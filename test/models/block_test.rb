@@ -4,7 +4,7 @@
 #
 #  id           :bigint           not null, primary key
 #  block_number :string
-#  hectarage    :decimal(, )
+#  hectarage    :decimal(10, 2)
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null
 #
