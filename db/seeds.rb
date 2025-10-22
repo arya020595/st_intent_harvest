@@ -14,6 +14,7 @@ WorkOrder.destroy_all
 Inventory.destroy_all
 WorkOrderRate.destroy_all
 User.destroy_all
+RolesPermission.destroy_all
 Role.destroy_all
 Permission.destroy_all
 Worker.destroy_all
