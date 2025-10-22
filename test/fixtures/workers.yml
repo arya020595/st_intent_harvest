@@ -1,8 +1,17 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
+# == Schema Information
+#
+# Table name: workers
+#
+#  id              :bigint           not null, primary key
+#  gender          :string
+#  hired_date      :date
+#  identity_number :string
+#  is_active       :boolean
+#  name            :string
+#  nationality     :string
+#  worker_type     :string
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
 #
 one: {}
 # column: value

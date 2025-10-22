@@ -1,3 +1,13 @@
+# == Schema Information
+#
+# Table name: vehicles
+#
+#  id             :bigint           not null, primary key
+#  vehicle_model  :string
+#  vehicle_number :string
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#
 require "test_helper"
 
 class VehicleTest < ActiveSupport::TestCase

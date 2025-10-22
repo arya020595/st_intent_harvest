@@ -65,6 +65,9 @@ group :development, :test do
   gem 'byebug', '~> 11.1', '>= 11.1.3'
   gem 'debug', platforms: %i[mri windows]
   gem 'rubocop', '~> 1.71', '>= 1.71.2'
+  
+  # Annotate models with schema information
+  gem 'annotate'
 end
 
 group :development do
