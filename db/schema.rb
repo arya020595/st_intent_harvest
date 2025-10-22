@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_22_150816) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_22_231803) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -40,6 +40,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_22_150816) do
     t.string "supplier"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "currency", default: "RM"
     t.index ["category_id"], name: "index_inventories_on_category_id"
     t.index ["unit_id"], name: "index_inventories_on_unit_id"
   end
@@ -52,6 +53,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_22_150816) do
     t.decimal "net_salary", precision: 10, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "currency", default: "RM"
     t.index ["pay_calculation_id"], name: "index_pay_calculation_details_on_pay_calculation_id"
     t.index ["worker_id"], name: "index_pay_calculation_details_on_worker_id"
   end
@@ -137,6 +139,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_22_150816) do
     t.bigint "unit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "currency", default: "RM"
     t.index ["unit_id"], name: "index_work_order_rates_on_unit_id"
   end
 

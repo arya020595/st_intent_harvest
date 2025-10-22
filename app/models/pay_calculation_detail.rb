@@ -12,6 +12,7 @@ end
 # Table name: pay_calculation_details
 #
 #  id                 :bigint           not null, primary key
+#  currency           :string           default("RM")
 #  deductions         :decimal(10, 2)
 #  gross_salary       :decimal(10, 2)
 #  net_salary         :decimal(10, 2)

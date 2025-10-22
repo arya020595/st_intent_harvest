@@ -3,6 +3,7 @@
 # Table name: inventories
 #
 #  id          :bigint           not null, primary key
+#  currency    :string           default("RM")
 #  description :text
 #  input_date  :date
 #  name        :string           not null

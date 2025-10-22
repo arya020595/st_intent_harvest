@@ -179,12 +179,12 @@ liter_unit = Unit.find_by(name: 'Liter')
 piece_unit = Unit.find_by(name: 'Piece')
 
 inventories_data = [
-  { name: 'NPK Fertilizer', description: 'Nitrogen Phosphorus Potassium compound', quantity: 500, category: fertilizer_category, unit: kg_unit, input_date: Date.today - 30, price: 15000, supplier: 'Agro Supplier Co.' },
-  { name: 'Organic Fertilizer', description: 'Natural organic fertilizer', quantity: 300, category: fertilizer_category, unit: kg_unit, input_date: Date.today - 25, price: 12000, supplier: 'Green Farm Supplies' },
-  { name: 'Herbicide', description: 'Weed control chemical', quantity: 100, category: pesticide_category, unit: liter_unit, input_date: Date.today - 20, price: 85000, supplier: 'ChemAgro Ltd.' },
-  { name: 'Insecticide', description: 'Pest control spray', quantity: 150, category: pesticide_category, unit: liter_unit, input_date: Date.today - 15, price: 95000, supplier: 'ChemAgro Ltd.' },
-  { name: 'Harvesting Knife', description: 'Sharp blade for palm fruit harvesting', quantity: 50, category: tools_category, unit: piece_unit, input_date: Date.today - 60, price: 45000, supplier: 'Tool Master' },
-  { name: 'Sprayer Machine', description: 'Motorized pesticide sprayer', quantity: 10, category: equipment_category, unit: piece_unit, input_date: Date.today - 90, price: 2500000, supplier: 'Agro Equipment Inc.' },
+  { name: 'NPK Fertilizer', description: 'Nitrogen Phosphorus Potassium compound', quantity: 500, category: fertilizer_category, unit: kg_unit, input_date: Date.today - 30, price: 65.00, currency: 'RM', supplier: 'Agro Supplier Co.' },
+  { name: 'Organic Fertilizer', description: 'Natural organic fertilizer', quantity: 300, category: fertilizer_category, unit: kg_unit, input_date: Date.today - 25, price: 55.00, currency: 'RM', supplier: 'Green Farm Supplies' },
+  { name: 'Herbicide', description: 'Weed control chemical', quantity: 100, category: pesticide_category, unit: liter_unit, input_date: Date.today - 20, price: 38.50, currency: 'RM', supplier: 'ChemAgro Ltd.' },
+  { name: 'Insecticide', description: 'Pest control spray', quantity: 150, category: pesticide_category, unit: liter_unit, input_date: Date.today - 15, price: 42.00, currency: 'RM', supplier: 'ChemAgro Ltd.' },
+  { name: 'Harvesting Knife', description: 'Sharp blade for palm fruit harvesting', quantity: 50, category: tools_category, unit: piece_unit, input_date: Date.today - 60, price: 28.50, currency: 'RM', supplier: 'Tool Master' },
+  { name: 'Sprayer Machine', description: 'Motorized pesticide sprayer', quantity: 10, category: equipment_category, unit: piece_unit, input_date: Date.today - 90, price: 1250.00, currency: 'RM', supplier: 'Agro Equipment Inc.' },
 ]
 
 inventories_data.each do |inventory_data|
@@ -201,11 +201,11 @@ day_unit = Unit.find_by(name: 'Day')
 hectare_unit = Unit.find_by(name: 'Hectare')
 
 rates_data = [
-  { work_order_name: 'Harvesting', rate: 150000, unit: day_unit },
-  { work_order_name: 'Spraying', rate: 120000, unit: day_unit },
-  { work_order_name: 'Fertilizing', rate: 100000, unit: day_unit },
-  { work_order_name: 'Weeding', rate: 80000, unit: day_unit },
-  { work_order_name: 'Land Preparation', rate: 500000, unit: hectare_unit },
+  { work_order_name: 'Harvesting', rate: 85.00, currency: 'RM', unit: day_unit },
+  { work_order_name: 'Spraying', rate: 75.00, currency: 'RM', unit: day_unit },
+  { work_order_name: 'Fertilizing', rate: 65.00, currency: 'RM', unit: day_unit },
+  { work_order_name: 'Weeding', rate: 55.00, currency: 'RM', unit: day_unit },
+  { work_order_name: 'Land Preparation', rate: 250.00, currency: 'RM', unit: hectare_unit },
 ]
 
 rates_data.each do |rate_data|
@@ -249,21 +249,21 @@ worker3 = Worker.find_by(identity_number: 'ID-003')
 WorkOrderWorker.find_or_create_by!(work_order: work_order1, worker: worker1) do |wow|
   wow.worker_name = worker1.name
   wow.quantity = 5
-  wow.rate = 150000
+  wow.rate = 85.00
   wow.remarks = 'Harvesting work on Block 1'
 end
 
 WorkOrderWorker.find_or_create_by!(work_order: work_order1, worker: worker2) do |wow|
   wow.worker_name = worker2.name
   wow.quantity = 3
-  wow.rate = 120000
+  wow.rate = 75.00
   wow.remarks = 'Spraying pesticides'
 end
 
 WorkOrderWorker.find_or_create_by!(work_order: work_order2, worker: worker3) do |wow|
   wow.worker_name = worker3.name
   wow.quantity = 4
-  wow.rate = 150000
+  wow.rate = 85.00
   wow.remarks = 'Harvesting work on Block 2'
 end
 
@@ -302,11 +302,12 @@ end
 puts "Creating pay calculation details..."
 [worker1, worker2, worker3].each do |worker|
   PayCalculationDetail.find_or_create_by!(pay_calculation: pay_calc, worker: worker) do |detail|
-    gross = rand(3000000..8000000)
-    deduct = rand(100000..500000)
+    gross = rand(3000..8000).to_f
+    deduct = rand(500..2000).to_f
     detail.gross_salary = gross
     detail.deductions = deduct
     detail.net_salary = gross - deduct
+    detail.currency = 'RM'
   end
 end
 

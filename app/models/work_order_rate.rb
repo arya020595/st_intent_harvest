@@ -10,6 +10,7 @@ end
 # Table name: work_order_rates
 #
 #  id              :bigint           not null, primary key
+#  currency        :string           default("RM")
 #  rate            :decimal(10, 2)
 #  work_order_name :string           not null
 #  created_at      :datetime         not null
