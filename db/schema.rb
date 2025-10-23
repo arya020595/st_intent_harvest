@@ -31,8 +31,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_22_231803) do
 
   create_table "inventories", force: :cascade do |t|
     t.string "name", null: false
-    t.text "description"
-    t.integer "quantity", default: 0
+    t.integer "stock_quantity", default: 0
     t.bigint "category_id"
     t.bigint "unit_id"
     t.date "input_date"
@@ -123,7 +122,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_22_231803) do
     t.bigint "work_order_id", null: false
     t.bigint "inventory_id"
     t.string "item_name"
-    t.integer "quantity"
+    t.integer "amount_used"
     t.decimal "price", precision: 10, scale: 2
     t.string "unit_name"
     t.string "category_name"
@@ -134,7 +133,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_22_231803) do
   end
 
   create_table "work_order_rates", force: :cascade do |t|
-    t.string "work_order_name", null: false
+    t.string "work_order_name"
     t.decimal "rate", precision: 10, scale: 2
     t.bigint "unit_id"
     t.datetime "created_at", null: false
@@ -147,7 +146,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_22_231803) do
     t.bigint "work_order_id", null: false
     t.bigint "worker_id", null: false
     t.string "worker_name"
-    t.integer "quantity"
+    t.integer "work_area_size"
     t.decimal "rate", precision: 10, scale: 2
     t.decimal "amount", precision: 10, scale: 2
     t.text "remarks"
@@ -159,17 +158,21 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_22_231803) do
 
   create_table "work_orders", force: :cascade do |t|
     t.bigint "block_id"
+    t.string "block_number"
+    t.string "block_hectarage"
+    t.bigint "work_order_rate_id"
+    t.string "work_order_rate_name"
+    t.decimal "work_order_rate_price", precision: 10, scale: 2
     t.date "start_date"
-    t.boolean "is_active", default: true
-    t.date "hired_date"
     t.string "work_order_status"
-    t.string "identity_number"
+    t.string "field_conductor"
     t.string "approved_by"
     t.datetime "approved_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["block_id", "work_order_rate_id"], name: "index_work_orders_on_block_and_rate"
     t.index ["block_id"], name: "index_work_orders_on_block_id"
-    t.index ["identity_number"], name: "index_work_orders_on_identity_number"
+    t.index ["work_order_rate_id"], name: "index_work_orders_on_work_order_rate_id"
   end
 
   create_table "workers", force: :cascade do |t|
@@ -197,4 +200,5 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_22_231803) do
   add_foreign_key "work_order_workers", "work_orders"
   add_foreign_key "work_order_workers", "workers"
   add_foreign_key "work_orders", "blocks"
+  add_foreign_key "work_orders", "work_order_rates"
 end

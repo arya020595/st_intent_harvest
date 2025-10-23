@@ -5,7 +5,7 @@
 #  id              :bigint           not null, primary key
 #  currency        :string           default("RM")
 #  rate            :decimal(10, 2)
-#  work_order_name :string           not null
+#  work_order_name :string
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  unit_id         :bigint

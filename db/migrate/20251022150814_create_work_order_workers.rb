@@ -4,7 +4,7 @@ class CreateWorkOrderWorkers < ActiveRecord::Migration[7.2]
       t.references :work_order, foreign_key: true, null: false
       t.references :worker, foreign_key: true, null: false
       t.string :worker_name
-      t.integer :quantity
+      t.integer :work_area_size
       t.decimal :rate, precision: 10, scale: 2
       t.decimal :amount, precision: 10, scale: 2
       t.text :remarks
