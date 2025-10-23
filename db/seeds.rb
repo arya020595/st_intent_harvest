@@ -180,12 +180,12 @@ liter_unit = Unit.find_by(name: 'Liter')
 piece_unit = Unit.find_by(name: 'Piece')
 
 inventories_data = [
-  { name: 'NPK Fertilizer', description: 'Nitrogen Phosphorus Potassium compound', quantity: 500, category: fertilizer_category, unit: kg_unit, input_date: Date.today - 30, price: 65.00, currency: 'RM', supplier: 'Agro Supplier Co.' },
-  { name: 'Organic Fertilizer', description: 'Natural organic fertilizer', quantity: 300, category: fertilizer_category, unit: kg_unit, input_date: Date.today - 25, price: 55.00, currency: 'RM', supplier: 'Green Farm Supplies' },
-  { name: 'Herbicide', description: 'Weed control chemical', quantity: 100, category: pesticide_category, unit: liter_unit, input_date: Date.today - 20, price: 38.50, currency: 'RM', supplier: 'ChemAgro Ltd.' },
-  { name: 'Insecticide', description: 'Pest control spray', quantity: 150, category: pesticide_category, unit: liter_unit, input_date: Date.today - 15, price: 42.00, currency: 'RM', supplier: 'ChemAgro Ltd.' },
-  { name: 'Harvesting Knife', description: 'Sharp blade for palm fruit harvesting', quantity: 50, category: tools_category, unit: piece_unit, input_date: Date.today - 60, price: 28.50, currency: 'RM', supplier: 'Tool Master' },
-  { name: 'Sprayer Machine', description: 'Motorized pesticide sprayer', quantity: 10, category: equipment_category, unit: piece_unit, input_date: Date.today - 90, price: 1250.00, currency: 'RM', supplier: 'Agro Equipment Inc.' },
+  { name: 'NPK Fertilizer', stock_quantity: 450, category: fertilizer_category, unit: kg_unit, price: 65.00, supplier: 'Agro Supplier Co.' },
+  { name: 'Organic Fertilizer', stock_quantity: 280, category: fertilizer_category, unit: kg_unit, price: 55.00, supplier: 'Green Farm Supplies' },
+  { name: 'Herbicide', stock_quantity: 85, category: pesticide_category, unit: liter_unit, price: 38.50, supplier: 'ChemAgro Ltd.' },
+  { name: 'Insecticide', stock_quantity: 130, category: pesticide_category, unit: liter_unit, price: 42.00, supplier: 'ChemAgro Ltd.' },
+  { name: 'Harvesting Knife', stock_quantity: 48, category: tools_category, unit: piece_unit, price: 28.50, supplier: 'Tool Master' },
+  { name: 'Sprayer Machine', stock_quantity: 8, category: equipment_category, unit: piece_unit, price: 1250.00, supplier: 'Agro Equipment Inc.' },
 ]
 
 inventories_data.each do |inventory_data|
@@ -202,11 +202,11 @@ day_unit = Unit.find_by(name: 'Day')
 hectare_unit = Unit.find_by(name: 'Hectare')
 
 rates_data = [
-  { work_order_name: 'Harvesting', rate: 85.00, currency: 'RM', unit: day_unit },
-  { work_order_name: 'Spraying', rate: 75.00, currency: 'RM', unit: day_unit },
-  { work_order_name: 'Fertilizing', rate: 65.00, currency: 'RM', unit: day_unit },
-  { work_order_name: 'Weeding', rate: 55.00, currency: 'RM', unit: day_unit },
-  { work_order_name: 'Land Preparation', rate: 250.00, currency: 'RM', unit: hectare_unit },
+  { work_order_name: 'Harvesting', rate: 85.00, unit_id: day_unit.id.to_s },
+  { work_order_name: 'Spraying', rate: 75.00, unit_id: day_unit.id.to_s },
+  { work_order_name: 'Fertilizing', rate: 65.00, unit_id: day_unit.id.to_s },
+  { work_order_name: 'Weeding', rate: 55.00, unit_id: day_unit.id.to_s },
+  { work_order_name: 'Land Preparation', rate: 250.00, unit_id: hectare_unit.id.to_s },
 ]
 
 rates_data.each do |rate_data|
@@ -220,23 +220,23 @@ puts "✓ Created #{WorkOrderRate.count} work order rates"
 puts "Creating work orders..."
 block1 = Block.find_by(block_number: 'BLK-001')
 block2 = Block.find_by(block_number: 'BLK-002')
+harvesting_rate = WorkOrderRate.find_by(work_order_name: 'Harvesting')
+spraying_rate = WorkOrderRate.find_by(work_order_name: 'Spraying')
 
-work_order1 = WorkOrder.find_or_create_by!(identity_number: 'WO-2024-001') do |wo|
-  wo.block = block1
+work_order1 = WorkOrder.find_or_create_by!(id: 1) do |wo|
+  wo.block_id = block1.id
   wo.start_date = Date.today - 7
-  wo.is_active = true
-  wo.hired_date = Date.today - 7
   wo.work_order_status = 'approved'
+  wo.field_conductor = 'John Conductor'
   wo.approved_by = 'Manager User'
   wo.approved_at = DateTime.now - 6.days
 end
 
-work_order2 = WorkOrder.find_or_create_by!(identity_number: 'WO-2024-002') do |wo|
-  wo.block = block2
+work_order2 = WorkOrder.find_or_create_by!(id: 2) do |wo|
+  wo.block_id = block2.id
   wo.start_date = Date.today - 3
-  wo.is_active = true
-  wo.hired_date = Date.today - 3
   wo.work_order_status = 'pending'
+  wo.field_conductor = 'Jane Conductor'
 end
 
 puts "✓ Created #{WorkOrder.count} work orders"
@@ -249,22 +249,22 @@ worker3 = Worker.find_by(identity_number: 'ID-003')
 
 WorkOrderWorker.find_or_create_by!(work_order: work_order1, worker: worker1) do |wow|
   wow.worker_name = worker1.name
-  wow.quantity = 5
   wow.rate = 85.00
+  wow.amount = 425.00
   wow.remarks = 'Harvesting work on Block 1'
 end
 
 WorkOrderWorker.find_or_create_by!(work_order: work_order1, worker: worker2) do |wow|
   wow.worker_name = worker2.name
-  wow.quantity = 3
   wow.rate = 75.00
+  wow.amount = 225.00
   wow.remarks = 'Spraying pesticides'
 end
 
 WorkOrderWorker.find_or_create_by!(work_order: work_order2, worker: worker3) do |wow|
   wow.worker_name = worker3.name
-  wow.quantity = 4
   wow.rate = 85.00
+  wow.amount = 340.00
   wow.remarks = 'Harvesting work on Block 2'
 end
 
@@ -277,7 +277,7 @@ herbicide = Inventory.find_by(name: 'Herbicide')
 
 WorkOrderItem.find_or_create_by!(work_order: work_order1, inventory: fertilizer) do |item|
   item.item_name = fertilizer.name
-  item.quantity = 50
+  item.amount_used = 50
   item.price = fertilizer.price
   item.unit_name = fertilizer.unit.name
   item.category_name = fertilizer.category.name
@@ -285,7 +285,7 @@ end
 
 WorkOrderItem.find_or_create_by!(work_order: work_order2, inventory: herbicide) do |item|
   item.item_name = herbicide.name
-  item.quantity = 10
+  item.amount_used = 10
   item.price = herbicide.price
   item.unit_name = herbicide.unit.name
   item.category_name = herbicide.category.name
@@ -308,12 +308,11 @@ puts "Creating pay calculation details..."
     detail.gross_salary = gross
     detail.deductions = deduct
     detail.net_salary = gross - deduct
-    detail.currency = 'RM'
   end
 end
 
 # Update overall total
-pay_calc.update!(overall_total: pay_calc.pay_calculation_details.sum(:net_salary))
+pay_calc.update!(overall_total: pay_calc.pay_calculation_details.sum(:gross_salary))
 
 puts "✓ Created pay calculation with #{PayCalculationDetail.count} details"
 
