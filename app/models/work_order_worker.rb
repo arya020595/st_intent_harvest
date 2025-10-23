@@ -2,7 +2,7 @@ class WorkOrderWorker < ApplicationRecord
   belongs_to :work_order
   belongs_to :worker
   
-  validates :quantity, numericality: { greater_than: 0 }, allow_nil: true
+  validates :work_area_size, numericality: { greater_than: 0 }, allow_nil: true
   validates :rate, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   
   before_save :calculate_amount
@@ -10,7 +10,7 @@ class WorkOrderWorker < ApplicationRecord
   private
   
   def calculate_amount
-    self.amount = (quantity || 0) * (rate || 0)
+    self.amount = (work_area_size || 0) * (rate || 0)
   end
 end
 
@@ -18,16 +18,16 @@ end
 #
 # Table name: work_order_workers
 #
-#  id            :bigint           not null, primary key
-#  amount        :decimal(10, 2)
-#  quantity      :integer
-#  rate          :decimal(10, 2)
-#  remarks       :text
-#  worker_name   :string
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
-#  work_order_id :bigint           not null
-#  worker_id     :bigint           not null
+#  id             :bigint           not null, primary key
+#  amount         :decimal(10, 2)
+#  rate           :decimal(10, 2)
+#  remarks        :text
+#  work_area_size :integer
+#  worker_name    :string
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  work_order_id  :bigint           not null
+#  worker_id      :bigint           not null
 #
 # Indexes
 #

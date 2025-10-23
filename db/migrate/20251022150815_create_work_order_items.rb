@@ -4,7 +4,7 @@ class CreateWorkOrderItems < ActiveRecord::Migration[7.2]
       t.references :work_order, foreign_key: true, null: false
       t.references :inventory, foreign_key: true
       t.string :item_name
-      t.integer :quantity
+      t.integer :amount_used
       t.decimal :price, precision: 10, scale: 2
       t.string :unit_name
       t.string :category_name
