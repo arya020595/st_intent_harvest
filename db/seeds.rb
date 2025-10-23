@@ -180,12 +180,12 @@ liter_unit = Unit.find_by(name: 'Liter')
 piece_unit = Unit.find_by(name: 'Piece')
 
 inventories_data = [
-  { name: 'NPK Fertilizer', stock_quantity: 450, category: fertilizer_category, unit: kg_unit, price: 65.00, supplier: 'Agro Supplier Co.' },
-  { name: 'Organic Fertilizer', stock_quantity: 280, category: fertilizer_category, unit: kg_unit, price: 55.00, supplier: 'Green Farm Supplies' },
-  { name: 'Herbicide', stock_quantity: 85, category: pesticide_category, unit: liter_unit, price: 38.50, supplier: 'ChemAgro Ltd.' },
-  { name: 'Insecticide', stock_quantity: 130, category: pesticide_category, unit: liter_unit, price: 42.00, supplier: 'ChemAgro Ltd.' },
-  { name: 'Harvesting Knife', stock_quantity: 48, category: tools_category, unit: piece_unit, price: 28.50, supplier: 'Tool Master' },
-  { name: 'Sprayer Machine', stock_quantity: 8, category: equipment_category, unit: piece_unit, price: 1250.00, supplier: 'Agro Equipment Inc.' },
+  { name: 'NPK Fertilizer', stock_quantity: 450, category: fertilizer_category, unit: kg_unit, price: 65.00, supplier: 'Agro Supplier Co.', input_date: Date.today - 30 },
+  { name: 'Organic Fertilizer', stock_quantity: 280, category: fertilizer_category, unit: kg_unit, price: 55.00, supplier: 'Green Farm Supplies', input_date: Date.today - 25 },
+  { name: 'Herbicide', stock_quantity: 85, category: pesticide_category, unit: liter_unit, price: 38.50, supplier: 'ChemAgro Ltd.', input_date: Date.today - 20 },
+  { name: 'Insecticide', stock_quantity: 130, category: pesticide_category, unit: liter_unit, price: 42.00, supplier: 'ChemAgro Ltd.', input_date: Date.today - 15 },
+  { name: 'Harvesting Knife', stock_quantity: 48, category: tools_category, unit: piece_unit, price: 28.50, supplier: 'Tool Master', input_date: Date.today - 60 },
+  { name: 'Sprayer Machine', stock_quantity: 8, category: equipment_category, unit: piece_unit, price: 1250.00, supplier: 'Agro Equipment Inc.', input_date: Date.today - 90 },
 ]
 
 inventories_data.each do |inventory_data|

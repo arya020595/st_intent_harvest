@@ -14,6 +14,7 @@ end
 #
 #  id             :bigint           not null, primary key
 #  currency       :string           default("RM")
+#  input_date     :date
 #  name           :string           not null
 #  price          :decimal(10, 2)
 #  stock_quantity :integer          default(0)

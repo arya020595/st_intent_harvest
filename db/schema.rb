@@ -34,6 +34,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_22_231803) do
     t.integer "stock_quantity", default: 0
     t.bigint "category_id"
     t.bigint "unit_id"
+    t.date "input_date"
     t.decimal "price", precision: 10, scale: 2
     t.string "supplier"
     t.datetime "created_at", null: false
