@@ -59,6 +59,14 @@ gem 'ransack'
 # Background jobs (Sidekiq 8.x)
 gem 'sidekiq', '~> 8.0', '>= 8.0.8'
 
+# dry-rb: dependency injection and functional helpers
+gem 'dry-container', '~> 0.11.0'
+gem 'dry-auto_inject', '~> 1.1'
+gem 'dry-monads', '~> 1.9'
+
+# State machine library for Ruby objects (AASM) — used to model object states and transitions
+gem 'aasm', '~> 5.5', '>= 5.5.2'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'bullet', '~> 8.0', '>= 8.0.8'
