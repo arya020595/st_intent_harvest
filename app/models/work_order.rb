@@ -1,10 +1,68 @@
+# frozen_string_literal: true
+
 class WorkOrder < ApplicationRecord
+  include AASM
+
   belongs_to :block, optional: true
+  belongs_to :work_order_rate, optional: true
   has_many :work_order_workers, dependent: :destroy
   has_many :work_order_items, dependent: :destroy
-  
+  has_many :work_order_histories, dependent: :destroy
+
   validates :start_date, presence: true
-  validates :work_order_status, inclusion: { in: %w[pending approved rejected completed], allow_nil: true }
+  validates :work_order_status, inclusion: { in: %w[ongoing pending rejected completed], allow_nil: true }
+  
+  # AASM State Machine Configuration with string column
+  aasm column: :work_order_status do
+    state :ongoing, initial: true
+    state :pending
+    state :rejected
+    state :completed
+
+    # Transitions
+    event :mark_complete do
+      transitions from: :ongoing, to: :pending do
+        after do
+          record_history_transition('ongoing', 'pending', 'mark_complete')
+        end
+      end
+    end
+
+    event :approve do
+      transitions from: :pending, to: :completed do
+        after do
+          record_history_transition('pending', 'completed', 'approve')
+        end
+      end
+    end
+
+    event :reject do
+      transitions from: :pending, to: :rejected do
+        after do
+          record_history_transition('pending', 'rejected', 'reject')
+        end
+      end
+    end
+
+    event :reopen do
+      transitions from: :rejected, to: :pending do
+        after do
+          record_history_transition('rejected', 'pending', 'reopen')
+        end
+      end
+    end
+  end
+
+  def record_history_transition(from_state, to_state, action)
+    WorkOrderHistory.create(
+      work_order: self,
+      from_state: from_state,
+      to_state: to_state,
+      action: action,
+      user: Current.user,
+      remarks: "State transitioned from #{from_state} to #{to_state}"
+    )
+  end
 end
 
 # == Schema Information

@@ -8,7 +8,7 @@ class CreateWorkOrders < ActiveRecord::Migration[7.2]
       t.string :work_order_rate_name
       t.decimal :work_order_rate_price, precision: 10, scale: 2
       t.date :start_date
-      t.string :work_order_status
+      t.string :work_order_status, default: 'ongoing'
       t.string :field_conductor
       t.string :approved_by
       t.datetime :approved_at
