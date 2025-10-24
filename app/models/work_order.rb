@@ -23,7 +23,7 @@ class WorkOrder < ApplicationRecord
     event :mark_complete do
       transitions from: :ongoing, to: :pending do
         after do
-          record_history_transition('ongoing', 'pending', 'mark_complete')
+          WorkOrderHistory.record_transition(self, 'ongoing', 'pending', 'mark_complete', Current.user, "State transitioned from ongoing to pending")
         end
       end
     end
@@ -31,7 +31,7 @@ class WorkOrder < ApplicationRecord
     event :approve do
       transitions from: :pending, to: :completed do
         after do
-          record_history_transition('pending', 'completed', 'approve')
+          WorkOrderHistory.record_transition(self, 'pending', 'completed', 'approve', Current.user, "State transitioned from pending to completed")
         end
       end
     end
@@ -39,7 +39,7 @@ class WorkOrder < ApplicationRecord
     event :request_amendment do
       transitions from: :pending, to: :amendment_required do
         after do
-          record_history_transition('pending', 'amendment_required', 'request_amendment')
+          WorkOrderHistory.record_transition(self, 'pending', 'amendment_required', 'request_amendment', Current.user, "State transitioned from pending to amendment_required")
         end
       end
     end
@@ -47,21 +47,10 @@ class WorkOrder < ApplicationRecord
     event :reopen do
       transitions from: :amendment_required, to: :pending do
         after do
-          record_history_transition('amendment_required', 'pending', 'reopen')
+          WorkOrderHistory.record_transition(self, 'amendment_required', 'pending', 'reopen', Current.user, "State transitioned from amendment_required to pending")
         end
       end
     end
-  end
-
-  def record_history_transition(from_state, to_state, action)
-    WorkOrderHistory.create(
-      work_order: self,
-      from_state: from_state,
-      to_state: to_state,
-      action: action,
-      user: Current.user,
-      remarks: "State transitioned from #{from_state} to #{to_state}"
-    )
   end
 end
 
