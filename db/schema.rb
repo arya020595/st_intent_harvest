@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_10_22_231803) do
+ActiveRecord::Schema[7.2].define(version: 2025_10_23_235200) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -118,6 +118,21 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_22_231803) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "work_order_histories", force: :cascade do |t|
+    t.bigint "work_order_id", null: false
+    t.string "from_state"
+    t.string "to_state"
+    t.string "action"
+    t.bigint "user_id"
+    t.text "remarks"
+    t.jsonb "transition_details", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_work_order_histories_on_user_id"
+    t.index ["work_order_id", "created_at"], name: "index_work_order_histories_on_order_and_created"
+    t.index ["work_order_id"], name: "index_work_order_histories_on_work_order_id"
+  end
+
   create_table "work_order_items", force: :cascade do |t|
     t.bigint "work_order_id", null: false
     t.bigint "inventory_id"
@@ -164,7 +179,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_22_231803) do
     t.string "work_order_rate_name"
     t.decimal "work_order_rate_price", precision: 10, scale: 2
     t.date "start_date"
-    t.string "work_order_status"
+    t.string "work_order_status", default: "ongoing"
     t.string "field_conductor"
     t.string "approved_by"
     t.datetime "approved_at"
@@ -194,6 +209,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_22_231803) do
   add_foreign_key "roles_permissions", "permissions"
   add_foreign_key "roles_permissions", "roles"
   add_foreign_key "users", "roles"
+  add_foreign_key "work_order_histories", "users"
+  add_foreign_key "work_order_histories", "work_orders"
   add_foreign_key "work_order_items", "inventories"
   add_foreign_key "work_order_items", "work_orders"
   add_foreign_key "work_order_rates", "units"
