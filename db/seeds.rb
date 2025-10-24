@@ -226,16 +226,16 @@ spraying_rate = WorkOrderRate.find_by(work_order_name: 'Spraying')
 work_order1 = WorkOrder.find_or_create_by!(id: 1) do |wo|
   wo.block_id = block1.id
   wo.start_date = Date.today - 7
-  wo.work_order_status = 'approved'
+  wo.work_order_status = 'ongoing'  # Saved as draft
   wo.field_conductor = 'John Conductor'
-  wo.approved_by = 'Manager User'
-  wo.approved_at = DateTime.now - 6.days
+  wo.approved_by = nil
+  wo.approved_at = nil
 end
 
 work_order2 = WorkOrder.find_or_create_by!(id: 2) do |wo|
   wo.block_id = block2.id
   wo.start_date = Date.today - 3
-  wo.work_order_status = 'pending'
+  wo.work_order_status = 'pending'  # Submitted for approval
   wo.field_conductor = 'Jane Conductor'
 end
 
