@@ -3,27 +3,27 @@
 class WorkOrder < ApplicationRecord
   include AASM
 
-  belongs_to :block, optional: true
-  belongs_to :work_order_rate, optional: true
+  belongs_to :block
+  belongs_to :work_order_rate
   has_many :work_order_workers, dependent: :destroy
   has_many :work_order_items, dependent: :destroy
   has_many :work_order_histories, dependent: :destroy
 
   validates :start_date, presence: true
-  validates :work_order_status, inclusion: { in: %w[ongoing pending rejected completed], allow_nil: true }
+  validates :work_order_status, inclusion: { in: %w[ongoing pending amendment_required completed], allow_nil: true }
   
   # AASM State Machine Configuration with string column
   aasm column: :work_order_status do
     state :ongoing, initial: true
     state :pending
-    state :rejected
+    state :amendment_required
     state :completed
 
     # Transitions
     event :mark_complete do
       transitions from: :ongoing, to: :pending do
         after do
-          record_history_transition('ongoing', 'pending', 'mark_complete')
+          WorkOrderHistory.record_transition(self, 'ongoing', 'pending', 'mark_complete', Current.user, "Work order submitted for approval")
         end
       end
     end
@@ -31,37 +31,26 @@ class WorkOrder < ApplicationRecord
     event :approve do
       transitions from: :pending, to: :completed do
         after do
-          record_history_transition('pending', 'completed', 'approve')
+          WorkOrderHistory.record_transition(self, 'pending', 'completed', 'approve', Current.user, "Work order approved and completed")
         end
       end
     end
 
-    event :reject do
-      transitions from: :pending, to: :rejected do
+    event :request_amendment do
+      transitions from: :pending, to: :amendment_required do
         after do
-          record_history_transition('pending', 'rejected', 'reject')
+          WorkOrderHistory.record_transition(self, 'pending', 'amendment_required', 'request_amendment', Current.user, "Amendment requested by approver")
         end
       end
     end
 
     event :reopen do
-      transitions from: :rejected, to: :pending do
+      transitions from: :amendment_required, to: :pending do
         after do
-          record_history_transition('rejected', 'pending', 'reopen')
+          WorkOrderHistory.record_transition(self, 'amendment_required', 'pending', 'reopen', Current.user, "Work order resubmitted after amendments")
         end
       end
     end
-  end
-
-  def record_history_transition(from_state, to_state, action)
-    WorkOrderHistory.create(
-      work_order: self,
-      from_state: from_state,
-      to_state: to_state,
-      action: action,
-      user: Current.user,
-      remarks: "State transitioned from #{from_state} to #{to_state}"
-    )
   end
 end
 
@@ -78,7 +67,7 @@ end
 #  start_date            :date
 #  work_order_rate_name  :string
 #  work_order_rate_price :decimal(10, 2)
-#  work_order_status     :string
+#  work_order_status     :string           default("ongoing")
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  block_id              :bigint

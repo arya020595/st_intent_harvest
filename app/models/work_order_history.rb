@@ -38,7 +38,7 @@ end
 #  from_state         :string
 #  remarks            :text
 #  to_state           :string
-#  transition_details :text             default("{}")
+#  transition_details :jsonb
 #  created_at         :datetime         not null
 #  updated_at         :datetime         not null
 #  user_id            :bigint
