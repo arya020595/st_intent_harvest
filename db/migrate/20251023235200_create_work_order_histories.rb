@@ -7,7 +7,7 @@ class CreateWorkOrderHistories < ActiveRecord::Migration[7.2]
       t.string :action
       t.references :user, foreign_key: true, null: true
       t.text :remarks
-      t.text :transition_details, default: '{}'
+      t.jsonb :transition_details, default: {}
 
       t.timestamps
     end
