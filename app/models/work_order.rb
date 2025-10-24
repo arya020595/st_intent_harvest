@@ -10,13 +10,13 @@ class WorkOrder < ApplicationRecord
   has_many :work_order_histories, dependent: :destroy
 
   validates :start_date, presence: true
-  validates :work_order_status, inclusion: { in: %w[ongoing pending rejected completed], allow_nil: true }
+  validates :work_order_status, inclusion: { in: %w[ongoing pending amendment_required completed], allow_nil: true }
   
   # AASM State Machine Configuration with string column
   aasm column: :work_order_status do
     state :ongoing, initial: true
     state :pending
-    state :rejected
+    state :amendment_required
     state :completed
 
     # Transitions
@@ -36,18 +36,18 @@ class WorkOrder < ApplicationRecord
       end
     end
 
-    event :reject do
-      transitions from: :pending, to: :rejected do
+    event :request_amendment do
+      transitions from: :pending, to: :amendment_required do
         after do
-          record_history_transition('pending', 'rejected', 'reject')
+          record_history_transition('pending', 'amendment_required', 'request_amendment')
         end
       end
     end
 
     event :reopen do
-      transitions from: :rejected, to: :pending do
+      transitions from: :amendment_required, to: :pending do
         after do
-          record_history_transition('rejected', 'pending', 'reopen')
+          record_history_transition('amendment_required', 'pending', 'reopen')
         end
       end
     end
