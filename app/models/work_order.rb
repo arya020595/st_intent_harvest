@@ -3,8 +3,8 @@
 class WorkOrder < ApplicationRecord
   include AASM
 
-  belongs_to :block, optional: true
-  belongs_to :work_order_rate, optional: true
+  belongs_to :block
+  belongs_to :work_order_rate
   has_many :work_order_workers, dependent: :destroy
   has_many :work_order_items, dependent: :destroy
   has_many :work_order_histories, dependent: :destroy
