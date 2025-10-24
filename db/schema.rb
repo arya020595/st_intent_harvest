@@ -125,7 +125,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_23_235200) do
     t.string "action"
     t.bigint "user_id"
     t.text "remarks"
-    t.text "transition_details", default: "{}"
+    t.jsonb "transition_details", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_work_order_histories_on_user_id"
@@ -179,7 +179,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_10_23_235200) do
     t.string "work_order_rate_name"
     t.decimal "work_order_rate_price", precision: 10, scale: 2
     t.date "start_date"
-    t.string "work_order_status"
+    t.string "work_order_status", default: "ongoing"
     t.string "field_conductor"
     t.string "approved_by"
     t.datetime "approved_at"

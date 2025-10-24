@@ -67,7 +67,7 @@ end
 #  start_date            :date
 #  work_order_rate_name  :string
 #  work_order_rate_price :decimal(10, 2)
-#  work_order_status     :string
+#  work_order_status     :string           default("ongoing")
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  block_id              :bigint
