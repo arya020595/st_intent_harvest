@@ -15,7 +15,11 @@ Rails.application.routes.draw do
   
   # Work Order Namespace
   namespace :work_order do
-    resources :details
+    resources :details do
+      member do
+        patch :mark_complete
+      end
+    end
     resources :approvals, only: [:index, :show, :update] do
       member do
         patch :approve
