@@ -6,9 +6,9 @@ end
 #
 # Table name: vehicles
 #
-#  id             :bigint           not null, primary key
-#  vehicle_model  :string
+#  id             :integer          not null, primary key
 #  vehicle_number :string
+#  vehicle_model  :string
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
 #
