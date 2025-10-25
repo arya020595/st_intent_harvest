@@ -497,6 +497,98 @@ docker compose ps
 docker compose logs -f web
 ```
 
+**Expected output from `docker compose ps`:**
+
+```
+NAME                        STATUS          PORTS
+st_intent_harvest-db-1      Up (healthy)    0.0.0.0:5432->5432/tcp
+st_intent_harvest-redis-1   Up (healthy)    0.0.0.0:6379->6379/tcp
+st_intent_harvest-web-1     Up              0.0.0.0:3000->3000/tcp
+```
+
+### Verifying Services are Running
+
+#### Check Container Status
+
+```bash
+# Show running containers
+docker compose ps
+
+# Show all containers (including stopped)
+docker compose ps -a
+```
+
+#### View Logs
+
+```bash
+# View all logs
+docker compose logs
+
+# Follow logs (live tail)
+docker compose logs -f
+
+# View only web app logs
+docker compose logs -f web
+
+# View last 50 lines
+docker compose logs --tail=50 web
+
+# View database logs
+docker compose logs db
+
+# View Redis logs
+docker compose logs redis
+```
+
+#### Access Your Application
+
+Open your browser and visit:
+
+- **Application**: http://localhost:3000
+- **Health Check**: http://localhost:3000/up
+- **PostgreSQL**: Use any DB client connecting to `localhost:5432`
+
+#### Check Individual Services
+
+```bash
+# Check Rails version
+docker compose exec web rails -v
+
+# Check database connection
+docker compose exec db psql -U postgres -c "SELECT version();"
+
+# Check Redis is responding
+docker compose exec redis redis-cli ping
+# Should return: PONG
+```
+
+#### Quick Health Check
+
+```bash
+# See resource usage (CPU, memory)
+docker stats
+
+# Check if Rails is responding
+curl http://localhost:3000/up
+# Should return: ok
+
+# Check all services status
+docker compose ps
+```
+
+#### Detailed Container Inspection
+
+```bash
+# Inspect web container details
+docker inspect st_intent_harvest-web-1
+
+# Check logs for errors
+docker compose logs --tail=100 web
+
+# Access container shell
+docker compose exec web bash
+```
+
 ### Making Code Changes
 
 Your code is **automatically synced** to the Docker container via volume mounts. Just edit files locally and refresh your browser!
@@ -816,9 +908,96 @@ web:
     - "3001:3000" # Change external port to 3001
 ```
 
+#### Port 5432 (PostgreSQL) Already in Use
+
+**Error**: `exposing port TCP 0.0.0.0:5432: bind: address already in use`
+
+**Cause**: You have PostgreSQL running locally on your machine.
+
+**Solution 1** - Stop local PostgreSQL (Recommended):
+
+```bash
+# Check if PostgreSQL is running
+sudo systemctl status postgresql
+
+# Stop PostgreSQL
+sudo systemctl stop postgresql
+
+# Disable PostgreSQL from starting on boot (optional)
+sudo systemctl disable postgresql
+
+# Now start Docker
+docker compose up -d
+```
+
+**Solution 2** - Change Docker PostgreSQL port to 5433:
+
+Edit `docker-compose.yml`:
+
+```yaml
+db:
+  ports:
+    - "5433:5432" # Change from 5432:5432
+```
+
+Then update `.env`:
+
+```bash
+DATABASE_PORT=5433  # Change from 5432
+```
+
+#### Port 6379 (Redis) Already in Use
+
+**Error**: `exposing port TCP 0.0.0.0:6379: bind: address already in use`
+
+**Cause**: You have Redis running locally on your machine.
+
+**Solution 1** - Stop local Redis (Recommended):
+
+```bash
+# Stop local Redis
+sudo systemctl stop redis
+sudo systemctl stop redis-server
+
+# Disable Redis from starting on boot (optional)
+sudo systemctl disable redis-server
+
+# Or find and kill the Redis process
+sudo lsof -i :6379
+sudo kill -9 <PID>
+
+# Now start Docker
+docker compose up -d
+```
+
+**Solution 2** - Change Docker Redis port to 6380:
+
+Edit `docker-compose.yml`:
+
+```yaml
+redis:
+  ports:
+    - "6380:6379" # Change from 6379:6379
+```
+
+#### Stop All Conflicting Services at Once
+
+If you have multiple port conflicts:
+
+```bash
+# Stop PostgreSQL and Redis together
+sudo systemctl stop postgresql redis-server
+
+# Start Docker
+docker compose up -d
+
+# (Optional) Disable them from starting on boot
+sudo systemctl disable postgresql redis-server
+```
+
 ### Database Connection Errors
 
-**Error**: `could not connect to server: Connection refused`
+#### Error: "could not connect to server: Connection refused"
 
 **Check database is running**:
 
@@ -837,6 +1016,40 @@ docker compose restart db
 
 ```bash
 cat .env | grep DATABASE
+```
+
+#### Error: "connection to server on socket failed: No such file or directory"
+
+**Cause**: Rails is trying to connect via Unix socket instead of TCP/IP. This happens when `host` is not configured in `config/database.yml`.
+
+**Solution**: Ensure your `config/database.yml` includes `host` configuration:
+
+```yaml
+development:
+  <<: *default
+  database: <%= ENV.fetch("DATABASE_NAME") { "st_intent_harvest_development" } %>
+  username: <%= ENV.fetch("DATABASE_USERNAME") { "postgres" } %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD") { "root" } %>
+  host: <%= ENV.fetch("DATABASE_HOST") { "localhost" } %>      # ← This is required!
+  port: <%= ENV.fetch("DATABASE_PORT") { 5432 } %>            # ← This too!
+```
+
+After fixing, restart the web container:
+
+```bash
+docker compose restart web
+docker compose exec web rails db:create
+docker compose exec web rails db:migrate
+```
+
+#### Error: "database does not exist"
+
+**Solution**: Create the database:
+
+```bash
+docker compose exec web rails db:create
+docker compose exec web rails db:migrate
+docker compose exec web rails db:seed
 ```
 
 ### Bundle Install Fails
