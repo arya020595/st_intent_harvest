@@ -10,7 +10,7 @@ class DashboardController < ApplicationController
     @completed_work_orders = WorkOrder.completed.count
     @amendment_required_work_orders = WorkOrder.amendment_required.count
     # Recent work orders
-    @recent_work_orders = WorkOrder.order(created_at: :desc).limit(10)
+    @recent_work_orders = WorkOrder.select(:id, :work_order_number, :work_order_date, :block_id, :work_order_status).order(created_at: :desc).limit(10)
     
     # Optional: Add user-specific statistics if needed
     # @my_work_orders = current_user.work_orders if current_user.respond_to?(:work_orders)
