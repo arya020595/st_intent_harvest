@@ -2,58 +2,58 @@
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=3.4.7
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS base
+FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim
 
 # Rails app lives here
 WORKDIR /rails
 
-# Set production environment
-ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
+# Set development environment (can be overridden at runtime)
+ENV RAILS_ENV="development" \
     BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development" \
-    PATH="/usr/local/bundle/bin:$PATH"
+    PATH="/rails/bin:/usr/local/bundle/bin:$PATH"
 
-# Build stage - for production deployment
-FROM base AS build
-
-# Install packages needed to build gems
+# Install packages needed for development and runtime
+# Includes dos2unix for Windows line ending support and bash
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libvips pkg-config libyaml-dev dos2unix && \
+    apt-get install --no-install-recommends -y \
+    bash \
+    build-essential \
+    git \
+    libpq-dev \
+    libvips \
+    pkg-config \
+    libyaml-dev \
+    dos2unix \
+    curl \
+    postgresql-client \
+    vim \
+    nano \
+    less && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Install application gems
+# Install application gems (do this before copying app code for better caching)
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 
 # Copy application code
 COPY . .
-RUN find ./bin -type f -exec dos2unix {} + && \
-    bundle exec bootsnap precompile app/ lib/ && \
-    SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
-# Final stage - for production deployment
-FROM base
+# Fix line endings for all scripts (Windows compatibility)
+RUN find ./bin -type f -exec dos2unix {} + 2>/dev/null || true && \
+    chmod +x ./bin/*
 
-# Install packages needed for deployment
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libvips postgresql-client && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+# Precompile bootsnap for faster boot times
+RUN bundle exec bootsnap precompile app/ lib/
 
-# Copy built artifacts: gems and application
-COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=build /rails /rails
+# Create necessary directories with proper permissions
+# Run as root to avoid Windows volume mount permission issues
+RUN mkdir -p tmp/pids tmp/sockets tmp/cache log storage && \
+    chmod -R 777 tmp log storage
 
-# Create and set permissions for the 'rails' user (non-root)
-RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
-USER rails:rails
-
-# Entrypoint prepares the database.
+# Entrypoint prepares the database
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD ["./bin/rails", "server"]
+CMD ["./bin/rails", "server", "-b", "0.0.0.0"]

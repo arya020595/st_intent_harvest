@@ -1,5 +1,10 @@
 #!/bin/bash -e
 
+# Fix line endings for scripts (Windows compatibility)
+# This is needed when files are mounted from Windows host
+find /rails/bin -type f -exec dos2unix {} + 2>/dev/null || true
+chmod +x /rails/bin/* 2>/dev/null || true
+
 # If running the rails server then create or migrate existing database
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   ./bin/rails db:prepare
