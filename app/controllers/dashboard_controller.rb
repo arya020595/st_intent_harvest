@@ -9,7 +9,6 @@ class DashboardController < ApplicationController
     @ongoing_work_orders = WorkOrder.ongoing.count
     @completed_work_orders = WorkOrder.completed.count
     @amendment_required_work_orders = WorkOrder.amendment_required.count
-    
     # Recent work orders
     @recent_work_orders = WorkOrder.order(created_at: :desc).limit(10)
     
