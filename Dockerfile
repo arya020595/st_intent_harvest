@@ -30,7 +30,7 @@ RUN bundle install && \
 
 # Copy application code
 COPY . .
-RUN dos2unix ./bin/* && \
+RUN find ./bin -type f -exec dos2unix {} + && \
     bundle exec bootsnap precompile app/ lib/ && \
     SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
