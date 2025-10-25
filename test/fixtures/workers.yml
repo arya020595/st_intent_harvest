@@ -2,17 +2,18 @@
 #
 # Table name: workers
 #
-#  id              :bigint           not null, primary key
-#  gender          :string
-#  hired_date      :date
-#  identity_number :string
-#  is_active       :boolean
+#  id              :integer          not null, primary key
 #  name            :string
-#  nationality     :string
 #  worker_type     :string
+#  gender          :string
+#  is_active       :boolean
+#  hired_date      :date
+#  nationality     :string
+#  identity_number :string
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #
+
 one: {}
 # column: value
 #

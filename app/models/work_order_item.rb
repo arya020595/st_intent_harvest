@@ -11,24 +11,19 @@ end
 #
 # Table name: work_order_items
 #
-#  id            :bigint           not null, primary key
-#  amount_used   :integer
-#  category_name :string
+#  id            :integer          not null, primary key
+#  work_order_id :integer          not null
+#  inventory_id  :integer
 #  item_name     :string
+#  amount_used   :integer
 #  price         :decimal(10, 2)
 #  unit_name     :string
+#  category_name :string
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
-#  inventory_id  :bigint
-#  work_order_id :bigint           not null
 #
 # Indexes
 #
 #  index_work_order_items_on_inventory_id   (inventory_id)
 #  index_work_order_items_on_work_order_id  (work_order_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (inventory_id => inventories.id)
-#  fk_rails_...  (work_order_id => work_orders.id)
 #

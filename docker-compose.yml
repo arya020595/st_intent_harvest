@@ -1,0 +1,96 @@
+services:
+  db:
+    image: postgres:16.1-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: st_intent_harvest_development
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - st_intent_harvest_network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - st_intent_harvest_network
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    environment:
+      DATABASE_HOST: ${DATABASE_HOST:-db}
+      DATABASE_PORT: ${DATABASE_PORT:-5432}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-postgres}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-root}
+      DATABASE_NAME: ${DATABASE_NAME:-st_intent_harvest_development}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      RAILS_ENV: ${RAILS_ENV:-development}
+      RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+    networks:
+      - st_intent_harvest_network
+
+  # Uncomment to add Sidekiq for background jobs
+  # sidekiq:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   command: bundle exec sidekiq
+  #   environment:
+  #     DATABASE_HOST: ${DATABASE_HOST:-db}
+  #     DATABASE_PORT: ${DATABASE_PORT:-5432}
+  #     DATABASE_USERNAME: ${DATABASE_USERNAME:-postgres}
+  #     DATABASE_PASSWORD: ${DATABASE_PASSWORD:-root}
+  #     DATABASE_NAME: ${DATABASE_NAME:-st_intent_harvest_development}
+  #     REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+  #     RAILS_ENV: ${RAILS_ENV:-development}
+  #   volumes:
+  #     - .:/rails
+  #     - bundle_cache:/usr/local/bundle
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   networks:
+  #     - st_intent_harvest_network
+
+volumes:
+  postgres_data:
+  redis_data:
+  bundle_cache:
+
+networks:
+  st_intent_harvest_network:
+    driver: bridge
