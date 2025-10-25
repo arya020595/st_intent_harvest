@@ -45,7 +45,7 @@ services:
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
       RAILS_ENV: ${RAILS_ENV:-development}
       RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
-      PATH: /rails/bin:/usr/local/bundle/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      PATH: /rails/bin:/usr/local/bundle/bin:$PATH
     ports:
       - "3000:3000"
     volumes:
