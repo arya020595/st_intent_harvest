@@ -6,6 +6,8 @@ class PermissionChecker
   end
 
   def allowed?(action, subject)
+    # Superadmin bypass: allow everything
+    return true if superadmin?
     return false unless user_has_role?
     
     permissions.exists?(action: action.to_s, subject: subject)
@@ -21,5 +23,10 @@ class PermissionChecker
 
   def permissions
     @permissions ||= @user.role.permissions
+  end
+
+  def superadmin?
+    # Case-insensitive match on role name 'Superadmin'
+    @user&.role&.name&.downcase == 'superadmin'
   end
 end

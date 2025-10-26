@@ -77,7 +77,9 @@ end
 
 ```ruby
 create_table :permissions do |t|
-  t.string :action, null: false      # "read", "create", "update", "destroy"
+  # Convention: action matches the policy method name (without the '?')
+  # e.g., "index", "show", "create", "update", "destroy", or custom actions like "approve"
+  t.string :action, null: false
   t.string :subject, null: false     # "Inventory", "WorkOrder", "Vehicle", etc.
   t.timestamps
 end
@@ -189,13 +191,13 @@ class ApplicationPolicy
     @record = record
   end
 
-  # Standard CRUD actions
+  # Standard CRUD actions (policy method -> same-named permission)
   def index?
-    has_permission?(:read)
+    has_permission?(:index)
   end
 
   def show?
-    has_permission?(:read)
+    has_permission?(:show)
   end
 
   def create?
@@ -241,7 +243,7 @@ class ApplicationPolicy
     end
 
     def resolve
-      if permission_checker.allowed?(:read, resource_name)
+      if permission_checker.allowed?(:index, resource_name)
         scope.all
       else
         scope.none
@@ -261,11 +263,11 @@ class ApplicationPolicy
 end
 ```
 
-**Action Mapping:**
+**Action Mapping (one-to-one):**
 | Controller Action | Policy Method | Permission Action |
 |------------------|---------------|-------------------|
-| `index` | `index?` | `read` |
-| `show` | `show?` | `read` |
+| `index` | `index?` | `index` |
+| `show` | `show?` | `show` |
 | `new` | `new?` | `create` |
 | `create` | `create?` | `create` |
 | `edit` | `edit?` | `update` |
@@ -374,16 +376,18 @@ end
 ```ruby
 # db/seeds.rb
 
-# Create permissions
+# Create permissions (align with policy methods)
 permissions = [
   # Inventory permissions
-  { action: 'read', subject: 'Inventory' },
+  { action: 'index', subject: 'Inventory' },
+  { action: 'show',  subject: 'Inventory' },
   { action: 'create', subject: 'Inventory' },
   { action: 'update', subject: 'Inventory' },
   { action: 'destroy', subject: 'Inventory' },
 
   # WorkOrder permissions
-  { action: 'read', subject: 'WorkOrder' },
+  { action: 'index', subject: 'WorkOrder' },
+  { action: 'show',  subject: 'WorkOrder' },
   { action: 'create', subject: 'WorkOrder' },
   { action: 'update', subject: 'WorkOrder' },
   { action: 'destroy', subject: 'WorkOrder' },
@@ -413,13 +417,13 @@ admin_role.permissions = Permission.all
 
 # Assign specific permissions to manager
 manager_permissions = Permission.where(
-  action: ['read', 'update'],
+  action: ['index', 'show', 'update'],
   subject: ['Inventory', 'WorkOrder', 'Vehicle']
 )
 manager_role.permissions = manager_permissions
 
-# Assign read-only permissions to viewer
-viewer_permissions = Permission.where(action: 'read')
+# Assign read-only permissions to viewer (list + show)
+viewer_permissions = Permission.where(action: ['index', 'show'])
 viewer_role.permissions = viewer_permissions
 
 puts "Seeded #{Permission.count} permissions"
@@ -578,7 +582,7 @@ class WorkOrderPolicy < ApplicationPolicy
 
   # Export/Import
   def export?
-    has_permission?(:read)
+    has_permission?(:index)
   end
 
   def import?
@@ -699,8 +703,8 @@ class WorkOrderPolicy < ApplicationPolicy
 
   class Scope < ApplicationPolicy::Scope
     def resolve
-      # First check read permission
-      return scope.none unless permission_checker.allowed?(:read, resource_name)
+      # First check index permission (list visibility)
+      return scope.none unless permission_checker.allowed?(:index, resource_name)
 
       # Then apply custom filtering
       if user.role.name == 'Admin'
@@ -942,7 +946,7 @@ RSpec.describe InventoryPolicy::Scope do
     end
   end
 
-  context 'for user without read permission' do
+  context 'for user without index permission' do
     let(:user) { create(:user, role: nil) }
 
     it 'returns no inventories' do
@@ -1150,7 +1154,7 @@ policy(Model).create?          # Check if user can create
 
 ```ruby
 Permission.create!(
-  action: 'read',              # read, create, update, destroy, or custom
+  action: 'index',             # index, show, create, update, destroy, or custom
   subject: 'Inventory'         # Model class name
 )
 ```
