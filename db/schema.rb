@@ -10,9 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_25_061102) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_26_045146) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "audits", force: :cascade do |t|
+    t.string "action"
+    t.integer "associated_id"
+    t.string "associated_type"
+    t.integer "auditable_id"
+    t.string "auditable_type"
+    t.text "audited_changes"
+    t.string "comment"
+    t.datetime "created_at"
+    t.string "remote_address"
+    t.string "request_uuid"
+    t.integer "user_id"
+    t.string "user_type"
+    t.string "username"
+    t.integer "version", default: 0
+    t.index ["associated_type", "associated_id"], name: "associated_index"
+    t.index ["auditable_type", "auditable_id", "version"], name: "auditable_index"
+    t.index ["created_at"], name: "index_audits_on_created_at"
+    t.index ["request_uuid"], name: "index_audits_on_request_uuid"
+    t.index ["user_id", "user_type"], name: "user_index"
+  end
 
   create_table "blocks", force: :cascade do |t|
     t.string "block_number"
@@ -179,6 +201,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_25_061102) do
     t.string "block_number"
     t.datetime "created_at", null: false
     t.string "field_conductor"
+    t.bigint "field_conductor_id"
     t.date "start_date"
     t.datetime "updated_at", null: false
     t.bigint "work_order_rate_id"
@@ -187,6 +210,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_25_061102) do
     t.string "work_order_status", default: "ongoing"
     t.index ["block_id", "work_order_rate_id"], name: "index_work_orders_on_block_and_rate"
     t.index ["block_id"], name: "index_work_orders_on_block_id"
+    t.index ["field_conductor_id"], name: "index_work_orders_on_field_conductor_id"
     t.index ["work_order_rate_id"], name: "index_work_orders_on_work_order_rate_id"
   end
 
@@ -217,5 +241,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_25_061102) do
   add_foreign_key "work_order_workers", "work_orders"
   add_foreign_key "work_order_workers", "workers"
   add_foreign_key "work_orders", "blocks"
+  add_foreign_key "work_orders", "users", column: "field_conductor_id"
   add_foreign_key "work_orders", "work_order_rates"
 end
