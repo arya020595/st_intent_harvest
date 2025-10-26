@@ -2,12 +2,19 @@
 
 # Fix line endings for scripts (Windows compatibility)
 # This is needed when files are mounted from Windows host
-find /rails/bin -type f -exec dos2unix {} + 2>/dev/null || true
+if command -v dos2unix >/dev/null 2>&1; then
+  find /rails/bin -type f -exec dos2unix {} + 2>/dev/null || true
+fi
 chmod +x /rails/bin/* 2>/dev/null || true
 
-# If running the rails server then create or migrate existing database
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
+# If running the rails server then clear stale pid and create or migrate DB
+# Handle both exec-form ("./bin/rails" "server" ...) and shell-form ("/bin/sh" "-c" "./bin/rails server ...")
+FULL_CMD="$*"
+if { [ "${1}" = "./bin/rails" ] && [ "${2}" = "server" ]; } ||
+   echo "$FULL_CMD" | grep -E -q "(^| )\./bin/rails( |$).*server"; then
+  # Remove stale pid if present to avoid server boot failure
+  rm -f ./tmp/pids/server.pid 2>/dev/null || true
   ./bin/rails db:prepare
 fi
 
-exec "${@}"
+exec "$@"

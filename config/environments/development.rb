@@ -12,6 +12,20 @@ Rails.application.configure do
   # Show full error reports.
   config.consider_all_requests_local = true
 
+  # Allow Rails Web Console from Docker bridge and typical private subnets in development.
+  # This fixes: "Cannot render console from 172.x.x.x! Allowed networks: 127.0.0.0/127.255.255.255, ::1"
+  # Caution: Only for development. Do NOT copy to production.
+  config.web_console.allowed_ips = [
+    "127.0.0.1",
+    "::1",
+    "10.0.0.0/8",
+    "172.16.0.0/12",
+    "192.168.0.0/16",
+  ]
+  # Back-compat for older web-console versions
+  config.web_console.whitelisted_ips = config.web_console.allowed_ips rescue nil
+  config.web_console.permissions = config.web_console.allowed_ips rescue nil
+
   # Enable server timing.
   config.server_timing = true
 
