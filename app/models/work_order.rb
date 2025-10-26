@@ -3,8 +3,13 @@
 class WorkOrder < ApplicationRecord
   include AASM
 
+  # Audit trail - automatically tracks create/update/destroy with user and changes
+  audited
+
   belongs_to :block
   belongs_to :work_order_rate
+  # The user responsible for the field (used for scoping/assignment)
+  belongs_to :field_conductor, class_name: 'User', optional: true
   has_many :work_order_workers, dependent: :destroy
   has_many :work_order_items, dependent: :destroy
   has_many :work_order_histories, dependent: :destroy

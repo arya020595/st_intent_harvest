@@ -9,11 +9,11 @@ class ApplicationPolicy
   end
 
   def index?
-    has_permission?(:read)
+    has_permission?(:index)
   end
 
   def show?
-    has_permission?(:read)
+    has_permission?(:show)
   end
 
   def create?
@@ -59,7 +59,7 @@ class ApplicationPolicy
     end
 
     def resolve
-      if permission_checker.allowed?(:read, resource_name)
+      if permission_checker.allowed?(:index, resource_name)
         scope.all
       else
         scope.none
