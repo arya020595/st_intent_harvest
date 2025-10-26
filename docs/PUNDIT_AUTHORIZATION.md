@@ -148,9 +148,17 @@ class PermissionChecker
   end
 
   def allowed?(action, subject)
+    # Superadmin bypass: allow everything
+    return true if superadmin?
     return false unless user_has_role?
 
     permissions.exists?(action: action.to_s, subject: subject)
+  end
+
+  # Public method - can be used in policies for scope filtering
+  def superadmin?
+    # Case-insensitive match on role name 'Superadmin'
+    @user&.role&.name&.downcase == 'superadmin'
   end
 
   private
@@ -170,9 +178,11 @@ end
 **How it works:**
 
 1. Takes a user object on initialization
-2. Checks if user has a role
-3. Queries the database for matching permission
-4. Returns `true` if permission exists, `false` otherwise
+2. **Checks if user is superadmin (bypasses all permission checks)**
+3. Checks if user has a role
+4. Queries the database for matching permission
+5. Returns `true` if permission exists, `false` otherwise
+6. Provides public `superadmin?` method for use in policy scopes
 
 ---
 
@@ -234,7 +244,7 @@ class ApplicationPolicy
     record.class.name
   end
 
-  class Scope
+    class Scope
     attr_reader :user, :scope
 
     def initialize(user, scope)
@@ -243,11 +253,11 @@ class ApplicationPolicy
     end
 
     def resolve
-      if permission_checker.allowed?(:index, resource_name)
-        scope.all
-      else
-        scope.none
-      end
+      return scope.none unless permission_checker.allowed?(:index, resource_name)
+
+      # Default: return all records if user has permission
+      # Override in subclass for custom filtering
+      scope.all
     end
 
     private
@@ -311,7 +321,12 @@ class InventoryPolicy < ApplicationPolicy
   # That's it! Inherits all behavior from ApplicationPolicy
 
   class Scope < ApplicationPolicy::Scope
-    # Inherits default scope behavior
+    def resolve
+      return scope.none unless permission_checker.allowed?(:index, resource_name)
+
+      # Superadmin sees all, regular users see filtered records
+      permission_checker.superadmin? ? scope.all : scope.where(warehouse_id: user.warehouse_id)
+    end
   end
 end
 ```
@@ -1129,6 +1144,74 @@ end
 - Don't bypass Pundit with manual permission checks
 - Don't forget to authorize in API controllers
 - Don't hardcode role names everywhere
+
+---
+
+## Superadmin Pattern
+
+### Centralized Superadmin Logic
+
+Superadmin checks are centralized in `PermissionChecker` to maintain a **single source of truth**:
+
+```ruby
+# app/services/permission_checker.rb
+class PermissionChecker
+  def allowed?(action, subject)
+    return true if superadmin?  # Bypass all permission checks
+    # ... normal permission logic
+  end
+
+  # Public method - can be used in policies
+  def superadmin?
+    @user&.role&.name&.downcase == 'superadmin'
+  end
+end
+```
+
+### Benefits
+
+- **Automatic Bypass**: Superadmin automatically passes all `authorize` checks
+- **DRY**: Superadmin logic defined in one place only
+- **Consistent**: All policies use the same superadmin check
+- **Maintainable**: Easy to change superadmin logic across the entire app
+
+### Usage in Policy Scopes
+
+For filtering records in scopes, use `permission_checker.superadmin?`:
+
+```ruby
+class InventoryPolicy < ApplicationPolicy
+  class Scope < ApplicationPolicy::Scope
+    def resolve
+      return scope.none unless permission_checker.allowed?(:index, resource_name)
+
+      # Superadmin sees all, regular users see filtered records
+      permission_checker.superadmin? ? scope.all : scope.where(warehouse_id: user.warehouse_id)
+    end
+  end
+end
+```
+
+### Setting Up Superadmin
+
+1. **Create the role:**
+
+   ```ruby
+   superadmin = Role.create!(name: 'Superadmin', description: 'Full system access')
+   ```
+
+2. **No permissions needed:**
+
+   - Superadmin bypasses permission checks
+   - No need to assign specific permissions
+   - Can still assign permissions if you want to track them
+
+3. **Assign to user:**
+   ```ruby
+   user.update(role: Role.find_by(name: 'Superadmin'))
+   ```
+
+For more details on namespaced policies and advanced patterns, see [POLICY_CONVENTION.md](POLICY_CONVENTION.md).
 
 ---
 
