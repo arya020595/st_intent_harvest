@@ -23,8 +23,8 @@ Rails.application.configure do
     "192.168.0.0/16",
   ]
   # Back-compat for older web-console versions
-  config.web_console.whitelisted_ips = config.web_console.allowed_ips rescue nil
-  config.web_console.permissions = config.web_console.allowed_ips rescue nil
+  config.web_console.whitelisted_ips = config.web_console.allowed_ips if config.web_console.respond_to?(:whitelisted_ips=)
+  config.web_console.permissions = config.web_console.allowed_ips if config.web_console.respond_to?(:permissions=)
 
   # Enable server timing.
   config.server_timing = true
