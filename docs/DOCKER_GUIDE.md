@@ -1150,7 +1150,7 @@ docker compose up -d
 
 ```bash
 # On Windows, configure Git to checkout with LF line endings for shell scripts
-git config core.autocrlf false
+git config --local core.autocrlf false
 
 # Add to .gitattributes (already configured in this project):
 # *.sh text eol=lf
