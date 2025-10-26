@@ -463,6 +463,9 @@ docker compose exec web rails db:migrate
 
 # Seed initial data (users, roles, permissions)
 docker compose exec web rails db:seed
+
+# Reset database (drop, create, migrate, seed)
+docker compose exec web rails db:reset
 ```
 
 ### Step 6: Access Application
@@ -1122,6 +1125,53 @@ docker compose logs -f web
 - Migration needed: `docker compose exec web rails db:migrate`
 - Missing gems: `docker compose exec web bundle install`
 - Syntax error in code
+
+### Windows Line Ending Issues
+
+**Error**: `/rails/bin/docker-entrypoint: line 8: exec: bash: not found` or `: invalid optionsh: -`
+
+**Cause**: Windows CRLF line endings in shell scripts instead of Unix LF line endings.
+
+**Solution** - Convert line endings on Windows:
+
+```powershell
+# Convert docker-entrypoint to Unix line endings
+$content = Get-Content -Path "bin/docker-entrypoint" -Raw
+$content = $content -replace "`r`n", "`n"
+[System.IO.File]::WriteAllText("$PWD/bin/docker-entrypoint", $content, [System.Text.UTF8Encoding]::new($false))
+
+# Rebuild and restart
+docker compose down
+docker compose build web
+docker compose up -d
+```
+
+**Prevention**: Configure Git to handle line endings properly:
+
+```bash
+# On Windows, configure Git to checkout with LF line endings for shell scripts
+git config core.autocrlf false
+
+# Add to .gitattributes (already configured in this project):
+# *.sh text eol=lf
+# bin/* text eol=lf
+```
+
+### Server PID File Issues
+
+**Error**: `A server is already running (pid: XX, file: /rails/tmp/pids/server.pid)`
+
+**Cause**: Stale PID file from previous container run.
+
+**Solution**: The entrypoint script automatically removes stale PID files, but if you encounter this:
+
+```bash
+# Remove PID file manually
+docker compose exec web rm -f tmp/pids/server.pid
+
+# Restart
+docker compose restart web
+```
 
 ### Slow Performance
 

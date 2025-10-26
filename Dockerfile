@@ -40,8 +40,9 @@ RUN bundle install && \
 COPY . .
 
 # Fix line endings for all scripts (Windows compatibility)
-RUN find ./bin -type f -exec dos2unix {} + 2>/dev/null || true && \
-    chmod +x ./bin/*
+# Convert line endings first, then make executable
+RUN find ./bin -type f -exec dos2unix {} \; 2>/dev/null || true
+RUN chmod +x ./bin/*
 
 # Precompile bootsnap for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
