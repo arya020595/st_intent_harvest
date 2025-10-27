@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_10_26_045146) do
+ActiveRecord::Schema[8.1].define(version: 2025_10_27_010044) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -200,8 +200,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_10_26_045146) do
     t.bigint "block_id"
     t.string "block_number"
     t.datetime "created_at", null: false
-    t.string "field_conductor"
     t.bigint "field_conductor_id"
+    t.string "field_conductor_name"
     t.date "start_date"
     t.datetime "updated_at", null: false
     t.bigint "work_order_rate_id"

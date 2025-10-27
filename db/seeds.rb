@@ -4,6 +4,9 @@
 
 puts "🌱 Starting seed process..."
 
+# Disable auditing during seeds to avoid YAML serialization issues
+Audited.auditing_enabled = false
+
 # Clean up existing data (in reverse order of dependencies)
 puts "Cleaning up existing data..."
 PayCalculationDetail.destroy_all
@@ -25,77 +28,147 @@ Category.destroy_all
 
 # Create Permissions
 puts "Creating permissions..."
-permissions = [
-  { subject: 'User', action: 'read' },
-  { subject: 'User', action: 'create' },
-  { subject: 'User', action: 'update' },
-  { subject: 'User', action: 'delete' },
-  { subject: 'Worker', action: 'read' },
-  { subject: 'Worker', action: 'create' },
-  { subject: 'Worker', action: 'update' },
-  { subject: 'Worker', action: 'delete' },
-  { subject: 'WorkOrder', action: 'read' },
-  { subject: 'WorkOrder', action: 'create' },
-  { subject: 'WorkOrder', action: 'update' },
-  { subject: 'WorkOrder', action: 'delete' },
-  { subject: 'WorkOrder', action: 'approve' },
-  { subject: 'Inventory', action: 'read' },
-  { subject: 'Inventory', action: 'create' },
-  { subject: 'Inventory', action: 'update' },
-  { subject: 'Inventory', action: 'delete' },
-  { subject: 'PayCalculation', action: 'read' },
-  { subject: 'PayCalculation', action: 'create' },
-  { subject: 'PayCalculation', action: 'update' },
+
+# Standard resource permissions (non-namespaced)
+user_permissions = [
+  { subject: 'User', action: 'index', description: 'View users list' },
+  { subject: 'User', action: 'show', description: 'View user details' },
+  { subject: 'User', action: 'create', description: 'Create new users' },
+  { subject: 'User', action: 'update', description: 'Edit users' },
+  { subject: 'User', action: 'destroy', description: 'Delete users' }
 ]
 
-permissions.each do |perm|
-  Permission.find_or_create_by!(perm)
+worker_permissions = [
+  { subject: 'Worker', action: 'index', description: 'View workers list' },
+  { subject: 'Worker', action: 'show', description: 'View worker details' },
+  { subject: 'Worker', action: 'create', description: 'Add new workers' },
+  { subject: 'Worker', action: 'update', description: 'Edit workers' },
+  { subject: 'Worker', action: 'destroy', description: 'Remove workers' }
+]
+
+inventory_permissions = [
+  { subject: 'Inventory', action: 'index', description: 'View inventories list' },
+  { subject: 'Inventory', action: 'show', description: 'View inventory details' },
+  { subject: 'Inventory', action: 'create', description: 'Create inventories' },
+  { subject: 'Inventory', action: 'update', description: 'Edit inventories' },
+  { subject: 'Inventory', action: 'destroy', description: 'Delete inventories' }
+]
+
+vehicle_permissions = [
+  { subject: 'Vehicle', action: 'index', description: 'View vehicles list' },
+  { subject: 'Vehicle', action: 'show', description: 'View vehicle details' },
+  { subject: 'Vehicle', action: 'create', description: 'Register vehicles' },
+  { subject: 'Vehicle', action: 'update', description: 'Update vehicles' },
+  { subject: 'Vehicle', action: 'destroy', description: 'Deactivate vehicles' }
+]
+
+payslip_permissions = [
+  { subject: 'Payslip', action: 'index', description: 'View payslips list' },
+  { subject: 'Payslip', action: 'show', description: 'View payslip details' }
+]
+
+# Namespaced WorkOrder permissions
+work_order_detail_permissions = [
+  { subject: 'WorkOrder::Detail', action: 'index', description: 'View work orders list' },
+  { subject: 'WorkOrder::Detail', action: 'show', description: 'View work order details' },
+  { subject: 'WorkOrder::Detail', action: 'create', description: 'Create work orders' },
+  { subject: 'WorkOrder::Detail', action: 'update', description: 'Edit work orders' },
+  { subject: 'WorkOrder::Detail', action: 'destroy', description: 'Delete work orders' },
+  { subject: 'WorkOrder::Detail', action: 'mark_complete', description: 'Mark work order as complete' }
+]
+
+work_order_approval_permissions = [
+  { subject: 'WorkOrder::Approval', action: 'index', description: 'View work orders for approval' },
+  { subject: 'WorkOrder::Approval', action: 'show', description: 'View approval details' },
+  { subject: 'WorkOrder::Approval', action: 'approve', description: 'Approve work orders' },
+  { subject: 'WorkOrder::Approval', action: 'reject', description: 'Reject work orders' }
+]
+
+work_order_pay_calc_permissions = [
+  { subject: 'WorkOrder::PayCalculation', action: 'index', description: 'View pay calculations list' },
+  { subject: 'WorkOrder::PayCalculation', action: 'show', description: 'View pay calculation details' },
+  { subject: 'WorkOrder::PayCalculation', action: 'create', description: 'Create pay calculations' },
+  { subject: 'WorkOrder::PayCalculation', action: 'update', description: 'Update pay calculations' },
+  { subject: 'WorkOrder::PayCalculation', action: 'destroy', description: 'Delete pay calculations' }
+]
+
+# Combine all permissions
+all_permissions = user_permissions + worker_permissions + inventory_permissions + 
+                  vehicle_permissions + payslip_permissions + work_order_detail_permissions + 
+                  work_order_approval_permissions + work_order_pay_calc_permissions
+
+all_permissions.each do |perm|
+  Permission.find_or_create_by!(subject: perm[:subject], action: perm[:action])
 end
 puts "✓ Created #{Permission.count} permissions"
 
 # Create Roles
 puts "Creating roles..."
-admin_role = Role.find_or_create_by!(name: 'Admin') do |role|
-  role.description = 'Full system access'
-end
-admin_role.permissions = Permission.all
 
+# Superadmin - bypasses all permission checks
+superadmin_role = Role.find_or_create_by!(name: 'Superadmin') do |role|
+  role.description = 'Full system access (bypasses all permission checks)'
+end
+# No need to assign permissions - superadmin bypasses permission checks
+
+# Manager - can approve work orders and manage pay calculations
 manager_role = Role.find_or_create_by!(name: 'Manager') do |role|
-  role.description = 'Can manage workers, work orders, and view reports'
+  role.description = 'Can approve work orders and manage pay calculations'
 end
-manager_role.permissions = Permission.where(action: ['read', 'create', 'update', 'approve'])
+manager_permissions = Permission.where(subject: ['WorkOrder::Approval', 'WorkOrder::PayCalculation', 'Payslip'])
+                                .or(Permission.where(action: ['index', 'show']))
+manager_role.permissions = manager_permissions
 
-staff_role = Role.find_or_create_by!(name: 'Staff') do |role|
-  role.description = 'Can view and create work orders'
+# Field Conductor - can create and manage work orders
+field_conductor_role = Role.find_or_create_by!(name: 'Field Conductor') do |role|
+  role.description = 'Can create and manage work orders'
 end
-staff_role.permissions = Permission.where(action: ['read', 'create'])
+field_conductor_permissions = Permission.where(subject: 'WorkOrder::Detail')
+                                        .or(Permission.where(subject: ['Worker', 'Vehicle', 'Inventory'], action: ['index', 'show']))
+field_conductor_role.permissions = field_conductor_permissions
+
+# Clerk - administrative support with read/write access to master data
+clerk_role = Role.find_or_create_by!(name: 'Clerk') do |role|
+  role.description = 'Can manage master data (users, workers, vehicles, inventories)'
+end
+clerk_permissions = Permission.where(subject: ['User', 'Worker', 'Vehicle', 'Inventory'])
+clerk_role.permissions = clerk_permissions
 
 puts "✓ Created #{Role.count} roles"
 
 # Create Users
 puts "Creating users..."
-User.find_or_create_by!(email: 'admin@example.com') do |user|
-  user.name = 'Administrator'
-  user.password = 'password123'
-  user.password_confirmation = 'password123'
-  user.role = admin_role
-  user.is_active = true
+
+# Superadmin user
+User.find_or_create_by!(email: 'superadmin@example.com') do |user|
+  user.name = 'Super Admin'
+  user.password = 'password'
+  user.password_confirmation = 'password'
+  user.role = superadmin_role
 end
 
+# Manager user
 User.find_or_create_by!(email: 'manager@example.com') do |user|
   user.name = 'Manager User'
-  user.password = 'password123'
-  user.password_confirmation = 'password123'
+  user.password = 'password'
+  user.password_confirmation = 'password'
   user.role = manager_role
-  user.is_active = true
 end
 
-User.find_or_create_by!(email: 'staff@example.com') do |user|
-  user.name = 'Staff User'
-  user.password = 'password123'
-  user.password_confirmation = 'password123'
-  user.role = staff_role
-  user.is_active = true
+# Field Conductor user
+User.find_or_create_by!(email: 'conductor@example.com') do |user|
+  user.name = 'Field Conductor'
+  user.password = 'password'
+  user.password_confirmation = 'password'
+  user.role = field_conductor_role
+end
+
+# Clerk user
+User.find_or_create_by!(email: 'clerk@example.com') do |user|
+  user.name = 'Clerk User'
+  user.password = 'password'
+  user.password_confirmation = 'password'
+  user.role = clerk_role
 end
 
 puts "✓ Created #{User.count} users"
@@ -222,13 +295,15 @@ block1 = Block.find_by(block_number: 'BLK-001')
 block2 = Block.find_by(block_number: 'BLK-002')
 harvesting_rate = WorkOrderRate.find_by(work_order_name: 'Harvesting')
 spraying_rate = WorkOrderRate.find_by(work_order_name: 'Spraying')
+conductor_user = User.find_by(email: 'conductor@example.com')
 
 work_order1 = WorkOrder.find_or_create_by!(id: 1) do |wo|
   wo.block_id = block1.id
   wo.work_order_rate_id = harvesting_rate.id
   wo.start_date = Date.today - 7
-  wo.work_order_status = 'ongoing'  # Saved as draft
-  wo.field_conductor = 'John Conductor'
+  wo.work_order_status = 'ongoing'
+  wo.field_conductor_id = conductor_user.id
+  wo.field_conductor_name = conductor_user.name
   wo.approved_by = nil
   wo.approved_at = nil
 end
@@ -237,8 +312,9 @@ work_order2 = WorkOrder.find_or_create_by!(id: 2) do |wo|
   wo.block_id = block2.id
   wo.work_order_rate_id = spraying_rate.id
   wo.start_date = Date.today - 3
-  wo.work_order_status = 'pending'  # Submitted for approval
-  wo.field_conductor = 'Jane Conductor'
+  wo.work_order_status = 'pending'
+  wo.field_conductor_id = conductor_user.id
+  wo.field_conductor_name = conductor_user.name
 end
 
 puts "✓ Created #{WorkOrder.count} work orders"
@@ -336,6 +412,10 @@ puts "  Work Order Items: #{WorkOrderItem.count}"
 puts "  Pay Calculations: #{PayCalculation.count}"
 puts "  Pay Calculation Details: #{PayCalculationDetail.count}"
 puts "\n👤 Test Users:"
-puts "  Admin: admin@example.com / password123"
-puts "  Manager: manager@example.com / password123"
-puts "  Staff: staff@example.com / password123"
+puts "  Superadmin: superadmin@example.com / password"
+puts "  Manager: manager@example.com / password"
+puts "  Field Conductor: conductor@example.com / password"
+puts "  Clerk: clerk@example.com / password"
+
+# Re-enable auditing after seeds
+Audited.auditing_enabled = true
