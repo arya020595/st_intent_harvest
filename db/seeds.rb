@@ -125,7 +125,7 @@ manager_role = Role.find_or_create_by!(name: 'Manager') do |role|
   role.description = 'Can approve work orders and manage pay calculations'
 end
 manager_permissions = Permission.where(subject: ['WorkOrder::Approval', 'WorkOrder::PayCalculation', 'Payslip'])
-                                .or(Permission.where(action: ['index', 'show']))
+                                .or(Permission.where(subject: ['Worker', 'Vehicle', 'Inventory', 'User'], action: ['index', 'show']))
 manager_role.permissions = manager_permissions
 
 # Field Conductor - can create and manage work orders
