@@ -93,9 +93,16 @@ work_order_pay_calc_permissions = [
 ]
 
 # Combine all permissions
-all_permissions = user_permissions + worker_permissions + inventory_permissions + 
-                  vehicle_permissions + payslip_permissions + work_order_detail_permissions + 
-                  work_order_approval_permissions + work_order_pay_calc_permissions
+all_permissions = [
+  *user_permissions,
+  *worker_permissions,
+  *inventory_permissions,
+  *vehicle_permissions,
+  *payslip_permissions,
+  *work_order_detail_permissions,
+  *work_order_approval_permissions,
+  *work_order_pay_calc_permissions
+].flatten
 
 all_permissions.each do |perm|
   Permission.find_or_create_by!(subject: perm[:subject], action: perm[:action])
