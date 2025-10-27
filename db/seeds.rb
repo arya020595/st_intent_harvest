@@ -105,9 +105,7 @@ all_permissions = [
 ].flatten
 
 all_permissions.each do |perm|
-  Permission.find_or_create_by!(subject: perm[:subject], action: perm[:action]) do |p|
-    p.description = perm[:description]
-  end
+  Permission.find_or_create_by!(subject: perm[:subject], action: perm[:action])
 end
 puts "✓ Created #{Permission.count} permissions"
 
