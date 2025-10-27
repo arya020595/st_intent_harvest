@@ -93,12 +93,21 @@ work_order_pay_calc_permissions = [
 ]
 
 # Combine all permissions
-all_permissions = user_permissions + worker_permissions + inventory_permissions + 
-                  vehicle_permissions + payslip_permissions + work_order_detail_permissions + 
-                  work_order_approval_permissions + work_order_pay_calc_permissions
+all_permissions = [
+  *user_permissions,
+  *worker_permissions,
+  *inventory_permissions,
+  *vehicle_permissions,
+  *payslip_permissions,
+  *work_order_detail_permissions,
+  *work_order_approval_permissions,
+  *work_order_pay_calc_permissions
+].flatten
 
 all_permissions.each do |perm|
-  Permission.find_or_create_by!(subject: perm[:subject], action: perm[:action])
+  Permission.find_or_create_by!(subject: perm[:subject], action: perm[:action]) do |p|
+    p.description = perm[:description]
+  end
 end
 puts "✓ Created #{Permission.count} permissions"
 
@@ -116,14 +125,14 @@ manager_role = Role.find_or_create_by!(name: 'Manager') do |role|
   role.description = 'Can approve work orders and manage pay calculations'
 end
 manager_permissions = Permission.where(subject: ['WorkOrder::Approval', 'WorkOrder::PayCalculation', 'Payslip'])
-                                .or(Permission.where(action: ['index', 'show']))
+                                .or(Permission.where(subject: ['Worker', 'Vehicle', 'Inventory', 'User'], action: ['index', 'show']))
 manager_role.permissions = manager_permissions
 
 # Field Conductor - can create and manage work orders
 field_conductor_role = Role.find_or_create_by!(name: 'Field Conductor') do |role|
   role.description = 'Can create and manage work orders'
 end
-field_conductor_permissions = Permission.where(subject: 'WorkOrder::Detail')
+field_conductor_permissions = Permission.where(subject: 'WorkOrder::Detail', action: ['index', 'show', 'create', 'update'])
                                         .or(Permission.where(subject: ['Worker', 'Vehicle', 'Inventory'], action: ['index', 'show']))
 field_conductor_role.permissions = field_conductor_permissions
 

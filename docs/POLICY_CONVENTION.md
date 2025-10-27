@@ -474,7 +474,8 @@ class PermissionChecker
 
   # Public method - can be used in policies
   def superadmin?
-    @user&.role&.name&.downcase == 'superadmin'
+    return false unless @user && @user.role && @user.role.name
+    @user.role.name.downcase == 'superadmin'
   end
 end
 ```

@@ -158,7 +158,7 @@ class PermissionChecker
   # Public method - can be used in policies for scope filtering
   def superadmin?
     # Case-insensitive match on role name 'Superadmin'
-    @user&.role&.name&.downcase == 'superadmin'
+    @user&.role&.name.try(:downcase) == 'superadmin'
   end
 
   private
