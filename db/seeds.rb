@@ -132,7 +132,7 @@ manager_role.permissions = manager_permissions
 field_conductor_role = Role.find_or_create_by!(name: 'Field Conductor') do |role|
   role.description = 'Can create and manage work orders'
 end
-field_conductor_permissions = Permission.where(subject: 'WorkOrder::Detail')
+field_conductor_permissions = Permission.where(subject: 'WorkOrder::Detail', action: ['index', 'show', 'create', 'update'])
                                         .or(Permission.where(subject: ['Worker', 'Vehicle', 'Inventory'], action: ['index', 'show']))
 field_conductor_role.permissions = field_conductor_permissions
 
