@@ -47,7 +47,19 @@ class ApplicationPolicy
   end
 
   def resource_name
-    record.class.name
+    # Handle different types of records:
+    # - Class (authorize ::WorkOrder) -> "WorkOrder"
+    # - Instance (@work_order) -> "WorkOrder"
+    # - Symbol/String (authorize :dashboard) -> "Dashboard"
+    if record.is_a?(Class)
+      record.name.demodulize
+    elsif record.is_a?(String) || record.is_a?(Symbol)
+      record.to_s.camelize.demodulize
+    elsif record.respond_to?(:model_name)
+      record.model_name.name.demodulize
+    else
+      record.class.name.demodulize
+    end
   end
 
   class Scope
@@ -73,7 +85,15 @@ class ApplicationPolicy
     end
 
     def resource_name
-      scope.name
+      # Handle scope which can be a Class or ActiveRecord::Relation
+      if scope.is_a?(Class)
+        scope.name.demodulize
+      elsif scope.respond_to?(:klass) && scope.klass
+        # ActiveRecord::Relation has a klass method
+        scope.klass.name.demodulize
+      else
+        scope.name.demodulize
+      end
     end
   end
 end

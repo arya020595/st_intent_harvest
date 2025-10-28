@@ -13,6 +13,12 @@ class PermissionChecker
     permissions.exists?(action: action.to_s, subject: subject)
   end
 
+  # Public method - can be used in policies for scope filtering
+  def superadmin?
+    # Case-insensitive match on role name 'Superadmin'
+    @user&.role&.name&.downcase == 'superadmin'
+  end
+
   private
 
   attr_reader :user
@@ -23,10 +29,5 @@ class PermissionChecker
 
   def permissions
     @permissions ||= @user.role.permissions
-  end
-
-  def superadmin?
-    # Case-insensitive match on role name 'Superadmin'
-    @user&.role&.name&.downcase == 'superadmin'
   end
 end
