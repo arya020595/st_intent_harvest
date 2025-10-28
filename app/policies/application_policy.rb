@@ -47,18 +47,28 @@ class ApplicationPolicy
   end
 
   def resource_name
-    # Handle different types of records:
-    # - Class (authorize ::WorkOrder) -> "WorkOrder"
-    # - Instance (@work_order) -> "WorkOrder"
-    # - Symbol/String (authorize :dashboard) -> "Dashboard"
-    if record.is_a?(Class)
-      record.name.demodulize
-    elsif record.is_a?(String) || record.is_a?(Symbol)
-      record.to_s.camelize.demodulize
-    elsif record.respond_to?(:model_name)
-      record.model_name.name.demodulize
+    self.class.extract_resource_name(record)
+  end
+
+  # Class method - shared helper for extracting resource names
+  # Handles:
+  # - Class (authorize ::WorkOrder) -> "WorkOrder"
+  # - Instance (@work_order) -> "WorkOrder"
+  # - Symbol/String (authorize :dashboard) -> "Dashboard"
+  # - ActiveRecord::Relation (scope.klass) -> "WorkOrder"
+  def self.extract_resource_name(input)
+    if input.is_a?(Class)
+      input.name.demodulize
+    elsif input.is_a?(String) || input.is_a?(Symbol)
+      input.to_s.camelize.demodulize
+    elsif input.respond_to?(:model_name)
+      input.model_name.name.demodulize
+    elsif input.respond_to?(:klass) && (klass = input.klass)
+      # Handle ActiveRecord::Relation (has a klass method)
+      # Safely extract klass and verify it's not nil/false before calling methods on it
+      klass.name.demodulize
     else
-      record.class.name.demodulize
+      input.class.name.demodulize
     end
   end
 
@@ -85,15 +95,7 @@ class ApplicationPolicy
     end
 
     def resource_name
-      # Handle scope which can be a Class or ActiveRecord::Relation
-      if scope.is_a?(Class)
-        scope.name.demodulize
-      elsif scope.respond_to?(:klass) && scope.klass
-        # ActiveRecord::Relation has a klass method
-        scope.klass.name.demodulize
-      else
-        scope.name.demodulize
-      end
+      ApplicationPolicy.extract_resource_name(scope)
     end
   end
 end
