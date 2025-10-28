@@ -1312,68 +1312,904 @@ def destroy
 end
 ```
 
-### Pattern 2: Search & Filter
+### Pattern 2: Pagination with Pagy
+
+**Setup Pagy (Already included in Gemfile):**
+
+```ruby
+# config/initializers/pagy.rb (create if doesn't exist)
+require 'pagy/extras/overflow'
+require 'pagy/extras/bootstrap'
+
+Pagy::DEFAULT[:items] = 25 # Default items per page
+Pagy::DEFAULT[:overflow] = :last_page # Redirect to last page if page number is too high
+```
+
+**Include Pagy in Controllers:**
+
+```ruby
+# app/controllers/application_controller.rb
+class ApplicationController < ActionController::Base
+  include Pagy::Backend
+  
+  # ... rest of code
+end
+```
+
+**Include Pagy in Views:**
+
+```ruby
+# app/helpers/application_helper.rb
+module ApplicationHelper
+  include Pagy::Frontend
+  
+  # ... rest of code
+end
+```
+
+**Controller with Pagy:**
+
+```ruby
+# app/controllers/products_controller.rb
+def index
+  @products = policy_scope(Product).includes(:category)
+  
+  # Basic pagination
+  @pagy, @products = pagy(@products, items: 20)
+  
+  # Or with custom items per page from params
+  items_per_page = params[:per_page]&.to_i || 25
+  items_per_page = [items_per_page, 100].min # Max 100 items
+  @pagy, @products = pagy(@products, items: items_per_page)
+end
+```
+
+**View with Pagy:**
+
+```erb
+<%# app/views/products/index.html.erb %>
+
+<div class="container mt-4">
+  <h1>Products</h1>
+  
+  <!-- Items per page selector -->
+  <div class="d-flex justify-content-between mb-3">
+    <div>
+      Showing <%= @pagy.from %>-<%= @pagy.to %> of <%= @pagy.count %> products
+    </div>
+    
+    <%= form_with url: products_path, method: :get, local: true do |f| %>
+      <%= label_tag :per_page, 'Per page:' %>
+      <%= select_tag :per_page, 
+          options_for_select([10, 25, 50, 100], params[:per_page]),
+          onchange: 'this.form.submit()',
+          class: 'form-select form-select-sm d-inline-block w-auto' %>
+    <% end %>
+  </div>
+  
+  <table class="table">
+    <!-- Table content -->
+  </table>
+  
+  <!-- Pagination controls (Bootstrap styled) -->
+  <div class="d-flex justify-content-center mt-4">
+    <%== pagy_bootstrap_nav(@pagy) %>
+  </div>
+  
+  <!-- Alternative: Pagination info + nav -->
+  <div class="mt-4">
+    <%== pagy_info(@pagy) %>
+    <%== pagy_bootstrap_nav(@pagy) %>
+  </div>
+</div>
+```
+
+**Advanced Pagy with AJAX (Turbo):**
 
 ```ruby
 # Controller
 def index
-  @products = policy_scope(Product)
-  @products = @products.where(category_id: params[:category_id]) if params[:category_id].present?
-  @products = @products.where("name ILIKE ?", "%#{params[:search]}%") if params[:search].present?
-  @products = @products.order(created_at: :desc).page(params[:page])
-end
-
-# View
-<%= form_with url: products_path, method: :get, local: true do |f| %>
-  <%= f.text_field :search, placeholder: "Search products..." %>
-  <%= f.select :category_id, Category.pluck(:name, :id), include_blank: "All Categories" %>
-  <%= f.submit "Filter" %>
-<% end %>
-```
-
-### Pattern 3: Bulk Operations
-
-```ruby
-# Controller
-def bulk_activate
-  authorize Product, :update?
-  Product.where(id: params[:product_ids]).update_all(is_active: true)
-  redirect_to products_url, notice: "Products activated."
-end
-
-# View
-<%= form_with url: bulk_activate_products_path, method: :patch do |f| %>
-  <% @products.each do |product| %>
-    <%= check_box_tag 'product_ids[]', product.id %>
-  <% end %>
-  <%= f.submit "Activate Selected" %>
-<% end %>
-```
-
-### Pattern 4: Export to CSV/Excel
-
-```ruby
-# Controller
-def export
-  @products = policy_scope(Product)
+  @products = policy_scope(Product).includes(:category)
+  @pagy, @products = pagy(@products)
   
   respond_to do |format|
-    format.csv do
-      send_data @products.to_csv, filename: "products-#{Date.today}.csv"
-    end
-    format.xlsx do
-      send_data @products.to_xlsx, filename: "products-#{Date.today}.xlsx"
+    format.html
+    format.turbo_stream
+  end
+end
+```
+
+```erb
+<%# app/views/products/index.html.erb %>
+<%= turbo_frame_tag 'products_list' do %>
+  <div id="products">
+    <%= render @products %>
+  </div>
+  
+  <%== pagy_bootstrap_nav(@pagy, link_extra: 'data-turbo-frame="products_list"') %>
+<% end %>
+```
+
+---
+
+### Pattern 3: Search & Filter with Ransack
+
+**Setup Ransack (Already included in Gemfile):**
+
+Ransack provides powerful search and filtering capabilities.
+
+**Controller with Ransack:**
+
+```ruby
+# app/controllers/products_controller.rb
+def index
+  # Create Ransack search object
+  @q = policy_scope(Product).includes(:category).ransack(params[:q])
+  
+  # Apply sorting (default: created_at desc)
+  @q.sorts = 'created_at desc' if @q.sorts.empty?
+  
+  # Get results
+  @products = @q.result
+  
+  # Add pagination
+  @pagy, @products = pagy(@products, items: params[:per_page]&.to_i || 25)
+  
+  authorize Product
+end
+```
+
+**Simple Search Form:**
+
+```erb
+<%# app/views/products/index.html.erb %>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <%= search_form_for @q, url: products_path, method: :get do |f| %>
+      <div class="row g-3">
+        <!-- Search by name -->
+        <div class="col-md-4">
+          <%= f.label :name_cont, 'Product Name', class: 'form-label' %>
+          <%= f.search_field :name_cont, 
+              placeholder: 'Search by name...', 
+              class: 'form-control' %>
+        </div>
+        
+        <!-- Search by SKU -->
+        <div class="col-md-3">
+          <%= f.label :sku_cont, 'SKU', class: 'form-label' %>
+          <%= f.search_field :sku_cont, 
+              placeholder: 'Search SKU...', 
+              class: 'form-control' %>
+        </div>
+        
+        <!-- Filter by category -->
+        <div class="col-md-3">
+          <%= f.label :category_id_eq, 'Category', class: 'form-label' %>
+          <%= f.select :category_id_eq, 
+              Category.pluck(:name, :id),
+              { include_blank: 'All Categories' },
+              { class: 'form-select' } %>
+        </div>
+        
+        <!-- Filter by status -->
+        <div class="col-md-2">
+          <%= f.label :is_active_eq, 'Status', class: 'form-label' %>
+          <%= f.select :is_active_eq,
+              [['Active', true], ['Inactive', false]],
+              { include_blank: 'All' },
+              { class: 'form-select' } %>
+        </div>
+      </div>
+      
+      <div class="row g-3 mt-2">
+        <!-- Price range -->
+        <div class="col-md-3">
+          <%= f.label :unit_price_gteq, 'Min Price', class: 'form-label' %>
+          <%= f.number_field :unit_price_gteq, 
+              placeholder: '0.00', 
+              step: 0.01,
+              class: 'form-control' %>
+        </div>
+        
+        <div class="col-md-3">
+          <%= f.label :unit_price_lteq, 'Max Price', class: 'form-label' %>
+          <%= f.number_field :unit_price_lteq, 
+              placeholder: '9999.99', 
+              step: 0.01,
+              class: 'form-control' %>
+        </div>
+        
+        <!-- Stock quantity range -->
+        <div class="col-md-3">
+          <%= f.label :stock_quantity_gteq, 'Min Stock', class: 'form-label' %>
+          <%= f.number_field :stock_quantity_gteq, 
+              placeholder: '0', 
+              class: 'form-control' %>
+        </div>
+        
+        <div class="col-md-3">
+          <%= f.label :stock_quantity_lteq, 'Max Stock', class: 'form-label' %>
+          <%= f.number_field :stock_quantity_lteq, 
+              placeholder: '1000', 
+              class: 'form-control' %>
+        </div>
+      </div>
+      
+      <div class="mt-3">
+        <%= f.submit 'Search', class: 'btn btn-primary' %>
+        <%= link_to 'Reset', products_path, class: 'btn btn-secondary' %>
+      </div>
+    <% end %>
+  </div>
+</div>
+```
+
+**Advanced Search with Date Range:**
+
+```erb
+<!-- Created date range -->
+<div class="col-md-3">
+  <%= f.label :created_at_gteq, 'Created From', class: 'form-label' %>
+  <%= f.date_field :created_at_gteq, class: 'form-control' %>
+</div>
+
+<div class="col-md-3">
+  <%= f.label :created_at_lteq, 'Created To', class: 'form-label' %>
+  <%= f.date_field :created_at_lteq, class: 'form-control' %>
+</div>
+```
+
+**Sortable Table Headers:**
+
+```erb
+<%# app/views/products/index.html.erb %>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th><%= sort_link(@q, :sku, 'SKU') %></th>
+      <th><%= sort_link(@q, :name, 'Name') %></th>
+      <th><%= sort_link(@q, :category_name, 'Category') %></th>
+      <th><%= sort_link(@q, :unit_price, 'Price') %></th>
+      <th><%= sort_link(@q, :stock_quantity, 'Stock') %></th>
+      <th><%= sort_link(@q, :created_at, 'Created') %></th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @products.each do |product| %>
+      <tr>
+        <td><%= product.sku %></td>
+        <td><%= link_to product.name, product %></td>
+        <td><%= product.category.name %></td>
+        <td><%= number_to_currency(product.unit_price) %></td>
+        <td>
+          <span class="badge <%= product.low_stock? ? 'bg-warning' : 'bg-success' %>">
+            <%= product.stock_quantity %>
+          </span>
+        </td>
+        <td><%= l(product.created_at, format: :short) %></td>
+        <td>
+          <%= link_to 'View', product, class: 'btn btn-sm btn-info' %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<!-- Pagination -->
+<div class="d-flex justify-content-between align-items-center mt-3">
+  <div>
+    <%== pagy_info(@pagy) %>
+  </div>
+  <div>
+    <%== pagy_bootstrap_nav(@pagy) %>
+  </div>
+</div>
+```
+
+**Ransack Search Predicates (Common):**
+
+| Predicate | Meaning | Example |
+|-----------|---------|---------|
+| `_eq` | Equals | `name_eq: "Laptop"` |
+| `_not_eq` | Not equals | `name_not_eq: "Laptop"` |
+| `_cont` | Contains | `name_cont: "Dell"` |
+| `_not_cont` | Doesn't contain | `name_not_cont: "HP"` |
+| `_start` | Starts with | `sku_start: "ELEC"` |
+| `_end` | Ends with | `sku_end: "001"` |
+| `_gt` | Greater than | `price_gt: 100` |
+| `_gteq` | Greater than or equal | `price_gteq: 100` |
+| `_lt` | Less than | `stock_lt: 10` |
+| `_lteq` | Less than or equal | `stock_lteq: 10` |
+| `_in` | In array | `category_id_in: [1,2,3]` |
+| `_not_in` | Not in array | `category_id_not_in: [4,5]` |
+| `_null` | Is null | `description_null: true` |
+| `_not_null` | Is not null | `description_not_null: true` |
+| `_true` | Is true | `is_active_true: 1` |
+| `_false` | Is false | `is_active_false: 1` |
+
+**Complete Example - Controller:**
+
+```ruby
+# app/controllers/products_controller.rb
+class ProductsController < ApplicationController
+  before_action :authenticate_user!
+  
+  def index
+    # Create Ransack search
+    @q = policy_scope(Product).includes(:category).ransack(params[:q])
+    
+    # Default sort
+    @q.sorts = 'created_at desc' if @q.sorts.empty?
+    
+    # Get results
+    @products = @q.result(distinct: true)
+    
+    # Add custom scope filters (outside Ransack)
+    @products = @products.low_stock if params[:low_stock] == '1'
+    @products = @products.active unless params[:show_inactive] == '1'
+    
+    # Pagination
+    items_per_page = [params[:per_page]&.to_i || 25, 100].min
+    @pagy, @products = pagy(@products, items: items_per_page)
+    
+    authorize Product
+  end
+end
+```
+
+**Complete Example - View:**
+
+```erb
+<%# app/views/products/index.html.erb %>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Products (<%= @pagy.count %>)</h1>
+    <% if policy(Product).create? %>
+      <%= link_to 'New Product', new_product_path, class: 'btn btn-primary' %>
+    <% end %>
+  </div>
+
+  <!-- Search & Filter Form -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">Search & Filter</h5>
+    </div>
+    <div class="card-body">
+      <%= search_form_for @q, url: products_path, method: :get do |f| %>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <%= f.label :name_or_sku_cont, 'Search (Name or SKU)', class: 'form-label' %>
+            <%= f.search_field :name_or_sku_cont, 
+                placeholder: 'Search...', 
+                class: 'form-control' %>
+          </div>
+          
+          <div class="col-md-3">
+            <%= f.label :category_id_eq, 'Category', class: 'form-label' %>
+            <%= f.select :category_id_eq, 
+                Category.pluck(:name, :id),
+                { include_blank: 'All' },
+                { class: 'form-select' } %>
+          </div>
+          
+          <div class="col-md-2">
+            <%= f.label :unit_price_gteq, 'Min Price', class: 'form-label' %>
+            <%= f.number_field :unit_price_gteq, 
+                step: 0.01, 
+                class: 'form-control' %>
+          </div>
+          
+          <div class="col-md-2">
+            <%= f.label :unit_price_lteq, 'Max Price', class: 'form-label' %>
+            <%= f.number_field :unit_price_lteq, 
+                step: 0.01, 
+                class: 'form-control' %>
+          </div>
+          
+          <div class="col-md-1 d-flex align-items-end">
+            <%= f.submit 'Search', class: 'btn btn-primary w-100' %>
+          </div>
+        </div>
+        
+        <div class="row g-3 mt-2">
+          <div class="col-auto">
+            <div class="form-check">
+              <%= check_box_tag :low_stock, '1', params[:low_stock] == '1', class: 'form-check-input' %>
+              <%= label_tag :low_stock, 'Low Stock Only', class: 'form-check-label' %>
+            </div>
+          </div>
+          
+          <div class="col-auto">
+            <div class="form-check">
+              <%= check_box_tag :show_inactive, '1', params[:show_inactive] == '1', class: 'form-check-input' %>
+              <%= label_tag :show_inactive, 'Show Inactive', class: 'form-check-label' %>
+            </div>
+          </div>
+          
+          <div class="col-auto ms-auto">
+            <%= link_to 'Clear Filters', products_path, class: 'btn btn-secondary' %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="card">
+    <div class="card-body">
+      <!-- Per page selector + count -->
+      <div class="d-flex justify-content-between mb-3">
+        <div class="text-muted">
+          Showing <%= @pagy.from %>-<%= @pagy.to %> of <%= @pagy.count %> products
+        </div>
+        
+        <%= form_with url: products_path, method: :get, local: true do |f| %>
+          <!-- Preserve search params -->
+          <%= hidden_field_tag 'q[name_or_sku_cont]', params.dig(:q, :name_or_sku_cont) %>
+          <%= hidden_field_tag 'q[category_id_eq]', params.dig(:q, :category_id_eq) %>
+          
+          <%= label_tag :per_page, 'Per page:', class: 'me-2' %>
+          <%= select_tag :per_page, 
+              options_for_select([10, 25, 50, 100], params[:per_page]),
+              onchange: 'this.form.submit()',
+              class: 'form-select form-select-sm d-inline-block w-auto' %>
+        <% end %>
+      </div>
+      
+      <!-- Sortable Table -->
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th><%= sort_link(@q, :sku) %></th>
+              <th><%= sort_link(@q, :name) %></th>
+              <th><%= sort_link(@q, :category_name, 'Category') %></th>
+              <th class="text-end"><%= sort_link(@q, :unit_price, 'Price') %></th>
+              <th class="text-center"><%= sort_link(@q, :stock_quantity, 'Stock') %></th>
+              <th class="text-center">Status</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if @products.any? %>
+              <% @products.each do |product| %>
+                <tr>
+                  <td><code><%= product.sku %></code></td>
+                  <td><%= link_to product.name, product %></td>
+                  <td><%= product.category.name %></td>
+                  <td class="text-end"><%= number_to_currency(product.unit_price) %></td>
+                  <td class="text-center">
+                    <span class="badge <%= product.low_stock? ? 'bg-warning' : 'bg-success' %>">
+                      <%= product.stock_quantity %>
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <% if product.is_active %>
+                      <span class="badge bg-success">Active</span>
+                    <% else %>
+                      <span class="badge bg-secondary">Inactive</span>
+                    <% end %>
+                  </td>
+                  <td class="text-end">
+                    <div class="btn-group btn-group-sm">
+                      <%= link_to 'View', product, class: 'btn btn-info' %>
+                      <% if policy(product).update? %>
+                        <%= link_to 'Edit', edit_product_path(product), class: 'btn btn-warning' %>
+                      <% end %>
+                      <% if policy(product).destroy? %>
+                        <%= link_to 'Delete', product, 
+                            data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' },
+                            class: 'btn btn-danger' %>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="7" class="text-center text-muted py-4">
+                  No products found. Try adjusting your search criteria.
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Pagination -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="text-muted">
+          <%== pagy_info(@pagy) %>
+        </div>
+        <div>
+          <%== pagy_bootstrap_nav(@pagy) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+**Helper for Preserving Search Params in Links:**
+
+```ruby
+# app/helpers/products_helper.rb
+module ProductsHelper
+  def search_params
+    params.permit(:q, :per_page, :low_stock, :show_inactive, 
+                  q: [:name_or_sku_cont, :category_id_eq, :unit_price_gteq, :unit_price_lteq])
+  end
+end
+```
+
+**Usage:**
+```erb
+<%= link_to 'Export CSV', products_path(format: :csv, **search_params), class: 'btn btn-success' %>
+```
+
+---
+
+### Pattern 4: Bulk Operations
+
+### Pattern 4: Bulk Operations
+
+**Routes:**
+
+```ruby
+# config/routes.rb
+resources :products do
+  collection do
+    patch :bulk_activate
+    patch :bulk_deactivate
+    delete :bulk_destroy
+  end
+end
+```
+
+**Controller:**
+
+```ruby
+# app/controllers/products_controller.rb
+def bulk_activate
+  authorize Product, :update?
+  
+  products = Product.where(id: params[:product_ids])
+  count = products.update_all(is_active: true)
+  
+  respond_to do |format|
+    format.html { redirect_to products_url, notice: "#{count} products activated." }
+    format.turbo_stream do
+      render turbo_stream: turbo_stream.replace(
+        'flash_messages',
+        partial: 'shared/flash',
+        locals: { message: "#{count} products activated.", type: 'success' }
+      )
     end
   end
 end
 
-# Model
+def bulk_deactivate
+  authorize Product, :update?
+  
+  products = Product.where(id: params[:product_ids])
+  count = products.update_all(is_active: false)
+  
+  redirect_to products_url, notice: "#{count} products deactivated."
+end
+
+def bulk_destroy
+  authorize Product, :destroy?
+  
+  products = Product.where(id: params[:product_ids])
+  count = products.destroy_all
+  
+  redirect_to products_url, notice: "#{count} products deleted."
+end
+```
+
+**View with Checkboxes:**
+
+```erb
+<%# app/views/products/index.html.erb %>
+
+<%= form_with url: '#', id: 'bulk_actions_form', method: :patch do %>
+  <!-- Bulk action controls -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <input type="checkbox" id="select_all" class="form-check-input me-2">
+      <label for="select_all" class="form-check-label">Select All</label>
+      <span id="selected_count" class="ms-3 text-muted"></span>
+    </div>
+    
+    <div class="btn-group">
+      <button type="button" 
+              class="btn btn-success btn-sm" 
+              data-action="activate"
+              data-url="<%= bulk_activate_products_path %>"
+              onclick="submitBulkAction(this)">
+        Activate Selected
+      </button>
+      <button type="button" 
+              class="btn btn-secondary btn-sm"
+              data-action="deactivate" 
+              data-url="<%= bulk_deactivate_products_path %>"
+              onclick="submitBulkAction(this)">
+        Deactivate Selected
+      </button>
+      <% if policy(Product).destroy? %>
+        <button type="button" 
+                class="btn btn-danger btn-sm"
+                data-action="destroy"
+                data-url="<%= bulk_destroy_products_path %>"
+                data-method="delete"
+                onclick="submitBulkAction(this)"
+                data-confirm="Delete selected products? This cannot be undone.">
+          Delete Selected
+        </button>
+      <% end %>
+    </div>
+  </div>
+  
+  <table class="table">
+    <thead>
+      <tr>
+        <th width="40">
+          <!-- Select all checkbox in header -->
+        </th>
+        <th>SKU</th>
+        <th>Name</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @products.each do |product| %>
+        <tr>
+          <td>
+            <%= check_box_tag 'product_ids[]', 
+                product.id, 
+                false, 
+                class: 'form-check-input bulk-checkbox' %>
+          </td>
+          <td><%= product.sku %></td>
+          <td><%= product.name %></td>
+          <td>
+            <%= link_to 'View', product, class: 'btn btn-sm btn-info' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<script>
+  // Select all functionality
+  document.getElementById('select_all').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.bulk-checkbox');
+    checkboxes.forEach(cb => cb.checked = this.checked);
+    updateSelectedCount();
+  });
+  
+  // Update count when individual checkboxes change
+  document.querySelectorAll('.bulk-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', updateSelectedCount);
+  });
+  
+  function updateSelectedCount() {
+    const checked = document.querySelectorAll('.bulk-checkbox:checked').length;
+    const counter = document.getElementById('selected_count');
+    counter.textContent = checked > 0 ? `(${checked} selected)` : '';
+  }
+  
+  function submitBulkAction(button) {
+    const form = document.getElementById('bulk_actions_form');
+    const checked = document.querySelectorAll('.bulk-checkbox:checked');
+    
+    if (checked.length === 0) {
+      alert('Please select at least one product');
+      return;
+    }
+    
+    if (button.dataset.confirm && !confirm(button.dataset.confirm)) {
+      return;
+    }
+    
+    form.action = button.dataset.url;
+    form.method = button.dataset.method || 'patch';
+    form.submit();
+  }
+</script>
+```
+
+**With Stimulus Controller (Better Approach):**
+
+```javascript
+// app/javascript/controllers/bulk_actions_controller.js
+import { Controller } from "@hotwired/stimulus"
+
+export default class extends Controller {
+  static targets = ["checkbox", "selectAll", "counter", "form"]
+  static values = { selectedCount: Number }
+  
+  connect() {
+    this.updateCount()
+  }
+  
+  toggleAll() {
+    const checked = this.selectAllTarget.checked
+    this.checkboxTargets.forEach(cb => cb.checked = checked)
+    this.updateCount()
+  }
+  
+  updateCount() {
+    this.selectedCountValue = this.checkboxTargets.filter(cb => cb.checked).length
+    this.counterTarget.textContent = this.selectedCountValue > 0 
+      ? `(${this.selectedCountValue} selected)` 
+      : ''
+  }
+  
+  submit(event) {
+    event.preventDefault()
+    
+    if (this.selectedCountValue === 0) {
+      alert('Please select at least one item')
+      return
+    }
+    
+    const button = event.currentTarget
+    const confirmMessage = button.dataset.confirm
+    
+    if (confirmMessage && !confirm(confirmMessage)) {
+      return
+    }
+    
+    this.formTarget.action = button.dataset.url
+    this.formTarget.method = button.dataset.method || 'patch'
+    this.formTarget.submit()
+  }
+}
+```
+
+```erb
+<%# View with Stimulus %>
+<div data-controller="bulk-actions">
+  <%= form_with url: '#', 
+      id: 'bulk_actions_form',
+      data: { bulk_actions_target: 'form' } do %>
+    
+    <div class="mb-3">
+      <input type="checkbox" 
+             data-bulk-actions-target="selectAll"
+             data-action="change->bulk-actions#toggleAll">
+      <span data-bulk-actions-target="counter"></span>
+    </div>
+    
+    <div class="btn-group">
+      <button type="button"
+              data-url="<%= bulk_activate_products_path %>"
+              data-action="click->bulk-actions#submit"
+              class="btn btn-success">
+        Activate
+      </button>
+    </div>
+    
+    <% @products.each do |product| %>
+      <%= check_box_tag 'product_ids[]', 
+          product.id,
+          false,
+          data: { 
+            bulk_actions_target: 'checkbox',
+            action: 'change->bulk-actions#updateCount'
+          } %>
+    <% end %>
+  <% end %>
+</div>
+```
+
+### Pattern 5: Export to CSV/Excel
+
+**Controller:**
+
+```ruby
+# app/controllers/products_controller.rb
+def index
+  @q = policy_scope(Product).includes(:category).ransack(params[:q])
+  @products = @q.result
+  @pagy, @products = pagy(@products)
+  
+  respond_to do |format|
+    format.html
+    format.csv { send_data generate_csv, filename: "products-#{Date.today}.csv" }
+    format.xlsx { send_data generate_xlsx, filename: "products-#{Date.today}.xlsx" }
+  end
+end
+
+private
+
+def generate_csv
+  CSV.generate(headers: true) do |csv|
+    csv << ['SKU', 'Name', 'Category', 'Price', 'Stock', 'Status', 'Created']
+    
+    # Export all results (not just current page)
+    @q.result.find_each do |product|
+      csv << [
+        product.sku,
+        product.name,
+        product.category.name,
+        product.unit_price,
+        product.stock_quantity,
+        product.is_active ? 'Active' : 'Inactive',
+        product.created_at.strftime('%Y-%m-%d')
+      ]
+    end
+  end
+end
+
+def generate_xlsx
+  # Using a gem like 'caxlsx' or 'write_xlsx'
+  require 'write_xlsx'
+  
+  workbook = WriteXLSX.new(StringIO.new)
+  worksheet = workbook.add_worksheet
+  
+  # Header row
+  bold = workbook.add_format(bold: 1)
+  worksheet.write_row(0, 0, ['SKU', 'Name', 'Category', 'Price', 'Stock'], bold)
+  
+  # Data rows
+  row = 1
+  @q.result.find_each do |product|
+    worksheet.write_row(row, 0, [
+      product.sku,
+      product.name,
+      product.category.name,
+      product.unit_price,
+      product.stock_quantity
+    ])
+    row += 1
+  end
+  
+  workbook.close
+  workbook.string_io.string
+end
+```
+
+**View - Export Button:**
+
+```erb
+<div class="btn-group">
+  <%= link_to 'Export CSV', 
+      products_path(format: :csv, q: params[:q]), 
+      class: 'btn btn-success' %>
+  <%= link_to 'Export Excel', 
+      products_path(format: :xlsx, q: params[:q]), 
+      class: 'btn btn-success' %>
+</div>
+```
+
+**Alternative: Model Method:**
+
+```ruby
+# app/models/product.rb
 def self.to_csv
   CSV.generate(headers: true) do |csv|
     csv << ['SKU', 'Name', 'Price', 'Stock']
-    all.each do |product|
+    all.find_each do |product|
       csv << [product.sku, product.name, product.unit_price, product.stock_quantity]
     end
+  end
+end
+
+# Controller
+def index
+  @products = Product.all
+  
+  respond_to do |format|
+    format.csv { send_data @products.to_csv, filename: "products-#{Date.today}.csv" }
   end
 end
 ```
