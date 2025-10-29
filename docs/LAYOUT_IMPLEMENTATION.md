@@ -323,16 +323,6 @@ end
 
 ---
 
-### 📚 References
-
-Based on:
-- **Rails Guides**: https://guides.rubyonrails.org/layouts_and_rendering.html
-- **Rails Security Guide**: https://guides.rubyonrails.org/security.html
-- **Devise Wiki**: https://github.com/heartcombo/devise/wiki
-- **"Agile Web Development with Rails"** by Sam Ruby
-- **"The Rails Way"** by Obie Fernandez
-- **"Secure by Default" principle** - OWASP Best Practices
-
 ---
 
 **Status:** ✅ **Fully Implemented and Tested**
