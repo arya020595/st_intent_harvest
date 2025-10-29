@@ -51,8 +51,8 @@
           <table class="table table-striped">
             <thead>
               <tr>
-                <th>Work Order #</th>
-                <th>Date</th>
+                <th>ID</th>
+                <th>Start Date</th>
                 <th>Block</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -61,9 +61,9 @@
             <tbody>
               <% @recent_work_orders.each do |work_order| %>
                 <tr>
-                  <td><%= work_order.work_order_number %></td>
-                  <td><%= work_order.work_order_date&.strftime("%d %b %Y") %></td>
-                  <td><%= work_order.block&.name %></td>
+                  <td>#<%= work_order.id %></td>
+                  <td><%= work_order.start_date&.strftime("%d %b %Y") %></td>
+                  <td><%= work_order.block&.block_number %></td>
                   <td>
                     <span class="badge 
                       <%= case work_order.work_order_status
@@ -77,7 +77,7 @@
                     </span>
                   </td>
                   <td>
-                    <%= link_to "View", work_order_detail_path(work_order), class: "btn btn-sm btn-primary" %>
+                    <%= link_to "View", "#", class: "btn btn-sm btn-primary" %>
                   </td>
                 </tr>
               <% end %>

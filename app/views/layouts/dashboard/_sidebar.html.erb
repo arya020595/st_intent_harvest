@@ -1,0 +1,93 @@
+<div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px; height: 100vh;">
+  <a href="<%= root_path %>" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+    <span class="fs-4">ST Dashboard</span>
+  </a>
+  <hr>
+  <ul class="nav nav-pills flex-column mb-auto">
+    <li class="nav-item">
+      <%= link_to root_path, class: "nav-link #{'active' if current_page?(root_path)}" do %>
+        <i class="bi bi-speedometer2 me-2"></i>
+        Dashboard
+      <% end %>
+    </li>
+    
+    <li>
+      <a class="nav-link link-dark" data-bs-toggle="collapse" href="#workOrdersCollapse" role="button" aria-expanded="false" aria-controls="workOrdersCollapse">
+        <i class="bi bi-clipboard-check me-2"></i>
+        Work Orders
+        <i class="bi bi-chevron-down float-end"></i>
+      </a>
+      <div class="collapse" id="workOrdersCollapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
+          <li><%= link_to "Work Order Details", "#", class: "nav-link link-dark" %></li>
+          <li><%= link_to "Work Order Approvals", "#", class: "nav-link link-dark" %></li>
+          <li><%= link_to "Pay Calculation", "#", class: "nav-link link-dark" %></li>
+        </ul>
+      </div>
+    </li>
+    
+    <li>
+      <%= link_to "#", class: "nav-link link-dark" do %>
+        <i class="bi bi-clipboard-data me-2"></i>
+        Payslip
+      <% end %>
+    </li>
+    
+    <li>
+      <%= link_to "#", class: "nav-link link-dark" do %>
+        <i class="bi bi-box-seam me-2"></i>
+        Inventory
+      <% end %>
+    </li>
+    
+    <li>
+      <%= link_to "#", class: "nav-link link-dark" do %>
+        <i class="bi bi-people me-2"></i>
+        Workers Profile
+      <% end %>
+    </li>
+    
+    <li>
+      <a class="nav-link link-dark" data-bs-toggle="collapse" href="#masterDataCollapse" role="button" aria-expanded="false" aria-controls="masterDataCollapse">
+        <i class="bi bi-database me-2"></i>
+        Master Data
+        <i class="bi bi-chevron-down float-end"></i>
+      </a>
+      <div class="collapse" id="masterDataCollapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
+          <li><%= link_to "Blocks", "#", class: "nav-link link-dark" %></li>
+          <li><%= link_to "Units", "#", class: "nav-link link-dark" %></li>
+          <li><%= link_to "Categories", "#", class: "nav-link link-dark" %></li>
+          <li><%= link_to "Vehicles", "#", class: "nav-link link-dark" %></li>
+        </ul>
+      </div>
+    </li>
+    <li>
+      <a class="nav-link link-dark" data-bs-toggle="collapse" href="#userManagementCollapse" role="button" aria-expanded="false" aria-controls="userManagementCollapse">
+        <i class="bi bi-shield-lock me-2"></i>
+        User Management
+        <i class="bi bi-chevron-down float-end"></i>
+      </a>
+      <div class="collapse" id="userManagementCollapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
+          <li><%= link_to "Roles", "#", class: "nav-link link-dark" %></li>
+          <li><%= link_to "Users", "#", class: "nav-link link-dark" %></li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+  
+  <hr>
+  
+  <div class="dropdown">
+    <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-person-circle me-2" style="font-size: 32px;"></i>
+      <strong><%= current_user&.email || "Guest" %></strong>
+    </a>
+    <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser">
+      <li><%= link_to "Profile", edit_user_registration_path, class: "dropdown-item" %></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "dropdown-item" %></li>
+    </ul>
+  </div>
+</div>
