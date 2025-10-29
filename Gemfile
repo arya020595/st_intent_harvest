@@ -70,6 +70,12 @@ gem 'aasm', '~> 5.5', '>= 5.5.2'
 # Audit trail for models - tracks who created/updated records and what changed
 gem 'audited', '~> 5.8'
 
+# Bootstrap 5 framework integration
+gem 'bootstrap', '~> 5.3', '>= 5.3.5'
+
+# Sass compiler for CSS preprocessing (required for Bootstrap SCSS)
+gem 'sassc-rails'
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'byebug', '~> 11.1', '>= 11.1.3'
