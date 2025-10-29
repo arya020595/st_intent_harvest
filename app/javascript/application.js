@@ -2,5 +2,8 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 
+// Import Popper.js first (required for Bootstrap dropdowns, popovers, tooltips)
+import "@popperjs/core"
+
 // Bootstrap JavaScript - auto-initializes data-bs-* attributes
 import "bootstrap"
