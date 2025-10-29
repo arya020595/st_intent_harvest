@@ -47,7 +47,29 @@ class ApplicationPolicy
   end
 
   def resource_name
-    record.class.name
+    self.class.extract_resource_name(record)
+  end
+
+  # Class method - shared helper for extracting resource names
+  # Handles:
+  # - Class (authorize ::WorkOrder) -> "WorkOrder"
+  # - Instance (@work_order) -> "WorkOrder"
+  # - Symbol/String (authorize :dashboard) -> "Dashboard"
+  # - ActiveRecord::Relation (scope.klass) -> "WorkOrder"
+  def self.extract_resource_name(input)
+    if input.is_a?(Class)
+      input.name.demodulize
+    elsif input.is_a?(String) || input.is_a?(Symbol)
+      input.to_s.camelize.demodulize
+    elsif input.respond_to?(:model_name)
+      input.model_name.name.demodulize
+    elsif input.respond_to?(:klass) && (klass = input.klass)
+      # Handle ActiveRecord::Relation (has a klass method)
+      # Safely extract klass and verify it's not nil before calling methods on it
+      klass.name.demodulize
+    else
+      input.class.name.demodulize
+    end
   end
 
   class Scope
@@ -73,7 +95,7 @@ class ApplicationPolicy
     end
 
     def resource_name
-      scope.name
+      ApplicationPolicy.extract_resource_name(scope)
     end
   end
 end
