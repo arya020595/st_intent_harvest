@@ -51,8 +51,11 @@ Rails.application.routes.draw do
   # Master Data Namespace
   namespace :master_data do
     resources :workers
+    resources :vehicles
     resources :work_order_rates
     resources :blocks
+    resources :units
+    resources :categories
   end
   
   # User Management Namespace

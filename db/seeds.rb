@@ -29,21 +29,70 @@ Category.destroy_all
 # Create Permissions
 puts "Creating permissions..."
 
-# Standard resource permissions (non-namespaced)
-user_permissions = [
-  { subject: 'User', action: 'index', description: 'View users list' },
-  { subject: 'User', action: 'show', description: 'View user details' },
-  { subject: 'User', action: 'create', description: 'Create new users' },
-  { subject: 'User', action: 'update', description: 'Edit users' },
-  { subject: 'User', action: 'destroy', description: 'Delete users' }
+# UserManagement namespaced permissions
+user_management_user_permissions = [
+  { subject: 'UserManagement::User', action: 'index', description: 'View users list' },
+  { subject: 'UserManagement::User', action: 'show', description: 'View user details' },
+  { subject: 'UserManagement::User', action: 'create', description: 'Create new users' },
+  { subject: 'UserManagement::User', action: 'update', description: 'Edit users' },
+  { subject: 'UserManagement::User', action: 'destroy', description: 'Delete users' }
 ]
 
+user_management_role_permissions = [
+  { subject: 'UserManagement::Role', action: 'index', description: 'View roles list' },
+  { subject: 'UserManagement::Role', action: 'show', description: 'View role details' },
+  { subject: 'UserManagement::Role', action: 'create', description: 'Create new roles' },
+  { subject: 'UserManagement::Role', action: 'update', description: 'Edit roles' },
+  { subject: 'UserManagement::Role', action: 'destroy', description: 'Delete roles' }
+]
+
+# MasterData namespaced permissions
 worker_permissions = [
-  { subject: 'Worker', action: 'index', description: 'View workers list' },
-  { subject: 'Worker', action: 'show', description: 'View worker details' },
-  { subject: 'Worker', action: 'create', description: 'Add new workers' },
-  { subject: 'Worker', action: 'update', description: 'Edit workers' },
-  { subject: 'Worker', action: 'destroy', description: 'Remove workers' }
+  { subject: 'MasterData::Worker', action: 'index', description: 'View workers list' },
+  { subject: 'MasterData::Worker', action: 'show', description: 'View worker details' },
+  { subject: 'MasterData::Worker', action: 'create', description: 'Add new workers' },
+  { subject: 'MasterData::Worker', action: 'update', description: 'Edit workers' },
+  { subject: 'MasterData::Worker', action: 'destroy', description: 'Remove workers' }
+]
+
+vehicle_permissions = [
+  { subject: 'MasterData::Vehicle', action: 'index', description: 'View vehicles list' },
+  { subject: 'MasterData::Vehicle', action: 'show', description: 'View vehicle details' },
+  { subject: 'MasterData::Vehicle', action: 'create', description: 'Register vehicles' },
+  { subject: 'MasterData::Vehicle', action: 'update', description: 'Update vehicles' },
+  { subject: 'MasterData::Vehicle', action: 'destroy', description: 'Deactivate vehicles' }
+]
+
+block_permissions = [
+  { subject: 'MasterData::Block', action: 'index', description: 'View blocks list' },
+  { subject: 'MasterData::Block', action: 'show', description: 'View block details' },
+  { subject: 'MasterData::Block', action: 'create', description: 'Create blocks' },
+  { subject: 'MasterData::Block', action: 'update', description: 'Update blocks' },
+  { subject: 'MasterData::Block', action: 'destroy', description: 'Delete blocks' }
+]
+
+work_order_rate_permissions = [
+  { subject: 'MasterData::WorkOrderRate', action: 'index', description: 'View work order rates list' },
+  { subject: 'MasterData::WorkOrderRate', action: 'show', description: 'View work order rate details' },
+  { subject: 'MasterData::WorkOrderRate', action: 'create', description: 'Create work order rates' },
+  { subject: 'MasterData::WorkOrderRate', action: 'update', description: 'Update work order rates' },
+  { subject: 'MasterData::WorkOrderRate', action: 'destroy', description: 'Delete work order rates' }
+]
+
+unit_permissions = [
+  { subject: 'MasterData::Unit', action: 'index', description: 'View units list' },
+  { subject: 'MasterData::Unit', action: 'show', description: 'View unit details' },
+  { subject: 'MasterData::Unit', action: 'create', description: 'Create units' },
+  { subject: 'MasterData::Unit', action: 'update', description: 'Update units' },
+  { subject: 'MasterData::Unit', action: 'destroy', description: 'Delete units' }
+]
+
+category_permissions = [
+  { subject: 'MasterData::Category', action: 'index', description: 'View categories list' },
+  { subject: 'MasterData::Category', action: 'show', description: 'View category details' },
+  { subject: 'MasterData::Category', action: 'create', description: 'Create categories' },
+  { subject: 'MasterData::Category', action: 'update', description: 'Update categories' },
+  { subject: 'MasterData::Category', action: 'destroy', description: 'Delete categories' }
 ]
 
 inventory_permissions = [
@@ -52,14 +101,6 @@ inventory_permissions = [
   { subject: 'Inventory', action: 'create', description: 'Create inventories' },
   { subject: 'Inventory', action: 'update', description: 'Edit inventories' },
   { subject: 'Inventory', action: 'destroy', description: 'Delete inventories' }
-]
-
-vehicle_permissions = [
-  { subject: 'Vehicle', action: 'index', description: 'View vehicles list' },
-  { subject: 'Vehicle', action: 'show', description: 'View vehicle details' },
-  { subject: 'Vehicle', action: 'create', description: 'Register vehicles' },
-  { subject: 'Vehicle', action: 'update', description: 'Update vehicles' },
-  { subject: 'Vehicle', action: 'destroy', description: 'Deactivate vehicles' }
 ]
 
 payslip_permissions = [
@@ -94,10 +135,15 @@ work_order_pay_calc_permissions = [
 
 # Combine all permissions
 all_permissions = [
-  *user_permissions,
+  *user_management_user_permissions,
+  *user_management_role_permissions,
   *worker_permissions,
-  *inventory_permissions,
   *vehicle_permissions,
+  *block_permissions,
+  *work_order_rate_permissions,
+  *unit_permissions,
+  *category_permissions,
+  *inventory_permissions,
   *payslip_permissions,
   *work_order_detail_permissions,
   *work_order_approval_permissions,
@@ -123,7 +169,7 @@ manager_role = Role.find_or_create_by!(name: 'Manager') do |role|
   role.description = 'Can approve work orders and manage pay calculations'
 end
 manager_permissions = Permission.where(subject: ['WorkOrder::Approval', 'WorkOrder::PayCalculation', 'Payslip'])
-                                .or(Permission.where(subject: ['Worker', 'Vehicle', 'Inventory', 'User'], action: ['index', 'show']))
+                                .or(Permission.where(subject: ['MasterData::Worker', 'MasterData::Vehicle', 'Inventory', 'UserManagement::User'], action: ['index', 'show']))
 manager_role.permissions = manager_permissions
 
 # Field Conductor - can create and manage work orders
@@ -131,14 +177,19 @@ field_conductor_role = Role.find_or_create_by!(name: 'Field Conductor') do |role
   role.description = 'Can create and manage work orders'
 end
 field_conductor_permissions = Permission.where(subject: 'WorkOrder::Detail', action: ['index', 'show', 'create', 'update'])
-                                        .or(Permission.where(subject: ['Worker', 'Vehicle', 'Inventory'], action: ['index', 'show']))
+                                        .or(Permission.where(subject: ['MasterData::Worker', 'MasterData::Vehicle', 'Inventory'], action: ['index', 'show']))
 field_conductor_role.permissions = field_conductor_permissions
 
 # Clerk - administrative support with read/write access to master data
 clerk_role = Role.find_or_create_by!(name: 'Clerk') do |role|
   role.description = 'Can manage master data (users, workers, vehicles, inventories)'
 end
-clerk_permissions = Permission.where(subject: ['User', 'Worker', 'Vehicle', 'Inventory'])
+clerk_permissions = Permission.where(subject: [
+  'UserManagement::User', 'UserManagement::Role', 
+  'MasterData::Worker', 'MasterData::Vehicle', 'MasterData::Block', 
+  'MasterData::WorkOrderRate', 'MasterData::Unit', 'MasterData::Category',
+  'Inventory'
+])
 clerk_role.permissions = clerk_permissions
 
 puts "✓ Created #{Role.count} roles"
