@@ -65,7 +65,7 @@ class ApplicationPolicy
       input.model_name.name.demodulize
     elsif input.respond_to?(:klass) && (klass = input.klass)
       # Handle ActiveRecord::Relation (has a klass method)
-      # Safely extract klass and verify it's not nil/false before calling methods on it
+      # Safely extract klass and verify it's not nil before calling methods on it
       klass.name.demodulize
     else
       input.class.name.demodulize
