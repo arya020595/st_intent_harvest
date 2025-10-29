@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ST Intent Harvest</title>
+    <title>ST Intent Harvest - Dashboard</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -14,9 +14,21 @@
   </head>
 
   <body class="d-flex flex-column min-vh-100">
-    <main class="flex-grow-1">
-      <%= render "layouts/flash" %>
-      <%= yield %>
-    </main>
+    <!-- Navbar -->
+    <%= render "layouts/dashboard/navbar" %>
+    
+    <div class="d-flex flex-grow-1">
+      <!-- Sidebar -->
+      <%= render "layouts/dashboard/sidebar" %>
+      
+      <!-- Main Content -->
+      <main class="flex-grow-1 p-4 bg-light">
+        <%= render "layouts/flash" %>
+        <%= yield %>
+      </main>
+    </div>
+    
+    <!-- Footer -->
+    <%= render "layouts/dashboard/footer" %>
   </body>
 </html>
