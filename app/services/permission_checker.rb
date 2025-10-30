@@ -9,7 +9,7 @@ class PermissionChecker
     # Superadmin bypass: allow everything
     return true if superadmin?
     return false unless user_has_role?
-    
+
     permissions.exists?(action: action.to_s, subject: subject)
   end
 
