@@ -99,7 +99,7 @@ group :development do
   # Code completion and inline documentation for Ruby/Rails [https://solargraph.org]
   gem 'solargraph', '~> 0.57.0'
 
-  # HTML formatter for Ruby/Rails code [https://github.com/htmllint/htmllint]
+  # HTML formatter for Ruby/Rails code [https://github.com/threedaymonk/htmlbeautifier]
   gem 'htmlbeautifier'
 end
 
