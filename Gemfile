@@ -60,8 +60,8 @@ gem 'ransack'
 gem 'sidekiq', '~> 8.0', '>= 8.0.8'
 
 # dry-rb: dependency injection and functional helpers
-gem 'dry-container', '~> 0.11.0'
 gem 'dry-auto_inject', '~> 1.1'
+gem 'dry-container', '~> 0.11.0'
 gem 'dry-monads', '~> 1.9'
 
 # State machine library for Ruby objects (AASM) — used to model object states and transitions
@@ -81,7 +81,7 @@ group :development, :test do
   gem 'byebug', '~> 11.1', '>= 11.1.3'
   gem 'debug', platforms: %i[mri windows]
   gem 'rubocop', '~> 1.71', '>= 1.71.2'
-  
+
   # Annotate models with schema information
   gem 'annotate'
 end
@@ -95,6 +95,12 @@ group :development do
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+
+  # Code completion and inline documentation for Ruby/Rails [https://solargraph.org]
+  gem 'solargraph', '~> 0.57.0'
+
+  # HTML formatter for Ruby/Rails code [https://github.com/htmllint/htmllint]
+  gem 'htmlbeautifier'
 end
 
 group :test do
