@@ -28,6 +28,6 @@ class PermissionChecker
   end
 
   def permissions
-    @permissions ||= @user.role.permissions.pluck(:action, :subject).to_set
+    @permissions ||= @user.role.permissions.pluck(:action, :subject).map { |a, s| [a.to_s, s.to_s] }.to_set
   end
 end
