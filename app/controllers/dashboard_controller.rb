@@ -3,13 +3,16 @@
 # Dashboard controller for the main application dashboard
 class DashboardController < ApplicationController
   def index
+    authorize :dashboard, :index?
+
     @pending_work_orders = WorkOrder.pending.count
     @ongoing_work_orders = WorkOrder.ongoing.count
     @completed_work_orders = WorkOrder.completed.count
     @amendment_required_work_orders = WorkOrder.amendment_required.count
     # Recent work orders
-    @recent_work_orders = WorkOrder.includes(:block).select(:id, :start_date, :block_id, :work_order_status).order(created_at: :desc).limit(10)
-    
+    @recent_work_orders = WorkOrder.includes(:block).select(:id, :start_date, :block_id,
+                                                            :work_order_status).order(created_at: :desc).limit(10)
+
     # Optional: Add user-specific statistics if needed
     # @my_work_orders = current_user.work_orders if current_user.respond_to?(:work_orders)
   end
