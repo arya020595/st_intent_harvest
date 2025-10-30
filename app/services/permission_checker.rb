@@ -9,8 +9,8 @@ class PermissionChecker
     # Superadmin bypass: allow everything
     return true if superadmin?
     return false unless user_has_role?
-    
-    permissions.exists?(action: action.to_s, subject: subject)
+
+    permissions.include?([action.to_s, subject.to_s])
   end
 
   # Public method - can be used in policies for scope filtering
@@ -28,6 +28,6 @@ class PermissionChecker
   end
 
   def permissions
-    @permissions ||= @user.role.permissions
+    @permissions ||= @user.role.permissions.pluck(:action, :subject).map { |a, s| [a.to_s, s.to_s] }.to_set
   end
 end
