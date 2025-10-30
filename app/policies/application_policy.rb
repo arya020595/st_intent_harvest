@@ -83,7 +83,7 @@ class ApplicationPolicy
     #   WorkOrder::ApprovalPolicy::Scope -> "WorkOrder::Approval"
     #   InventoryPolicy::Scope -> "Inventory"
     def resource_name
-      @resource_name ||= self.class.name.delete_suffix('::Scope').delete_suffix('Policy')
+      @resource_name ||= self.class.name.sub(/(::Scope)?Policy\z/, '')
     end
   end
 end
