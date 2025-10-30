@@ -36,26 +36,6 @@ class ApplicationPolicy
     has_permission?(:destroy)
   end
 
-  # Class method - shared helper for extracting resource names
-  # Handles:
-  # - Class (authorize ::WorkOrder) -> "WorkOrder"
-  # - Instance (@work_order) -> "WorkOrder"
-  # - Symbol/String (authorize :dashboard) -> "Dashboard"
-  # - ActiveRecord::Relation (scope.klass) -> "WorkOrder"
-  def self.extract_resource_name(input)
-    if input.is_a?(Class)
-      input.name
-    elsif input.is_a?(String) || input.is_a?(Symbol)
-      input.to_s.camelize
-    elsif input.respond_to?(:model_name)
-      input.model_name.name
-    elsif input.respond_to?(:klass) && (klass = input.klass)
-      klass.name
-    else
-      input.class.name
-    end
-  end
-
   private
 
   def has_permission?(action)
@@ -66,8 +46,13 @@ class ApplicationPolicy
     @permission_checker ||= PermissionChecker.new(user)
   end
 
+  # Derive resource name from policy class name by removing "Policy" suffix
+  # Examples:
+  #   WorkOrder::DetailPolicy -> "WorkOrder::Detail"
+  #   WorkOrder::ApprovalPolicy -> "WorkOrder::Approval"
+  #   InventoryPolicy -> "Inventory"
   def resource_name
-    self.class.extract_resource_name(record)
+    @resource_name ||= self.class.name.delete_suffix('Policy')
   end
 
   class Scope
@@ -92,8 +77,13 @@ class ApplicationPolicy
       @permission_checker ||= PermissionChecker.new(user)
     end
 
+    # Derive resource name from policy scope class name
+    # Examples:
+    #   WorkOrder::DetailPolicy::Scope -> "WorkOrder::Detail"
+    #   WorkOrder::ApprovalPolicy::Scope -> "WorkOrder::Approval"
+    #   InventoryPolicy::Scope -> "Inventory"
     def resource_name
-      ApplicationPolicy.extract_resource_name(scope)
+      @resource_name ||= self.class.name.delete_suffix('::Scope').delete_suffix('Policy')
     end
   end
 end

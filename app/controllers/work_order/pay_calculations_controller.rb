@@ -2,54 +2,56 @@
 
 module WorkOrder
   class PayCalculationsController < ApplicationController
-    before_action :set_pay_calculation, only: %i[show edit update destroy]
+    before_action :set_work_order, only: %i[show edit update destroy]
 
     def index
-      @pay_calculations = policy_scope([:work_order, PayCalculation])
-      authorize [:work_order, PayCalculation], :index?
+      @work_orders = policy_scope(
+        WorkOrder,
+        policy_scope_class: WorkOrder::PayCalculationPolicy::Scope
+      )
+      authorize WorkOrder, policy_class: WorkOrder::PayCalculationPolicy
     end
 
     def show
-      authorize [:work_order, @pay_calculation], :show?
+      authorize @work_order, policy_class: WorkOrder::PayCalculationPolicy
     end
 
     def new
-      @pay_calculation = PayCalculation.new
-      authorize [:work_order, @pay_calculation], :new?
+      @work_order = WorkOrder.new
+      authorize @work_order, policy_class: WorkOrder::PayCalculationPolicy
     end
 
     def create
-      @pay_calculation = PayCalculation.new(pay_calculation_params)
-      authorize [:work_order, @pay_calculation], :create?
+      @work_order = WorkOrder.new(work_order_params)
+      authorize @work_order, policy_class: WorkOrder::PayCalculationPolicy
 
       # Logic to be implemented later
     end
 
     def edit
-      authorize [:work_order, @pay_calculation], :edit?
+      authorize @work_order, policy_class: WorkOrder::PayCalculationPolicy
     end
 
     def update
-      authorize [:work_order, @pay_calculation], :update?
+      authorize @work_order, policy_class: WorkOrder::PayCalculationPolicy
 
       # Logic to be implemented later
     end
 
     def destroy
-      authorize [:work_order, @pay_calculation], :destroy?
+      authorize @work_order, policy_class: WorkOrder::PayCalculationPolicy
 
       # Logic to be implemented later
     end
 
     private
 
-    def set_pay_calculation
-      @pay_calculation = PayCalculation.find(params[:id])
+    def set_work_order
+      @work_order = WorkOrder.find(params[:id])
     end
 
-    def pay_calculation_params
-      params.require(:pay_calculation).permit(
-        :work_order_id,
+    def work_order_params
+      params.require(:work_order).permit(
         :calculation_date,
         :total_amount,
         :status
