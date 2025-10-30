@@ -36,6 +36,26 @@ class ApplicationPolicy
     has_permission?(:destroy)
   end
 
+  # Class method - shared helper for extracting resource names
+  # Handles:
+  # - Class (authorize ::WorkOrder) -> "WorkOrder"
+  # - Instance (@work_order) -> "WorkOrder"
+  # - Symbol/String (authorize :dashboard) -> "Dashboard"
+  # - ActiveRecord::Relation (scope.klass) -> "WorkOrder"
+  def self.extract_resource_name(input)
+    if input.is_a?(Class)
+      input.name
+    elsif input.is_a?(String) || input.is_a?(Symbol)
+      input.to_s.camelize
+    elsif input.respond_to?(:model_name)
+      input.model_name.name
+    elsif input.respond_to?(:klass) && (klass = input.klass)
+      klass.name
+    else
+      input.class.name
+    end
+  end
+
   private
 
   def has_permission?(action)
@@ -48,28 +68,6 @@ class ApplicationPolicy
 
   def resource_name
     self.class.extract_resource_name(record)
-  end
-
-  # Class method - shared helper for extracting resource names
-  # Handles:
-  # - Class (authorize ::WorkOrder) -> "WorkOrder"
-  # - Instance (@work_order) -> "WorkOrder"
-  # - Symbol/String (authorize :dashboard) -> "Dashboard"
-  # - ActiveRecord::Relation (scope.klass) -> "WorkOrder"
-  def self.extract_resource_name(input)
-    if input.is_a?(Class)
-      input.name.demodulize
-    elsif input.is_a?(String) || input.is_a?(Symbol)
-      input.to_s.camelize.demodulize
-    elsif input.respond_to?(:model_name)
-      input.model_name.name.demodulize
-    elsif input.respond_to?(:klass) && (klass = input.klass)
-      # Handle ActiveRecord::Relation (has a klass method)
-      # Safely extract klass and verify it's not nil before calling methods on it
-      klass.name.demodulize
-    else
-      input.class.name.demodulize
-    end
   end
 
   class Scope
