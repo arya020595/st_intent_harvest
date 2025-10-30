@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PayslipsController < ApplicationController
-  before_action :set_payslip, only: [:show]
+  before_action :set_payslip, only: %i[show]
 
   def index
     @payslips = policy_scope(Payslip)
