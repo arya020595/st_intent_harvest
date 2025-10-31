@@ -1,0 +1,23 @@
+<%= form_with(model: [:master_data, vehicle], local: true) do |form| %>
+  <% if vehicle.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(vehicle.errors.count, "error") %> prohibited this vehicle from being saved:</h4>
+      <ul>
+        <% vehicle.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="mb-3">
+    <%= form.label :vehicle_number, class: "form-label" %>
+    <%= form.text_field :vehicle_number, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :vehicle_model, class: "form-label" %>
+    <%= form.text_field :vehicle_model, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

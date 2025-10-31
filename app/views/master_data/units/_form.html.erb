@@ -1,0 +1,23 @@
+<%= form_with(model: [:master_data, unit], local: true) do |form| %>
+  <% if unit.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(unit.errors.count, "error") %> prohibited this unit from being saved:</h4>
+      <ul>
+        <% unit.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="mb-3">
+    <%= form.label :name, class: "form-label" %>
+    <%= form.text_field :name, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :unit_type, class: "form-label" %>
+    <%= form.text_field :unit_type, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

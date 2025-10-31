@@ -1,0 +1,36 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Roles</h1>
+      <div class="mb-3">
+        <%= link_to "New Role", new_user_management_role_path, class: "btn btn-primary" %>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Permissions Count</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @roles.each do |role| %>
+              <tr>
+                <td><%= role.name %></td>
+                <td><%= role.description %></td>
+                <td><%= role.permissions.count %></td>
+                <td>
+                  <%= link_to "Show", user_management_role_path(role), class: "btn btn-sm btn-info" %>
+                  <%= link_to "Edit", edit_user_management_role_path(role), class: "btn btn-sm btn-warning" %>
+                  <%= link_to "Delete", user_management_role_path(role), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

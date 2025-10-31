@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Inventories</h1>
+      <div class="mb-3">
+        <%= link_to "New Inventory", new_inventory_path, class: "btn btn-primary" %>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Stock Quantity</th>
+              <th>Unit</th>
+              <th>Price</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @inventories.each do |inventory| %>
+              <tr>
+                <td><%= inventory.name %></td>
+                <td><%= inventory.category&.name %></td>
+                <td><%= inventory.stock_quantity %></td>
+                <td><%= inventory.unit&.name %></td>
+                <td><%= inventory.price %></td>
+                <td>
+                  <%= link_to "Show", inventory_path(inventory), class: "btn btn-sm btn-info" %>
+                  <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
+                  <%= link_to "Delete", inventory_path(inventory), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

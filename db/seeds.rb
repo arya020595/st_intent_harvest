@@ -135,11 +135,18 @@ work_order_pay_calc_permissions = [
   { subject: 'WorkOrder::PayCalculation', action: 'destroy', description: 'Delete pay calculations' }
 ]
 
+# Dashboard permissions (for accessing the main dashboard)
+dashboard_permissions = [
+  { subject: 'Dashboard', action: 'index', description: 'View dashboard' },
+  { subject: 'Dashboard', action: 'show', description: 'View dashboard details' }
+]
+
 # Combine all permissions
 all_permissions = [
   *user_management_user_permissions,
   *user_management_role_permissions,
   *worker_permissions,
+  *dashboard_permissions,
   *vehicle_permissions,
   *block_permissions,
   *work_order_rate_permissions,
@@ -170,33 +177,31 @@ end
 manager_role = Role.find_or_create_by!(name: 'Manager') do |role|
   role.description = 'Can view dashboard and approve work orders'
 end
-manager_permissions = Permission.where(subject: 'WorkOrder::Approval', action: %w[index show update])
+manager_permissions = Permission.where(subject: ['Dashboard', 'WorkOrder::Approval'])
 manager_role.permissions = manager_permissions
 
-# Field Conductor - can create and manage work order details
+# Field Conductor - can create and manage work order details (NO dashboard access)
 field_conductor_role = Role.find_or_create_by!(name: 'Field Conductor') do |role|
   role.description = 'Can create and manage work order details'
 end
-field_conductor_permissions = Permission.where(subject: 'WorkOrder::Detail', action: %w[index show create update])
+field_conductor_permissions = Permission.where(subject: ['WorkOrder::Detail'])
 field_conductor_role.permissions = field_conductor_permissions
 
-# Clerk - administrative support with managed access to pay calculations, payslips, inventories, workers, and master data
+# Clerk - administrative support with managed access to pay calculations, payslips, inventories, workers, and master data (NO dashboard access)
 clerk_role = Role.find_or_create_by!(name: 'Clerk') do |role|
   role.description = 'Can manage pay calculations, payslips, inventories, workers, and master data'
 end
-clerk_permissions = []
-# Pay calculations - can create, view and update
-clerk_permissions += Permission.where(subject: 'WorkOrder::PayCalculation', action: %w[index show create update])
-# Payslips - read-only access
-clerk_permissions += Permission.where(subject: 'Payslip', action: %w[index show])
-# Inventories, Workers, and Master Data - can create, view and update
-clerk_permissions += Permission.where(subject: 'Inventory', action: %w[index show create update])
-clerk_permissions += Permission.where(subject: 'Worker', action: %w[index show create update])
-clerk_permissions += Permission.where(subject: 'MasterData::Vehicle', action: %w[index show create update])
-clerk_permissions += Permission.where(subject: 'MasterData::Block', action: %w[index show create update])
-clerk_permissions += Permission.where(subject: 'MasterData::WorkOrderRate', action: %w[index show create update])
-clerk_permissions += Permission.where(subject: 'MasterData::Unit', action: %w[index show create update])
-clerk_permissions += Permission.where(subject: 'MasterData::Category', action: %w[index show create update])
+clerk_permissions = Permission.where(subject: [
+                                       'WorkOrder::PayCalculation',
+                                       'Payslip',
+                                       'Inventory',
+                                       'Worker',
+                                       'MasterData::Vehicle',
+                                       'MasterData::Block',
+                                       'MasterData::WorkOrderRate',
+                                       'MasterData::Unit',
+                                       'MasterData::Category'
+                                     ])
 clerk_role.permissions = clerk_permissions
 
 puts "✓ Created #{Role.count} roles"

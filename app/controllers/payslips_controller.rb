@@ -4,16 +4,16 @@ class PayslipsController < ApplicationController
   before_action :set_payslip, only: %i[show]
 
   def index
-    @payslips = policy_scope(Payslip)
-    authorize Payslip
+    @payslips = policy_scope(PayCalculation, policy_scope_class: PayslipPolicy::Scope)
+    authorize PayCalculation, policy_class: PayslipPolicy
   end
 
   def show
-    authorize @payslip
+    authorize @payslip, policy_class: PayslipPolicy
   end
 
   def export
-    authorize Payslip, :export?
+    authorize PayCalculation, :export?, policy_class: PayslipPolicy
 
     # Logic to be implemented later
     # Export payslips to CSV/PDF
@@ -22,6 +22,6 @@ class PayslipsController < ApplicationController
   private
 
   def set_payslip
-    @payslip = Payslip.find(params[:id])
+    @payslip = PayCalculation.find(params[:id])
   end
 end

@@ -1,0 +1,31 @@
+<%= form_with(model: [:work_order, work_order], url: work_order.new_record? ? work_order_details_path : work_order_detail_path(work_order), local: true) do |form| %>
+  <% if work_order.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(work_order.errors.count, "error") %> prohibited this work order from being saved:</h4>
+      <ul>
+        <% work_order.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="mb-3">
+    <%= form.label :block_id, class: "form-label" %>
+    <%= form.collection_select :block_id, Block.all, :id, :block_number, { include_blank: "Select Block" }, class: "form-select" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :work_order_rate_id, class: "form-label" %>
+    <%= form.collection_select :work_order_rate_id, WorkOrderRate.all, :id, :work_order_name, { include_blank: "Select Work Order Rate" }, class: "form-select" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :start_date, class: "form-label" %>
+    <%= form.date_field :start_date, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :field_conductor_id, class: "form-label" %>
+    <%= form.collection_select :field_conductor_id, User.all, :id, :name, { include_blank: "Select Field Conductor" }, class: "form-select" %>
+  </div>
+  <div class="mb-3">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

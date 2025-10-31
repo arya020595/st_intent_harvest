@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Workers</h1>
+      <div class="mb-3">
+        <%= link_to "New Worker", new_worker_path, class: "btn btn-primary" %>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Worker Type</th>
+              <th>Gender</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @workers.each do |worker| %>
+              <tr>
+                <td><%= worker.name %></td>
+                <td><%= worker.worker_type %></td>
+                <td><%= worker.gender %></td>
+                <td><%= worker.is_active ? "Active" : "Inactive" %></td>
+                <td>
+                  <%= link_to "Show", worker_path(worker), class: "btn btn-sm btn-info" %>
+                  <%= link_to "Edit", edit_worker_path(worker), class: "btn btn-sm btn-warning" %>
+                  <%= link_to "Delete", worker_path(worker), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

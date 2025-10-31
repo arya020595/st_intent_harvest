@@ -1,0 +1,34 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Units</h1>
+      <div class="mb-3">
+        <%= link_to "New Unit", new_master_data_unit_path, class: "btn btn-primary" %>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Unit Type</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @units.each do |unit| %>
+              <tr>
+                <td><%= unit.name %></td>
+                <td><%= unit.unit_type %></td>
+                <td>
+                  <%= link_to "Show", master_data_unit_path(unit), class: "btn btn-sm btn-info" %>
+                  <%= link_to "Edit", edit_master_data_unit_path(unit), class: "btn btn-sm btn-warning" %>
+                  <%= link_to "Delete", master_data_unit_path(unit), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
