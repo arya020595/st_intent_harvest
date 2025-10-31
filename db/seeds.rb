@@ -177,7 +177,7 @@ manager_role.permissions = manager_permissions
 field_conductor_role = Role.find_or_create_by!(name: 'Field Conductor') do |role|
   role.description = 'Can create and manage work order details'
 end
-field_conductor_permissions = Permission.where(subject: 'WorkOrder::Detail')
+field_conductor_permissions = Permission.where(subject: 'WorkOrder::Detail', action: %w[index show create update])
 field_conductor_role.permissions = field_conductor_permissions
 
 # Clerk - administrative support with full access to pay calculations, payslips, inventories, workers, and master data
