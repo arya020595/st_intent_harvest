@@ -170,7 +170,7 @@ end
 manager_role = Role.find_or_create_by!(name: 'Manager') do |role|
   role.description = 'Can view dashboard and approve work orders'
 end
-manager_permissions = Permission.where(subject: 'WorkOrder::Approval')
+manager_permissions = Permission.where(subject: 'WorkOrder::Approval', action: %w[index show update])
 manager_role.permissions = manager_permissions
 
 # Field Conductor - can create and manage work order details
