@@ -180,21 +180,23 @@ end
 field_conductor_permissions = Permission.where(subject: 'WorkOrder::Detail', action: %w[index show create update])
 field_conductor_role.permissions = field_conductor_permissions
 
-# Clerk - administrative support with full access to pay calculations, payslips, inventories, workers, and master data
+# Clerk - administrative support with managed access to pay calculations, payslips, inventories, workers, and master data
 clerk_role = Role.find_or_create_by!(name: 'Clerk') do |role|
   role.description = 'Can manage pay calculations, payslips, inventories, workers, and master data'
 end
-clerk_permissions = Permission.where(subject: [
-                                       'WorkOrder::PayCalculation',
-                                       'Payslip',
-                                       'Inventory',
-                                       'Worker',
-                                       'MasterData::Vehicle',
-                                       'MasterData::Block',
-                                       'MasterData::WorkOrderRate',
-                                       'MasterData::Unit',
-                                       'MasterData::Category'
-                                     ])
+clerk_permissions = []
+# Pay calculations - can create, view and update
+clerk_permissions += Permission.where(subject: 'WorkOrder::PayCalculation', action: %w[index show create update])
+# Payslips - read-only access
+clerk_permissions += Permission.where(subject: 'Payslip', action: %w[index show])
+# Inventories, Workers, and Master Data - can create, view and update
+clerk_permissions += Permission.where(subject: 'Inventory', action: %w[index show create update])
+clerk_permissions += Permission.where(subject: 'Worker', action: %w[index show create update])
+clerk_permissions += Permission.where(subject: 'MasterData::Vehicle', action: %w[index show create update])
+clerk_permissions += Permission.where(subject: 'MasterData::Block', action: %w[index show create update])
+clerk_permissions += Permission.where(subject: 'MasterData::WorkOrderRate', action: %w[index show create update])
+clerk_permissions += Permission.where(subject: 'MasterData::Unit', action: %w[index show create update])
+clerk_permissions += Permission.where(subject: 'MasterData::Category', action: %w[index show create update])
 clerk_role.permissions = clerk_permissions
 
 puts "✓ Created #{Role.count} roles"
