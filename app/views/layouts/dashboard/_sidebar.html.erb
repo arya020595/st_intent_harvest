@@ -3,7 +3,7 @@
     <span class="fs-4">ST Dashboard</span>
   </a>
   <hr>
-  <ul class="nav nav-pills flex-column mb-auto">
+  <ul id="sidebarAccordion" class="nav nav-pills flex-column mb-auto">
     <% if can_view_menu?('Dashboard') %>
       <li class="nav-item">
         <%= link_to root_path, class: "nav-link #{current_page?(root_path) ? 'active' : 'link-dark'}" do %>
@@ -17,12 +17,12 @@
     <% if has_work_order_access %>
       <li>
         <% work_order_active = active_controller?('work_order') %>
-        <a class="nav-link <%= work_order_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" href="#workOrdersCollapse" role="button" aria-expanded="<%= work_order_active %>" aria-controls="workOrdersCollapse">
+        <a class="nav-link <%= work_order_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#workOrdersCollapse" href="#" role="button" aria-expanded="<%= work_order_active %>" aria-controls="workOrdersCollapse">
           <i class="bi bi-clipboard-check me-2"></i>
           Work Orders
-          <i class="bi bi-chevron-down float-end"></i>
+          <i class="bi bi-chevron-right float-end collapse-chevron"></i>
         </a>
-        <div class="collapse <%= 'show' if work_order_active %>" id="workOrdersCollapse">
+        <div class="collapse <%= 'show' if work_order_active %>" id="workOrdersCollapse" data-bs-parent="#sidebarAccordion">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
             <% if can_view_menu?('WorkOrder::Detail') %>
               <li><%= link_to "Work Order Details", work_order_details_path, class: "nav-link #{active_controller?('work_order/details') ? 'active' : 'link-dark'}" %></li>
@@ -66,12 +66,12 @@
     <% if has_master_data_access %>
       <li>
         <% master_data_active = active_controller?('master_data') %>
-        <a class="nav-link <%= master_data_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" href="#masterDataCollapse" role="button" aria-expanded="<%= master_data_active %>" aria-controls="masterDataCollapse">
+        <a class="nav-link <%= master_data_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#masterDataCollapse" href="#" role="button" aria-expanded="<%= master_data_active %>" aria-controls="masterDataCollapse">
           <i class="bi bi-database me-2"></i>
           Master Data
-          <i class="bi bi-chevron-down float-end"></i>
+          <i class="bi bi-chevron-right float-end collapse-chevron"></i>
         </a>
-        <div class="collapse <%= 'show' if master_data_active %>" id="masterDataCollapse">
+        <div class="collapse <%= 'show' if master_data_active %>" id="masterDataCollapse" data-bs-parent="#sidebarAccordion">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
             <% if can_view_menu?('MasterData::Block') %>
               <li><%= link_to "Blocks", master_data_blocks_path, class: "nav-link #{active_controller?('master_data/blocks') ? 'active' : 'link-dark'}" %></li>
@@ -97,12 +97,12 @@
     <% if has_user_mgmt_access %>
       <li>
         <% user_management_active = active_controller?('user_management') %>
-        <a class="nav-link <%= user_management_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" href="#userManagementCollapse" role="button" aria-expanded="<%= user_management_active %>" aria-controls="userManagementCollapse">
+        <a class="nav-link <%= user_management_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#userManagementCollapse" href="#" role="button" aria-expanded="<%= user_management_active %>" aria-controls="userManagementCollapse">
           <i class="bi bi-shield-lock me-2"></i>
           User Management
-          <i class="bi bi-chevron-down float-end"></i>
+          <i class="bi bi-chevron-right float-end collapse-chevron"></i>
         </a>
-        <div class="collapse <%= 'show' if user_management_active %>" id="userManagementCollapse">
+        <div class="collapse <%= 'show' if user_management_active %>" id="userManagementCollapse" data-bs-parent="#sidebarAccordion">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
             <% if can_view_menu?('UserManagement::Role') %>
               <li><%= link_to "Roles", user_management_roles_path, class: "nav-link #{active_controller?('user_management/roles') ? 'active' : 'link-dark'}" %></li>
