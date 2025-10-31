@@ -180,19 +180,18 @@ end
 manager_permissions = Permission.where(subject: ['Dashboard', 'WorkOrder::Approval'])
 manager_role.permissions = manager_permissions
 
-# Field Conductor - can create and manage work order details
+# Field Conductor - can create and manage work order details (NO dashboard access)
 field_conductor_role = Role.find_or_create_by!(name: 'Field Conductor') do |role|
   role.description = 'Can create and manage work order details'
 end
-field_conductor_permissions = Permission.where(subject: ['Dashboard', 'WorkOrder::Detail'])
+field_conductor_permissions = Permission.where(subject: ['WorkOrder::Detail'])
 field_conductor_role.permissions = field_conductor_permissions
 
-# Clerk - administrative support with managed access to pay calculations, payslips, inventories, workers, and master data
+# Clerk - administrative support with managed access to pay calculations, payslips, inventories, workers, and master data (NO dashboard access)
 clerk_role = Role.find_or_create_by!(name: 'Clerk') do |role|
   role.description = 'Can manage pay calculations, payslips, inventories, workers, and master data'
 end
 clerk_permissions = Permission.where(subject: [
-                                       'Dashboard',
                                        'WorkOrder::PayCalculation',
                                        'Payslip',
                                        'Inventory',
