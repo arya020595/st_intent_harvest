@@ -1,4 +1,9 @@
 <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px; height: 100vh;">
+  <style>
+    /* Rotate chevron when section expanded */
+    .nav-link .collapse-chevron { transition: transform .2s ease; }
+    .nav-link[aria-expanded="true"] .collapse-chevron { transform: rotate(90deg); }
+  </style>
   <a href="<%= root_path %>" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
     <span class="fs-4">ST Dashboard</span>
   </a>
@@ -17,10 +22,10 @@
     <% if has_work_order_access %>
       <li>
         <% work_order_active = active_controller?('work_order') %>
-        <a class="nav-link <%= work_order_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" href="#workOrdersCollapse" role="button" aria-expanded="<%= work_order_active %>" aria-controls="workOrdersCollapse">
+        <a class="nav-link <%= work_order_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#workOrdersCollapse" href="javascript:void(0)" role="button" aria-expanded="<%= work_order_active %>" aria-controls="workOrdersCollapse">
           <i class="bi bi-clipboard-check me-2"></i>
           Work Orders
-          <i class="bi bi-chevron-down float-end"></i>
+          <i class="bi bi-chevron-right float-end collapse-chevron"></i>
         </a>
         <div class="collapse <%= 'show' if work_order_active %>" id="workOrdersCollapse" data-bs-parent="#sidebarAccordion">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
@@ -66,10 +71,10 @@
     <% if has_master_data_access %>
       <li>
         <% master_data_active = active_controller?('master_data') %>
-        <a class="nav-link <%= master_data_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" href="#masterDataCollapse" role="button" aria-expanded="<%= master_data_active %>" aria-controls="masterDataCollapse">
+        <a class="nav-link <%= master_data_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#masterDataCollapse" href="javascript:void(0)" role="button" aria-expanded="<%= master_data_active %>" aria-controls="masterDataCollapse">
           <i class="bi bi-database me-2"></i>
           Master Data
-          <i class="bi bi-chevron-down float-end"></i>
+          <i class="bi bi-chevron-right float-end collapse-chevron"></i>
         </a>
         <div class="collapse <%= 'show' if master_data_active %>" id="masterDataCollapse" data-bs-parent="#sidebarAccordion">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
@@ -97,10 +102,10 @@
     <% if has_user_mgmt_access %>
       <li>
         <% user_management_active = active_controller?('user_management') %>
-        <a class="nav-link <%= user_management_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" href="#userManagementCollapse" role="button" aria-expanded="<%= user_management_active %>" aria-controls="userManagementCollapse">
+        <a class="nav-link <%= user_management_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#userManagementCollapse" href="javascript:void(0)" role="button" aria-expanded="<%= user_management_active %>" aria-controls="userManagementCollapse">
           <i class="bi bi-shield-lock me-2"></i>
           User Management
-          <i class="bi bi-chevron-down float-end"></i>
+          <i class="bi bi-chevron-right float-end collapse-chevron"></i>
         </a>
         <div class="collapse <%= 'show' if user_management_active %>" id="userManagementCollapse" data-bs-parent="#sidebarAccordion">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
