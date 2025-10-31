@@ -2,13 +2,13 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
-puts "🌱 Starting seed process..."
+puts '🌱 Starting seed process...'
 
 # Disable auditing during seeds to avoid YAML serialization issues
 Audited.auditing_enabled = false
 
 # Clean up existing data (in reverse order of dependencies)
-puts "Cleaning up existing data..."
+puts 'Cleaning up existing data...'
 PayCalculationDetail.destroy_all
 PayCalculation.destroy_all
 WorkOrderItem.destroy_all
@@ -27,7 +27,7 @@ Unit.destroy_all
 Category.destroy_all
 
 # Create Permissions
-puts "Creating permissions..."
+puts 'Creating permissions...'
 
 # UserManagement namespaced permissions
 user_management_user_permissions = [
@@ -46,13 +46,15 @@ user_management_role_permissions = [
   { subject: 'UserManagement::Role', action: 'destroy', description: 'Delete roles' }
 ]
 
-# MasterData namespaced permissions
+# Worker permissions (non-namespaced)
 worker_permissions = [
-  { subject: 'MasterData::Worker', action: 'index', description: 'View workers list' },
-  { subject: 'MasterData::Worker', action: 'show', description: 'View worker details' },
-  { subject: 'MasterData::Worker', action: 'create', description: 'Add new workers' },
-  { subject: 'MasterData::Worker', action: 'update', description: 'Edit workers' },
-  { subject: 'MasterData::Worker', action: 'destroy', description: 'Remove workers' }
+  { subject: 'Worker', action: 'index', description: 'View workers list' },
+  { subject: 'Worker', action: 'show', description: 'View worker details' },
+  { subject: 'Worker', action: 'new', description: 'View new worker form' },
+  { subject: 'Worker', action: 'create', description: 'Add new workers' },
+  { subject: 'Worker', action: 'edit', description: 'View edit worker form' },
+  { subject: 'Worker', action: 'update', description: 'Edit workers' },
+  { subject: 'Worker', action: 'destroy', description: 'Remove workers' }
 ]
 
 vehicle_permissions = [
@@ -156,7 +158,7 @@ end
 puts "✓ Created #{Permission.count} permissions"
 
 # Create Roles
-puts "Creating roles..."
+puts 'Creating roles...'
 
 # Superadmin - bypasses all permission checks
 superadmin_role = Role.find_or_create_by!(name: 'Superadmin') do |role|
@@ -169,15 +171,23 @@ manager_role = Role.find_or_create_by!(name: 'Manager') do |role|
   role.description = 'Can approve work orders and manage pay calculations'
 end
 manager_permissions = Permission.where(subject: ['WorkOrder::Approval', 'WorkOrder::PayCalculation', 'Payslip'])
-                                .or(Permission.where(subject: ['MasterData::Worker', 'MasterData::Vehicle', 'Inventory', 'UserManagement::User'], action: ['index', 'show']))
+                                .or(Permission.where(
+                                      subject: ['Worker', 'MasterData::Vehicle', 'Inventory',
+                                                'UserManagement::User'], action: %w[index show]
+                                    ))
 manager_role.permissions = manager_permissions
 
 # Field Conductor - can create and manage work orders
 field_conductor_role = Role.find_or_create_by!(name: 'Field Conductor') do |role|
   role.description = 'Can create and manage work orders'
 end
-field_conductor_permissions = Permission.where(subject: 'WorkOrder::Detail', action: ['index', 'show', 'create', 'update'])
-                                        .or(Permission.where(subject: ['MasterData::Worker', 'MasterData::Vehicle', 'Inventory'], action: ['index', 'show']))
+field_conductor_permissions = Permission.where(subject: 'WorkOrder::Detail',
+                                               action: %w[index show
+                                                          create update])
+                                        .or(Permission.where(subject: ['Worker', 'MasterData::Vehicle', 'Inventory'],
+                                                             action: %w[
+                                                               index show
+                                                             ]))
 field_conductor_role.permissions = field_conductor_permissions
 
 # Clerk - administrative support with read/write access to master data
@@ -185,17 +195,17 @@ clerk_role = Role.find_or_create_by!(name: 'Clerk') do |role|
   role.description = 'Can manage master data (users, workers, vehicles, inventories)'
 end
 clerk_permissions = Permission.where(subject: [
-  'UserManagement::User', 'UserManagement::Role', 
-  'MasterData::Worker', 'MasterData::Vehicle', 'MasterData::Block', 
-  'MasterData::WorkOrderRate', 'MasterData::Unit', 'MasterData::Category',
-  'Inventory'
-])
+                                       'UserManagement::User', 'UserManagement::Role',
+                                       'Worker', 'MasterData::Vehicle', 'MasterData::Block',
+                                       'MasterData::WorkOrderRate', 'MasterData::Unit', 'MasterData::Category',
+                                       'Inventory'
+                                     ])
 clerk_role.permissions = clerk_permissions
 
 puts "✓ Created #{Role.count} roles"
 
 # Create Users
-puts "Creating users..."
+puts 'Creating users...'
 
 # Superadmin user
 User.find_or_create_by!(email: 'superadmin@example.com') do |user|
@@ -232,7 +242,7 @@ end
 puts "✓ Created #{User.count} users"
 
 # Create Units
-puts "Creating units..."
+puts 'Creating units...'
 units_data = [
   { name: 'Kg', unit_type: 'Weight' },
   { name: 'Liter', unit_type: 'Volume' },
@@ -240,7 +250,7 @@ units_data = [
   { name: 'Hour', unit_type: 'Time' },
   { name: 'Day', unit_type: 'Time' },
   { name: 'Hectare', unit_type: 'Area' },
-  { name: 'Ton', unit_type: 'Weight' },
+  { name: 'Ton', unit_type: 'Weight' }
 ]
 
 units_data.each do |unit_data|
@@ -249,23 +259,25 @@ end
 puts "✓ Created #{Unit.count} units"
 
 # Create Categories
-puts "Creating categories..."
+puts 'Creating categories...'
 material_category = Category.find_or_create_by!(name: 'Materials', category_type: 'Inventory')
-fertilizer_category = Category.find_or_create_by!(name: 'Fertilizers', category_type: 'Inventory', parent: material_category)
-pesticide_category = Category.find_or_create_by!(name: 'Pesticides', category_type: 'Inventory', parent: material_category)
+fertilizer_category = Category.find_or_create_by!(name: 'Fertilizers', category_type: 'Inventory',
+                                                  parent: material_category)
+pesticide_category = Category.find_or_create_by!(name: 'Pesticides', category_type: 'Inventory',
+                                                 parent: material_category)
 tools_category = Category.find_or_create_by!(name: 'Tools', category_type: 'Inventory')
 equipment_category = Category.find_or_create_by!(name: 'Equipment', category_type: 'Inventory')
 
 puts "✓ Created #{Category.count} categories"
 
 # Create Blocks
-puts "Creating blocks..."
+puts 'Creating blocks...'
 blocks_data = [
   { block_number: 'BLK-001', hectarage: 10.5 },
   { block_number: 'BLK-002', hectarage: 15.0 },
   { block_number: 'BLK-003', hectarage: 8.25 },
   { block_number: 'BLK-004', hectarage: 12.75 },
-  { block_number: 'BLK-005', hectarage: 20.0 },
+  { block_number: 'BLK-005', hectarage: 20.0 }
 ]
 
 blocks_data.each do |block_data|
@@ -274,11 +286,11 @@ end
 puts "✓ Created #{Block.count} blocks"
 
 # Create Vehicles
-puts "Creating vehicles..."
+puts 'Creating vehicles...'
 vehicles_data = [
   { vehicle_number: 'VH-001', vehicle_model: 'Toyota Hilux' },
   { vehicle_number: 'VH-002', vehicle_model: 'Isuzu D-Max' },
-  { vehicle_number: 'VH-003', vehicle_model: 'Mitsubishi Triton' },
+  { vehicle_number: 'VH-003', vehicle_model: 'Mitsubishi Triton' }
 ]
 
 vehicles_data.each do |vehicle_data|
@@ -287,14 +299,20 @@ end
 puts "✓ Created #{Vehicle.count} vehicles"
 
 # Create Workers
-puts "Creating workers..."
+puts 'Creating workers...'
 workers_data = [
-  { name: 'John Doe', worker_type: 'Harvester', gender: 'Male', is_active: true, hired_date: Date.new(2023, 1, 15), nationality: 'Indonesian', identity_number: 'ID-001' },
-  { name: 'Jane Smith', worker_type: 'Sprayer', gender: 'Female', is_active: true, hired_date: Date.new(2023, 2, 20), nationality: 'Indonesian', identity_number: 'ID-002' },
-  { name: 'Ahmad Rahman', worker_type: 'Harvester', gender: 'Male', is_active: true, hired_date: Date.new(2023, 3, 10), nationality: 'Indonesian', identity_number: 'ID-003' },
-  { name: 'Siti Nurhaliza', worker_type: 'Fertilizer', gender: 'Female', is_active: true, hired_date: Date.new(2023, 4, 5), nationality: 'Indonesian', identity_number: 'ID-004' },
-  { name: 'Budi Santoso', worker_type: 'Harvester', gender: 'Male', is_active: true, hired_date: Date.new(2023, 5, 12), nationality: 'Indonesian', identity_number: 'ID-005' },
-  { name: 'Maria Garcia', worker_type: 'Sprayer', gender: 'Female', is_active: false, hired_date: Date.new(2022, 8, 20), nationality: 'Filipino', identity_number: 'ID-006' },
+  { name: 'John Doe', worker_type: 'Harvester', gender: 'Male', is_active: true, hired_date: Date.new(2023, 1, 15),
+    nationality: 'Indonesian', identity_number: 'ID-001' },
+  { name: 'Jane Smith', worker_type: 'Sprayer', gender: 'Female', is_active: true, hired_date: Date.new(2023, 2, 20),
+    nationality: 'Indonesian', identity_number: 'ID-002' },
+  { name: 'Ahmad Rahman', worker_type: 'Harvester', gender: 'Male', is_active: true, hired_date: Date.new(2023, 3, 10),
+    nationality: 'Indonesian', identity_number: 'ID-003' },
+  { name: 'Siti Nurhaliza', worker_type: 'Fertilizer', gender: 'Female', is_active: true,
+    hired_date: Date.new(2023, 4, 5), nationality: 'Indonesian', identity_number: 'ID-004' },
+  { name: 'Budi Santoso', worker_type: 'Harvester', gender: 'Male', is_active: true, hired_date: Date.new(2023, 5, 12),
+    nationality: 'Indonesian', identity_number: 'ID-005' },
+  { name: 'Maria Garcia', worker_type: 'Sprayer', gender: 'Female', is_active: false,
+    hired_date: Date.new(2022, 8, 20), nationality: 'Filipino', identity_number: 'ID-006' }
 ]
 
 workers_data.each do |worker_data|
@@ -305,18 +323,24 @@ end
 puts "✓ Created #{Worker.count} workers"
 
 # Create Inventories
-puts "Creating inventories..."
+puts 'Creating inventories...'
 kg_unit = Unit.find_by(name: 'Kg')
 liter_unit = Unit.find_by(name: 'Liter')
 piece_unit = Unit.find_by(name: 'Piece')
 
 inventories_data = [
-  { name: 'NPK Fertilizer', stock_quantity: 450, category: fertilizer_category, unit: kg_unit, price: 65.00, supplier: 'Agro Supplier Co.', input_date: Date.today - 30 },
-  { name: 'Organic Fertilizer', stock_quantity: 280, category: fertilizer_category, unit: kg_unit, price: 55.00, supplier: 'Green Farm Supplies', input_date: Date.today - 25 },
-  { name: 'Herbicide', stock_quantity: 85, category: pesticide_category, unit: liter_unit, price: 38.50, supplier: 'ChemAgro Ltd.', input_date: Date.today - 20 },
-  { name: 'Insecticide', stock_quantity: 130, category: pesticide_category, unit: liter_unit, price: 42.00, supplier: 'ChemAgro Ltd.', input_date: Date.today - 15 },
-  { name: 'Harvesting Knife', stock_quantity: 48, category: tools_category, unit: piece_unit, price: 28.50, supplier: 'Tool Master', input_date: Date.today - 60 },
-  { name: 'Sprayer Machine', stock_quantity: 8, category: equipment_category, unit: piece_unit, price: 1250.00, supplier: 'Agro Equipment Inc.', input_date: Date.today - 90 },
+  { name: 'NPK Fertilizer', stock_quantity: 450, category: fertilizer_category, unit: kg_unit, price: 65.00,
+    supplier: 'Agro Supplier Co.', input_date: Date.today - 30 },
+  { name: 'Organic Fertilizer', stock_quantity: 280, category: fertilizer_category, unit: kg_unit, price: 55.00,
+    supplier: 'Green Farm Supplies', input_date: Date.today - 25 },
+  { name: 'Herbicide', stock_quantity: 85, category: pesticide_category, unit: liter_unit, price: 38.50,
+    supplier: 'ChemAgro Ltd.', input_date: Date.today - 20 },
+  { name: 'Insecticide', stock_quantity: 130, category: pesticide_category, unit: liter_unit, price: 42.00,
+    supplier: 'ChemAgro Ltd.', input_date: Date.today - 15 },
+  { name: 'Harvesting Knife', stock_quantity: 48, category: tools_category, unit: piece_unit, price: 28.50,
+    supplier: 'Tool Master', input_date: Date.today - 60 },
+  { name: 'Sprayer Machine', stock_quantity: 8, category: equipment_category, unit: piece_unit, price: 1250.00,
+    supplier: 'Agro Equipment Inc.', input_date: Date.today - 90 }
 ]
 
 inventories_data.each do |inventory_data|
@@ -327,8 +351,8 @@ end
 puts "✓ Created #{Inventory.count} inventory items"
 
 # Create Work Order Rates
-puts "Creating work order rates..."
-hour_unit = Unit.find_by(name: 'Hour')
+puts 'Creating work order rates...'
+Unit.find_by(name: 'Hour')
 day_unit = Unit.find_by(name: 'Day')
 hectare_unit = Unit.find_by(name: 'Hectare')
 
@@ -337,7 +361,7 @@ rates_data = [
   { work_order_name: 'Spraying', rate: 75.00, unit_id: day_unit.id.to_s },
   { work_order_name: 'Fertilizing', rate: 65.00, unit_id: day_unit.id.to_s },
   { work_order_name: 'Weeding', rate: 55.00, unit_id: day_unit.id.to_s },
-  { work_order_name: 'Land Preparation', rate: 250.00, unit_id: hectare_unit.id.to_s },
+  { work_order_name: 'Land Preparation', rate: 250.00, unit_id: hectare_unit.id.to_s }
 ]
 
 rates_data.each do |rate_data|
@@ -348,7 +372,7 @@ end
 puts "✓ Created #{WorkOrderRate.count} work order rates"
 
 # Create Work Orders
-puts "Creating work orders..."
+puts 'Creating work orders...'
 block1 = Block.find_by(block_number: 'BLK-001')
 block2 = Block.find_by(block_number: 'BLK-002')
 harvesting_rate = WorkOrderRate.find_by(work_order_name: 'Harvesting')
@@ -378,7 +402,7 @@ end
 puts "✓ Created #{WorkOrder.count} work orders"
 
 # Create Work Order Workers
-puts "Creating work order workers relationships..."
+puts 'Creating work order workers relationships...'
 worker1 = Worker.find_by(identity_number: 'ID-001')
 worker2 = Worker.find_by(identity_number: 'ID-002')
 worker3 = Worker.find_by(identity_number: 'ID-003')
@@ -407,7 +431,7 @@ end
 puts "✓ Created #{WorkOrderWorker.count} work order workers relationships"
 
 # Create Work Order Items
-puts "Creating work order items..."
+puts 'Creating work order items...'
 fertilizer = Inventory.find_by(name: 'NPK Fertilizer')
 herbicide = Inventory.find_by(name: 'Herbicide')
 
@@ -430,13 +454,13 @@ end
 puts "✓ Created #{WorkOrderItem.count} work order items"
 
 # Create Pay Calculations
-puts "Creating pay calculations..."
+puts 'Creating pay calculations...'
 pay_calc = PayCalculation.find_or_create_by!(month_year: '2024-10') do |pc|
   pc.overall_total = 0
 end
 
 # Create Pay Calculation Details
-puts "Creating pay calculation details..."
+puts 'Creating pay calculation details...'
 [worker1, worker2, worker3].each do |worker|
   PayCalculationDetail.find_or_create_by!(pay_calculation: pay_calc, worker: worker) do |detail|
     gross = rand(3000..8000).to_f
@@ -470,10 +494,10 @@ puts "  Work Order Items: #{WorkOrderItem.count}"
 puts "  Pay Calculations: #{PayCalculation.count}"
 puts "  Pay Calculation Details: #{PayCalculationDetail.count}"
 puts "\n👤 Test Users:"
-puts "  Superadmin: superadmin@example.com / password"
-puts "  Manager: manager@example.com / password"
-puts "  Field Conductor: conductor@example.com / password"
-puts "  Clerk: clerk@example.com / password"
+puts '  Superadmin: superadmin@example.com / password'
+puts '  Manager: manager@example.com / password'
+puts '  Field Conductor: conductor@example.com / password'
+puts '  Clerk: clerk@example.com / password'
 
 # Re-enable auditing after seeds
 Audited.auditing_enabled = true

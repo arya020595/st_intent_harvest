@@ -45,8 +45,8 @@ Rails.application.routes.draw do
   # Inventory
   resources :inventories
 
-  # Work Profile
-  resources :work_profiles
+  # Workers
+  resources :workers
 
   # Master Data Namespace
   namespace :master_data do
