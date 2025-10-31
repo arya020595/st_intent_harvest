@@ -102,7 +102,7 @@
     <% if has_user_mgmt_access %>
       <li>
         <% user_management_active = active_controller?('user_management') %>
-        <a class="nav-link <%= user_management_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#userManagementCollapse" href="javascript:void(0)" role="button" aria-expanded="<%= user_management_active %>" aria-controls="userManagementCollapse">
+        <a class="nav-link <%= user_management_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#userManagementCollapse" href="#" role="button" aria-expanded="<%= user_management_active %>" aria-controls="userManagementCollapse">
           <i class="bi bi-shield-lock me-2"></i>
           User Management
           <i class="bi bi-chevron-right float-end collapse-chevron"></i>
