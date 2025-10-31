@@ -11,6 +11,12 @@
           Dashboard
         <% end %>
       </li>
+      <li>
+        <%= link_to bi_dashboard_path, class: "nav-link #{current_page?(bi_dashboard_path) ? 'active' : 'link-dark'}" do %>
+          <i class="bi bi-bar-chart-line me-2"></i>
+          BI Dashboard
+        <% end %>
+      </li>
     <% end %>
     <% # Check if user has access to any work order submenu %>
     <% has_work_order_access = can_view_menu?('WorkOrder::Detail') || can_view_menu?('WorkOrder::Approval') || can_view_menu?('WorkOrder::PayCalculation') %>

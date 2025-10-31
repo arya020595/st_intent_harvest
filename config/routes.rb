@@ -18,6 +18,8 @@ Rails.application.routes.draw do
 
   # Dashboard
   get 'dashboard', to: 'dashboard#index'
+  # BI Dashboard
+  get 'bi_dashboard', to: 'bi_dashboard#index', as: :bi_dashboard
 
   # Work Order Namespace
   namespace :work_order do
