@@ -187,7 +187,7 @@ end
 field_conductor_permissions = Permission.where(subject: ['Dashboard', 'WorkOrder::Detail'])
 field_conductor_role.permissions = field_conductor_permissions
 
-# Clerk - administrative support with full access to pay calculations, payslips, inventories, workers, and master data
+# Clerk - administrative support with managed access to pay calculations, payslips, inventories, workers, and master data
 clerk_role = Role.find_or_create_by!(name: 'Clerk') do |role|
   role.description = 'Can manage pay calculations, payslips, inventories, workers, and master data'
 end
