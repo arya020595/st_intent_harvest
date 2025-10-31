@@ -1,0 +1,43 @@
+<%= form_with(model: worker, local: true) do |form| %>
+  <% if worker.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(worker.errors.count, "error") %> prohibited this worker from being saved:</h4>
+      <ul>
+        <% worker.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="mb-3">
+    <%= form.label :name, class: "form-label" %>
+    <%= form.text_field :name, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :worker_type, class: "form-label" %>
+    <%= form.text_field :worker_type, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :gender, class: "form-label" %>
+    <%= form.select :gender, [["Male", "Male"], ["Female", "Female"]], { include_blank: "Select Gender" }, class: "form-select" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :identity_number, class: "form-label" %>
+    <%= form.text_field :identity_number, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :nationality, class: "form-label" %>
+    <%= form.text_field :nationality, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :hired_date, class: "form-label" %>
+    <%= form.date_field :hired_date, class: "form-control" %>
+  </div>
+  <div class="mb-3 form-check">
+    <%= form.check_box :is_active, class: "form-check-input" %>
+    <%= form.label :is_active, "Active", class: "form-check-label" %>
+  </div>
+  <div class="mb-3">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

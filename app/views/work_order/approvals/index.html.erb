@@ -1,0 +1,41 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Work Order Approvals</h1>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Block</th>
+              <th>Work Order Rate</th>
+              <th>Start Date</th>
+              <th>Status</th>
+              <th>Field Conductor</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @work_orders.each do |work_order| %>
+              <tr>
+                <td><%= work_order.block.block_number %></td>
+                <td><%= work_order.work_order_rate.work_order_name %></td>
+                <td><%= work_order.start_date %></td>
+                <td><span class="badge bg-<%= work_order.work_order_status %>"><%= work_order.work_order_status %></span></td>
+                <td><%= work_order.field_conductor_name %></td>
+                <td>
+                  <%= link_to "Show", work_order_approval_path(work_order), class: "btn btn-sm btn-info" %>
+                  <% if work_order.may_approve? %>
+                    <%= link_to "Approve", approve_work_order_approval_path(work_order), method: :patch, class: "btn btn-sm btn-success" %>
+                  <% end %>
+                  <% if work_order.may_request_amendment? %>
+                    <%= link_to "Request Amendment", reject_work_order_approval_path(work_order), method: :patch, class: "btn btn-sm btn-warning" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Vehicles</h1>
+      <div class="mb-3">
+        <%= link_to "New Vehicle", new_master_data_vehicle_path, class: "btn btn-primary" %>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Vehicle Number</th>
+              <th>Vehicle Model</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @vehicles.each do |vehicle| %>
+              <tr>
+                <td><%= vehicle.vehicle_number %></td>
+                <td><%= vehicle.vehicle_model %></td>
+                <td>
+                  <%= link_to "Show", master_data_vehicle_path(vehicle), class: "btn btn-sm btn-info" %>
+                  <%= link_to "Edit", edit_master_data_vehicle_path(vehicle), class: "btn btn-sm btn-warning" %>
+                  <%= link_to "Delete", master_data_vehicle_path(vehicle), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

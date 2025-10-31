@@ -1,0 +1,31 @@
+<%= form_with(model: [:master_data, work_order_rate], local: true) do |form| %>
+  <% if work_order_rate.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(work_order_rate.errors.count, "error") %> prohibited this work order rate from being saved:</h4>
+      <ul>
+        <% work_order_rate.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="mb-3">
+    <%= form.label :work_order_name, class: "form-label" %>
+    <%= form.text_field :work_order_name, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :rate, class: "form-label" %>
+    <%= form.number_field :rate, step: 0.01, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :unit_id, class: "form-label" %>
+    <%= form.collection_select :unit_id, Unit.all, :id, :name, { include_blank: "Select Unit" }, class: "form-select" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :currency, class: "form-label" %>
+    <%= form.text_field :currency, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

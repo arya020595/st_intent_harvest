@@ -1,61 +1,58 @@
 # frozen_string_literal: true
 
-module WorkOrder
-  class PayCalculationsController < ApplicationController
-    before_action :set_work_order, only: %i[show edit update destroy]
+class WorkOrder::PayCalculationsController < ApplicationController
+  before_action :set_pay_calculation, only: %i[show edit update destroy]
 
-    def index
-      @work_orders = policy_scope(
-        WorkOrder,
-        policy_scope_class: WorkOrder::PayCalculationPolicy::Scope
-      )
-      authorize WorkOrder, policy_class: WorkOrder::PayCalculationPolicy
-    end
+  def index
+    @pay_calculations = policy_scope(
+      PayCalculation,
+      policy_scope_class: WorkOrder::PayCalculationPolicy::Scope
+    )
+    authorize PayCalculation, policy_class: WorkOrder::PayCalculationPolicy
+  end
 
-    def show
-      authorize @work_order, policy_class: WorkOrder::PayCalculationPolicy
-    end
+  def show
+    authorize @pay_calculation, policy_class: WorkOrder::PayCalculationPolicy
+  end
 
-    def new
-      @work_order = WorkOrder.new
-      authorize @work_order, policy_class: WorkOrder::PayCalculationPolicy
-    end
+  def new
+    @pay_calculation = PayCalculation.new
+    authorize @pay_calculation, policy_class: WorkOrder::PayCalculationPolicy
+  end
 
-    def create
-      @work_order = WorkOrder.new(work_order_params)
-      authorize @work_order, policy_class: WorkOrder::PayCalculationPolicy
+  def create
+    @pay_calculation = PayCalculation.new(pay_calculation_params)
+    authorize @pay_calculation, policy_class: WorkOrder::PayCalculationPolicy
 
-      # Logic to be implemented later
-    end
+    # Logic to be implemented later
+  end
 
-    def edit
-      authorize @work_order, policy_class: WorkOrder::PayCalculationPolicy
-    end
+  def edit
+    authorize @pay_calculation, policy_class: WorkOrder::PayCalculationPolicy
+  end
 
-    def update
-      authorize @work_order, policy_class: WorkOrder::PayCalculationPolicy
+  def update
+    authorize @pay_calculation, policy_class: WorkOrder::PayCalculationPolicy
 
-      # Logic to be implemented later
-    end
+    # Logic to be implemented later
+  end
 
-    def destroy
-      authorize @work_order, policy_class: WorkOrder::PayCalculationPolicy
+  def destroy
+    authorize @pay_calculation, policy_class: WorkOrder::PayCalculationPolicy
 
-      # Logic to be implemented later
-    end
+    # Logic to be implemented later
+  end
 
-    private
+  private
 
-    def set_work_order
-      @work_order = WorkOrder.find(params[:id])
-    end
+  def set_pay_calculation
+    @pay_calculation = PayCalculation.find(params[:id])
+  end
 
-    def work_order_params
-      params.require(:work_order).permit(
-        :calculation_date,
-        :total_amount,
-        :status
-      )
-    end
+  def pay_calculation_params
+    params.require(:pay_calculation).permit(
+      :month_year,
+      :overall_total
+    )
   end
 end

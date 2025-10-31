@@ -1,0 +1,24 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Category Details</h1>
+      <div class="card">
+        <div class="card-body">
+          <dl class="row">
+            <dt class="col-sm-3">Name:</dt>
+            <dd class="col-sm-9"><%= @category.name %></dd>
+            <dt class="col-sm-3">Category Type:</dt>
+            <dd class="col-sm-9"><%= @category.category_type %></dd>
+            <dt class="col-sm-3">Parent Category:</dt>
+            <dd class="col-sm-9"><%= @category.parent&.name %></dd>
+          </dl>
+          <div class="mt-3">
+            <%= link_to "Edit", edit_master_data_category_path(@category), class: "btn btn-warning" %>
+            <%= link_to "Back", master_data_categories_path, class: "btn btn-secondary" %>
+            <%= link_to "Delete", master_data_category_path(@category), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-danger" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

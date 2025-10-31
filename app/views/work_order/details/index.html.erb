@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Work Orders</h1>
+      <div class="mb-3">
+        <%= link_to "New Work Order", new_work_order_detail_path, class: "btn btn-primary" %>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Block</th>
+              <th>Work Order Rate</th>
+              <th>Start Date</th>
+              <th>Status</th>
+              <th>Field Conductor</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @work_orders.each do |work_order| %>
+              <tr>
+                <td><%= work_order.block.block_number %></td>
+                <td><%= work_order.work_order_rate.work_order_name %></td>
+                <td><%= work_order.start_date %></td>
+                <td><span class="badge bg-<%= work_order.work_order_status %>"><%= work_order.work_order_status %></span></td>
+                <td><%= work_order.field_conductor_name %></td>
+                <td>
+                  <%= link_to "Show", work_order_detail_path(work_order), class: "btn btn-sm btn-info" %>
+                  <%= link_to "Edit", edit_work_order_detail_path(work_order), class: "btn btn-sm btn-warning" %>
+                  <%= link_to "Delete", work_order_detail_path(work_order), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

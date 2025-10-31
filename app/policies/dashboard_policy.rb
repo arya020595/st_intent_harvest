@@ -1,10 +1,14 @@
 # frozen_string_literal: true
 
 class DashboardPolicy < ApplicationPolicy
-  # Example: authorize :dashboard, :show?
+  # Example: authorize :dashboard, :index?
   # Seeds expected (subject: "Dashboard"):
+  #   Permission.create!(action: "index", subject: "Dashboard")
   #   Permission.create!(action: "show", subject: "Dashboard")
-  #   Permission.create!(action: "index", subject: "Dashboard") # if you list widgets, etc.
+
+  def index?
+    has_permission?(:index)
+  end
 
   def show?
     has_permission?(:show)

@@ -1,0 +1,23 @@
+<%= form_with(model: [:work_order, pay_calculation], url: pay_calculation.new_record? ? work_order_pay_calculations_path : work_order_pay_calculation_path(pay_calculation), local: true) do |form| %>
+  <% if pay_calculation.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(pay_calculation.errors.count, "error") %> prohibited this pay calculation from being saved:</h4>
+      <ul>
+        <% pay_calculation.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="mb-3">
+    <%= form.label :month_year, class: "form-label" %>
+    <%= form.text_field :month_year, placeholder: "YYYY-MM", class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :overall_total, class: "form-label" %>
+    <%= form.number_field :overall_total, step: 0.01, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

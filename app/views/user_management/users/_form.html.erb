@@ -1,0 +1,41 @@
+<%= form_with(model: [:user_management, user], local: true) do |form| %>
+  <% if user.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h4>
+      <ul>
+        <% user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="mb-3">
+    <%= form.label :name, class: "form-label" %>
+    <%= form.text_field :name, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :email, class: "form-label" %>
+    <%= form.email_field :email, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :role_id, class: "form-label" %>
+    <%= form.collection_select :role_id, Role.all, :id, :name, { include_blank: "Select Role" }, class: "form-select" %>
+  </div>
+  <% if user.new_record? %>
+    <div class="mb-3">
+      <%= form.label :password, class: "form-label" %>
+      <%= form.password_field :password, class: "form-control" %>
+    </div>
+    <div class="mb-3">
+      <%= form.label :password_confirmation, class: "form-label" %>
+      <%= form.password_field :password_confirmation, class: "form-control" %>
+    </div>
+  <% end %>
+  <div class="mb-3 form-check">
+    <%= form.check_box :is_active, class: "form-check-input" %>
+    <%= form.label :is_active, "Active", class: "form-check-label" %>
+  </div>
+  <div class="mb-3">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

@@ -5,80 +5,77 @@
   <hr>
   <ul class="nav nav-pills flex-column mb-auto">
     <li class="nav-item">
-      <%= link_to root_path, class: "nav-link #{'active' if current_page?(root_path)}" do %>
+      <%= link_to root_path, class: "nav-link #{current_page?(root_path) ? 'active' : 'link-dark'}" do %>
         <i class="bi bi-speedometer2 me-2"></i>
         Dashboard
       <% end %>
     </li>
-    
     <li>
-      <a class="nav-link link-dark" data-bs-toggle="collapse" href="#workOrdersCollapse" role="button" aria-expanded="false" aria-controls="workOrdersCollapse">
+      <% work_order_active = active_controller?('work_order') %>
+      <a class="nav-link <%= work_order_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" href="#workOrdersCollapse" role="button" aria-expanded="<%= work_order_active %>" aria-controls="workOrdersCollapse">
         <i class="bi bi-clipboard-check me-2"></i>
         Work Orders
         <i class="bi bi-chevron-down float-end"></i>
       </a>
-      <div class="collapse" id="workOrdersCollapse">
+      <div class="collapse <%= 'show' if work_order_active %>" id="workOrdersCollapse">
         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
-          <li><%= link_to "Work Order Details", "#", class: "nav-link link-dark" %></li>
-          <li><%= link_to "Work Order Approvals", "#", class: "nav-link link-dark" %></li>
-          <li><%= link_to "Pay Calculation", "#", class: "nav-link link-dark" %></li>
+          <li><%= link_to "Work Order Details", work_order_details_path, class: "nav-link #{active_controller?('work_order/details') ? 'active' : 'link-dark'}" %></li>
+          <li><%= link_to "Work Order Approvals", work_order_approvals_path, class: "nav-link #{active_controller?('work_order/approvals') ? 'active' : 'link-dark'}" %></li>
+          <li><%= link_to "Pay Calculation", work_order_pay_calculations_path, class: "nav-link #{active_controller?('work_order/pay_calculations') ? 'active' : 'link-dark'}" %></li>
         </ul>
       </div>
     </li>
-    
     <li>
-      <%= link_to "#", class: "nav-link link-dark" do %>
+      <%= link_to payslips_path, class: "nav-link #{active_controller?('payslips') ? 'active' : 'link-dark'}" do %>
         <i class="bi bi-clipboard-data me-2"></i>
         Payslip
       <% end %>
     </li>
-    
     <li>
-      <%= link_to "#", class: "nav-link link-dark" do %>
+      <%= link_to inventories_path, class: "nav-link #{active_controller?('inventories') ? 'active' : 'link-dark'}" do %>
         <i class="bi bi-box-seam me-2"></i>
         Inventory
       <% end %>
     </li>
-    
     <li>
-      <%= link_to "#", class: "nav-link link-dark" do %>
+      <%= link_to workers_path, class: "nav-link #{active_controller?('workers') ? 'active' : 'link-dark'}" do %>
         <i class="bi bi-people me-2"></i>
-        Workers Profile
+        Workers
       <% end %>
     </li>
-    
     <li>
-      <a class="nav-link link-dark" data-bs-toggle="collapse" href="#masterDataCollapse" role="button" aria-expanded="false" aria-controls="masterDataCollapse">
+      <% master_data_active = active_controller?('master_data') %>
+      <a class="nav-link <%= master_data_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" href="#masterDataCollapse" role="button" aria-expanded="<%= master_data_active %>" aria-controls="masterDataCollapse">
         <i class="bi bi-database me-2"></i>
         Master Data
         <i class="bi bi-chevron-down float-end"></i>
       </a>
-      <div class="collapse" id="masterDataCollapse">
+      <div class="collapse <%= 'show' if master_data_active %>" id="masterDataCollapse">
         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
-          <li><%= link_to "Blocks", "#", class: "nav-link link-dark" %></li>
-          <li><%= link_to "Units", "#", class: "nav-link link-dark" %></li>
-          <li><%= link_to "Categories", "#", class: "nav-link link-dark" %></li>
-          <li><%= link_to "Vehicles", "#", class: "nav-link link-dark" %></li>
+          <li><%= link_to "Blocks", master_data_blocks_path, class: "nav-link #{active_controller?('master_data/blocks') ? 'active' : 'link-dark'}" %></li>
+          <li><%= link_to "Units", master_data_units_path, class: "nav-link #{active_controller?('master_data/units') ? 'active' : 'link-dark'}" %></li>
+          <li><%= link_to "Categories", master_data_categories_path, class: "nav-link #{active_controller?('master_data/categories') ? 'active' : 'link-dark'}" %></li>
+          <li><%= link_to "Vehicles", master_data_vehicles_path, class: "nav-link #{active_controller?('master_data/vehicles') ? 'active' : 'link-dark'}" %></li>
+          <li><%= link_to "Work Order Rates", master_data_work_order_rates_path, class: "nav-link #{active_controller?('master_data/work_order_rates') ? 'active' : 'link-dark'}" %></li>
         </ul>
       </div>
     </li>
     <li>
-      <a class="nav-link link-dark" data-bs-toggle="collapse" href="#userManagementCollapse" role="button" aria-expanded="false" aria-controls="userManagementCollapse">
+      <% user_management_active = active_controller?('user_management') %>
+      <a class="nav-link <%= user_management_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" href="#userManagementCollapse" role="button" aria-expanded="<%= user_management_active %>" aria-controls="userManagementCollapse">
         <i class="bi bi-shield-lock me-2"></i>
         User Management
         <i class="bi bi-chevron-down float-end"></i>
       </a>
-      <div class="collapse" id="userManagementCollapse">
+      <div class="collapse <%= 'show' if user_management_active %>" id="userManagementCollapse">
         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
-          <li><%= link_to "Roles", "#", class: "nav-link link-dark" %></li>
-          <li><%= link_to "Users", "#", class: "nav-link link-dark" %></li>
+          <li><%= link_to "Roles", user_management_roles_path, class: "nav-link #{active_controller?('user_management/roles') ? 'active' : 'link-dark'}" %></li>
+          <li><%= link_to "Users", user_management_users_path, class: "nav-link #{active_controller?('user_management/users') ? 'active' : 'link-dark'}" %></li>
         </ul>
       </div>
     </li>
   </ul>
-  
   <hr>
-  
   <div class="dropdown">
     <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
       <i class="bi bi-person-circle me-2" style="font-size: 32px;"></i>
