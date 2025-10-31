@@ -22,7 +22,7 @@
     <% if has_work_order_access %>
       <li>
         <% work_order_active = active_controller?('work_order') %>
-        <a class="nav-link <%= work_order_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#workOrdersCollapse" href="javascript:void(0)" role="button" aria-expanded="<%= work_order_active %>" aria-controls="workOrdersCollapse">
+        <a class="nav-link <%= work_order_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#workOrdersCollapse" href="#" role="button" aria-expanded="<%= work_order_active %>" aria-controls="workOrdersCollapse">
           <i class="bi bi-clipboard-check me-2"></i>
           Work Orders
           <i class="bi bi-chevron-right float-end collapse-chevron"></i>
