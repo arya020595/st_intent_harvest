@@ -71,7 +71,7 @@
     <% if has_master_data_access %>
       <li>
         <% master_data_active = active_controller?('master_data') %>
-        <a class="nav-link <%= master_data_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#masterDataCollapse" href="javascript:void(0)" role="button" aria-expanded="<%= master_data_active %>" aria-controls="masterDataCollapse">
+        <a class="nav-link <%= master_data_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#masterDataCollapse" href="#" role="button" aria-expanded="<%= master_data_active %>" aria-controls="masterDataCollapse">
           <i class="bi bi-database me-2"></i>
           Master Data
           <i class="bi bi-chevron-right float-end collapse-chevron"></i>
