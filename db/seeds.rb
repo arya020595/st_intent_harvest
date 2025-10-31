@@ -166,39 +166,34 @@ superadmin_role = Role.find_or_create_by!(name: 'Superadmin') do |role|
 end
 # No need to assign permissions - superadmin bypasses permission checks
 
-# Manager - can approve work orders and manage pay calculations
+# Manager - can view dashboard and approve work orders
 manager_role = Role.find_or_create_by!(name: 'Manager') do |role|
-  role.description = 'Can approve work orders and manage pay calculations'
+  role.description = 'Can view dashboard and approve work orders'
 end
-manager_permissions = Permission.where(subject: ['WorkOrder::Approval', 'WorkOrder::PayCalculation', 'Payslip'])
-                                .or(Permission.where(
-                                      subject: ['Worker', 'MasterData::Vehicle', 'Inventory',
-                                                'UserManagement::User'], action: %w[index show]
-                                    ))
+manager_permissions = Permission.where(subject: 'WorkOrder::Approval')
 manager_role.permissions = manager_permissions
 
-# Field Conductor - can create and manage work orders
+# Field Conductor - can create and manage work order details
 field_conductor_role = Role.find_or_create_by!(name: 'Field Conductor') do |role|
-  role.description = 'Can create and manage work orders'
+  role.description = 'Can create and manage work order details'
 end
-field_conductor_permissions = Permission.where(subject: 'WorkOrder::Detail',
-                                               action: %w[index show
-                                                          create update])
-                                        .or(Permission.where(subject: ['Worker', 'MasterData::Vehicle', 'Inventory'],
-                                                             action: %w[
-                                                               index show
-                                                             ]))
+field_conductor_permissions = Permission.where(subject: 'WorkOrder::Detail')
 field_conductor_role.permissions = field_conductor_permissions
 
-# Clerk - administrative support with read/write access to master data
+# Clerk - administrative support with full access to pay calculations, payslips, inventories, workers, and master data
 clerk_role = Role.find_or_create_by!(name: 'Clerk') do |role|
-  role.description = 'Can manage master data (users, workers, vehicles, inventories)'
+  role.description = 'Can manage pay calculations, payslips, inventories, workers, and master data'
 end
 clerk_permissions = Permission.where(subject: [
-                                       'UserManagement::User', 'UserManagement::Role',
-                                       'Worker', 'MasterData::Vehicle', 'MasterData::Block',
-                                       'MasterData::WorkOrderRate', 'MasterData::Unit', 'MasterData::Category',
-                                       'Inventory'
+                                       'WorkOrder::PayCalculation',
+                                       'Payslip',
+                                       'Inventory',
+                                       'Worker',
+                                       'MasterData::Vehicle',
+                                       'MasterData::Block',
+                                       'MasterData::WorkOrderRate',
+                                       'MasterData::Unit',
+                                       'MasterData::Category'
                                      ])
 clerk_role.permissions = clerk_permissions
 
