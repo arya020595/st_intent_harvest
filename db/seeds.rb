@@ -274,52 +274,47 @@ puts "✓ Created #{Category.count} categories"
 
 # Create Blocks
 puts 'Creating blocks...'
-blocks_data = [
-  { block_number: 'BLK-001', hectarage: 10.5 },
-  { block_number: 'BLK-002', hectarage: 15.0 },
-  { block_number: 'BLK-003', hectarage: 8.25 },
-  { block_number: 'BLK-004', hectarage: 12.75 },
-  { block_number: 'BLK-005', hectarage: 20.0 }
-]
+10.times do |i|
+  block_number = "BLK-#{(i + 1).to_s.rjust(3, '0')}"
 
-blocks_data.each do |block_data|
-  Block.find_or_create_by!(block_data)
+  Block.find_or_create_by!(block_number: block_number) do |block|
+    block.hectarage = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(5.0, 50.0)
+  end
 end
 puts "✓ Created #{Block.count} blocks"
 
 # Create Vehicles
 puts 'Creating vehicles...'
-vehicles_data = [
-  { vehicle_number: 'VH-001', vehicle_model: 'Toyota Hilux' },
-  { vehicle_number: 'VH-002', vehicle_model: 'Isuzu D-Max' },
-  { vehicle_number: 'VH-003', vehicle_model: 'Mitsubishi Triton' }
+vehicle_models = [
+  'Toyota Hilux', 'Isuzu D-Max', 'Mitsubishi Triton', 'Ford Ranger',
+  'Nissan Navara', 'Mazda BT-50', 'Chevrolet Colorado'
 ]
 
-vehicles_data.each do |vehicle_data|
-  Vehicle.find_or_create_by!(vehicle_data)
+10.times do |i|
+  vehicle_number = "VH-#{(i + 1).to_s.rjust(3, '0')}"
+
+  Vehicle.find_or_create_by!(vehicle_number: vehicle_number) do |vehicle|
+    vehicle.vehicle_model = vehicle_models.sample
+  end
 end
 puts "✓ Created #{Vehicle.count} vehicles"
 
 # Create Workers
 puts 'Creating workers...'
-workers_data = [
-  { name: 'John Doe', worker_type: 'Harvester', gender: 'Male', is_active: true, hired_date: Date.new(2023, 1, 15),
-    nationality: 'Indonesian', identity_number: 'ID-001' },
-  { name: 'Jane Smith', worker_type: 'Sprayer', gender: 'Female', is_active: true, hired_date: Date.new(2023, 2, 20),
-    nationality: 'Indonesian', identity_number: 'ID-002' },
-  { name: 'Ahmad Rahman', worker_type: 'Harvester', gender: 'Male', is_active: true, hired_date: Date.new(2023, 3, 10),
-    nationality: 'Indonesian', identity_number: 'ID-003' },
-  { name: 'Siti Nurhaliza', worker_type: 'Fertilizer', gender: 'Female', is_active: true,
-    hired_date: Date.new(2023, 4, 5), nationality: 'Indonesian', identity_number: 'ID-004' },
-  { name: 'Budi Santoso', worker_type: 'Harvester', gender: 'Male', is_active: true, hired_date: Date.new(2023, 5, 12),
-    nationality: 'Indonesian', identity_number: 'ID-005' },
-  { name: 'Maria Garcia', worker_type: 'Sprayer', gender: 'Female', is_active: false,
-    hired_date: Date.new(2022, 8, 20), nationality: 'Filipino', identity_number: 'ID-006' }
-]
+worker_types = ['Part - Time', 'Full - Time']
+genders = %w[Male Female]
+nationalities = %w[Indonesian Malaysian Filipino Thai Vietnamese]
 
-workers_data.each do |worker_data|
-  Worker.find_or_create_by!(identity_number: worker_data[:identity_number]) do |worker|
-    worker.assign_attributes(worker_data)
+50.times do |i|
+  identity_number = "ID-#{(i + 1).to_s.rjust(3, '0')}"
+
+  Worker.find_or_create_by!(identity_number: identity_number) do |worker|
+    worker.name = Faker::Name.name
+    worker.worker_type = worker_types.sample
+    worker.gender = genders.sample
+    worker.is_active = [true, true, true, false].sample # 75% active, 25% inactive
+    worker.hired_date = Faker::Date.between(from: 10.years.ago, to: Date.today)
+    worker.nationality = nationalities.sample
   end
 end
 puts "✓ Created #{Worker.count} workers"
@@ -330,127 +325,150 @@ kg_unit = Unit.find_by(name: 'Kg')
 liter_unit = Unit.find_by(name: 'Liter')
 piece_unit = Unit.find_by(name: 'Piece')
 
-inventories_data = [
-  { name: 'NPK Fertilizer', stock_quantity: 450, category: fertilizer_category, unit: kg_unit, price: 65.00,
-    supplier: 'Agro Supplier Co.', input_date: Date.today - 30 },
-  { name: 'Organic Fertilizer', stock_quantity: 280, category: fertilizer_category, unit: kg_unit, price: 55.00,
-    supplier: 'Green Farm Supplies', input_date: Date.today - 25 },
-  { name: 'Herbicide', stock_quantity: 85, category: pesticide_category, unit: liter_unit, price: 38.50,
-    supplier: 'ChemAgro Ltd.', input_date: Date.today - 20 },
-  { name: 'Insecticide', stock_quantity: 130, category: pesticide_category, unit: liter_unit, price: 42.00,
-    supplier: 'ChemAgro Ltd.', input_date: Date.today - 15 },
-  { name: 'Harvesting Knife', stock_quantity: 48, category: tools_category, unit: piece_unit, price: 28.50,
-    supplier: 'Tool Master', input_date: Date.today - 60 },
-  { name: 'Sprayer Machine', stock_quantity: 8, category: equipment_category, unit: piece_unit, price: 1250.00,
-    supplier: 'Agro Equipment Inc.', input_date: Date.today - 90 }
-]
-
-inventories_data.each do |inventory_data|
-  Inventory.find_or_create_by!(name: inventory_data[:name]) do |inventory|
-    inventory.assign_attributes(inventory_data)
+# Fertilizer inventories
+fertilizer_names = ['NPK Fertilizer', 'Organic Fertilizer', 'Urea Fertilizer', 'Compost', 'Phosphate Fertilizer']
+fertilizer_names.each do |name|
+  Inventory.find_or_create_by!(name: name) do |inventory|
+    inventory.stock_quantity = Faker::Number.between(from: 100, to: 500)
+    inventory.category = fertilizer_category
+    inventory.unit = kg_unit
+    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(45.0, 85.0)
+    inventory.supplier = Faker::Company.name
+    inventory.input_date = Faker::Date.between(from: 90.days.ago, to: Date.today)
   end
 end
+
+# Pesticide inventories
+pesticide_names = ['Herbicide', 'Insecticide', 'Fungicide', 'Pesticide Mix']
+pesticide_names.each do |name|
+  Inventory.find_or_create_by!(name: name) do |inventory|
+    inventory.stock_quantity = Faker::Number.between(from: 50, to: 200)
+    inventory.category = pesticide_category
+    inventory.unit = liter_unit
+    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(30.0, 60.0)
+    inventory.supplier = Faker::Company.name
+    inventory.input_date = Faker::Date.between(from: 90.days.ago, to: Date.today)
+  end
+end
+
+# Tools inventories
+tool_names = ['Harvesting Knife', 'Pruning Shears', 'Hand Trowel', 'Garden Hoe', 'Machete']
+tool_names.each do |name|
+  Inventory.find_or_create_by!(name: name) do |inventory|
+    inventory.stock_quantity = Faker::Number.between(from: 20, to: 100)
+    inventory.category = tools_category
+    inventory.unit = piece_unit
+    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(15.0, 50.0)
+    inventory.supplier = Faker::Company.name
+    inventory.input_date = Faker::Date.between(from: 180.days.ago, to: Date.today)
+  end
+end
+
+# Equipment inventories
+equipment_names = ['Sprayer Machine', 'Water Pump', 'Generator', 'Lawn Mower']
+equipment_names.each do |name|
+  Inventory.find_or_create_by!(name: name) do |inventory|
+    inventory.stock_quantity = Faker::Number.between(from: 5, to: 15)
+    inventory.category = equipment_category
+    inventory.unit = piece_unit
+    inventory.price = Faker::Number.decimal(l_digits: 4, r_digits: 2).to_f.clamp(800.0, 2500.0)
+    inventory.supplier = Faker::Company.name
+    inventory.input_date = Faker::Date.between(from: 365.days.ago, to: Date.today)
+  end
+end
+
 puts "✓ Created #{Inventory.count} inventory items"
 
 # Create Work Order Rates
 puts 'Creating work order rates...'
-Unit.find_by(name: 'Hour')
 day_unit = Unit.find_by(name: 'Day')
 hectare_unit = Unit.find_by(name: 'Hectare')
 
-rates_data = [
-  { work_order_name: 'Harvesting', rate: 85.00, unit_id: day_unit.id.to_s },
-  { work_order_name: 'Spraying', rate: 75.00, unit_id: day_unit.id.to_s },
-  { work_order_name: 'Fertilizing', rate: 65.00, unit_id: day_unit.id.to_s },
-  { work_order_name: 'Weeding', rate: 55.00, unit_id: day_unit.id.to_s },
-  { work_order_name: 'Land Preparation', rate: 250.00, unit_id: hectare_unit.id.to_s }
-]
-
-rates_data.each do |rate_data|
-  WorkOrderRate.find_or_create_by!(work_order_name: rate_data[:work_order_name]) do |rate|
-    rate.assign_attributes(rate_data)
+# Day-based rates
+day_based_work_orders = %w[Harvesting Spraying Fertilizing Weeding Pruning Planting]
+day_based_work_orders.each do |work_order_name|
+  WorkOrderRate.find_or_create_by!(work_order_name: work_order_name) do |rate|
+    rate.rate = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(50.0, 100.0)
+    rate.unit_id = day_unit.id.to_s
   end
 end
+
+# Hectare-based rates
+hectare_based_work_orders = ['Land Preparation', 'Land Clearing', 'Irrigation Setup']
+hectare_based_work_orders.each do |work_order_name|
+  WorkOrderRate.find_or_create_by!(work_order_name: work_order_name) do |rate|
+    rate.rate = Faker::Number.decimal(l_digits: 3, r_digits: 2).to_f.clamp(200.0, 400.0)
+    rate.unit_id = hectare_unit.id.to_s
+  end
+end
+
 puts "✓ Created #{WorkOrderRate.count} work order rates"
 
 # Create Work Orders
 puts 'Creating work orders...'
-block1 = Block.find_by(block_number: 'BLK-001')
-block2 = Block.find_by(block_number: 'BLK-002')
-harvesting_rate = WorkOrderRate.find_by(work_order_name: 'Harvesting')
-spraying_rate = WorkOrderRate.find_by(work_order_name: 'Spraying')
+blocks = Block.all.to_a
+work_order_rates = WorkOrderRate.all.to_a
 conductor_user = User.find_by(email: 'conductor@example.com')
+work_order_statuses = %w[ongoing pending amendment_required completed]
 
-work_order1 = WorkOrder.find_or_create_by!(id: 1) do |wo|
-  wo.block_id = block1.id
-  wo.work_order_rate_id = harvesting_rate.id
-  wo.start_date = Date.today - 7
-  wo.work_order_status = 'ongoing'
-  wo.field_conductor_id = conductor_user.id
-  wo.field_conductor_name = conductor_user.name
-  wo.approved_by = nil
-  wo.approved_at = nil
-end
+20.times do |i|
+  WorkOrder.find_or_create_by!(id: i + 1) do |wo|
+    wo.block_id = blocks.sample.id
+    wo.work_order_rate_id = work_order_rates.sample.id
+    wo.start_date = Faker::Date.between(from: 60.days.ago, to: Date.today)
+    wo.work_order_status = work_order_statuses.sample
+    wo.field_conductor_id = conductor_user.id
+    wo.field_conductor_name = conductor_user.name
 
-work_order2 = WorkOrder.find_or_create_by!(id: 2) do |wo|
-  wo.block_id = block2.id
-  wo.work_order_rate_id = spraying_rate.id
-  wo.start_date = Date.today - 3
-  wo.work_order_status = 'pending'
-  wo.field_conductor_id = conductor_user.id
-  wo.field_conductor_name = conductor_user.name
+    # Add approval info for completed work orders
+    if wo.work_order_status == 'completed'
+      manager_user = User.find_by(email: 'manager@example.com')
+      wo.approved_by = manager_user.id.to_s
+      wo.approved_at = wo.start_date + rand(1..5).days
+    end
+  end
 end
 
 puts "✓ Created #{WorkOrder.count} work orders"
 
 # Create Work Order Workers
 puts 'Creating work order workers relationships...'
-worker1 = Worker.find_by(identity_number: 'ID-001')
-worker2 = Worker.find_by(identity_number: 'ID-002')
-worker3 = Worker.find_by(identity_number: 'ID-003')
+work_orders = WorkOrder.all.to_a
+workers = Worker.limit(30).to_a # Use first 30 workers for work orders
 
-WorkOrderWorker.find_or_create_by!(work_order: work_order1, worker: worker1) do |wow|
-  wow.worker_name = worker1.name
-  wow.rate = 85.00
-  wow.amount = 425.00
-  wow.remarks = 'Harvesting work on Block 1'
-end
+work_orders.each do |work_order|
+  # Assign 2-5 workers per work order
+  assigned_workers = workers.sample(rand(2..5))
 
-WorkOrderWorker.find_or_create_by!(work_order: work_order1, worker: worker2) do |wow|
-  wow.worker_name = worker2.name
-  wow.rate = 75.00
-  wow.amount = 225.00
-  wow.remarks = 'Spraying pesticides'
-end
-
-WorkOrderWorker.find_or_create_by!(work_order: work_order2, worker: worker3) do |wow|
-  wow.worker_name = worker3.name
-  wow.rate = 85.00
-  wow.amount = 340.00
-  wow.remarks = 'Harvesting work on Block 2'
+  assigned_workers.each do |worker|
+    WorkOrderWorker.find_or_create_by!(work_order: work_order, worker: worker) do |wow|
+      wow.worker_name = worker.name
+      wow.rate = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(50.0, 100.0)
+      wow.amount = wow.rate * rand(3..8) # amount = rate * days worked
+      wow.remarks = Faker::Lorem.sentence(word_count: 5)
+    end
+  end
 end
 
 puts "✓ Created #{WorkOrderWorker.count} work order workers relationships"
 
 # Create Work Order Items
 puts 'Creating work order items...'
-fertilizer = Inventory.find_by(name: 'NPK Fertilizer')
-herbicide = Inventory.find_by(name: 'Herbicide')
+inventories = Inventory.all.to_a
 
-WorkOrderItem.find_or_create_by!(work_order: work_order1, inventory: fertilizer) do |item|
-  item.item_name = fertilizer.name
-  item.amount_used = 50
-  item.price = fertilizer.price
-  item.unit_name = fertilizer.unit.name
-  item.category_name = fertilizer.category.name
-end
+work_orders.each do |work_order|
+  # Assign 1-3 inventory items per work order
+  assigned_inventories = inventories.sample(rand(1..3))
 
-WorkOrderItem.find_or_create_by!(work_order: work_order2, inventory: herbicide) do |item|
-  item.item_name = herbicide.name
-  item.amount_used = 10
-  item.price = herbicide.price
-  item.unit_name = herbicide.unit.name
-  item.category_name = herbicide.category.name
+  assigned_inventories.each do |inventory|
+    WorkOrderItem.find_or_create_by!(work_order: work_order, inventory: inventory) do |item|
+      item.item_name = inventory.name
+      item.amount_used = rand(5..100)
+      item.price = inventory.price
+      item.unit_name = inventory.unit.name
+      item.category_name = inventory.category.name
+    end
+  end
 end
 
 puts "✓ Created #{WorkOrderItem.count} work order items"
@@ -463,10 +481,10 @@ end
 
 # Create Pay Calculation Details
 puts 'Creating pay calculation details...'
-[worker1, worker2, worker3].each do |worker|
+Worker.where(is_active: true).limit(30).each do |worker|
   PayCalculationDetail.find_or_create_by!(pay_calculation: pay_calc, worker: worker) do |detail|
-    gross = rand(3000..8000).to_f
-    deduct = rand(500..2000).to_f
+    gross = Faker::Number.decimal(l_digits: 4, r_digits: 2).to_f.clamp(3000.0, 10_000.0)
+    deduct = Faker::Number.decimal(l_digits: 3, r_digits: 2).to_f.clamp(500.0, 2500.0)
     detail.gross_salary = gross
     detail.deductions = deduct
     detail.net_salary = gross - deduct
