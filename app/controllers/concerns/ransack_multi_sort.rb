@@ -1,0 +1,59 @@
+# frozen_string_literal: true
+
+# RansackMultiSort Concern
+#
+# Provides reusable methods for controllers using Ransack search with multi-sort.
+# Follows Interface Segregation Principle - provides focused, cohesive methods.
+#
+# Usage:
+#   class WorkersController < ApplicationController
+#     include RansackMultiSort
+#
+#     def index
+#       apply_ransack_search(policy_scope(Worker))
+#       @pagy, @workers = paginate_results(@q.result)
+#     end
+#   end
+module RansackMultiSort
+  extend ActiveSupport::Concern
+
+  # Default pagination value
+  DEFAULT_PER_PAGE = 10
+
+  private
+
+  # Applies Ransack search without default sort
+  #
+  # Sets @q instance variable with configured Ransack search object.
+  # Multi-sort is handled entirely client-side via JavaScript.
+  #
+  # @param scope [ActiveRecord::Relation] The base scope to search
+  # @return [Ransack::Search] Configured ransack search object
+  def apply_ransack_search(scope)
+    @q = build_ransack_search(scope)
+  end
+
+  # Paginates results using Pagy
+  #
+  # @param results [ActiveRecord::Relation] Results to paginate
+  # @return [Array<Pagy, ActiveRecord::Relation>] Pagy object and paginated results
+  def paginate_results(results)
+    pagy(results, limit: sanitized_per_page_param)
+  end
+
+  # Builds Ransack search object from params
+  #
+  # @param scope [ActiveRecord::Relation] The base scope
+  # @return [Ransack::Search] Ransack search object
+  def build_ransack_search(scope)
+    scope.ransack(params[:q])
+  end
+
+  # Gets sanitized per_page parameter with default fallback
+  #
+  # @return [Integer] Sanitized per_page value
+  def sanitized_per_page_param
+    per_page = params[:per_page].to_i
+    per_page.positive? ? per_page : DEFAULT_PER_PAGE
+  end
+end

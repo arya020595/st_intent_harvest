@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 class WorkersController < ApplicationController
+  include RansackMultiSort
+
   before_action :set_worker, only: %i[show edit update destroy]
 
   def index
     authorize Worker
 
-    @q = policy_scope(Worker).ransack(params[:q])
-    per_page = params[:per_page].present? ? params[:per_page].to_i : 10
-    @pagy, @workers = pagy(@q.result, limit: per_page)
+    apply_ransack_search(policy_scope(Worker).order(id: :desc))
+    @pagy, @workers = paginate_results(@q.result)
   end
 
   def show
