@@ -1,0 +1,368 @@
+import { Controller } from "@hotwired/stimulus";
+
+/**
+ * WorkOrderFormController
+ *
+ * Handles dynamic form interactions for work order creation/editing:
+ * - Auto-fill work order rate and unit when work order is selected
+ * - Add/remove resource rows dynamically
+ * - Auto-fill resource details when inventory is selected
+ * - Add/remove worker rows dynamically
+ * - Auto-fill worker rate and calculate amount
+ */
+export default class extends Controller {
+  static targets = ["resourcesContainer", "workersContainer"];
+  static values = {
+    inventories: Array,
+    workers: Array,
+    resourceIndexStart: Number,
+    workerIndexStart: Number,
+  };
+
+  connect() {
+    console.log("WorkOrderFormController connected");
+    // Start indexes after any pre-rendered rows from the server
+    const existingResourceRows = this.resourcesContainerTarget.querySelectorAll(
+      "tr[data-resource-index]"
+    ).length;
+    const existingWorkerRows = this.workersContainerTarget.querySelectorAll(
+      "tr[data-worker-index]"
+    ).length;
+
+    this.resourceIndex = Number.isInteger(this.resourceIndexStartValue)
+      ? this.resourceIndexStartValue
+      : existingResourceRows;
+    this.workerIndex = Number.isInteger(this.workerIndexStartValue)
+      ? this.workerIndexStartValue
+      : existingWorkerRows;
+    // Use Stimulus values - they're automatically parsed from JSON
+    this.inventories = this.inventoriesValue || [];
+    this.workers = this.workersValue || [];
+    // Store the current work order rate
+    this.currentWorkOrderRate = 0;
+
+    // Initialize current work order rate from the selected option on load (edit/new with preselected)
+    this.initializeWorkOrderRateFromSelect();
+    console.log("Loaded inventories:", this.inventories.length);
+    console.log("Loaded workers:", this.workers.length);
+  }
+
+  initializeWorkOrderRateFromSelect() {
+    try {
+      // Find the select that holds work order rates (it has data-work-order-rates attribute)
+      const rateSelect = this.element.querySelector(
+        "select[data-work-order-rates]"
+      );
+      if (!rateSelect) return;
+
+      const selectedId = rateSelect.value;
+      const workOrderRates = JSON.parse(
+        rateSelect.dataset.workOrderRates || "[]"
+      );
+      const selectedRate = workOrderRates.find(
+        (rate) => rate.id?.toString() === selectedId
+      );
+
+      if (selectedRate) {
+        const rateValue = parseFloat(selectedRate.rate) || 0;
+        this.currentWorkOrderRate = rateValue;
+
+        // Update header displays
+        const rateDisplay = document.getElementById("work_order_rate_display");
+        const unitDisplay = document.getElementById("work_order_unit_display");
+        if (rateDisplay)
+          rateDisplay.value =
+            rateValue > 0 ? `RM ${rateValue.toFixed(2)}` : "N/A";
+        if (unitDisplay)
+          unitDisplay.value = selectedRate.unit
+            ? selectedRate.unit.name
+            : "N/A";
+
+        // Ensure all existing worker rows reflect the current rate
+        this.updateAllWorkerRates();
+      }
+    } catch (e) {
+      console.warn("Failed to initialize work order rate from select", e);
+    }
+  }
+
+  updateWorkOrderRate(event) {
+    const select = event.target;
+    const selectedId = select.value;
+
+    if (!selectedId) {
+      document.getElementById("work_order_rate_display").value = "Auto Filled";
+      document.getElementById("work_order_unit_display").value = "Auto Filled";
+      this.currentWorkOrderRate = 0;
+      return;
+    }
+
+    try {
+      const workOrderRates = JSON.parse(select.dataset.workOrderRates || "[]");
+      const selectedRate = workOrderRates.find(
+        (rate) => rate.id.toString() === selectedId
+      );
+
+      if (selectedRate) {
+        const rateValue = parseFloat(selectedRate.rate) || 0;
+        this.currentWorkOrderRate = rateValue;
+        document.getElementById("work_order_rate_display").value =
+          rateValue > 0 ? `RM ${rateValue.toFixed(2)}` : "N/A";
+        document.getElementById("work_order_unit_display").value =
+          selectedRate.unit ? selectedRate.unit.name : "N/A";
+
+        // Update all existing worker rates
+        this.updateAllWorkerRates();
+      }
+    } catch (error) {
+      console.error("Error updating work order rate:", error);
+    }
+  }
+
+  updateAllWorkerRates() {
+    // Update rate for all existing worker rows
+    const workerRows = this.workersContainerTarget.querySelectorAll(
+      "tr[data-worker-index]"
+    );
+    workerRows.forEach((row) => {
+      const index = row.dataset.workerIndex;
+      const workerSelect = row.querySelector("select");
+      if (workerSelect && workerSelect.value) {
+        this.applyWorkerRate(index);
+      }
+    });
+  }
+
+  addResource() {
+    if (!this.inventories || this.inventories.length === 0) {
+      alert("No inventories available. Please add inventory items first.");
+      return;
+    }
+    const row = this.createResourceRow(this.resourceIndex);
+    this.resourcesContainerTarget.insertAdjacentHTML("beforeend", row);
+    this.resourceIndex++;
+  }
+
+  createResourceRow(index) {
+    const inventoryOptions = (this.inventories || [])
+      .map(
+        (inv) =>
+          `<option value="${inv.id}" data-category="${
+            inv.category?.name || ""
+          }" data-price="${inv.price || 0}" data-unit="${
+            inv.unit?.name || ""
+          }">${inv.name}</option>`
+      )
+      .join("");
+
+    return `
+      <tr data-resource-index="${index}">
+        <td>
+          <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][${index}][inventory_id]" onchange="window.workOrderFormController.updateResourceDetails(this, ${index})">
+            <option value="">Select Resource</option>
+            ${inventoryOptions}
+          </select>
+        </td>
+        <td>
+          <input type="text" class="form-control form-control-sm" id="resource_category_${index}" value="Auto Filled" disabled style="background-color: #e9ecef;">
+        </td>
+        <td>
+          <input type="text" class="form-control form-control-sm" id="resource_price_${index}" value="Auto Filled" disabled style="background-color: #e9ecef;">
+        </td>
+        <td>
+          <input type="text" class="form-control form-control-sm" id="resource_unit_${index}" value="Auto Filled" disabled style="background-color: #e9ecef;">
+        </td>
+        <td>
+          <input type="number" class="form-control form-control-sm" name="work_order[work_order_items_attributes][${index}][amount_used]" placeholder="0" step="0.01" min="0">
+        </td>
+        <input type="hidden" id="resource_destroy_${index}" name="work_order[work_order_items_attributes][${index}][_destroy]" value="0">
+        <td class="text-center">
+          <button type="button" class="btn btn-danger btn-sm" onclick="window.workOrderFormController.removeResource(${index})">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `;
+  }
+
+  updateResourceDetails(select, index) {
+    const selectedOption = select.options[select.selectedIndex];
+    if (!selectedOption.value) {
+      document.getElementById(`resource_category_${index}`).value =
+        "Auto Filled";
+      document.getElementById(`resource_price_${index}`).value = "Auto Filled";
+      document.getElementById(`resource_unit_${index}`).value = "Auto Filled";
+      return;
+    }
+
+    const category = selectedOption.dataset.category || "N/A";
+    const price = selectedOption.dataset.price || "0";
+    const unit = selectedOption.dataset.unit || "N/A";
+
+    document.getElementById(`resource_category_${index}`).value = category;
+    document.getElementById(`resource_price_${index}`).value = `RM ${parseFloat(
+      price
+    ).toFixed(2)}`;
+    document.getElementById(`resource_unit_${index}`).value = unit;
+  }
+
+  addWorker() {
+    if (!this.workers || this.workers.length === 0) {
+      alert("No workers available. Please add worker records first.");
+      return;
+    }
+    const row = this.createWorkerRow(this.workerIndex);
+    this.workersContainerTarget.insertAdjacentHTML("beforeend", row);
+    this.workerIndex++;
+  }
+
+  createWorkerRow(index) {
+    const workerOptions = (this.workers || [])
+      .map((worker) => `<option value="${worker.id}">${worker.name}</option>`)
+      .join("");
+
+    return `
+      <tr data-worker-index="${index}">
+        <td>
+          <select class="form-select form-select-sm" name="work_order[work_order_workers_attributes][${index}][worker_id]" onchange="window.workOrderFormController.updateWorkerDetails(this, ${index})">
+            <option value="">Select Worker</option>
+            ${workerOptions}
+          </select>
+        </td>
+        <td>
+          <input type="number" class="form-control form-control-sm" id="worker_quantity_${index}" name="work_order[work_order_workers_attributes][${index}][work_area_size]" placeholder="0" step="0.01" min="0" oninput="window.workOrderFormController.calculateWorkerAmount(${index})">
+        </td>
+        <td>
+          <input type="text" class="form-control form-control-sm" id="worker_rate_${index}" value="Auto Calculate" disabled style="background-color: #e9ecef;">
+          <input type="hidden" id="worker_rate_value_${index}" name="work_order[work_order_workers_attributes][${index}][rate]" value="0">
+        </td>
+        <td>
+          <input type="text" class="form-control form-control-sm" id="worker_amount_${index}" value="Auto Calculate" disabled style="background-color: #e9ecef;">
+          <input type="hidden" id="worker_amount_value_${index}" name="work_order[work_order_workers_attributes][${index}][amount]" value="0">
+        </td>
+        <td>
+          <input type="text" class="form-control form-control-sm" name="work_order[work_order_workers_attributes][${index}][remarks]" placeholder="Remarks">
+        </td>
+        <input type="hidden" id="worker_destroy_${index}" name="work_order[work_order_workers_attributes][${index}][_destroy]" value="0">
+        <td class="text-center">
+          <button type="button" class="btn btn-danger btn-sm" onclick="window.workOrderFormController.removeWorker(${index})">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `;
+  }
+
+  updateWorkerDetails(select, index) {
+    const selectedOption = select.options[select.selectedIndex];
+    if (!selectedOption.value) {
+      document.getElementById(`worker_rate_${index}`).value = "Auto Filled";
+      document.getElementById(`worker_rate_value_${index}`).value = "0";
+      document.getElementById(`worker_amount_${index}`).value =
+        "Auto Calculate";
+      document.getElementById(`worker_amount_value_${index}`).value = "0";
+      return;
+    }
+
+    // Apply the current work order rate to this worker
+    this.applyWorkerRate(index);
+  }
+
+  applyWorkerRate(index) {
+    const rate = this.currentWorkOrderRate || 0;
+    document.getElementById(`worker_rate_${index}`).value =
+      rate > 0 ? `RM ${rate.toFixed(2)}` : "Auto Filled";
+    document.getElementById(`worker_rate_value_${index}`).value =
+      rate.toFixed(2);
+
+    // Recalculate amount with the new rate
+    this.calculateWorkerAmount(index);
+  }
+
+  calculateWorkerAmount(index) {
+    const quantity =
+      parseFloat(document.getElementById(`worker_quantity_${index}`).value) ||
+      0;
+    const rate =
+      parseFloat(document.getElementById(`worker_rate_value_${index}`).value) ||
+      0;
+    const amount = quantity * rate;
+
+    document.getElementById(
+      `worker_amount_${index}`
+    ).value = `RM ${amount.toFixed(2)}`;
+    document.getElementById(`worker_amount_value_${index}`).value =
+      amount.toFixed(2);
+  }
+}
+
+// Make controller globally accessible for inline event handlers
+window.workOrderFormController = {
+  removeResource: (index) => {
+    const row = document.querySelector(`tr[data-resource-index="${index}"]`);
+    const destroyInput = document.getElementById(`resource_destroy_${index}`);
+    if (destroyInput) {
+      destroyInput.value = "1";
+      if (row) row.style.display = "none";
+    } else if (row) {
+      // New row without id, safe to remove from DOM
+      row.remove();
+    }
+  },
+  removeWorker: (index) => {
+    const row = document.querySelector(`tr[data-worker-index="${index}"]`);
+    const destroyInput = document.getElementById(`worker_destroy_${index}`);
+    if (destroyInput) {
+      destroyInput.value = "1";
+      if (row) row.style.display = "none";
+    } else if (row) {
+      // New row without id, safe to remove from DOM
+      row.remove();
+    }
+  },
+  updateResourceDetails: (select, index) => {
+    const controller = document.querySelector(
+      "[data-controller='work-order-form']"
+    );
+    if (controller) {
+      const stimulusController =
+        window.Stimulus.getControllerForElementAndIdentifier(
+          controller,
+          "work-order-form"
+        );
+      if (stimulusController) {
+        stimulusController.updateResourceDetails(select, index);
+      }
+    }
+  },
+  updateWorkerDetails: (select, index) => {
+    const controller = document.querySelector(
+      "[data-controller='work-order-form']"
+    );
+    if (controller) {
+      const stimulusController =
+        window.Stimulus.getControllerForElementAndIdentifier(
+          controller,
+          "work-order-form"
+        );
+      if (stimulusController) {
+        stimulusController.updateWorkerDetails(select, index);
+      }
+    }
+  },
+  calculateWorkerAmount: (index) => {
+    const controller = document.querySelector(
+      "[data-controller='work-order-form']"
+    );
+    if (controller) {
+      const stimulusController =
+        window.Stimulus.getControllerForElementAndIdentifier(
+          controller,
+          "work-order-form"
+        );
+      if (stimulusController) {
+        stimulusController.calculateWorkerAmount(index);
+      }
+    }
+  },
+};

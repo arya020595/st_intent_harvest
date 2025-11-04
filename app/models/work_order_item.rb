@@ -1,10 +1,22 @@
 class WorkOrderItem < ApplicationRecord
   belongs_to :work_order
   belongs_to :inventory, optional: true
-  
-  validates :item_name, presence: true
+
+  validates :inventory_id, presence: true
   validates :amount_used, numericality: { greater_than: 0 }, allow_nil: true
-  validates :price, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+
+  before_save :populate_inventory_details
+
+  private
+
+  def populate_inventory_details
+    return unless inventory_id_changed? && inventory
+
+    self.item_name = inventory.name
+    self.price = inventory.price
+    self.unit_name = inventory.unit&.name
+    self.category_name = inventory.category&.name
+  end
 end
 
 # == Schema Information
