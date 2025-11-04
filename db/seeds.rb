@@ -483,8 +483,10 @@ end
 puts 'Creating pay calculation details...'
 Worker.where(is_active: true).limit(30).each do |worker|
   PayCalculationDetail.find_or_create_by!(pay_calculation: pay_calc, worker: worker) do |detail|
-    gross = Faker::Number.decimal(l_digits: 4, r_digits: 2).clamp(BigDecimal("3000.0"), BigDecimal("10000.0"))
-    deduct = Faker::Number.decimal(l_digits: 3, r_digits: 2).clamp(BigDecimal("500.0"), BigDecimal("2500.0"))
+    gross = Faker::Number.decimal(l_digits: 4, r_digits: 2)
+    gross = [[gross, BigDecimal("3000.00")].max, BigDecimal("10000.00")].min
+    deduct = Faker::Number.decimal(l_digits: 3, r_digits: 2)
+    deduct = [[deduct, BigDecimal("500.00")].max, BigDecimal("2500.00")].min
     detail.gross_salary = gross
     detail.deductions = deduct
     detail.net_salary = gross - deduct
