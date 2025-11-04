@@ -28,7 +28,7 @@ export default class extends Controller {
 
     // Add all form data to URL params
     for (const [key, value] of formData.entries()) {
-      if (value) {
+      if (value !== '') {
         url.searchParams.append(key, value);
       }
     }
