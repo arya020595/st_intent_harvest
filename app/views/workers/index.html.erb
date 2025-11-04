@@ -7,28 +7,28 @@
       <% end %>
     </div>
     <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-hover table-sm mb-0">
-          <thead class="table-success">
-            <tr>
-              <th class="text-center">
-                <%= sort_link(@q, :id, 'Worker ID') %>
-              </th>
-              <th>
-                <%= sort_link(@q, :name, 'Worker Name') %>
-              </th>
-              <th>
-                <%= sort_link(@q, :worker_type, 'Worker Type') %>
-              </th>
-              <th class="text-center">
-                <%= sort_link(@q, :is_active, 'Status') %>
-              </th>
-              <th class="text-center">
-                <%= sort_link(@q, :hired_date, 'Hired Date') %>
-              </th>
-              <th class="text-center">Actions</th>
-            </tr>
-            <%= search_form_for @q, html: { class: 'contents', id: 'worker-search-form', data: { turbo: false } } do |f| %>
+      <%= search_form_for @q, html: { id: 'worker-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
+        <div class="table-responsive">
+          <table class="table table-hover table-sm mb-0">
+            <thead class="table-success">
+              <tr>
+                <th class="text-center">
+                  <%= sort_link(@q, :id, 'Worker ID') %>
+                </th>
+                <th>
+                  <%= sort_link(@q, :name, 'Worker Name') %>
+                </th>
+                <th>
+                  <%= sort_link(@q, :worker_type, 'Worker Type') %>
+                </th>
+                <th class="text-center">
+                  <%= sort_link(@q, :is_active, 'Status') %>
+                </th>
+                <th class="text-center">
+                  <%= sort_link(@q, :hired_date, 'Hired Date') %>
+                </th>
+                <th class="text-center">Actions</th>
+              </tr>
               <tr>
                 <th class="text-center">
                   <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID (e.g., 137)', min: 1 %>
@@ -53,53 +53,53 @@
                 </th>
                 <th class="text-center">
                   <div class="d-flex gap-1 justify-content-center">
-                    <%= f.submit 'Search', class: 'btn btn-success btn-sm', data: { turbo: false } %>
-                    <%= link_to 'Reset', workers_path, class: 'btn btn-secondary btn-sm', data: { turbo: false } %>
+                    <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
+                    <%= link_to 'Reset', workers_path, class: 'btn btn-secondary btn-sm' %>
                   </div>
                 </th>
               </tr>
-            <% end %>
-          </thead>
-          <tbody>
-            <% if @workers.any? %>
-              <% @workers.each do |worker| %>
+            </thead>
+            <tbody>
+              <% if @workers.any? %>
+                <% @workers.each do |worker| %>
+                  <tr>
+                    <td class="text-center">IH_<%= worker.id.to_s.rjust(3, '0') %></td>
+                    <td><%= worker.name %></td>
+                    <td><%= worker.worker_type %></td>
+                    <td class="text-center">
+                      <% if worker.is_active %>
+                        <span class="badge bg-success">Active</span>
+                      <% else %>
+                        <span class="badge bg-secondary">Inactive</span>
+                      <% end %>
+                    </td>
+                    <td class="text-center"><%= worker.hired_date&.strftime('%d-%m-%Y') || '-' %></td>
+                    <td class="text-center">
+                      <div class="btn-group btn-group-sm" role="group">
+                        <%= link_to worker_path(worker), class: "btn btn-info btn-sm", title: "View Details" do %>
+                          <i class="bi bi-info-circle"></i>
+                        <% end %>
+                        <%= link_to edit_worker_path(worker), class: "btn btn-warning btn-sm", title: "Edit" do %>
+                          <i class="bi bi-pencil"></i>
+                        <% end %>
+                        <%= link_to worker_path(worker), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{worker.name}?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
+                          <i class="bi bi-trash"></i>
+                        <% end %>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              <% else %>
                 <tr>
-                  <td class="text-center">IH_<%= worker.id.to_s.rjust(3, '0') %></td>
-                  <td><%= worker.name %></td>
-                  <td><%= worker.worker_type %></td>
-                  <td class="text-center">
-                    <% if worker.is_active %>
-                      <span class="badge bg-success">Active</span>
-                    <% else %>
-                      <span class="badge bg-secondary">Inactive</span>
-                    <% end %>
-                  </td>
-                  <td class="text-center"><%= worker.hired_date&.strftime('%d-%m-%Y') || '-' %></td>
-                  <td class="text-center">
-                    <div class="btn-group btn-group-sm" role="group">
-                      <%= link_to worker_path(worker), class: "btn btn-info btn-sm", title: "View Details" do %>
-                        <i class="bi bi-info-circle"></i>
-                      <% end %>
-                      <%= link_to edit_worker_path(worker), class: "btn btn-warning btn-sm", title: "Edit" do %>
-                        <i class="bi bi-pencil"></i>
-                      <% end %>
-                      <%= link_to worker_path(worker), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{worker.name}?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
-                        <i class="bi bi-trash"></i>
-                      <% end %>
-                    </div>
+                  <td colspan="6" class="text-center text-muted py-4">
+                    No workers found. <%= link_to 'Add a new worker', new_worker_path, class: 'text-decoration-none' %>
                   </td>
                 </tr>
               <% end %>
-            <% else %>
-              <tr>
-                <td colspan="6" class="text-center text-muted py-4">
-                  No workers found. <%= link_to 'Add a new worker', new_worker_path, class: 'text-decoration-none' %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
       <div class="d-flex justify-content-between align-items-center mt-3">
         <div class="d-flex align-items-center gap-2">
           <span class="text-muted small">Show</span>
