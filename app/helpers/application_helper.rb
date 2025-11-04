@@ -1,5 +1,6 @@
 module ApplicationHelper
   include Pagy::Frontend
+  include RansackMultiSortHelper
 
   # Check if current page matches any of the given paths
   def active_nav_item?(*paths)
