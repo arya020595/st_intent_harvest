@@ -454,7 +454,7 @@ puts "✓ Created #{WorkOrderWorker.count} work order workers relationships"
 
 # Create Work Order Items
 puts 'Creating work order items...'
-inventories = Inventory.all.to_a
+inventories = Inventory.includes(:unit, :category).to_a
 
 work_orders.each do |work_order|
   # Assign 1-3 inventory items per work order
