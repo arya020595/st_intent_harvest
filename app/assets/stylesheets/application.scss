@@ -1,7 +1,7 @@
 @import "bootstrap";
 @import "dashboard";
 @import "inventories";
-
+@import "workers";
 
 .sidebar-bg {
   background-image: image-url('sidebar-background.png');
@@ -42,4 +42,3 @@
     color: #ffffff !important;
   }
 }
-
