@@ -278,7 +278,7 @@ puts 'Creating blocks...'
   block_number = "BLK-#{(i + 1).to_s.rjust(3, '0')}"
 
   Block.find_or_create_by!(block_number: block_number) do |block|
-    block.hectarage = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(5.0, 50.0)
+    block.hectarage = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal("5.0"), BigDecimal("50.0"))
   end
 end
 puts "✓ Created #{Block.count} blocks"
