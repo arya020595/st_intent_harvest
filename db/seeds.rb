@@ -332,7 +332,7 @@ fertilizer_names.each do |name|
     inventory.stock_quantity = Faker::Number.between(from: 100, to: 500)
     inventory.category = fertilizer_category
     inventory.unit = kg_unit
-    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(45.0, 85.0)
+    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(45.0, 85.0)
     inventory.supplier = Faker::Company.name
     inventory.input_date = Faker::Date.between(from: 90.days.ago, to: Date.today)
   end
@@ -345,7 +345,7 @@ pesticide_names.each do |name|
     inventory.stock_quantity = Faker::Number.between(from: 50, to: 200)
     inventory.category = pesticide_category
     inventory.unit = liter_unit
-    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(30.0, 60.0)
+    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(30.0, 60.0)
     inventory.supplier = Faker::Company.name
     inventory.input_date = Faker::Date.between(from: 90.days.ago, to: Date.today)
   end
@@ -358,7 +358,7 @@ tool_names.each do |name|
     inventory.stock_quantity = Faker::Number.between(from: 20, to: 100)
     inventory.category = tools_category
     inventory.unit = piece_unit
-    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(15.0, 50.0)
+    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(15.0, 50.0)
     inventory.supplier = Faker::Company.name
     inventory.input_date = Faker::Date.between(from: 180.days.ago, to: Date.today)
   end
@@ -371,7 +371,7 @@ equipment_names.each do |name|
     inventory.stock_quantity = Faker::Number.between(from: 5, to: 15)
     inventory.category = equipment_category
     inventory.unit = piece_unit
-    inventory.price = Faker::Number.decimal(l_digits: 4, r_digits: 2).to_f.clamp(800.0, 2500.0)
+    inventory.price = Faker::Number.decimal(l_digits: 4, r_digits: 2).clamp(800.0, 2500.0)
     inventory.supplier = Faker::Company.name
     inventory.input_date = Faker::Date.between(from: 365.days.ago, to: Date.today)
   end
