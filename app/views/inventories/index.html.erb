@@ -1,40 +1,428 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>Inventories</h1>
-      <div class="mb-3">
-        <%= link_to "New Inventory", new_inventory_path, class: "btn btn-primary" %>
-      </div>
-      <div class="table-responsive">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Stock Quantity</th>
-              <th>Unit</th>
-              <th>Price</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @inventories.each do |inventory| %>
-              <tr>
-                <td><%= inventory.name %></td>
-                <td><%= inventory.category&.name %></td>
-                <td><%= inventory.stock_quantity %></td>
-                <td><%= inventory.unit&.name %></td>
-                <td><%= inventory.price %></td>
-                <td>
-                  <%= link_to "Show", inventory_path(inventory), class: "btn btn-sm btn-info" %>
-                  <%= link_to "Edit", edit_inventory_path(inventory), class: "btn btn-sm btn-warning" %>
-                  <%= link_to "Delete", inventory_path(inventory), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
-                </td>
-              </tr>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+<div class="inventory-page">
+  <h1>Inventory</h1>
+
+  <button type="button" class="add-button" id="openModalBtn">
+    <i id="add-icon" class="fa fa-plus-circle"></i> Add Inventory
+  </button>
+
+  <table id="inventoryTable" border="1" cellpadding="10">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Unit</th>
+        <th>Quantity</th>
+        <th>Input Date</th>
+        <th>Price</th>
+      </tr>
+      <tr class="filters">
+        <th></th>
+        <th><input type="text" id="nameFilter" placeholder="Search Name" style="width: 90%; padding: 10px"></th>
+        <th>
+          <select id="categoryFilter" style="width: 95%; padding: 10px;">
+            <option value="">Select Category</option>
+            <% @categories.each do |cat| %>
+              <option value="<%= cat.name %>"><%= cat.name %></option>
             <% end %>
-          </tbody>
-        </table>
+          </select>
+        </th>
+        <th>
+          <select id="unitFilter" style="width: 95%; padding: 10px;">
+            <option value="">Select Unit</option>
+            <% @units.each do |unit| %>
+              <option value="<%= unit.name %>"><%= unit.name %></option>
+            <% end %>
+          </select>
+        </th>
+        <th></th>
+        <th><input type="date" id="dateFilter" style="width: 95%; padding: 10px;"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @inventories.each do |inv| %>
+        <tr>
+          <td class="action-buttons">
+            <a href="#" title="Info" data-turbo="false">
+              <i class="bi bi-info-circle-fill info-icon" style="color: #0d6efd; font-size: 1.2rem;" data-id="<%= inv.id %>"></i>
+            </a>
+            <a href="#" title="Edit" data-turbo="false">
+              <i class="bi bi-pencil-fill edit-icon" style="color: #ffc107; font-size: 1.2rem;" data-id="<%= inv.id %>"></i>
+            </a>
+            <a href="#" title="Delete" data-turbo="false">
+              <i class="bi bi-trash-fill delete-icon" style="color: #dc3545; font-size: 1.2rem;" data-id="<%= inv.id %>"></i>
+            </a>
+          </td>
+          <td><%= inv.name %></td>
+          <td><%= inv.category&.name %></td>
+          <td><%= inv.unit&.name %></td>
+          <td><%= inv.stock_quantity %></td>
+          <td><%= inv.input_date %></td>
+          <td>RM <%= number_with_precision(inv.price, precision: 2) %></td>
+          <td style="display:none;"><%= inv.supplier %></td>
+        </tr>
+      <% end %>
+
+      <tr id="noDataRow" style="display: none; text-align: center; color: #6c757d;">
+        <td colspan="7">
+          <i class="fa fa-exclamation-circle" style="margin-right: 8px;"></i>
+          There is no data!
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ADD MODAL -->
+  <div id="addInventoryModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2>Add New Inventory</h2>
+      <hr/>
+      <%= form_with(model: @inventory, url: inventories_path, local: true) do |f| %>
+        <div class="form-row">
+          <div class="form-group">
+            <%= f.label :name %>
+            <%= f.text_field :name, class: "form-control", placeholder: "Enter Inventory Name", required: true %>
+          </div>
+          <div class="form-group">
+            <%= f.label :category_id, "Category" %>
+            <%= f.collection_select :category_id, @categories, :id, :name, { prompt: "Select Category" }, class: "form-control", required: true %>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <%= f.label :unit_id, "Unit" %>
+            <%= f.collection_select :unit_id, @units, :id, :name, { prompt: "Select Unit" }, class: "form-control", required: true %>
+          </div>
+          <div class="form-group">
+            <%= f.label :stock_quantity %>
+            <%= f.number_field :stock_quantity, class: "form-control", required: true %>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <%= f.label :price, "Price (RM)" %>
+            <%= f.number_field :price, step: 0.01, min: 0, class: "form-control", required: true %>
+          </div>
+          <div class="form-group">
+            <%= f.label :supplier, "Supplier Name" %>
+            <%= f.text_field :supplier, class: "form-control", required: true %>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <%= f.label :input_date, "Input Date" %>
+            <%= f.date_field :input_date, class: "form-control", required: true %>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <%= f.button type: "submit", class: "submit-button" do %>
+            <i class="bi bi-save-fill text-white"></i> Save
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- VIEW MODAL -->
+  <div id="viewInventoryModal" class="modal">
+    <div class="modal-content">
+      <span class="close-view-modal">&times;</span>
+      <h2>View Inventory Details</h2>
+      <hr/>
+      <div id="viewInventoryDetails"></div>
+    </div>
+  </div>
+
+<!-- EDIT MODAL -->
+<div id="editInventoryModal" class="modal">
+  <div class="modal-content">
+    <span class="close-update-modal">&times;</span>
+    <h2>Update Inventory Details</h2>
+    <hr />
+    <%= form_with model: @inventory, url: "", method: :patch, local: true, id: "editInventoryForm" do |f| %>
+      <div class="form-row">
+        <div class="form-group">
+          <%= f.label :name %>
+          <%= f.text_field :name, class: "form-control", id: "edit_name", required: true %>
+        </div>
+        <div class="form-group">
+          <%= f.label :category_id, "Category" %>
+          <%= f.collection_select :category_id, @categories, :id, :name, {}, class: "form-control", id: "edit_category" %>
+        </div>
       </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <%= f.label :unit_id, "Unit" %>
+          <%= f.collection_select :unit_id, @units, :id, :name, {}, class: "form-control", id: "edit_unit" %>
+        </div>
+        <div class="form-group">
+          <%= f.label :stock_quantity %>
+          <%= f.number_field :stock_quantity, class: "form-control", id: "edit_quantity", required: true %>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <%= f.label :price, "Price (RM)" %>
+          <%= f.number_field :price, step: 0.01, min: 0, class: "form-control", id: "edit_price", required: true %>
+        </div>
+        <div class="form-group">
+          <%= f.label :input_date, "Input Date" %>
+          <%= f.date_field :input_date, class: "form-control", id: "edit_date", required: true %>
+        </div>
+      </div>
+
+      <div style="text-align: right;">
+        <%= f.button type: "submit", class: "submit-button" do %>
+          <i class="bi bi-arrow-repeat text-white"></i>
+          Update
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+
+  <!-- DELETE MODAL -->
+  <div id="deleteInventoryModal" class="modal">
+    <div class="modal-content">
+      <span class="close-delete-modal">&times;</span>
+      <h2>Delete Inventory</h2>
+      <hr />
+      <p id="deleteConfirmMessage"></p>
+
+      <%= form_with url: "", method: :delete, local: true, id: "deleteInventoryForm" do %>
+        <div style="text-align: right;">
+          <%= button_tag "Delete", class: "btn btn-danger" %>
+          <button type="button" id="cancelDeleteBtn" class="btn btn-secondary">Cancel</button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+
+  <!-- PAGINATION -->
+  <div class="pagination-container">
+    <div class="pagination-left">
+      Show 
+      <select id="rowsPerPage">
+        <option value="5" selected>5</option>
+        <option value="10">10</option>
+        <option value="25">25</option>
+      </select>
+      entries 
+      <span class="pagination-info" id="paginationInfo"></span>
+    </div>
+    <div class="pagination-buttons">
+      <button id="prevPage">&lt;&lt; Previous</button>
+      <button id="nextPage">Next &gt;&gt;</button>
     </div>
   </div>
 </div>
+
+<!--- JAVASCRIPT -->
+<script>
+document.addEventListener('turbo:load', function () {
+  // -------------------------------
+  // TABLE + FILTER + PAGINATION
+  // -------------------------------
+  const table = document.getElementById('inventoryTable');
+  const tbody = table.tBodies[0];
+  const rows = Array.from(tbody.rows).filter(r => r.id !== 'noDataRow');
+
+  const nameFilter = document.getElementById('nameFilter');
+  const categoryFilter = document.getElementById('categoryFilter');
+  const unitFilter = document.getElementById('unitFilter');
+  const dateFilter = document.getElementById('dateFilter');
+  const rowsPerPageSelect = document.getElementById('rowsPerPage');
+  const prevPageBtn = document.getElementById('prevPage');
+  const nextPageBtn = document.getElementById('nextPage');
+  const paginationInfo = document.getElementById('paginationInfo');
+  const paginationButtonsContainer = document.querySelector('.pagination-buttons');
+
+  let currentPage = 1;
+  let rowsPerPage = parseInt(rowsPerPageSelect.value);
+
+  function filterRows() {
+    const nameVal = nameFilter.value.toLowerCase();
+    const categoryVal = categoryFilter.value;
+    const unitVal = unitFilter.value;
+    const dateVal = dateFilter.value;
+
+    return rows.filter(row => {
+      const nameText = row.cells[1].textContent.toLowerCase();
+      const categoryText = row.cells[2].textContent;
+      const unitText = row.cells[3].textContent;
+      const dateText = row.cells[5].textContent;
+      return (
+        nameText.includes(nameVal) &&
+        (categoryVal === "" || categoryText === categoryVal) &&
+        (unitVal === "" || unitText === unitVal) &&
+        (dateVal === "" || dateText === dateVal)
+      );
+    });
+  }
+
+  function displayTable() {
+    const filteredRows = filterRows();
+    const totalPages = Math.ceil(filteredRows.length / rowsPerPage) || 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    rows.forEach(r => r.style.display = 'none');
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    filteredRows.slice(start, end).forEach(r => r.style.display = '');
+
+    const noDataRow = document.getElementById('noDataRow');
+    noDataRow.style.display = filteredRows.length === 0 ? '' : 'none';
+
+    const startIndex = filteredRows.length === 0 ? 0 : start + 1;
+    const endIndex = Math.min(end, filteredRows.length);
+    paginationInfo.textContent = `Showing ${startIndex} to ${endIndex} of ${filteredRows.length} entries`;
+
+    paginationButtonsContainer.querySelectorAll('.page-btn').forEach(btn => btn.remove());
+    const nextBtn = document.getElementById('nextPage');
+    for (let i = 1; i <= totalPages; i++) {
+      const btn = document.createElement('button');
+      btn.textContent = i;
+      btn.classList.add('page-btn');
+      if (i === currentPage) btn.classList.add('active');
+      btn.addEventListener('click', () => {
+        currentPage = i;
+        displayTable();
+      });
+      paginationButtonsContainer.insertBefore(btn, nextBtn);
+    }
+
+    prevPageBtn.disabled = currentPage === 1;
+    nextPageBtn.disabled = currentPage === totalPages;
+  }
+
+  [nameFilter, categoryFilter, unitFilter, dateFilter].forEach(el => {
+    el.addEventListener('input', () => { currentPage = 1; displayTable(); });
+    el.addEventListener('change', () => { currentPage = 1; displayTable(); });
+  });
+
+  rowsPerPageSelect.addEventListener('change', () => {
+    rowsPerPage = parseInt(rowsPerPageSelect.value);
+    currentPage = 1;
+    displayTable();
+  });
+  prevPageBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; displayTable(); } });
+  nextPageBtn.addEventListener('click', () => {
+    const totalPages = Math.ceil(filterRows().length / rowsPerPage) || 1;
+    if (currentPage < totalPages) { currentPage++; displayTable(); }
+  });
+
+  // -------------------------------
+  // ADD INVENTORY MODAL
+  // -------------------------------
+  const addModal = document.getElementById('addInventoryModal');
+  const openAddBtn = document.getElementById('openModalBtn');
+  const closeAddBtn = addModal.querySelector('.close-modal');
+  openAddBtn.addEventListener('click', () => addModal.style.display = 'flex');
+  closeAddBtn.addEventListener('click', () => addModal.style.display = 'none');
+  window.addEventListener('click', e => { if (e.target === addModal) addModal.style.display = 'none'; });
+
+  // -------------------------------
+  // VIEW INVENTORY MODAL
+  // -------------------------------
+  const viewModal = document.getElementById('viewInventoryModal');
+  const closeViewBtn = viewModal.querySelector('.close-view-modal');
+  const viewDetails = document.getElementById('viewInventoryDetails');
+
+  function showInfoModal(row) {
+    const [name, category, unit, quantity, inputDate, price, supplier] = [1,2,3,4,5,6,7].map(i => row.cells[i].textContent);
+    console.log([...row.cells].map((c, i) => `${i}: ${c.textContent}`));
+
+    viewDetails.innerHTML = `
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Category:</strong> ${category}</p>
+      <p><strong>Unit:</strong> ${unit}</p>
+      <p><strong>Quantity:</strong> ${quantity}</p>
+      <p><strong>Input Date:</strong> ${inputDate}</p>
+      <p><strong>Price:</strong> ${price}</p>
+      <p><strong>Supplier Name:</strong> ${supplier}</p>
+      
+    `;
+    viewModal.style.display = 'flex';
+  }
+
+  closeViewBtn.addEventListener('click', () => viewModal.style.display = 'none');
+  window.addEventListener('click', e => { if (e.target === viewModal) viewModal.style.display = 'none'; });
+
+  // -------------------------------
+  // EDIT MODAL (REAL PATCH REQUEST)
+  // -------------------------------
+  const editModal = document.getElementById('editInventoryModal');
+  const closeEditBtn = editModal.querySelector('.close-update-modal');
+  const editForm = document.getElementById('editInventoryForm');
+
+  function showEditModal(row) {
+    const id = row.querySelector('.edit-icon').dataset.id;
+    const name = row.cells[1].textContent.trim();
+    const category = row.cells[2].textContent.trim();
+    const unit = row.cells[3].textContent.trim();
+    const quantity = row.cells[4].textContent.trim();
+    const date = row.cells[5].textContent.trim();
+    const price = row.cells[6].textContent.replace('RM', '').trim();
+
+    editForm.action = `/inventories/${id}`;
+
+    // Fill fields
+    document.getElementById('edit_name').value = name;
+    document.getElementById('edit_quantity').value = quantity;
+    document.getElementById('edit_price').value = price;
+    document.getElementById('edit_date').value = date;
+
+    editModal.style.display = 'flex';
+  }
+
+  closeEditBtn.addEventListener('click', () => editModal.style.display = 'none');
+  window.addEventListener('click', e => { if (e.target === editModal) editModal.style.display = 'none'; });
+
+  // -------------------------------
+  // DELETE MODAL (REAL DELETE REQUEST)
+  // -------------------------------
+  const deleteModal = document.getElementById('deleteInventoryModal');
+  const closeDeleteBtn = deleteModal.querySelector('.close-delete-modal');
+  const deleteMsg = document.getElementById('deleteConfirmMessage');
+  const deleteForm = document.getElementById('deleteInventoryForm');
+  const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+
+  function showDeleteModal(row) {
+    const id = row.querySelector('.delete-icon').dataset.id;
+    const name = row.cells[1].textContent.trim();
+    deleteMsg.textContent = `Are you sure you want to delete "${name}"?`;
+    deleteForm.action = `/inventories/${id}`;
+    deleteModal.style.display = 'flex';
+  }
+
+  closeDeleteBtn.addEventListener('click', () => deleteModal.style.display = 'none');
+  cancelDeleteBtn.addEventListener('click', () => deleteModal.style.display = 'none');
+  window.addEventListener('click', e => { if (e.target === deleteModal) deleteModal.style.display = 'none'; });
+
+  // -------------------------------
+  // ICON CLICK HANDLERS
+  // -------------------------------
+  table.addEventListener('click', e => {
+    const infoIcon = e.target.closest('.info-icon');
+    const editIcon = e.target.closest('.edit-icon');
+    const deleteIcon = e.target.closest('.delete-icon');
+
+    if (infoIcon) { e.preventDefault(); showInfoModal(infoIcon.closest('tr')); }
+    if (editIcon) { e.preventDefault(); showEditModal(editIcon.closest('tr')); }
+    if (deleteIcon) { e.preventDefault(); showDeleteModal(deleteIcon.closest('tr')); }
+  });
+
+  // Initialize
+  displayTable();
+});
+</script>
+

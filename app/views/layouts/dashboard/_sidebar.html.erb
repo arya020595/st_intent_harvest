@@ -1,8 +1,8 @@
-<div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px; height: 100vh;">
+<div class="d-flex flex-column flex-shrink-0 p-3 sidebar-bg" style="width: 280px; height: auto">
   <a href="<%= root_path %>" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
-    <span class="fs-4">ST Dashboard</span>
+    <!-- <span class="fs-4">ST Dashboard</span> -->
   </a>
-  <hr>
+   <!-- <hr> -->
   <ul id="sidebarAccordion" class="nav nav-pills flex-column mb-auto">
     <% if can_view_menu?('Dashboard') %>
       <li class="nav-item">
@@ -13,7 +13,7 @@
       </li>
       <li>
         <%= link_to bi_dashboard_path, class: "nav-link #{current_page?(bi_dashboard_path) ? 'active' : 'link-dark'}" do %>
-          <i class="bi bi-bar-chart-line me-2"></i>
+          <i class="bi bi-bar-chart-line-fill me-2"></i>
           BI Dashboard
         <% end %>
       </li>
@@ -24,7 +24,7 @@
       <li>
         <% work_order_active = active_controller?('work_order') %>
         <a class="nav-link <%= work_order_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#workOrdersCollapse" href="#" role="button" aria-expanded="<%= work_order_active %>" aria-controls="workOrdersCollapse">
-          <i class="bi bi-clipboard-check me-2"></i>
+          <i class="bi bi-clipboard-check-fill me-2"></i>
           Work Orders
           <i class="bi bi-chevron-right float-end collapse-chevron"></i>
         </a>
@@ -46,7 +46,7 @@
     <% if can_view_menu?('Payslip') %>
       <li>
         <%= link_to payslips_path, class: "nav-link #{active_controller?('payslips') ? 'active' : 'link-dark'}" do %>
-          <i class="bi bi-clipboard-data me-2"></i>
+          <i class="bi bi-clipboard-data-fill me-2"></i>
           Payslip
         <% end %>
       </li>
@@ -54,7 +54,7 @@
     <% if can_view_menu?('Inventory') %>
       <li>
         <%= link_to inventories_path, class: "nav-link #{active_controller?('inventories') ? 'active' : 'link-dark'}" do %>
-          <i class="bi bi-box-seam me-2"></i>
+          <i class="bi bi-box-seam-fill me-2"></i>
           Inventory
         <% end %>
       </li>
@@ -62,7 +62,7 @@
     <% if can_view_menu?('Worker') %>
       <li>
         <%= link_to workers_path, class: "nav-link #{active_controller?('workers') ? 'active' : 'link-dark'}" do %>
-          <i class="bi bi-people me-2"></i>
+          <i class="bi bi-people-fill me-2"></i>
           Workers
         <% end %>
       </li>
@@ -73,7 +73,7 @@
       <li>
         <% master_data_active = active_controller?('master_data') %>
         <a class="nav-link <%= master_data_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#masterDataCollapse" href="#" role="button" aria-expanded="<%= master_data_active %>" aria-controls="masterDataCollapse">
-          <i class="bi bi-database me-2"></i>
+          <i class="bi bi-database-fill me-2"></i>
           Master Data
           <i class="bi bi-chevron-right float-end collapse-chevron"></i>
         </a>
@@ -104,7 +104,7 @@
       <li>
         <% user_management_active = active_controller?('user_management') %>
         <a class="nav-link <%= user_management_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#userManagementCollapse" href="#" role="button" aria-expanded="<%= user_management_active %>" aria-controls="userManagementCollapse">
-          <i class="bi bi-shield-lock me-2"></i>
+          <i class="bi bi-shield-lock-fill me-2"></i>
           User Management
           <i class="bi bi-chevron-right float-end collapse-chevron"></i>
         </a>
