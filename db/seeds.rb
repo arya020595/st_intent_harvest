@@ -332,7 +332,7 @@ fertilizer_names.each do |name|
     inventory.stock_quantity = Faker::Number.between(from: 100, to: 500)
     inventory.category = fertilizer_category
     inventory.unit = kg_unit
-    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(45.0, 85.0)
+    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal("45.0"), BigDecimal("85.0"))
     inventory.supplier = Faker::Company.name
     inventory.input_date = Faker::Date.between(from: 90.days.ago, to: Date.today)
   end
@@ -345,7 +345,7 @@ pesticide_names.each do |name|
     inventory.stock_quantity = Faker::Number.between(from: 50, to: 200)
     inventory.category = pesticide_category
     inventory.unit = liter_unit
-    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(30.0, 60.0)
+    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal("30.0"), BigDecimal("60.0"))
     inventory.supplier = Faker::Company.name
     inventory.input_date = Faker::Date.between(from: 90.days.ago, to: Date.today)
   end
@@ -358,7 +358,7 @@ tool_names.each do |name|
     inventory.stock_quantity = Faker::Number.between(from: 20, to: 100)
     inventory.category = tools_category
     inventory.unit = piece_unit
-    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(15.0, 50.0)
+    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal("15.0"), BigDecimal("50.0"))
     inventory.supplier = Faker::Company.name
     inventory.input_date = Faker::Date.between(from: 180.days.ago, to: Date.today)
   end
@@ -371,7 +371,7 @@ equipment_names.each do |name|
     inventory.stock_quantity = Faker::Number.between(from: 5, to: 15)
     inventory.category = equipment_category
     inventory.unit = piece_unit
-    inventory.price = Faker::Number.decimal(l_digits: 4, r_digits: 2).to_f.clamp(800.0, 2500.0)
+    inventory.price = Faker::Number.decimal(l_digits: 4, r_digits: 2).clamp(BigDecimal("800.0"), BigDecimal("2500.0"))
     inventory.supplier = Faker::Company.name
     inventory.input_date = Faker::Date.between(from: 365.days.ago, to: Date.today)
   end
@@ -388,7 +388,7 @@ hectare_unit = Unit.find_by(name: 'Hectare')
 day_based_work_orders = %w[Harvesting Spraying Fertilizing Weeding Pruning Planting]
 day_based_work_orders.each do |work_order_name|
   WorkOrderRate.find_or_create_by!(work_order_name: work_order_name) do |rate|
-    rate.rate = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(50.0, 100.0)
+    rate.rate = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal("50.0"), BigDecimal("100.0"))
     rate.unit_id = day_unit.id.to_s
   end
 end
@@ -397,7 +397,7 @@ end
 hectare_based_work_orders = ['Land Preparation', 'Land Clearing', 'Irrigation Setup']
 hectare_based_work_orders.each do |work_order_name|
   WorkOrderRate.find_or_create_by!(work_order_name: work_order_name) do |rate|
-    rate.rate = Faker::Number.decimal(l_digits: 3, r_digits: 2).to_f.clamp(200.0, 400.0)
+    rate.rate = Faker::Number.decimal(l_digits: 3, r_digits: 2).clamp(BigDecimal("200.0"), BigDecimal("400.0"))
     rate.unit_id = hectare_unit.id.to_s
   end
 end
@@ -443,7 +443,7 @@ work_orders.each do |work_order|
   assigned_workers.each do |worker|
     WorkOrderWorker.find_or_create_by!(work_order: work_order, worker: worker) do |wow|
       wow.worker_name = worker.name
-      wow.rate = Faker::Number.decimal(l_digits: 2, r_digits: 2).to_f.clamp(50.0, 100.0)
+      wow.rate = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal("50.0"), BigDecimal("100.0"))
       wow.amount = wow.rate * rand(3..8) # amount = rate * days worked
       wow.remarks = Faker::Lorem.sentence(word_count: 5)
     end
@@ -483,8 +483,8 @@ end
 puts 'Creating pay calculation details...'
 Worker.where(is_active: true).limit(30).each do |worker|
   PayCalculationDetail.find_or_create_by!(pay_calculation: pay_calc, worker: worker) do |detail|
-    gross = Faker::Number.decimal(l_digits: 4, r_digits: 2).to_f.clamp(3000.0, 10_000.0)
-    deduct = Faker::Number.decimal(l_digits: 3, r_digits: 2).to_f.clamp(500.0, 2500.0)
+    gross = Faker::Number.decimal(l_digits: 4, r_digits: 2).clamp(BigDecimal("3000.0"), BigDecimal("10000.0"))
+    deduct = Faker::Number.decimal(l_digits: 3, r_digits: 2).clamp(BigDecimal("500.0"), BigDecimal("2500.0"))
     detail.gross_salary = gross
     detail.deductions = deduct
     detail.net_salary = gross - deduct
