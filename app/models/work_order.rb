@@ -16,7 +16,31 @@ class WorkOrder < ApplicationRecord
 
   validates :start_date, presence: true
   validates :work_order_status, inclusion: { in: %w[ongoing pending amendment_required completed], allow_nil: true }
-  
+
+  # Ransack configuration
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[
+      id
+      start_date
+      work_order_status
+      block_number
+      block_hectarage
+      work_order_rate_name
+      work_order_rate_price
+      approved_by
+      approved_at
+      created_at
+      updated_at
+      block_id
+      work_order_rate_id
+      field_conductor_id
+    ]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[block work_order_rate field_conductor work_order_workers work_order_items work_order_histories]
+  end
+
   # AASM State Machine Configuration with string column
   aasm column: :work_order_status do
     state :ongoing, initial: true
@@ -28,7 +52,8 @@ class WorkOrder < ApplicationRecord
     event :mark_complete do
       transitions from: :ongoing, to: :pending do
         after do
-          WorkOrderHistory.record_transition(self, 'ongoing', 'pending', 'mark_complete', Current.user, "Work order submitted for approval")
+          WorkOrderHistory.record_transition(self, 'ongoing', 'pending', 'mark_complete', Current.user,
+                                             'Work order submitted for approval')
         end
       end
     end
@@ -36,7 +61,8 @@ class WorkOrder < ApplicationRecord
     event :approve do
       transitions from: :pending, to: :completed do
         after do
-          WorkOrderHistory.record_transition(self, 'pending', 'completed', 'approve', Current.user, "Work order approved and completed")
+          WorkOrderHistory.record_transition(self, 'pending', 'completed', 'approve', Current.user,
+                                             'Work order approved and completed')
         end
       end
     end
@@ -44,7 +70,8 @@ class WorkOrder < ApplicationRecord
     event :request_amendment do
       transitions from: :pending, to: :amendment_required do
         after do
-          WorkOrderHistory.record_transition(self, 'pending', 'amendment_required', 'request_amendment', Current.user, "Amendment requested by approver")
+          WorkOrderHistory.record_transition(self, 'pending', 'amendment_required', 'request_amendment', Current.user,
+                                             'Amendment requested by approver')
         end
       end
     end
@@ -52,7 +79,8 @@ class WorkOrder < ApplicationRecord
     event :reopen do
       transitions from: :amendment_required, to: :pending do
         after do
-          WorkOrderHistory.record_transition(self, 'amendment_required', 'pending', 'reopen', Current.user, "Work order resubmitted after amendments")
+          WorkOrderHistory.record_transition(self, 'amendment_required', 'pending', 'reopen', Current.user,
+                                             'Work order resubmitted after amendments')
         end
       end
     end

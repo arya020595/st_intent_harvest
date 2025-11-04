@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 class WorkOrder::DetailsController < ApplicationController
+  include RansackMultiSort
+
   before_action :set_work_order, only: %i[show edit update destroy mark_complete]
 
   def index
-    @work_orders = policy_scope(
-      WorkOrder,
-      policy_scope_class: WorkOrder::DetailPolicy::Scope
-    )
     authorize WorkOrder, policy_class: WorkOrder::DetailPolicy
+
+    apply_ransack_search(policy_scope(WorkOrder, policy_scope_class: WorkOrder::DetailPolicy::Scope).order(id: :desc))
+    @pagy, @work_orders = paginate_results(@q.result.includes(:block, :work_order_rate, :field_conductor))
   end
 
   def show
