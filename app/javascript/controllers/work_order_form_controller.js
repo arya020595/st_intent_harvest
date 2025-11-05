@@ -43,6 +43,8 @@ export default class extends Controller {
 
     // Initialize current work order rate from the selected option on load (edit/new with preselected)
     this.initializeWorkOrderRateFromSelect();
+    // Preserve per-worker saved rates on load; just refresh displays and amounts
+    this.refreshAllWorkerDisplays();
     console.log("Loaded inventories:", this.inventories.length);
     console.log("Loaded workers:", this.workers.length);
   }
@@ -78,12 +80,28 @@ export default class extends Controller {
             ? selectedRate.unit.name
             : "N/A";
 
-        // Ensure all existing worker rows reflect the current rate
-        this.updateAllWorkerRates();
+        // On initial load, do not overwrite saved per-worker rates
       }
     } catch (e) {
       console.warn("Failed to initialize work order rate from select", e);
     }
+  }
+
+  refreshAllWorkerDisplays() {
+    const workerRows = this.workersContainerTarget.querySelectorAll(
+      "tr[data-worker-index]"
+    );
+    workerRows.forEach((row) => {
+      const index = row.dataset.workerIndex;
+      const rateHidden = document.getElementById(`worker_rate_value_${index}`);
+      const rateDisplay = document.getElementById(`worker_rate_${index}`);
+      const rateVal = parseFloat(rateHidden?.value || "0");
+      if (rateDisplay) {
+        rateDisplay.value =
+          rateVal > 0 ? `RM ${rateVal.toFixed(2)}` : "Auto Calculate";
+      }
+      this.calculateWorkerAmount(index);
+    });
   }
 
   updateWorkOrderRate(event) {
@@ -233,8 +251,14 @@ export default class extends Controller {
           <input type="number" class="form-control form-control-sm" id="worker_quantity_${index}" name="work_order[work_order_workers_attributes][${index}][work_area_size]" placeholder="0" step="0.01" min="0" oninput="window.workOrderFormController.calculateWorkerAmount(${index})">
         </td>
         <td>
-          <input type="text" class="form-control form-control-sm" id="worker_rate_${index}" value="Auto Calculate" disabled style="background-color: #e9ecef;">
-          <input type="hidden" id="worker_rate_value_${index}" name="work_order[work_order_workers_attributes][${index}][rate]" value="0">
+          <input type="text" class="form-control form-control-sm" id="worker_rate_${index}" value="${
+      this.currentWorkOrderRate > 0
+        ? `RM ${this.currentWorkOrderRate.toFixed(2)}`
+        : "Auto Calculate"
+    }" disabled style="background-color: #e9ecef;">
+          <input type="hidden" id="worker_rate_value_${index}" name="work_order[work_order_workers_attributes][${index}][rate]" value="${(
+      this.currentWorkOrderRate || 0
+    ).toFixed(2)}">
         </td>
         <td>
           <input type="text" class="form-control form-control-sm" id="worker_amount_${index}" value="Auto Calculate" disabled style="background-color: #e9ecef;">
@@ -264,8 +288,8 @@ export default class extends Controller {
       return;
     }
 
-    // Apply the current work order rate to this worker
-    this.applyWorkerRate(index);
+    // Preserve existing rate; just recalc amount based on quantity and current hidden rate
+    this.calculateWorkerAmount(index);
   }
 
   applyWorkerRate(index) {
