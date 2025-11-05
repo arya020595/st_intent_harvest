@@ -1,14 +1,20 @@
 # frozen_string_literal: true
 
 class WorkOrder::ApprovalsController < ApplicationController
+  include RansackMultiSort
+
   before_action :set_work_order, only: %i[show update approve reject]
 
   def index
-    @work_orders = policy_scope(
-      WorkOrder,
-      policy_scope_class: WorkOrder::ApprovalPolicy::Scope
-    )
     authorize WorkOrder, policy_class: WorkOrder::ApprovalPolicy
+
+    # Exclude 'ongoing' work orders from approvals listing
+    base_scope = policy_scope(WorkOrder, policy_scope_class: WorkOrder::ApprovalPolicy::Scope)
+                 .where.not(work_order_status: WorkOrder::STATUSES[:ongoing])
+                 .order(id: :desc)
+
+    apply_ransack_search(base_scope)
+    @pagy, @work_orders = paginate_results(@q.result.includes(:block, :work_order_rate, :field_conductor))
   end
 
   def show
