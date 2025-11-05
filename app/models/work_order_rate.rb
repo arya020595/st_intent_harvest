@@ -1,8 +1,17 @@
 class WorkOrderRate < ApplicationRecord
   belongs_to :unit, optional: true
-  
+
   validates :work_order_name, presence: true
   validates :rate, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+
+  # Ransack configuration
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[id work_order_name rate currency created_at updated_at unit_id]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[unit]
+  end
 end
 
 # == Schema Information

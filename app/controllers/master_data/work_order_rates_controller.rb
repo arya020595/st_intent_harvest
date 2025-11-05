@@ -2,11 +2,16 @@
 
 module MasterData
   class WorkOrderRatesController < ApplicationController
+    include RansackMultiSort
+
     before_action :set_work_order_rate, only: %i[show edit update destroy]
 
     def index
-      @work_order_rates = policy_scope(WorkOrderRate, policy_scope_class: MasterData::WorkOrderRatePolicy::Scope)
       authorize WorkOrderRate, policy_class: MasterData::WorkOrderRatePolicy
+
+      apply_ransack_search(policy_scope(WorkOrderRate,
+                                        policy_scope_class: MasterData::WorkOrderRatePolicy::Scope).order(id: :desc))
+      @pagy, @work_order_rates = paginate_results(@q.result)
     end
 
     def show

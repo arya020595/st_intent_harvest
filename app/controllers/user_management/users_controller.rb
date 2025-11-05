@@ -2,11 +2,15 @@
 
 module UserManagement
   class UsersController < ApplicationController
+    include RansackMultiSort
+
     before_action :set_user, only: %i[show edit update destroy]
 
     def index
-      @users = policy_scope(User, policy_scope_class: UserManagement::UserPolicy::Scope)
       authorize User, policy_class: UserManagement::UserPolicy
+
+      apply_ransack_search(policy_scope(User, policy_scope_class: UserManagement::UserPolicy::Scope).order(id: :desc))
+      @pagy, @users = paginate_results(@q.result)
     end
 
     def show

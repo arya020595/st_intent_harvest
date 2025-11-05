@@ -2,11 +2,15 @@
 
 module MasterData
   class BlocksController < ApplicationController
+    include RansackMultiSort
+
     before_action :set_block, only: %i[show edit update destroy]
 
     def index
-      @blocks = policy_scope(Block, policy_scope_class: MasterData::BlockPolicy::Scope)
       authorize Block, policy_class: MasterData::BlockPolicy
+
+      apply_ransack_search(policy_scope(Block, policy_scope_class: MasterData::BlockPolicy::Scope).order(id: :desc))
+      @pagy, @blocks = paginate_results(@q.result)
     end
 
     def show
