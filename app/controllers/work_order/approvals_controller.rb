@@ -8,7 +8,12 @@ class WorkOrder::ApprovalsController < ApplicationController
   def index
     authorize WorkOrder, policy_class: WorkOrder::ApprovalPolicy
 
-    apply_ransack_search(policy_scope(WorkOrder, policy_scope_class: WorkOrder::ApprovalPolicy::Scope).order(id: :desc))
+    # Exclude 'ongoing' work orders from approvals listing
+    base_scope = policy_scope(WorkOrder, policy_scope_class: WorkOrder::ApprovalPolicy::Scope)
+                 .where.not(work_order_status: WorkOrder::STATUSES[:ongoing])
+                 .order(id: :desc)
+
+    apply_ransack_search(base_scope)
     @pagy, @work_orders = paginate_results(@q.result.includes(:block, :work_order_rate, :field_conductor))
   end
 

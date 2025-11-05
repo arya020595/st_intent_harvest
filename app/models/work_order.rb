@@ -3,6 +3,14 @@
 class WorkOrder < ApplicationRecord
   include AASM
 
+  # Status constants
+  STATUSES = {
+    ongoing: 'ongoing',
+    pending: 'pending',
+    amendment_required: 'amendment_required',
+    completed: 'completed'
+  }.freeze
+
   # Audit trail - automatically tracks create/update/destroy with user and changes
   audited
 
@@ -15,7 +23,7 @@ class WorkOrder < ApplicationRecord
   has_many :work_order_histories, dependent: :destroy
 
   validates :start_date, presence: true
-  validates :work_order_status, inclusion: { in: %w[ongoing pending amendment_required completed], allow_nil: true }
+  validates :work_order_status, inclusion: { in: STATUSES.values, allow_nil: true }
 
   # Ransack configuration
   def self.ransackable_attributes(_auth_object = nil)
