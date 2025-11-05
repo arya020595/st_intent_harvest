@@ -1,0 +1,13 @@
+<div class="mb-3 bg-success text-white px-3 py-2 rounded">
+  <h6 class="mb-0">
+    <% breadcrumbs.each_with_index do |(text, url), index| %>
+      <% if index == 0 %>
+        <%= text %>
+      <% elsif index == breadcrumbs.length - 1 %>
+        <span class="fw-bold"> &gt; <%= text %></span>
+      <% else %>
+        <span> - <%= link_to text, url, class: "text-decoration-none text-white" %></span>
+      <% end %>
+    <% end %>
+  </h6>
+</div>
