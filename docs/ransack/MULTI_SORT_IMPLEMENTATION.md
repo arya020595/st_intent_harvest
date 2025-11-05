@@ -522,7 +522,7 @@ end
 
 <!-- Show with custom formatting -->
 <td>
-  <%= unit.name || link_to(rate.unit.name, master_data_unit_path(rate.unit), class: "text-decoration-none") %>
+  <%= unit.name.present? ? unit.name : link_to(rate.unit.name, master_data_unit_path(rate.unit), class: "text-decoration-none") %>
 </td>
 ```
 
