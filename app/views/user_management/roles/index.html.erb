@@ -51,7 +51,7 @@
               <% if @roles.any? %>
                 <% @roles.each do |role| %>
                   <tr>
-                    <td class="text-center">IH_<%= role.id.to_s.rjust(3, '0') %></td>
+                    <td class="text-center"><%= role.id %></td>
                     <td><%= role.name %></td>
                     <td>
                       <small class="text-muted"><%= role.created_at.strftime("%b %d, %Y %H:%M") if role.created_at %></small>

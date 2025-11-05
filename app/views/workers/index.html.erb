@@ -63,7 +63,7 @@
               <% if @workers.any? %>
                 <% @workers.each do |worker| %>
                   <tr>
-                    <td class="text-center">IH_<%= worker.id.to_s.rjust(3, '0') %></td>
+                    <td class="text-center"><%= worker.id %></td>
                     <td><%= worker.name %></td>
                     <td><%= worker.worker_type %></td>
                     <td class="text-center">

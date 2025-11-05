@@ -63,7 +63,7 @@
               <% if @work_order_rates.any? %>
                 <% @work_order_rates.each do |work_order_rate| %>
                   <tr>
-                    <td class="text-center">IH_<%= work_order_rate.id.to_s.rjust(3, '0') %></td>
+                    <td class="text-center"><%= work_order_rate.id %></td>
                     <td><strong><%= work_order_rate.work_order_name %></strong></td>
                     <td class="text-center">
                       <span class="badge bg-info"><%= number_with_precision(work_order_rate.rate, precision: 2) %></span>

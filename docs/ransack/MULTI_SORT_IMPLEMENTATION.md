@@ -331,7 +331,7 @@ end
               <% if @users.any? %>
                 <% @users.each do |user| %>
                   <tr>
-                    <td class="text-center">IH_<%= user.id.to_s.rjust(3, '0') %></td>
+                    <td class="text-center"><%= user.id %></td>
                     <td><%= user.name %></td>
                     <td><%= user.email %></td>
                     <td><%= user.role&.name || 'N/A' %></td>
@@ -573,14 +573,14 @@ end
 </td>
 ```
 
-### 7. ID Formatting (IH\_ prefix with padding)
+### 7. ID Display
 
 ```erb
-<!-- Display formatted ID with prefix and zero-padding -->
+<!-- Display plain ID -->
 <td class="text-center">
-  IH_<%= record.id.to_s.rjust(3, '0') %>
+  <%= record.id %>
 </td>
-<!-- Examples: IH_001, IH_042, IH_123 -->
+<!-- Examples: 1, 42, 123 -->
 ```
 
 ### 8. Action Button Groups

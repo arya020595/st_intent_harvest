@@ -57,7 +57,7 @@
               <% if @vehicles.any? %>
                 <% @vehicles.each do |vehicle| %>
                   <tr>
-                    <td class="text-center">IH_<%= vehicle.id.to_s.rjust(3, '0') %></td>
+                    <td class="text-center"><%= vehicle.id %></td>
                     <td><strong><%= vehicle.vehicle_number %></strong></td>
                     <td><%= vehicle.vehicle_model %></td>
                     <td>
