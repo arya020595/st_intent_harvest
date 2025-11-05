@@ -6,9 +6,9 @@ class WorkOrder::ApprovalPolicy < ApplicationPolicy
     has_permission?(:approve)
   end
 
-  # Custom action for rejecting/requesting amendments (pending -> amendment_required)
-  def reject?
-    has_permission?(:reject)
+  # Custom action for requesting amendments (pending -> amendment_required)
+  def request_amendment?
+    has_permission?(:request_amendment)
   end
 
   class Scope < ApplicationPolicy::Scope

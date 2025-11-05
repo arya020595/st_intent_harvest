@@ -1,0 +1,32 @@
+<!-- Approval Modal -->
+<div class="modal fade" id="approvalModal" tabindex="-1" aria-labelledby="approvalModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <div class="mb-3">
+          <i class="bi bi-exclamation-circle text-warning" style="font-size: 4rem;"></i>
+        </div>
+        <h5 class="modal-title mb-4" id="approvalModalLabel">Approve this Work Order?</h5>
+        <div class="d-flex gap-2 justify-content-center">
+          <% if work_order.may_request_amendment? %>
+            <%= link_to request_amendment_work_order_approval_path(work_order), 
+                data: { turbo_method: :patch }, 
+                class: "btn btn-warning px-4" do %>
+              Amendment Required
+            <% end %>
+          <% end %>
+          <% if work_order.may_approve? %>
+            <%= link_to approve_work_order_approval_path(work_order), 
+                data: { turbo_method: :patch }, 
+                class: "btn btn-success px-4" do %>
+              Approve
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

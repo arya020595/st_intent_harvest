@@ -22,36 +22,19 @@ class WorkOrder::DetailsController < ApplicationController
   end
 
   def create
-    @work_order = WorkOrder.new(work_order_params)
+    service = WorkOrderServices::CreateService.new(work_order_params)
+    @work_order = service.work_order
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
 
-    # If draft param is present, save as draft (status stays as initial: ongoing)
-    if params[:draft].present?
-      if @work_order.save
-        redirect_to work_order_detail_path(@work_order), notice: 'Work order was saved as draft.'
-      else
-        flash.now[:alert] = 'There was an error creating the work order. Please check the form.'
-        render :new, status: :unprocessable_entity
-      end
-      return
-    end
+    draft = params[:draft].present?
 
-    # Otherwise, treat as submission: create and immediately move to pending
-    ActiveRecord::Base.transaction do
-      if @work_order.save
-        begin
-          # Use AASM transition to pending so history callbacks (if any) run
-          @work_order.mark_complete!
-          redirect_to work_order_detail_path(@work_order), notice: 'Work order was successfully submitted.'
-        rescue StandardError => e
-          Rails.logger.error("WorkOrder submission transition failed: #{e.class}: #{e.message}")
-          flash.now[:alert] = 'There was an error submitting the work order. Please try again.'
-          raise ActiveRecord::Rollback
-        end
-      else
-        flash.now[:alert] = 'There was an error creating the work order. Please check the form.'
-        render :new, status: :unprocessable_entity
-      end
+    if service.call(draft: draft)
+      message = draft ? 'Work order was saved as draft.' : 'Work order was successfully submitted.'
+      redirect_to work_order_detail_path(@work_order), notice: message
+    else
+      flash.now[:alert] =
+        service.errors.any? ? service.errors.join(', ') : 'There was an error creating the work order. Please check the form.'
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -62,10 +45,15 @@ class WorkOrder::DetailsController < ApplicationController
   def update
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
 
-    if @work_order.update(work_order_params)
-      redirect_to work_order_detail_path(@work_order), notice: 'Work order was successfully updated.'
+    service = WorkOrderServices::UpdateService.new(@work_order, work_order_params)
+    submit = params[:submit].present?
+
+    if service.call(submit: submit)
+      message = submit ? 'Work order was successfully submitted for approval.' : 'Work order was successfully updated.'
+      redirect_to work_order_detail_path(@work_order), notice: message
     else
-      flash.now[:alert] = 'There was an error updating the work order. Please check the form.'
+      flash.now[:alert] =
+        service.errors.any? ? service.errors.join(', ') : 'There was an error updating the work order. Please check the form.'
       render :edit, status: :unprocessable_entity
     end
   end

@@ -3,7 +3,7 @@
 class WorkOrder::ApprovalsController < ApplicationController
   include RansackMultiSort
 
-  before_action :set_work_order, only: %i[show update approve reject]
+  before_action :set_work_order, only: %i[show update approve request_amendment]
 
   def index
     authorize WorkOrder, policy_class: WorkOrder::ApprovalPolicy
@@ -30,13 +30,31 @@ class WorkOrder::ApprovalsController < ApplicationController
   def approve
     authorize @work_order, policy_class: WorkOrder::ApprovalPolicy
 
-    # Logic to be implemented later
+    if @work_order.may_approve?
+      @work_order.approved_by = current_user.name
+      @work_order.approved_at = Time.current
+      @work_order.approve!
+      redirect_to work_order_approvals_path, notice: 'Work order has been approved successfully.'
+    else
+      redirect_to work_order_approval_path(@work_order),
+                  alert: "Cannot approve work order in #{@work_order.work_order_status} status."
+    end
+  rescue AASM::InvalidTransition => e
+    redirect_to work_order_approval_path(@work_order), alert: "Failed to approve work order: #{e.message}"
   end
 
-  def reject
+  def request_amendment
     authorize @work_order, policy_class: WorkOrder::ApprovalPolicy
 
-    # Logic to be implemented later
+    if @work_order.may_request_amendment?
+      @work_order.request_amendment!
+      redirect_to work_order_approvals_path, notice: 'Amendment has been requested for this work order.'
+    else
+      redirect_to work_order_approval_path(@work_order),
+                  alert: "Cannot request amendment for work order in #{@work_order.work_order_status} status."
+    end
+  rescue AASM::InvalidTransition => e
+    redirect_to work_order_approval_path(@work_order), alert: "Failed to request amendment: #{e.message}"
   end
 
   private
