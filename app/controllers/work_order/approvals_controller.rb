@@ -10,7 +10,7 @@ class WorkOrder::ApprovalsController < ApplicationController
 
     # Exclude 'ongoing' work orders from approvals listing
     base_scope = policy_scope(WorkOrder, policy_scope_class: WorkOrder::ApprovalPolicy::Scope)
-                 .where.not(work_order_status: 'ongoing')
+                 .where.not(work_order_status: WorkOrder::STATUSES[:ongoing])
                  .order(id: :desc)
 
     apply_ransack_search(base_scope)
