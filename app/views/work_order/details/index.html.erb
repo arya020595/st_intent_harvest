@@ -79,7 +79,7 @@
                         <%= link_to work_order_detail_path(work_order), class: "btn btn-info btn-sm", title: "View Details" do %>
                           <i class="bi bi-info-circle"></i>
                         <% end %>
-                        <% unless work_order.completed? %>
+                        <% if work_order.work_order_status.in?(%w[ongoing amendment_required]) %>
                           <%= link_to edit_work_order_detail_path(work_order), class: "btn btn-warning btn-sm", title: "Edit" do %>
                             <i class="bi bi-pencil"></i>
                           <% end %>
