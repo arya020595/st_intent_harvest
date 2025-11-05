@@ -75,7 +75,7 @@
               <% if @users.any? %>
                 <% @users.each do |user| %>
                   <tr>
-                    <td class="text-center">IH_<%= user.id.to_s.rjust(3, '0') %></td>
+                    <td class="text-center"><%= user.id %></td>
                     <td><%= user.name %></td>
                     <td><%= user.email %></td>
                     <td><%= user.role&.name || 'N/A' %></td>
