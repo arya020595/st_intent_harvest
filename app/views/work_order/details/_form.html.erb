@@ -69,7 +69,7 @@
               User.joins(:role).where(roles: { name: 'Field Conductor' }), 
               :id, 
               :name, 
-              { include_blank: "Auto Filled" }, 
+              { include_blank: "Select Field Conductor" }, 
               { class: "form-select" } %>
         </div>
       </div>
