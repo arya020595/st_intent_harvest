@@ -63,7 +63,7 @@
               <% if @categories.any? %>
                 <% @categories.each do |category| %>
                   <tr>
-                    <td class="text-center">IH_<%= category.id.to_s.rjust(3, '0') %></td>
+                    <td class="text-center"><%= category.id %></td>
                     <td><strong><%= category.name %></strong></td>
                     <td>
                       <span class="badge bg-info"><%= category.category_type %></span>

@@ -57,7 +57,7 @@
               <% if @blocks.any? %>
                 <% @blocks.each do |block| %>
                   <tr>
-                    <td class="text-center">IH_<%= block.id.to_s.rjust(3, '0') %></td>
+                    <td class="text-center"><%= block.id %></td>
                     <td><%= block.block_number %></td>
                     <td class="text-center"><%= number_with_precision(block.hectarage, precision: 2) if block.hectarage %></td>
                     <td>

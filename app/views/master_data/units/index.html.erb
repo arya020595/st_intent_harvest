@@ -57,7 +57,7 @@
               <% if @units.any? %>
                 <% @units.each do |unit| %>
                   <tr>
-                    <td class="text-center">IH_<%= unit.id.to_s.rjust(3, '0') %></td>
+                    <td class="text-center"><%= unit.id %></td>
                     <td><strong><%= unit.name %></strong></td>
                     <td>
                       <span class="badge bg-warning text-dark"><%= unit.unit_type %></span>
