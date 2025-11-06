@@ -38,12 +38,19 @@ module WorkOrderServices
       ActiveRecord::Base.transaction do
         if work_order.update(@work_order_params)
           begin
-            # Use AASM transition to pending so history callbacks run
-            work_order.mark_complete!
+            # Use AASM transition to pending based on current status
+            if work_order.work_order_status == 'amendment_required'
+              work_order.reopen!
+            elsif work_order.work_order_status == 'ongoing'
+              work_order.mark_complete!
+            else
+              @errors << "Work order cannot be submitted from '#{work_order.work_order_status}' status."
+              raise ActiveRecord::Rollback
+            end
             success = true
           rescue StandardError => e
             Rails.logger.error("WorkOrder submission transition failed: #{e.class}: #{e.message}")
-            @errors << 'There was an error submitting the work order. Please try again.'
+            @errors << 'There was an error submitting the work order. Please try again.' unless @errors.any?
             raise ActiveRecord::Rollback
           end
         else
