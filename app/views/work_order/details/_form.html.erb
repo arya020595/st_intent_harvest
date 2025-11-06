@@ -207,11 +207,18 @@
       </div>
       <!-- Action Buttons -->
       <div class="d-flex justify-content-end gap-2 mb-4">
-        <%= button_tag type: "submit", name: "draft", value: "true", class: "btn btn-warning" do %>
-          <i class="bi bi-save"></i> Save as Draft
-        <% end %>
-        <%= button_tag type: "submit", name: "submit", value: "true", class: "btn btn-success" do %>
-          <i class="bi bi-check-circle"></i> Submit Work Order
+        <% if work_order.persisted? %>
+          <!-- For edit form -->
+          <%= form.submit "Save Changes", class: "btn btn-warning" %>
+          <%= button_tag type: "submit", name: "submit", value: "true", class: "btn btn-success" do %>
+            <i class="bi bi-check-circle"></i> Submit Work Order
+          <% end %>
+        <% else %>
+          <!-- For new form -->
+          <%= button_tag type: "submit", name: "draft", value: "true", class: "btn btn-warning" do %>
+            <i class="bi bi-save"></i> Save as Draft
+          <% end %>
+          <%= form.submit "Submit Work Order", class: "btn btn-success" %>
         <% end %>
       </div>
     <% end %>
