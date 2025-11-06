@@ -23,7 +23,7 @@ module WorkOrderServices
 
     def save_as_draft
       if work_order.save
-        Success(work_order)
+        Success(work_order: work_order, message: 'Work order was saved as draft.')
       else
         Failure(work_order.errors.full_messages)
       end
@@ -35,7 +35,7 @@ module WorkOrderServices
           begin
             # Use AASM transition to pending so history callbacks run
             work_order.mark_complete!
-            Success(work_order)
+            Success(work_order: work_order, message: 'Work order was successfully submitted.')
           rescue StandardError => e
             Rails.logger.error("WorkOrder submission transition failed: #{e.class}: #{e.message}")
             raise ActiveRecord::Rollback

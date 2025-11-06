@@ -124,7 +124,7 @@ export default class extends Controller {
     const options = {
       method: "PATCH",
       headers: this.getRequestHeaders(),
-      redirect: "follow",
+      redirect: "manual", // Changed from "follow" to prevent auto-redirect
     };
 
     if (body) {
@@ -137,6 +137,7 @@ export default class extends Controller {
   getRequestHeaders() {
     return {
       "Content-Type": "application/json",
+      Accept: "application/json", // Request JSON response
       "X-CSRF-Token": this.getCsrfToken(),
     };
   }
@@ -147,19 +148,39 @@ export default class extends Controller {
       .getAttribute("content");
   }
 
-  handleResponse(response) {
-    if (response.redirected) {
-      window.location.href = response.url;
-    } else if (response.ok) {
-      window.location.reload();
+  async handleResponse(response) {
+    if (response.ok) {
+      const data = await response.json();
+
+      if (data.success && data.redirect_url) {
+        // Show success message if available
+        if (data.message) {
+          this.showSuccess(data.message);
+        }
+        // Redirect to the URL provided by the server
+        window.location.href = data.redirect_url;
+      } else {
+        window.location.reload();
+      }
     } else {
-      this.showError("An error occurred. Please try again.");
+      // Handle error response
+      try {
+        const data = await response.json();
+        this.showError(data.error || "An error occurred. Please try again.");
+      } catch {
+        this.showError("An error occurred. Please try again.");
+      }
     }
   }
 
   handleError(error) {
     console.error("Request failed:", error);
     this.showError("An error occurred. Please try again.");
+  }
+
+  showSuccess(message) {
+    // You can replace this with a better notification system (e.g., toast)
+    alert(message);
   }
 
   showError(message) {

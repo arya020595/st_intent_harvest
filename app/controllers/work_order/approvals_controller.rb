@@ -2,6 +2,7 @@
 
 class WorkOrder::ApprovalsController < ApplicationController
   include RansackMultiSort
+  include ResponseHandling
 
   before_action :set_work_order, only: %i[show update approve request_amendment]
 
@@ -33,10 +34,12 @@ class WorkOrder::ApprovalsController < ApplicationController
     service = WorkOrderServices::ApproveService.new(@work_order, current_user)
     result = service.call
 
-    result.either(
-      ->(message) { respond_with_success(message) },
-      ->(error) { respond_with_error(error) }
-    )
+    # HTML (ERB form) -> redirect to index
+    # JSON (JavaScript) -> redirect to show (stay on current page)
+    handle_result(result,
+                  success_path: work_order_approvals_path,
+                  json_success_path: work_order_approval_path(@work_order),
+                  error_path: work_order_approval_path(@work_order))
   end
 
   def request_amendment
@@ -46,10 +49,12 @@ class WorkOrder::ApprovalsController < ApplicationController
     service = WorkOrderServices::RequestAmendmentService.new(@work_order, remarks)
     result = service.call
 
-    result.either(
-      ->(message) { respond_with_success(message) },
-      ->(error) { respond_with_error(error) }
-    )
+    # HTML (ERB form) -> redirect to index
+    # JSON (JavaScript) -> redirect to show (stay on current page)
+    handle_result(result,
+                  success_path: work_order_approvals_path,
+                  json_success_path: work_order_approval_path(@work_order),
+                  error_path: work_order_approval_path(@work_order))
   end
 
   private
@@ -60,20 +65,5 @@ class WorkOrder::ApprovalsController < ApplicationController
 
   def approval_params
     params.require(:work_order).permit(:approved_by, :approved_at)
-  end
-
-  # Response handlers
-  def respond_with_success(notice_message)
-    respond_to do |format|
-      format.html { redirect_to work_order_approvals_path, notice: notice_message }
-      format.json { head :ok }
-    end
-  end
-
-  def respond_with_error(error_message)
-    respond_to do |format|
-      format.html { redirect_to work_order_approval_path(@work_order), alert: error_message }
-      format.json { render json: { error: error_message }, status: :unprocessable_entity }
-    end
   end
 end

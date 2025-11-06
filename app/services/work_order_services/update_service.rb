@@ -23,7 +23,7 @@ module WorkOrderServices
 
     def update_only
       if work_order.update(@work_order_params)
-        Success(work_order)
+        Success('Work order was successfully updated.')
       else
         Failure(work_order.errors.full_messages)
       end
@@ -41,7 +41,7 @@ module WorkOrderServices
             else
               raise StandardError, "Work order cannot be submitted from '#{work_order.work_order_status}' status."
             end
-            Success(work_order)
+            Success('Work order was successfully submitted for approval.')
           rescue StandardError => e
             Rails.logger.error("WorkOrder submission transition failed: #{e.class}: #{e.message}")
             raise ActiveRecord::Rollback

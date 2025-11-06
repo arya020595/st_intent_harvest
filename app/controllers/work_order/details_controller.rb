@@ -2,6 +2,7 @@
 
 class WorkOrder::DetailsController < ApplicationController
   include RansackMultiSort
+  include ResponseHandling
 
   before_action :set_work_order, only: %i[show edit update destroy mark_complete]
 
@@ -29,15 +30,10 @@ class WorkOrder::DetailsController < ApplicationController
     draft = params[:draft].present?
     result = service.call(draft: draft)
 
-    result.either(
-      lambda { |work_order|
-        message = draft ? 'Work order was saved as draft.' : 'Work order was successfully submitted.'
-        redirect_to work_order_detail_path(work_order), notice: message
-      },
-      lambda { |errors|
-        flash.now[:alert] = errors.is_a?(Array) ? errors.join(', ') : errors
-        render :new, status: :unprocessable_entity
-      }
+    handle_result(
+      result,
+      success_path: ->(data) { work_order_detail_path(data[:work_order]) },
+      error_action: :new
     )
   end
 
@@ -52,15 +48,10 @@ class WorkOrder::DetailsController < ApplicationController
     submit = params[:submit].present?
     result = service.call(submit: submit)
 
-    result.either(
-      lambda { |work_order|
-        message = submit ? 'Work order was successfully submitted for approval.' : 'Work order was successfully updated.'
-        redirect_to work_order_detail_path(work_order), notice: message
-      },
-      lambda { |errors|
-        flash.now[:alert] = errors.is_a?(Array) ? errors.join(', ') : errors
-        render :edit, status: :unprocessable_entity
-      }
+    handle_result(
+      result,
+      success_path: work_order_detail_path(@work_order),
+      error_action: :edit
     )
   end
 
@@ -80,9 +71,10 @@ class WorkOrder::DetailsController < ApplicationController
     service = WorkOrderServices::MarkCompleteService.new(@work_order)
     result = service.call
 
-    result.either(
-      ->(message) { redirect_to work_order_detail_path(@work_order), notice: message },
-      ->(error) { redirect_to work_order_detail_path(@work_order), alert: error }
+    handle_result(
+      result,
+      success_path: work_order_detail_path(@work_order),
+      error_path: work_order_detail_path(@work_order)
     )
   end
 
