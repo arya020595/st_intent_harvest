@@ -27,15 +27,18 @@ class WorkOrder::DetailsController < ApplicationController
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
 
     draft = params[:draft].present?
+    result = service.call(draft: draft)
 
-    if service.call(draft: draft)
-      message = draft ? 'Work order was saved as draft.' : 'Work order was successfully submitted.'
-      redirect_to work_order_detail_path(@work_order), notice: message
-    else
-      flash.now[:alert] =
-        service.errors.any? ? service.errors.join(', ') : 'There was an error creating the work order. Please check the form.'
-      render :new, status: :unprocessable_entity
-    end
+    result.either(
+      lambda { |work_order|
+        message = draft ? 'Work order was saved as draft.' : 'Work order was successfully submitted.'
+        redirect_to work_order_detail_path(work_order), notice: message
+      },
+      lambda { |errors|
+        flash.now[:alert] = errors.is_a?(Array) ? errors.join(', ') : errors
+        render :new, status: :unprocessable_entity
+      }
+    )
   end
 
   def edit
@@ -47,15 +50,18 @@ class WorkOrder::DetailsController < ApplicationController
 
     service = WorkOrderServices::UpdateService.new(@work_order, work_order_params)
     submit = params[:submit].present?
+    result = service.call(submit: submit)
 
-    if service.call(submit: submit)
-      message = submit ? 'Work order was successfully submitted for approval.' : 'Work order was successfully updated.'
-      redirect_to work_order_detail_path(@work_order), notice: message
-    else
-      flash.now[:alert] =
-        service.errors.any? ? service.errors.join(', ') : 'There was an error updating the work order. Please check the form.'
-      render :edit, status: :unprocessable_entity
-    end
+    result.either(
+      lambda { |work_order|
+        message = submit ? 'Work order was successfully submitted for approval.' : 'Work order was successfully updated.'
+        redirect_to work_order_detail_path(work_order), notice: message
+      },
+      lambda { |errors|
+        flash.now[:alert] = errors.is_a?(Array) ? errors.join(', ') : errors
+        render :edit, status: :unprocessable_entity
+      }
+    )
   end
 
   def destroy
@@ -72,12 +78,12 @@ class WorkOrder::DetailsController < ApplicationController
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
 
     service = WorkOrderServices::MarkCompleteService.new(@work_order)
+    result = service.call
 
-    if service.call
-      redirect_to work_order_detail_path(@work_order), notice: service.message
-    else
-      redirect_to work_order_detail_path(@work_order), alert: service.message
-    end
+    result.either(
+      ->(message) { redirect_to work_order_detail_path(@work_order), notice: message },
+      ->(error) { redirect_to work_order_detail_path(@work_order), alert: error }
+    )
   end
 
   private
