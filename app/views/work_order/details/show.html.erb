@@ -22,7 +22,7 @@
       <i class="bi bi-trash"></i> Delete
     <% end %>
     <% if @work_order.work_order_status.in?(%w[ongoing amendment_required]) %>
-      <%= button_to work_order_detail_path(@work_order), method: :patch, params: { work_order: { work_order_status: 'pending' } }, class: "btn btn-primary" do %>
+      <%= link_to mark_complete_work_order_detail_path(@work_order), method: :patch, data: { turbo_method: :patch }, class: "btn btn-primary" do %>
         <i class="bi bi-check-circle"></i> Work Order Complete
       <% end %>
     <% end %>

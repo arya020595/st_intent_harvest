@@ -71,7 +71,21 @@ class WorkOrder::DetailsController < ApplicationController
   def mark_complete
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
 
-    # Logic to be implemented later
+    if @work_order.work_order_status == 'amendment_required'
+      if @work_order.reopen!
+        redirect_to work_order_detail_path(@work_order), notice: 'Work order has been resubmitted for approval.'
+      else
+        redirect_to work_order_detail_path(@work_order), alert: 'There was an error updating the work order status.'
+      end
+    elsif @work_order.work_order_status == 'ongoing'
+      if @work_order.mark_complete!
+        redirect_to work_order_detail_path(@work_order), notice: 'Work order has been submitted for approval.'
+      else
+        redirect_to work_order_detail_path(@work_order), alert: 'There was an error updating the work order status.'
+      end
+    else
+      redirect_to work_order_detail_path(@work_order), alert: 'Work order cannot be marked complete from this status.'
+    end
   end
 
   private
