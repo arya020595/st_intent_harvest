@@ -1,20 +1,18 @@
 class InventoriesController < ApplicationController
-  before_action :set_inventory, only: [:edit, :update, :destroy]
+  before_action :set_inventory, only: %i[edit update destroy]
 
   def index
     @inventories = Inventory.order(created_at: :desc)
     @inventory = Inventory.new
     @categories = Category.all
-    @units = Unit.all 
+    @units = Unit.all
   end
 
   def create
     @inventory = Inventory.new(inventory_params)
-    @categories = Category.all
-    @units = Unit.all
 
     if @inventory.save
-      redirect_to inventories_path, notice: "Inventory added successfully!"
+      redirect_to inventories_path, notice: 'Inventory added successfully!'
     else
       @inventories = Inventory.order(created_at: :desc)
       render :index
@@ -23,17 +21,17 @@ class InventoriesController < ApplicationController
 
   def update
     if @inventory.update(inventory_params)
-      redirect_to inventories_path, notice: "Inventory updated successfully!"
+      redirect_to inventories_path, notice: 'Inventory updated successfully!'
     else
-      redirect_to inventories_path, alert: "Failed to update inventory."
+      redirect_to inventories_path, alert: 'Failed to update inventory.'
     end
   end
 
   def destroy
     if @inventory.destroy
-      redirect_to inventories_path, notice: "Inventory deleted successfully!"
+      redirect_to inventories_path, notice: 'Inventory deleted successfully!'
     else
-      redirect_to inventories_path, alert: "Failed to delete inventory."
+      redirect_to inventories_path, alert: 'Failed to delete inventory.'
     end
   end
 
