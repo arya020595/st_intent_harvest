@@ -274,23 +274,12 @@ docker compose up web
 - Error after pulling changes with new gems
 - Application won't start due to missing gems
 
-**Solution (Automatic):**
+**Solution:**
 
-Our `docker-entrypoint` handles this automatically:
-
-```bash
-# Just restart the container
-docker compose restart web
-```
-
-The entrypoint runs `bundle check || bundle install` on startup, so missing gems are auto-installed.
-
-**Solution (Manual - if automatic doesn't work):**
+If you have added new gems, you need to install them manually inside the container:
 
 ```bash
-# Install gems manually
 docker compose exec web bundle install
-
 # Restart container
 docker compose restart web
 ```
