@@ -6,10 +6,10 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown user-account-box">
         <a class="nav-link dropdown-toggle text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" 
           style="border: 0; outline: 0; box-shadow: none;">
-          <i class="bi bi-person-circle"></i> <%= current_user.email %>
+          <i class="bi bi-person-circle" style="color: #29B6F6; font-size: 24px; margin-right: 10px"></i> <%= current_user.name %>
         </a>
 
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">

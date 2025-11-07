@@ -11,16 +11,22 @@
   <table id="inventoryTable" border="1" cellpadding="10">
     <thead>
       <tr>
-        <th></th>
-        <th>Name</th>
-        <th>Category</th>
-        <th>Unit</th>
-        <th>Quantity</th>
-        <th>Input Date</th>
-        <th>Price</th>
+        <th>
+        </th>
+        <th class="sortable" data-column="1">Name <i class="fa fa-sort"></i></th>
+        <th class="sortable" data-column="2">Category<i class="fa fa-sort"></i></th>
+        <th class="sortable" data-column="3">Unit<i class="fa fa-sort"></i></th>
+        <th class="sortable" data-column="4">Quantity<i class="fa fa-sort"></i></th>
+        <th class="sortable" data-column="5">Input Date<i class="fa fa-sort"></i></th>
+        <th class="sortable" data-column="6">Price<i class="fa fa-sort"></i></th>
       </tr>
       <tr class="filters">
-        <th></th>
+        <th>
+          <div style="display: flex; gap: 5px">
+            <button type="button" id="applyFilters" class="btn btn-primary">Search</button>
+            <button type="button" id="resetFilters" class="btn btn-secondary">Reset</button>
+          </div>
+        </th>
         <th><input type="text" id="nameFilter" placeholder="Search Name" style="width: 90%; padding: 10px"></th>
         <th>
           <select id="categoryFilter" style="width: 95%; padding: 10px;">
@@ -214,7 +220,8 @@
       <select id="rowsPerPage">
         <option value="5" selected>5</option>
         <option value="10">10</option>
-        <option value="25">25</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
       </select>
       entries 
       <span class="pagination-info" id="paginationInfo"></span>
@@ -246,8 +253,26 @@ document.addEventListener('turbo:load', function () {
   const paginationInfo = document.getElementById('paginationInfo');
   const paginationButtonsContainer = document.querySelector('.pagination-buttons');
 
+//Apply filter buttons
+const applyFiltersBtn = document.getElementById('applyFilters');
+const resetFiltersBtn = document.getElementById('resetFilters');
+
   let currentPage = 1;
   let rowsPerPage = parseInt(rowsPerPageSelect.value);
+
+  applyFiltersBtn.addEventListener('click', () => {
+  currentPage = 1;
+  displayTable();
+});
+
+resetFiltersBtn.addEventListener('click', () => {
+  nameFilter.value = '';
+  categoryFilter.value = '';
+  unitFilter.value = '';
+  dateFilter.value = '';
+  currentPage = 1;
+  displayTable();
+});
 
   function filterRows() {
     const nameVal = nameFilter.value.toLowerCase();
@@ -304,10 +329,10 @@ document.addEventListener('turbo:load', function () {
     nextPageBtn.disabled = currentPage === totalPages;
   }
 
-  [nameFilter, categoryFilter, unitFilter, dateFilter].forEach(el => {
-    el.addEventListener('input', () => { currentPage = 1; displayTable(); });
-    el.addEventListener('change', () => { currentPage = 1; displayTable(); });
-  });
+  //[nameFilter, categoryFilter, unitFilter, dateFilter].forEach(el => {
+  //  el.addEventListener('input', () => { currentPage = 1; displayTable(); });
+  //  el.addEventListener('change', () => { currentPage = 1; displayTable(); });
+  //});
 
   rowsPerPageSelect.addEventListener('change', () => {
     rowsPerPage = parseInt(rowsPerPageSelect.value);
@@ -318,6 +343,59 @@ document.addEventListener('turbo:load', function () {
   nextPageBtn.addEventListener('click', () => {
     const totalPages = Math.ceil(filterRows().length / rowsPerPage) || 1;
     if (currentPage < totalPages) { currentPage++; displayTable(); }
+  });
+
+  // -------------------------------
+  // SORTING DATA USING HEADER CLICKS
+  // -------------------------------
+let sortingData = { column: null, direction: true };
+
+  // -------------------------------
+  // SORTING LOGIC
+  // -------------------------------
+  let sortConfig = { column: null, direction: 'asc' };
+
+  function sortRows(columnIndex, direction) {
+    const filtered = filterRows();
+    filtered.sort((a, b) => {
+      const valA = a.cells[columnIndex].textContent.trim().toLowerCase();
+      const valB = b.cells[columnIndex].textContent.trim().toLowerCase();
+
+      // detect if numeric
+      const numA = parseFloat(valA.replace(/[^\d.-]/g, ''));
+      const numB = parseFloat(valB.replace(/[^\d.-]/g, ''));
+      const bothNumbers = !isNaN(numA) && !isNaN(numB);
+
+      if (bothNumbers) {
+        return direction === 'asc' ? numA - numB : numB - numA;
+      } else {
+        return direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+      }
+    });
+
+    // Reorder DOM
+    rows.forEach(r => r.style.display = 'none');
+    filtered.forEach(r => tbody.appendChild(r));
+  }
+
+  // Event listener for sortable headers
+  document.querySelectorAll('.sortable').forEach(header => {
+    header.addEventListener('click', () => {
+      const columnIndex = parseInt(header.dataset.column);
+      if (sortConfig.column === columnIndex) {
+        sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortConfig.column = columnIndex;
+        sortConfig.direction = 'asc';
+      }
+
+      // Update icon
+      document.querySelectorAll('.sortable i').forEach(i => i.className = 'fa fa-sort');
+      header.querySelector('i').className = sortConfig.direction === 'asc' ? 'fa fa-sort-up' : 'fa fa-sort-down';
+
+      sortRows(columnIndex, sortConfig.direction);
+      displayTable();
+    });
   });
 
   // -------------------------------

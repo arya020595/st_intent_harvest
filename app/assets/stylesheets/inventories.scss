@@ -378,4 +378,18 @@ button.disabled {
 }
 
 
+th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+th.sortable i {
+  margin-left: 6px;
+  color: #FFFFFF;
+}
+th.sortable:hover i {
+  color: #0d6efd;
+}
+
+
 

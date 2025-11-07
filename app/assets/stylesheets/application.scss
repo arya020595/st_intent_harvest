@@ -1,6 +1,9 @@
 @import "bootstrap";
 @import "dashboard";
 @import "inventories";
+@import "login";
+@import "dashboard";
+
 
 
 .sidebar-bg {
@@ -41,5 +44,23 @@
   .nav-link.active i.bi {
     color: #ffffff !important;
   }
+
+  .powered-by{
+    font-weight: 700;
+    color: #ffffff;
+    text-align: center;
+  }
 }
+
+.user-account-box {
+  border: none;       
+  border-radius: 8px;         
+  padding: 6px 12px;            
+  display: inline-block;        
+  margin-left: 10px;
+  width: auto;       
+  font-weight: 800;
+  font-size: 18px;
+}
+
 
