@@ -1,53 +1,40 @@
-# frozen_string_literal: true
-
 class InventoriesController < ApplicationController
-  before_action :set_inventory, only: %i[show edit update destroy]
+  before_action :set_inventory, only: [:edit, :update, :destroy]
 
   def index
-    @inventories = policy_scope(Inventory)
-    authorize Inventory
-  end
-
-  def show
-    authorize @inventory
-  end
-
-  def new
+    @inventories = Inventory.order(created_at: :desc)
     @inventory = Inventory.new
-    @blocks = Block.all
-    authorize @inventory
+    @categories = Category.all
+    @units = Unit.all 
   end
 
   def create
     @inventory = Inventory.new(inventory_params)
-    authorize @inventory
+    @categories = Category.all
+    @units = Unit.all
 
     if @inventory.save
-      redirect_to @inventory, notice: 'Inventory item was successfully created.'
+      redirect_to inventories_path, notice: "Inventory added successfully!"
     else
-      render :new, status: :unprocessable_entity
+      @inventories = Inventory.order(created_at: :desc)
+      render :index
     end
   end
 
-  def edit
-    authorize @inventory
-  end
-
   def update
-    authorize @inventory
-
     if @inventory.update(inventory_params)
-      redirect_to @inventory, notice: 'Inventory item was successfully updated.'
+      redirect_to inventories_path, notice: "Inventory updated successfully!"
     else
-      render :edit, status: :unprocessable_entity
+      redirect_to inventories_path, alert: "Failed to update inventory."
     end
   end
 
   def destroy
-    authorize @inventory
-
-    @inventory.destroy!
-    redirect_to inventories_url, notice: 'Inventory item was successfully deleted.'
+    if @inventory.destroy
+      redirect_to inventories_path, notice: "Inventory deleted successfully!"
+    else
+      redirect_to inventories_path, alert: "Failed to delete inventory."
+    end
   end
 
   private
@@ -59,13 +46,13 @@ class InventoriesController < ApplicationController
   def inventory_params
     params.require(:inventory).permit(
       :name,
-      :stock_quantity,
+      :category_id,
       :price,
       :currency,
+      :stock_quantity,
       :supplier,
-      :input_date,
       :unit_id,
-      :category_id
+      :input_date
     )
   end
 end

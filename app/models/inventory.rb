@@ -2,11 +2,16 @@ class Inventory < ApplicationRecord
   belongs_to :category, optional: true
   belongs_to :unit, optional: true
   has_many :work_order_items, dependent: :nullify
-  
-  validates :name, presence: true
-  validates :stock_quantity, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
-  validates :price, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+
+  validates :name, presence: { message: "Please enter the inventory name" }
+  validates :category_id, presence: { message: "Please select a category" }, if: -> { category_id.present? || category_id.nil? }
+  validates :unit_id, presence: { message: "Please select a unit" }, if: -> { unit_id.present? || unit_id.nil? }
+  validates :stock_quantity, numericality: { greater_than_or_equal_to: 0, message: "Quantity must be 0 or more" }, allow_nil: true
+  validates :price, numericality: { greater_than_or_equal_to: 0, message: "Price must be 0 or more" }, allow_nil: true
+  validates :supplier, presence: { message: "Please enter supplier name" }, if: -> { supplier.present? || supplier.nil? }
+  validates :input_date, presence: { message: "Please select an input date" }, if: -> { input_date.present? || input_date.nil? }
 end
+
 
 # == Schema Information
 #
