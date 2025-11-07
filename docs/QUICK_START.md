@@ -99,6 +99,18 @@ docker compose build    # Rebuild images
 docker compose up -d    # Start fresh
 ```
 
-## 📚 Full Documentation
+## 📚 Documentation
 
-See [DOCKER_GUIDE.md](./DOCKER_GUIDE.md) for comprehensive documentation.
+- **[DOCKER_GUIDE.md](./DOCKER_GUIDE.md)** - Comprehensive Docker documentation
+- **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Common issues and solutions
+
+## 🆘 Need Help?
+
+Having issues? Check the **[Troubleshooting Guide](./TROUBLESHOOTING.md)** for:
+
+- Images not rendering or updating
+- Container startup problems
+- Database connection issues
+- Gem installation errors
+- Performance problems
+- And more...

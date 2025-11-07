@@ -28,6 +28,7 @@ docker compose exec web rails db:seed
 
 - **[Quick Start Guide](docs/QUICK_START.md)** - Get up and running in 5 minutes
 - **[Docker Guide](docs/DOCKER_GUIDE.md)** - Comprehensive Docker documentation
+- **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Common issues and solutions
 - **[Pundit Authorization](docs/PUNDIT_AUTHORIZATION.md)** - Permission system details
 - **[Work Order Status Flow](docs/WORK_ORDER_STATUS_FLOW.md)** - State machine documentation
 
@@ -106,29 +107,34 @@ Staff:   staff@example.com   / password123
 
 ## 🐛 Troubleshooting
 
-See [Docker Guide](docs/DOCKER_GUIDE.md#troubleshooting) for detailed troubleshooting steps.
+Having issues? Check the **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** for detailed solutions:
 
-### Common Issues
+- 🖼️ Images not rendering or updating
+- 🐳 Container startup problems
+- 💾 Database connection errors
+- 💎 Gem installation issues
+- 🐌 Performance problems
+- And more common issues...
 
-**Port conflicts?**
+### Quick Fixes
+
+**Images not showing or updating?**
 
 ```bash
-# Stop local services
-sudo systemctl stop postgresql redis-server
-
-# Or change ports in docker-compose.yml
+docker compose exec web rails assets:clobber && docker compose restart web
 ```
 
-**Database connection errors?**
+**New gems not installed?**
+
+```bash
+docker compose restart web  # Auto-installs missing gems
+```
+
+**Database issues?**
 
 ```bash
 docker compose restart web
 ```
-
-**Code changes not showing?**
-
-- Code syncs automatically via volume mounts
-- For gem changes: `docker compose exec web bundle install && docker compose restart web`
 
 ## 📄 License
 
