@@ -84,6 +84,9 @@ group :development, :test do
 
   # Annotate models with schema information
   gem 'annotate'
+
+  # Faker for generating fake data
+  gem 'faker'
 end
 
 group :development do
