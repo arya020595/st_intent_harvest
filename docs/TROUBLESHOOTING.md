@@ -195,7 +195,7 @@ docker compose restart web
 
 **Symptoms:**
 
-- Error: `FATAL: database "st_intent_harvest_development" does not exist`
+- Error: `FATAL: database "<app_name>_development" does not exist`
 - Application won't start
 
 **Solution:**
