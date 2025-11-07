@@ -89,7 +89,46 @@ docker compose exec db psql -U postgres -c "SELECT version();"
 ### Code changes not reflecting?
 
 - No restart needed! Volume mounts sync code in real-time.
-- For gem changes: `docker compose exec web bundle install` then `docker compose restart web`
+- For gem changes: Just restart the container `docker compose restart web`
+
+### New gem added - "Run `bundle install` to install missing gems"?
+
+This happens when someone added a new gem and you pulled their changes.
+
+**Solution: Just restart the container** 🎉
+
+```bash
+# The entrypoint automatically runs bundle install on startup
+docker compose restart web
+
+# Or if you want to see the bundle install output:
+docker compose down
+docker compose up -d
+docker compose logs -f web
+```
+
+**How this works:**
+
+- Your `docker-compose.yml` uses a persistent `bundle_cache` volume (line 52)
+- Gems are stored in this volume, not in the image
+- The entrypoint runs `bundle check || bundle install` on every startup
+- New gems are installed automatically without rebuilding!
+
+**If container is stuck restarting:**
+
+```bash
+# Check logs first to see the error
+docker compose logs web
+
+# Force restart
+docker compose down
+docker compose up -d
+```
+
+**Prevention for team:**
+When you add a new gem, mention in PR/commit message:
+
+> "Added new gem - teammates need to restart: `docker compose restart web`"
 
 ### Reset everything?
 
