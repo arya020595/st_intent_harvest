@@ -153,7 +153,7 @@ export default class extends Controller {
 
   addResource() {
     if (!this.inventories || this.inventories.length === 0) {
-      alert("No inventories available. Please add inventory items first.");
+      this.showError("No inventories available. Please add inventory items first.");
       return;
     }
     const rowHTML = this.createResourceRow(this.resourceIndex);
@@ -235,7 +235,7 @@ export default class extends Controller {
 
   addWorker() {
     if (!this.workers || this.workers.length === 0) {
-      alert("No workers available. Please add worker records first.");
+      this.showError("No workers available. Please add worker records first.");
       return;
     }
     const row = this.createWorkerRow(this.workerIndex);
@@ -376,6 +376,28 @@ export default class extends Controller {
     if (row) {
       row.style.display = "none";
     }
+  }
+
+  escapeHTML(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  showError(message) {
+    this.getToastController()?.showError(message);
+  }
+
+  getToastController() {
+    const toastElement = document.querySelector('[data-controller="toast"]');
+    if (toastElement) {
+      return this.application.getControllerForElementAndIdentifier(
+        toastElement,
+        "toast"
+      );
+    }
+    console.error("Toast controller not found");
+    return null;
   }
 }
 
