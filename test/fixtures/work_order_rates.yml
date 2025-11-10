@@ -18,8 +18,12 @@
 #
 #  fk_rails_...  (unit_id => units.id)
 #
-one: {}
-# column: value
-#
-two: {}
-# column: value
+one:
+  work_order_name: "Harvesting"
+  rate: 150.00
+  currency: "RM"
+
+two:
+  work_order_name: "Fertilizing"
+  rate: 200.00
+  currency: "RM"

@@ -1,0 +1,57 @@
+# == Schema Information
+#
+# Table name: work_orders
+#
+#  id                    :bigint           not null, primary key
+#  approved_at           :datetime
+#  approved_by           :string
+#  block_hectarage       :string
+#  block_number          :string
+#  field_conductor_name  :string
+#  start_date            :date
+#  work_order_rate_name  :string
+#  work_order_rate_price :decimal(10, 2)
+#  work_order_status     :string           default("ongoing")
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  block_id              :bigint
+#  field_conductor_id    :bigint
+#  work_order_rate_id    :bigint
+#
+# Indexes
+#
+#  index_work_orders_on_block_and_rate        (block_id,work_order_rate_id)
+#  index_work_orders_on_block_id              (block_id)
+#  index_work_orders_on_field_conductor_id    (field_conductor_id)
+#  index_work_orders_on_work_order_rate_id    (work_order_rate_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (block_id => blocks.id)
+#  fk_rails_...  (field_conductor_id => users.id)
+#  fk_rails_...  (work_order_rate_id => work_order_rates.id)
+#
+
+one:
+  block: one
+  work_order_rate: one
+  field_conductor: admin
+  start_date: 2025-01-01
+  work_order_status: "ongoing"
+  block_number: "A-001"
+  block_hectarage: "25.5"
+  work_order_rate_name: "Harvesting"
+  work_order_rate_price: 150.00
+  field_conductor_name: "Admin User"
+
+two:
+  block: two
+  work_order_rate: two
+  field_conductor: one
+  start_date: 2025-01-02
+  work_order_status: "ongoing"
+  block_number: "B-002"
+  block_hectarage: "30.75"
+  work_order_rate_name: "Fertilizing"
+  work_order_rate_price: 200.00
+  field_conductor_name: "John Doe"
