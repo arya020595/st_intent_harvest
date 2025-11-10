@@ -1385,10 +1385,10 @@ docker compose up -d web
 
 ```bash
 # Don't remove container after exit
-docker compose run --service-ports --no-deps web
+docker compose run --service-ports --no-deps --rm=false web
 
 # Or keep it with dependencies
-docker compose run --service-ports web
+docker compose run --service-ports --rm=false web
 ```
 
 ### Using Docker Compose Profiles
