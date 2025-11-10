@@ -157,7 +157,7 @@ export default class extends Controller {
       return;
     }
     const rowHTML = this.createResourceRow(this.resourceIndex);
-    const temp = document.createElement('tbody');
+    const temp = document.createElement("tbody");
     temp.innerHTML = rowHTML.trim();
     const rowElement = temp.firstElementChild;
     if (rowElement) {
@@ -211,7 +211,7 @@ export default class extends Controller {
   updateResourceDetails(event) {
     const select = event.currentTarget;
     const index = select.dataset.resourceIndex;
-    
+
     if (!select || !select.options || select.selectedIndex < 0) return;
     const selectedOption = select.options[select.selectedIndex];
     if (!selectedOption.value) {
@@ -245,15 +245,15 @@ export default class extends Controller {
 
   // Helper function to build worker options safely using DOM APIs
   buildWorkerOptions() {
-    const select = document.createElement('select');
+    const select = document.createElement("select");
     // Add default option
-    const defaultOption = document.createElement('option');
+    const defaultOption = document.createElement("option");
     defaultOption.value = "";
     defaultOption.textContent = "Select Worker";
     select.appendChild(defaultOption);
     // Add worker options
     (this.workers || []).forEach((worker) => {
-      const option = document.createElement('option');
+      const option = document.createElement("option");
       option.value = worker.id;
       option.textContent = worker.name;
       select.appendChild(option);
@@ -304,7 +304,7 @@ export default class extends Controller {
   updateWorkerDetails(event) {
     const select = event.currentTarget;
     const index = select.dataset.workerIndex;
-    
+
     if (!select || !select.options || select.selectedIndex < 0) return;
     const selectedOption = select.options[select.selectedIndex];
     if (!selectedOption.value) {
@@ -340,7 +340,9 @@ export default class extends Controller {
     const quantityEl = document.getElementById(`worker_quantity_${index}`);
     const rateEl = document.getElementById(`worker_rate_value_${index}`);
     const amountEl = document.getElementById(`worker_amount_${index}`);
-    const amountValueEl = document.getElementById(`worker_amount_value_${index}`);
+    const amountValueEl = document.getElementById(
+      `worker_amount_value_${index}`
+    );
 
     const quantity = parseFloat(quantityEl?.value) || 0;
     const rate = parseFloat(rateEl?.value) || 0;
@@ -377,5 +379,12 @@ export default class extends Controller {
       row.style.display = "none";
     }
   }
-}
 
+  // Helper function to escape HTML to prevent XSS
+  escapeHTML(str) {
+    if (!str) return "";
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+}
