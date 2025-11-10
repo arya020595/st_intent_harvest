@@ -114,10 +114,10 @@
                 <td>
                   <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][<%= index %>][inventory_id]" data-action="change->work-order-form#updateResourceDetails">
                     <option value="">Select Resource</option>
-                    <% Inventory.includes(:category, :unit).all.each do |inv| %>
+                    <% @inventories.each do |inv| %>
                       <option value="<%= inv.id %>" data-category="<%= inv.category&.name %>" data-price="<%= inv.price || 0 %>" data-unit="<%= inv.unit&.name %>" <%= 'selected' if inv.id == item.inventory_id %>><%= inv.name %></option>
-                      <% end %>
-                    </select>
+                    <% end %>
+                  </select>
                     <%= hidden_field_tag "work_order[work_order_items_attributes][#{index}][id]", item.id %>
                   </td>
                   <td>
