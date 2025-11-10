@@ -156,8 +156,13 @@ export default class extends Controller {
       alert("No inventories available. Please add inventory items first.");
       return;
     }
-    const row = this.createResourceRow(this.resourceIndex);
-    this.resourcesContainerTarget.insertAdjacentHTML("beforeend", row);
+    const rowHTML = this.createResourceRow(this.resourceIndex);
+    const temp = document.createElement('tbody');
+    temp.innerHTML = rowHTML.trim();
+    const rowElement = temp.firstElementChild;
+    if (rowElement) {
+      this.resourcesContainerTarget.appendChild(rowElement);
+    }
     this.resourceIndex++;
   }
 
@@ -238,26 +243,31 @@ export default class extends Controller {
     this.workerIndex++;
   }
 
-  // Helper function to escape HTML special characters
-  escapeHTML(str) {
-    return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+  // Helper function to build worker options safely using DOM APIs
+  buildWorkerOptions() {
+    const select = document.createElement('select');
+    // Add default option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = "";
+    defaultOption.textContent = "Select Worker";
+    select.appendChild(defaultOption);
+    // Add worker options
+    (this.workers || []).forEach((worker) => {
+      const option = document.createElement('option');
+      option.value = worker.id;
+      option.textContent = worker.name;
+      select.appendChild(option);
+    });
+    return select.innerHTML;
   }
 
   createWorkerRow(index) {
-    const workerOptions = (this.workers || [])
-      .map((worker) => `<option value="${worker.id}">${this.escapeHTML(worker.name)}</option>`)
-      .join("");
+    const workerOptions = this.buildWorkerOptions();
 
     return `
       <tr data-worker-index="${index}">
         <td>
           <select class="form-select form-select-sm" name="work_order[work_order_workers_attributes][${index}][worker_id]" data-action="change->work-order-form#updateWorkerDetails" data-worker-index="${index}">
-            <option value="">Select Worker</option>
             ${workerOptions}
           </select>
         </td>
