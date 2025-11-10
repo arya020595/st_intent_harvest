@@ -62,6 +62,38 @@ docker compose exec web bundle install
 docker compose exec web bash
 ```
 
+### Interactive Debugging
+
+When you need to debug with `binding.pry` or `byebug`:
+
+```bash
+# Stop the background web service
+docker compose stop web
+
+# Run interactively with ports exposed
+docker compose run --service-ports web
+
+# Now you can interact with debugger in terminal!
+# Press Ctrl+C when done
+
+# Restart background service
+docker compose up -d web
+```
+
+**What `docker compose run --service-ports web` does:**
+
+- Runs Rails server in **interactive mode** (you can see output and type input)
+- Exposes ports (so `http://localhost:3000` still works)
+- Allows you to interact with debuggers like `binding.pry` or `byebug`
+- Perfect for debugging, running console, or any interactive task
+
+**Use cases:**
+
+- Debugging with `binding.pry` in controllers/models
+- Running interactive Rails console
+- Running generators that need input
+- Any task that needs to see real-time output
+
 ## Troubleshooting
 
 ### Port already in use?
