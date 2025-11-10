@@ -26,13 +26,9 @@ module WorkOrderServices
     private
 
     def request_amendment
-      work_order.request_amendment!
-      update_work_order_history_with_remarks
-    end
-
-    def update_work_order_history_with_remarks
-      last_history = work_order.work_order_histories.last
-      last_history.update(remarks: remarks) if last_history
+      # Pass remarks using keyword arguments
+      # The after callback will receive this and use it for WorkOrderHistory
+      work_order.request_amendment!(remarks: remarks)
     end
   end
 end
