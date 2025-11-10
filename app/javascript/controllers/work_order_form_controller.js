@@ -165,11 +165,11 @@ export default class extends Controller {
     const inventoryOptions = (this.inventories || [])
       .map(
         (inv) =>
-          `<option value="${inv.id}" data-category="${
+          `<option value="${inv.id}" data-category="${this.escapeHTML(
             inv.category?.name || ""
-          }" data-price="${inv.price || 0}" data-unit="${
+          )}" data-price="${inv.price || 0}" data-unit="${this.escapeHTML(
             inv.unit?.name || ""
-          }">${inv.name}</option>`
+          )}">${this.escapeHTML(inv.name)}</option>`
       )
       .join("");
 
@@ -238,9 +238,19 @@ export default class extends Controller {
     this.workerIndex++;
   }
 
+  // Helper function to escape HTML special characters
+  escapeHTML(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   createWorkerRow(index) {
     const workerOptions = (this.workers || [])
-      .map((worker) => `<option value="${worker.id}">${worker.name}</option>`)
+      .map((worker) => `<option value="${worker.id}">${this.escapeHTML(worker.name)}</option>`)
       .join("");
 
     return `

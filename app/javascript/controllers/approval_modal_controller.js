@@ -144,7 +144,7 @@ export default class extends Controller {
   getCsrfToken() {
     return document
       .querySelector('meta[name="csrf-token"]')
-      .getAttribute("content");
+      ?.getAttribute("content") || "";
   }
 
   async handleResponse(response) {
