@@ -20,12 +20,14 @@ class WorkOrder::DetailsController < ApplicationController
   def new
     @work_order = WorkOrder.new
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
+    @inventories = Inventory.includes(:category, :unit).all
   end
 
   def create
     service = WorkOrderServices::CreateService.new(work_order_params)
     @work_order = service.work_order
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
+    @inventories = Inventory.includes(:category, :unit).all
 
     draft = params[:draft].present?
     result = service.call(draft: draft)
@@ -39,10 +41,12 @@ class WorkOrder::DetailsController < ApplicationController
 
   def edit
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
+    @inventories = Inventory.includes(:category, :unit).all
   end
 
   def update
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
+    @inventories = Inventory.includes(:category, :unit).all
 
     service = WorkOrderServices::UpdateService.new(@work_order, work_order_params)
     submit = params[:submit].present?
