@@ -99,10 +99,10 @@
             <% if @work_order.work_order_items.any? %>
               <% @work_order.work_order_items.each do |item| %>
                 <tr>
-                  <td><%= item.inventory.name %></td>
-                  <td><%= item.inventory.category&.name || '-' %></td>
-                  <td><%= number_with_precision(item.inventory.price, precision: 2) %></td>
-                  <td><%= item.inventory.unit&.name || '-' %></td>
+                  <td><%= item.item_name %></td>
+                  <td><%= item.category_name || '-' %></td>
+                  <td><%= number_with_precision(item.price, precision: 2) %></td>
+                  <td><%= item.unit_name || '-' %></td>
                   <td><%= item.amount_used %></td>
                 </tr>
               <% end %>
