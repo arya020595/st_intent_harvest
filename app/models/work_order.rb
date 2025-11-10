@@ -87,12 +87,14 @@ class WorkOrder < ApplicationRecord
     # Transitions
     event :mark_complete do
       transitions from: :ongoing, to: :pending, guard: :workers_or_items? do
-        after do
+        after do |**options|
+          custom_remarks = options[:remarks] || 'Work order submitted for approval'
+
           WorkOrderHistory.record_transition(
             work_order: self,
             event_name: :mark_complete,
             user: Current.user,
-            remarks: 'Work order submitted for approval'
+            remarks: custom_remarks
           )
         end
       end
@@ -100,12 +102,14 @@ class WorkOrder < ApplicationRecord
 
     event :approve do
       transitions from: :pending, to: :completed do
-        after do
+        after do |**options|
+          custom_remarks = options[:remarks] || 'Work order approved and completed'
+
           WorkOrderHistory.record_transition(
             work_order: self,
             event_name: :approve,
             user: Current.user,
-            remarks: 'Work order approved and completed'
+            remarks: custom_remarks
           )
         end
       end
@@ -113,12 +117,14 @@ class WorkOrder < ApplicationRecord
 
     event :request_amendment do
       transitions from: :pending, to: :amendment_required do
-        after do
+        after do |**options|
+          custom_remarks = options[:remarks] || 'Amendment requested by approver'
+
           WorkOrderHistory.record_transition(
             work_order: self,
             event_name: :request_amendment,
             user: Current.user,
-            remarks: 'Amendment requested by approver'
+            remarks: custom_remarks
           )
         end
       end
@@ -126,12 +132,14 @@ class WorkOrder < ApplicationRecord
 
     event :reopen do
       transitions from: :amendment_required, to: :pending, guard: :workers_or_items? do
-        after do
+        after do |**options|
+          custom_remarks = options[:remarks] || 'Work order resubmitted after amendments'
+
           WorkOrderHistory.record_transition(
             work_order: self,
             event_name: :reopen,
             user: Current.user,
-            remarks: 'Work order resubmitted after amendments'
+            remarks: custom_remarks
           )
         end
       end

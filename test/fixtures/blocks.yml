@@ -9,8 +9,10 @@
 #  updated_at   :datetime         not null
 #
 
-one: {}
-# column: value
-#
-two: {}
-# column: value
+one:
+  block_number: "A-001"
+  hectarage: 25.50
+
+two:
+  block_number: "B-002"
+  hectarage: 30.75

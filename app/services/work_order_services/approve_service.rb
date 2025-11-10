@@ -4,11 +4,12 @@ module WorkOrderServices
   class ApproveService
     include Dry::Monads[:result]
 
-    attr_reader :work_order, :current_user
+    attr_reader :work_order, :current_user, :remarks
 
-    def initialize(work_order, current_user)
+    def initialize(work_order, current_user, remarks = nil)
       @work_order = work_order
       @current_user = current_user
+      @remarks = remarks
     end
 
     def call
@@ -27,7 +28,8 @@ module WorkOrderServices
     def approve_work_order
       work_order.approved_by = current_user.name
       work_order.approved_at = Time.current
-      work_order.approve!
+      # Pass custom remarks using keyword arguments
+      work_order.approve!(remarks: remarks)
     end
   end
 end
