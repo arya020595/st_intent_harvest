@@ -92,6 +92,9 @@ export default class extends Controller {
     if (selectedDates.length === 2) {
       const [startDate, endDate] = selectedDates;
       this.syncRansackFields(startDate, endDate);
+    } else if (selectedDates.length === 1) {
+      // Clear fields on partial selection to avoid stale data
+      this.clearRansackFields();
     } else if (selectedDates.length === 0) {
       this.clearRansackFields();
     }
