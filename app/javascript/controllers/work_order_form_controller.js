@@ -380,7 +380,11 @@ export default class extends Controller {
     }
   }
 
-  // Helper function to escape HTML to prevent XSS
+  /**
+   * Escapes HTML special characters to prevent XSS attacks
+   * @param {string} str - The string to escape
+   * @returns {string} The escaped HTML string
+   */
   escapeHTML(str) {
     if (!str) return "";
     const div = document.createElement("div");
