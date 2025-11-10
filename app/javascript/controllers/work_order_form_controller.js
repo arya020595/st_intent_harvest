@@ -278,6 +278,7 @@ export default class extends Controller {
   }
 
   updateWorkerDetails(select, index) {
+    if (!select || !select.options || select.selectedIndex < 0) return;
     const selectedOption = select.options[select.selectedIndex];
     if (!selectedOption.value) {
       document.getElementById(`worker_rate_${index}`).value = "Auto Filled";
