@@ -61,8 +61,8 @@
                 <% @work_orders.each do |work_order| %>
                   <tr>
                     <td class="text-center"><%= work_order.id %></td>
-                    <td><%= work_order.work_order_rate.work_order_name %></td>
-                    <td><%= work_order.block.block_number %></td>
+                    <td><%= work_order.work_order_rate_name %></td>
+                    <td><%= work_order.block_number %></td>
                     <td class="text-center"><%= work_order.start_date&.strftime('%d-%m-%Y') || '-' %></td>
                     <td class="text-center">
                       <% badge_class = case work_order.work_order_status

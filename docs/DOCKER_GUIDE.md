@@ -1313,6 +1313,84 @@ docker attach <container_name>
 
 To detach without stopping: `Ctrl+P` then `Ctrl+Q`
 
+### Interactive Debugging with Pry/Byebug
+
+When you need to debug with `binding.pry` or `byebug`, you need an **interactive terminal** that can receive input.
+
+#### Problem: Regular `docker compose up -d` doesn't allow interaction
+
+If you have `binding.pry` in your code and run `docker compose up -d`, the debugger will pause but you won't be able to interact with it.
+
+#### Solution: Use `docker compose run --service-ports`
+
+```bash
+# Stop the background web service first
+docker compose stop web
+
+# Run web service interactively with ports exposed
+docker compose run --service-ports web
+```
+
+**What this does:**
+
+- `docker compose run` - Runs a one-off command in a new container
+- `--service-ports` - Maps ports defined in docker-compose.yml (like port 3000)
+- `web` - The service name to run
+
+**Now you can:**
+
+1. Access your app at `http://localhost:3000` (ports are exposed)
+2. See console output in real-time
+3. Interact with debugger when `binding.pry` or `byebug` is hit
+4. Press `Ctrl+C` to stop cleanly
+
+**Example workflow:**
+
+```bash
+# 1. Stop background web service
+docker compose stop web
+
+# 2. Start web interactively
+docker compose run --service-ports web
+
+# 3. Access app in browser → triggers your binding.pry
+# 4. Interact with debugger in terminal:
+#    (pry) @user
+#    (pry) params
+#    (pry) continue
+
+# 5. When done, press Ctrl+C
+
+# 6. Restart background service
+docker compose up -d web
+```
+
+**Common use cases:**
+
+- Debugging with `binding.pry` or `byebug`
+- Running Rails console interactively: `docker compose run web rails console`
+- Running generators that need input: `docker compose run web rails g scaffold Post`
+- Running tasks that need user input
+
+**Differences between commands:**
+
+| Command                                  | Use Case                 | Interactive | Ports Exposed                   | Removes Container After |
+| ---------------------------------------- | ------------------------ | ----------- | ------------------------------- | ----------------------- |
+| `docker compose up -d`                   | Normal development       | ❌ No       | ✅ Yes                          | ❌ No (reusable)        |
+| `docker compose exec web bash`           | Access running container | ✅ Yes      | N/A (container already running) | ❌ No                   |
+| `docker compose run web`                 | One-off commands         | ✅ Yes      | ❌ No                           | ✅ Yes (by default)     |
+| `docker compose run --service-ports web` | Interactive debugging    | ✅ Yes      | ✅ Yes                          | ✅ Yes (by default)     |
+
+**Keep container after run:**
+
+```bash
+# Don't remove container after exit
+docker compose run --service-ports --no-deps --rm=false web
+
+# Or keep it with dependencies
+docker compose run --service-ports --rm=false web
+```
+
 ### Using Docker Compose Profiles
 
 If you want to optionally run services:

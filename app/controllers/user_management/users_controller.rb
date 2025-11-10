@@ -10,7 +10,7 @@ module UserManagement
       authorize User, policy_class: UserManagement::UserPolicy
 
       apply_ransack_search(policy_scope(User, policy_scope_class: UserManagement::UserPolicy::Scope).order(id: :desc))
-      @pagy, @users = paginate_results(@q.result)
+      @pagy, @users = paginate_results(@q.result.includes(:role))
     end
 
     def show
