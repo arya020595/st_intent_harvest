@@ -99,7 +99,7 @@ module ResponseHandling
   def resolve_path(path, data)
     return nil if path.nil?
 
-    path.is_a?(Proc) ? path.call(data) : path
+    path.is_a?(Proc) ? path.call(data || {}) : path
   end
 
   # Default redirect path for successful responses (override in controller if needed)
