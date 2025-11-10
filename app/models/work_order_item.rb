@@ -2,7 +2,7 @@ class WorkOrderItem < ApplicationRecord
   belongs_to :work_order
   belongs_to :inventory, optional: true
 
-  validates :inventory_id, presence: true
+  validates :inventory_id, presence: true, allow_blank: true
   validates :amount_used, numericality: { greater_than: 0 }, allow_nil: true
 
   before_save :populate_inventory_details
