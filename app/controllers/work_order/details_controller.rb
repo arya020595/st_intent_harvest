@@ -20,18 +20,23 @@ class WorkOrder::DetailsController < ApplicationController
   def new
     @work_order = WorkOrder.new
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
-    @workers = Worker.active
-    @inventories = Inventory.includes(:category, :unit).all
+    @workers = []
+    @inventories = []
   end
 
   def create
     service = WorkOrderServices::CreateService.new(work_order_params)
     @work_order = service.work_order
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
-    @inventories = Inventory.includes(:category, :unit).all
 
     draft = params[:draft].present?
     result = service.call(draft: draft)
+
+    # If validation fails, prepare minimal data for re-rendering form
+    if result.failure?
+      @workers = []
+      @inventories = []
+    end
 
     handle_result(
       result,
@@ -42,17 +47,23 @@ class WorkOrder::DetailsController < ApplicationController
 
   def edit
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
-    @workers = Worker.active
-    @inventories = Inventory.includes(:category, :unit).all
+    # Only load data for existing items/workers to avoid N+1 queries
+    @workers = Worker.active.where(id: @work_order.work_order_workers.pluck(:worker_id))
+    @inventories = Inventory.includes(:category, :unit).where(id: @work_order.work_order_items.pluck(:inventory_id))
   end
 
   def update
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
-    @inventories = Inventory.includes(:category, :unit).all
 
     service = WorkOrderServices::UpdateService.new(@work_order, work_order_params)
     submit = params[:submit].present?
     result = service.call(submit: submit)
+
+    # If validation fails, prepare minimal data for re-rendering form
+    if result.failure?
+      @workers = Worker.active.where(id: @work_order.work_order_workers.pluck(:worker_id))
+      @inventories = Inventory.includes(:category, :unit).where(id: @work_order.work_order_items.pluck(:inventory_id))
+    end
 
     handle_result(
       result,

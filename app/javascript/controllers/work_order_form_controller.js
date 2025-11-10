@@ -13,8 +13,6 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   static targets = ["resourcesContainer", "workersContainer"];
   static values = {
-    inventories: Array,
-    workers: Array,
     resourceIndexStart: Number,
     workerIndexStart: Number,
   };
@@ -35,9 +33,9 @@ export default class extends Controller {
     this.workerIndex = Number.isInteger(this.workerIndexStartValue)
       ? this.workerIndexStartValue
       : existingWorkerRows;
-    // Use Stimulus values - they're automatically parsed from JSON
-    this.inventories = this.inventoriesValue || [];
-    this.workers = this.workersValue || [];
+    // Initialize empty arrays - will be loaded on demand
+    this.inventories = [];
+    this.workers = [];
     // Store the current work order rate
     this.currentWorkOrderRate = 0;
 
@@ -45,8 +43,7 @@ export default class extends Controller {
     this.initializeWorkOrderRateFromSelect();
     // Preserve per-worker saved rates on load; just refresh displays and amounts
     this.refreshAllWorkerDisplays();
-    console.log("Loaded inventories:", this.inventories.length);
-    console.log("Loaded workers:", this.workers.length);
+    console.log("WorkOrderFormController ready - data will be loaded on demand");
   }
 
   initializeWorkOrderRateFromSelect() {
@@ -152,13 +149,46 @@ export default class extends Controller {
   }
 
   addResource() {
+    // Load inventories if not already loaded
     if (!this.inventories || this.inventories.length === 0) {
-      alert("No inventories available. Please add inventory items first.");
-      return;
+      this.loadInventories().then(() => {
+        this.insertResourceRow();
+      }).catch((error) => {
+        console.error("Error loading inventories:", error);
+        alert("Failed to load inventory data. Please try again.");
+      });
+    } else {
+      this.insertResourceRow();
     }
+  }
+
+  insertResourceRow() {
     const row = this.createResourceRow(this.resourceIndex);
     this.resourcesContainerTarget.insertAdjacentHTML("beforeend", row);
     this.resourceIndex++;
+  }
+
+  async loadInventories() {
+    if (this.loadingInventories) {
+      return this.loadingInventories;
+    }
+    
+    this.loadingInventories = fetch('/inventories.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch inventories');
+        }
+        return response.json();
+      })
+      .then(data => {
+        this.inventories = data;
+        console.log("Loaded inventories:", this.inventories.length);
+      })
+      .finally(() => {
+        this.loadingInventories = null;
+      });
+    
+    return this.loadingInventories;
   }
 
   createResourceRow(index) {
@@ -229,13 +259,46 @@ export default class extends Controller {
   }
 
   addWorker() {
+    // Load workers if not already loaded
     if (!this.workers || this.workers.length === 0) {
-      alert("No workers available. Please add worker records first.");
-      return;
+      this.loadWorkers().then(() => {
+        this.insertWorkerRow();
+      }).catch((error) => {
+        console.error("Error loading workers:", error);
+        alert("Failed to load worker data. Please try again.");
+      });
+    } else {
+      this.insertWorkerRow();
     }
+  }
+
+  insertWorkerRow() {
     const row = this.createWorkerRow(this.workerIndex);
     this.workersContainerTarget.insertAdjacentHTML("beforeend", row);
     this.workerIndex++;
+  }
+
+  async loadWorkers() {
+    if (this.loadingWorkers) {
+      return this.loadingWorkers;
+    }
+    
+    this.loadingWorkers = fetch('/workers.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch workers');
+        }
+        return response.json();
+      })
+      .then(data => {
+        this.workers = data;
+        console.log("Loaded workers:", this.workers.length);
+      })
+      .finally(() => {
+        this.loadingWorkers = null;
+      });
+    
+    return this.loadingWorkers;
   }
 
   // Helper function to escape HTML special characters

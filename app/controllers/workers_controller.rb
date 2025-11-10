@@ -10,6 +10,11 @@ class WorkersController < ApplicationController
 
     apply_ransack_search(policy_scope(Worker).order(id: :desc))
     @pagy, @workers = paginate_results(@q.result)
+
+    respond_to do |format|
+      format.html
+      format.json { render json: Worker.active.select(:id, :name).to_json }
+    end
   end
 
   def show

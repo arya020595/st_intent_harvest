@@ -6,6 +6,19 @@ class InventoriesController < ApplicationController
   def index
     @inventories = policy_scope(Inventory)
     authorize Inventory
+
+    respond_to do |format|
+      format.html
+      format.json do
+        inventories = Inventory.includes(:category, :unit)
+                              .select(:id, :name, :price, :category_id, :unit_id)
+                              .to_json(include: { 
+                                category: { only: [:id, :name] }, 
+                                unit: { only: [:id, :name] } 
+                              })
+        render json: inventories
+      end
+    end
   end
 
   def show
