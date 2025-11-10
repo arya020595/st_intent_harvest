@@ -238,9 +238,19 @@ export default class extends Controller {
     this.workerIndex++;
   }
 
+  // Helper function to escape HTML special characters
+  escapeHTML(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   createWorkerRow(index) {
     const workerOptions = (this.workers || [])
-      .map((worker) => `<option value="${worker.id}">${worker.name}</option>`)
+      .map((worker) => `<option value="${worker.id}">${this.escapeHTML(worker.name)}</option>`)
       .join("");
 
     return `
