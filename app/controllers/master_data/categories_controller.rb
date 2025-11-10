@@ -11,7 +11,7 @@ module MasterData
 
       apply_ransack_search(policy_scope(Category,
                                         policy_scope_class: MasterData::CategoryPolicy::Scope).order(id: :desc))
-      @pagy, @categories = paginate_results(@q.result)
+      @pagy, @categories = paginate_results(@q.result.includes(:parent))
     end
 
     def show

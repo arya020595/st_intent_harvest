@@ -11,7 +11,7 @@ module MasterData
 
       apply_ransack_search(policy_scope(WorkOrderRate,
                                         policy_scope_class: MasterData::WorkOrderRatePolicy::Scope).order(id: :desc))
-      @pagy, @work_order_rates = paginate_results(@q.result)
+      @pagy, @work_order_rates = paginate_results(@q.result.includes(:unit))
     end
 
     def show
