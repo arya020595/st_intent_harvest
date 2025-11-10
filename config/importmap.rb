@@ -11,4 +11,4 @@ pin 'bootstrap', to: 'bootstrap.min.js', preload: true
 pin '@popperjs/core', to: 'popper.js', preload: true
 
 # Flatpickr for date range picker
-pin "flatpickr" # @4.6.13
+pin 'flatpickr' # @4.6.13
