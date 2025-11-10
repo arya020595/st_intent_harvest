@@ -172,9 +172,9 @@
                   <td>
                     <select class="form-select form-select-sm" name="work_order[work_order_workers_attributes][<%= index %>][worker_id]" onchange="window.workOrderFormController.updateWorkerDetails(this, <%= index %>)">
                       <option value="">Select Worker</option>
-                      <% Worker.find_each do |w| %>
+                      <% Worker.all.each do |w| %>
                         <option value="<%= w.id %>" <%= 'selected' if w.id == wow.worker_id %>><%= w.name %></option>
-                        <% end %>
+                      <% end %>
                       </select>
                       <%= hidden_field_tag "work_order[work_order_workers_attributes][#{index}][id]", wow.id %>
                     </td>
