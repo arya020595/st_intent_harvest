@@ -150,6 +150,17 @@ denormalize :block_hectarage, from: :block, attribute: :hectarage, transform: ->
 # Populates work_order.block_hectarage from block.hectarage.to_s
 ```
 
+### Nested Associations with Path
+
+```ruby
+# Navigate through nested associations using dot notation
+denormalize :unit_name, from: :inventory, path: 'unit.name'
+denormalize :category_name, from: :inventory, path: 'category.name'
+
+# Equivalent to: inventory.unit&.name and inventory.category&.name
+# Safe navigation (uses &.) - won't crash if unit or category is nil
+```
+
 ---
 
 ## Implementation Details
@@ -241,7 +252,32 @@ end
 - Customer/product data might change, but order should show historical values
 - Faster queries (no JOIN needed to display order list)
 
-### Example 2: Invoice with Calculations
+### Example 2: Work Order Items with Nested Associations
+
+```ruby
+class WorkOrderItem < ApplicationRecord
+  include Denormalizable
+
+  belongs_to :work_order
+  belongs_to :inventory, optional: true
+
+  # Direct attributes
+  denormalize :item_name, from: :inventory, attribute: :name
+  denormalize :price, from: :inventory
+
+  # Nested associations using path
+  denormalize :unit_name, from: :inventory, path: 'unit.name'
+  denormalize :category_name, from: :inventory, path: 'category.name'
+end
+```
+
+**Why use path?**
+
+- Avoid manual callbacks for nested associations
+- Safe navigation built-in (won't crash if `unit` or `category` is nil)
+- Clean, declarative syntax instead of `inventory.unit&.name`
+
+### Example 3: Invoice with Calculations
 
 ```ruby
 class Invoice < ApplicationRecord
@@ -256,7 +292,7 @@ class Invoice < ApplicationRecord
 end
 ```
 
-### Example 3: Work Order (Current Use Case)
+### Example 4: Work Order (Current Use Case)
 
 ```ruby
 class WorkOrder < ApplicationRecord

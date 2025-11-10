@@ -1,21 +1,18 @@
 class WorkOrderItem < ApplicationRecord
+  include Denormalizable
+
   belongs_to :work_order
   belongs_to :inventory, optional: true
 
   validates :amount_used, numericality: { greater_than: 0, message: 'must be greater than 0' }, allow_nil: true
 
-  before_save :populate_inventory_details
+  # Denormalize inventory details
+  denormalize :item_name, from: :inventory, attribute: :name
+  denormalize :price, from: :inventory
 
-  private
-
-  def populate_inventory_details
-    return unless inventory_id_changed? && inventory
-
-    self.item_name = inventory.name
-    self.price = inventory.price
-    self.unit_name = inventory.unit&.name
-    self.category_name = inventory.category&.name
-  end
+  # Denormalize nested associations using path option
+  denormalize :unit_name, from: :inventory, path: 'unit.name'
+  denormalize :category_name, from: :inventory, path: 'category.name'
 end
 
 # == Schema Information

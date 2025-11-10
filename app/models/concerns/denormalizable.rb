@@ -7,9 +7,15 @@
 #   class WorkOrder < ApplicationRecord
 #     include Denormalizable
 #
+#     # Simple denormalization
 #     denormalize :block_number, from: :block
+#
+#     # With custom attribute
 #     denormalize :block_hectarage, from: :block, attribute: :hectarage, transform: ->(val) { val.to_s }
-#     denormalize :work_order_rate_name, from: :work_order_rate, attribute: :work_order_name
+#
+#     # Nested associations with path
+#     denormalize :unit_name, from: :inventory, path: 'unit.name'
+#     denormalize :category_name, from: :inventory, path: 'category.name'
 #   end
 module Denormalizable
   extend ActiveSupport::Concern
@@ -23,11 +29,13 @@ module Denormalizable
     # @param field [Symbol] The denormalized field name in current model
     # @param from [Symbol] The association name to get data from
     # @param attribute [Symbol] The attribute name in the associated model (defaults to field name)
+    # @param path [String] Dot-separated path for nested associations (e.g., 'unit.name')
     # @param transform [Proc] Optional transformation to apply to the value
-    def denormalize(field, from:, attribute: nil, transform: nil)
+    def denormalize(field, from:, attribute: nil, path: nil, transform: nil)
       denormalized_fields[field] = {
         association: from,
         attribute: attribute || field,
+        path: path,
         transform: transform
       }
     end
@@ -49,6 +57,7 @@ module Denormalizable
     self.class.denormalized_fields.each do |field, config|
       association = config[:association]
       source_attribute = config[:attribute]
+      path = config[:path]
       transform = config[:transform]
 
       # Only update if the foreign key changed and association exists
@@ -59,7 +68,16 @@ module Denormalizable
       next unless associated_record
 
       # Get the value from associated record
-      value = associated_record.public_send(source_attribute)
+      # Support nested path (e.g., 'unit.name') or direct attribute
+      value = if path
+                # Navigate through nested associations using path
+                # e.g., 'unit.name' becomes associated_record.unit&.name
+                path.split('.').reduce(associated_record) do |obj, method|
+                  obj&.public_send(method)
+                end
+              else
+                associated_record.public_send(source_attribute)
+              end
 
       # Apply transformation if provided (even on nil values)
       value = transform.call(value) if transform

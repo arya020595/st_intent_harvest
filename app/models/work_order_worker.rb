@@ -1,18 +1,18 @@
 class WorkOrderWorker < ApplicationRecord
+  include Denormalizable
+
   belongs_to :work_order
   belongs_to :worker
 
   validates :work_area_size, numericality: { greater_than: 0 }, allow_nil: true
   validates :rate, numericality: { greater_than_or_equal_to: 0, message: 'must be 0 or greater' }, allow_nil: true
 
-  before_save :populate_worker_name
+  # Denormalize worker name from worker association
+  denormalize :worker_name, from: :worker, attribute: :name
+
   before_save :calculate_amount
 
   private
-
-  def populate_worker_name
-    self.worker_name = worker.name if worker_id_changed? && worker
-  end
 
   def calculate_amount
     self.amount = (work_area_size || 0) * (rate || 0)
