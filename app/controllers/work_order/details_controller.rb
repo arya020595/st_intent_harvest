@@ -28,6 +28,7 @@ class WorkOrder::DetailsController < ApplicationController
     service = WorkOrderServices::CreateService.new(work_order_params)
     @work_order = service.work_order
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
+    @workers = Worker.active
     @inventories = Inventory.includes(:category, :unit).all
 
     draft = params[:draft].present?
@@ -48,6 +49,7 @@ class WorkOrder::DetailsController < ApplicationController
 
   def update
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
+    @workers = Worker.active
     @inventories = Inventory.includes(:category, :unit).all
 
     service = WorkOrderServices::UpdateService.new(@work_order, work_order_params)
