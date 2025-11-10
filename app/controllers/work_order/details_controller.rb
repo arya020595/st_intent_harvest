@@ -20,6 +20,7 @@ class WorkOrder::DetailsController < ApplicationController
   def new
     @work_order = WorkOrder.new
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
+    @workers = Worker.all
   end
 
   def create
@@ -39,6 +40,7 @@ class WorkOrder::DetailsController < ApplicationController
 
   def edit
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
+    @workers = Worker.all
   end
 
   def update
