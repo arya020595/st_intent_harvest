@@ -304,19 +304,21 @@ export default class extends Controller {
   }
 
   calculateWorkerAmount(index) {
-    const quantity =
-      parseFloat(document.getElementById(`worker_quantity_${index}`).value) ||
-      0;
-    const rate =
-      parseFloat(document.getElementById(`worker_rate_value_${index}`).value) ||
-      0;
+    const quantityEl = document.getElementById(`worker_quantity_${index}`);
+    const rateEl = document.getElementById(`worker_rate_value_${index}`);
+    const amountEl = document.getElementById(`worker_amount_${index}`);
+    const amountValueEl = document.getElementById(`worker_amount_value_${index}`);
+
+    const quantity = parseFloat(quantityEl?.value) || 0;
+    const rate = parseFloat(rateEl?.value) || 0;
     const amount = quantity * rate;
 
-    document.getElementById(
-      `worker_amount_${index}`
-    ).value = `RM ${amount.toFixed(2)}`;
-    document.getElementById(`worker_amount_value_${index}`).value =
-      amount.toFixed(2);
+    if (amountEl) {
+      amountEl.value = `RM ${amount.toFixed(2)}`;
+    }
+    if (amountValueEl) {
+      amountValueEl.value = amount.toFixed(2);
+    }
   }
 }
 
