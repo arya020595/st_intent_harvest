@@ -85,6 +85,9 @@ group :development, :test do
 
   # Faker for generating fake data
   gem 'faker'
+
+  # Bullet gem to help detect N+1 queries and unused eager loading
+  gem 'bullet', '~> 8.1'
 end
 
 group :development do
