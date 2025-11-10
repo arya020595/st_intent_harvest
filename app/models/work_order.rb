@@ -14,6 +14,7 @@ class WorkOrder < ApplicationRecord
 
   # Audit trail - automatically tracks create/update/destroy with user and changes
   # audited # Temporarily disabled due to Psych::DisallowedClass issue with Date serialization
+  # TODO: Re-enable audited after fixing Psych::DisallowedClass issue. See tracking ticket: TICKET-1234
 
   belongs_to :block
   belongs_to :work_order_rate
