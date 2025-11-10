@@ -203,8 +203,8 @@ See [Flatpickr formatting documentation](https://flatpickr.js.org/formatting/) f
              data-flatpickr-mode-value="range"
              data-flatpickr-date-format-value="d-m-Y"
              data-flatpickr-field-name-value="q[created_at]">
-      <%= f.hidden_field :created_at_gteq %>
-      <%= f.hidden_field :created_at_lteq %>
+      <%= f.hidden_field :created_at_gteq, value: params.dig(:q, :created_at_gteq) %>
+      <%= f.hidden_field :created_at_lteq, value: params.dig(:q, :created_at_lteq) %>
     </div>
   </div>
 
