@@ -41,10 +41,11 @@ module ResponseHandling
     respond_to do |format|
       format.html { redirect_to html_redirect_path, notice: message }
       format.json do
+        safe_redirect_path = json_redirect_path || default_success_path || '/'
         render json: {
           success: true,
           message: message,
-          redirect_url: url_for(json_redirect_path)
+          redirect_url: url_for(safe_redirect_path)
         }, status: status || :ok
       end
     end
