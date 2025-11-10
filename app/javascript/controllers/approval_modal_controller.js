@@ -178,11 +178,22 @@ export default class extends Controller {
   }
 
   showSuccess(message) {
-    // You can replace this with a better notification system (e.g., toast)
-    alert(message);
+    this.getToastController()?.showSuccess(message);
   }
 
   showError(message) {
-    alert(message);
+    this.getToastController()?.showError(message);
+  }
+
+  getToastController() {
+    const toastElement = document.querySelector('[data-controller="toast"]');
+    if (toastElement) {
+      return this.application.getControllerForElementAndIdentifier(
+        toastElement,
+        "toast"
+      );
+    }
+    console.error("Toast controller not found");
+    return null;
   }
 }
