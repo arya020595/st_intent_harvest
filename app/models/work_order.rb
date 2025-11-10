@@ -2,6 +2,7 @@
 
 class WorkOrder < ApplicationRecord
   include AASM
+  include Denormalizable
 
   # Status constants
   STATUSES = {
@@ -30,9 +31,14 @@ class WorkOrder < ApplicationRecord
   validates :block_id, presence: true
   validates :work_order_rate_id, presence: true
   validates :work_order_status, inclusion: { in: STATUSES.values, allow_nil: true }
+  validate :must_have_workers_or_items, on: :update, if: :pending?
 
-  # Callbacks to populate denormalized fields
-  before_save :populate_denormalized_fields
+  # Define denormalized fields - auto-populated from associations
+  denormalize :block_number, from: :block
+  denormalize :block_hectarage, from: :block, attribute: :hectarage, transform: ->(val) { val.to_s if val }
+  denormalize :work_order_rate_name, from: :work_order_rate, attribute: :work_order_name
+  denormalize :work_order_rate_price, from: :work_order_rate, attribute: :rate
+  denormalize :field_conductor_name, from: :field_conductor, attribute: :name
 
   # Ransack configuration
   def self.ransackable_attributes(_auth_object = nil)
@@ -44,6 +50,7 @@ class WorkOrder < ApplicationRecord
       block_hectarage
       work_order_rate_name
       work_order_rate_price
+      field_conductor_name
       approved_by
       approved_at
       created_at
@@ -56,6 +63,15 @@ class WorkOrder < ApplicationRecord
 
   def self.ransackable_associations(_auth_object = nil)
     %w[block work_order_rate field_conductor work_order_workers work_order_items work_order_histories]
+  end
+
+  # Custom validation method
+  def must_have_workers_or_items
+    workers = work_order_workers.reject(&:marked_for_destruction?)
+    items = work_order_items.reject(&:marked_for_destruction?)
+    return unless workers.empty? && items.empty?
+
+    errors.add(:base, 'Work order must have at least one worker or one inventory item')
   end
 
   # AASM State Machine Configuration with string column
@@ -102,24 +118,6 @@ class WorkOrder < ApplicationRecord
       end
     end
   end
-
-  private
-
-  def populate_denormalized_fields
-    if block_id_changed? && block
-      self.block_number = block.block_number
-      self.block_hectarage = block.hectarage.to_s if block.hectarage
-    end
-
-    if work_order_rate_id_changed? && work_order_rate
-      self.work_order_rate_name = work_order_rate.work_order_name
-      self.work_order_rate_price = work_order_rate.rate
-    end
-
-    return unless field_conductor_id_changed? && field_conductor
-
-    self.field_conductor_name = field_conductor.name
-  end
 end
 
 # == Schema Information
@@ -131,7 +129,7 @@ end
 #  approved_by           :string
 #  block_hectarage       :string
 #  block_number          :string
-#  field_conductor       :string
+#  field_conductor_name  :string
 #  start_date            :date
 #  work_order_rate_name  :string
 #  work_order_rate_price :decimal(10, 2)
@@ -139,16 +137,19 @@ end
 #  created_at            :datetime         not null
 #  updated_at            :datetime         not null
 #  block_id              :bigint
+#  field_conductor_id    :bigint
 #  work_order_rate_id    :bigint
 #
 # Indexes
 #
-#  index_work_orders_on_block_and_rate      (block_id,work_order_rate_id)
-#  index_work_orders_on_block_id            (block_id)
-#  index_work_orders_on_work_order_rate_id  (work_order_rate_id)
+#  index_work_orders_on_block_and_rate       (block_id,work_order_rate_id)
+#  index_work_orders_on_block_id             (block_id)
+#  index_work_orders_on_field_conductor_id   (field_conductor_id)
+#  index_work_orders_on_work_order_rate_id   (work_order_rate_id)
 #
 # Foreign Keys
 #
 #  fk_rails_...  (block_id => blocks.id)
+#  fk_rails_...  (field_conductor_id => users.id)
 #  fk_rails_...  (work_order_rate_id => work_order_rates.id)
 #
