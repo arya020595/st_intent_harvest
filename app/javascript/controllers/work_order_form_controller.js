@@ -156,8 +156,13 @@ export default class extends Controller {
       alert("No inventories available. Please add inventory items first.");
       return;
     }
-    const row = this.createResourceRow(this.resourceIndex);
-    this.resourcesContainerTarget.insertAdjacentHTML("beforeend", row);
+    const rowHTML = this.createResourceRow(this.resourceIndex);
+    const temp = document.createElement('tbody');
+    temp.innerHTML = rowHTML.trim();
+    const rowElement = temp.firstElementChild;
+    if (rowElement) {
+      this.resourcesContainerTarget.appendChild(rowElement);
+    }
     this.resourceIndex++;
   }
 
