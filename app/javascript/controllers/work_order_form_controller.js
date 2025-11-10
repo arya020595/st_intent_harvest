@@ -204,6 +204,7 @@ export default class extends Controller {
   }
 
   updateResourceDetails(select, index) {
+    if (!select || !select.options || select.selectedIndex < 0) return;
     const selectedOption = select.options[select.selectedIndex];
     if (!selectedOption.value) {
       document.getElementById(`resource_category_${index}`).value =
