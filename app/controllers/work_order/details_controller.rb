@@ -10,7 +10,7 @@ class WorkOrder::DetailsController < ApplicationController
     authorize WorkOrder, policy_class: WorkOrder::DetailPolicy
 
     apply_ransack_search(policy_scope(WorkOrder, policy_scope_class: WorkOrder::DetailPolicy::Scope).order(id: :desc))
-    @pagy, @work_orders = paginate_results(@q.result.includes(:block, :work_order_rate, :field_conductor))
+    @pagy, @work_orders = paginate_results(@q.result)
   end
 
   def show
