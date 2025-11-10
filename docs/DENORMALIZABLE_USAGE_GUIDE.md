@@ -211,7 +211,7 @@ module Denormalizable
       value = associated_record.public_send(source_attribute)
 
       # Apply transformation if provided
-      value = transform.call(value) if transform && value
+      value = transform.call(value) if transform
 
       # Set the denormalized field
       public_send("#{field}=", value)
