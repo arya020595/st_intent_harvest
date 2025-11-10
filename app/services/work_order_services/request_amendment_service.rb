@@ -6,13 +6,12 @@ module WorkOrderServices
 
     attr_reader :work_order, :remarks
 
-    def initialize(work_order, remarks)
+    def initialize(work_order, remarks = nil)
       @work_order = work_order
       @remarks = remarks
     end
 
     def call
-      return Failure('Remarks are required for amendment request.') if remarks.blank?
       unless work_order.may_request_amendment?
         return Failure("Cannot request amendment for work order in #{work_order.work_order_status} status.")
       end
