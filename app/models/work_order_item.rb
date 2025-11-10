@@ -1,10 +1,18 @@
 class WorkOrderItem < ApplicationRecord
+  include Denormalizable
+
   belongs_to :work_order
   belongs_to :inventory, optional: true
-  
-  validates :item_name, presence: true
+
   validates :amount_used, numericality: { greater_than: 0 }, allow_nil: true
-  validates :price, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+
+  # Denormalize inventory details
+  denormalize :item_name, from: :inventory, attribute: :name
+  denormalize :price, from: :inventory
+
+  # Denormalize nested associations using path option
+  denormalize :unit_name, from: :inventory, path: 'unit.name'
+  denormalize :category_name, from: :inventory, path: 'category.name'
 end
 
 # == Schema Information

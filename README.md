@@ -28,7 +28,8 @@ docker compose exec web rails db:seed
 
 - **[Quick Start Guide](docs/QUICK_START.md)** - Get up and running in 5 minutes
 - **[Docker Guide](docs/DOCKER_GUIDE.md)** - Comprehensive Docker documentation
-- **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** - Common issues and solutions
+- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues and solutions
+- **[Denormalizable Usage Guide](docs/DENORMALIZABLE_USAGE_GUIDE.md)** - Clean denormalization pattern
 - **[Pundit Authorization](docs/PUNDIT_AUTHORIZATION.md)** - Permission system details
 - **[Work Order Status Flow](docs/WORK_ORDER_STATUS_FLOW.md)** - State machine documentation
 

@@ -1,9 +1,15 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>Edit Work Order</h1>
+<div class="container-fluid px-4 py-4">
+  <%= render 'shared/breadcrumb', breadcrumbs: [
+    ['Work Order', '#'],
+    ['Work Order Details', work_order_details_path],
+    ['Edit Work Order', nil]
+  ] %>
+  <div class="card shadow-sm">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">Edit Work Order</h5>
+    </div>
+    <div class="card-body">
       <%= render "form", work_order: @work_order %>
-      <%= link_to "Back", work_order_details_path, class: "btn btn-secondary mt-3" %>
     </div>
   </div>
 </div>

@@ -2,8 +2,9 @@
 
 class WorkOrder::ApprovalsController < ApplicationController
   include RansackMultiSort
+  include ResponseHandling
 
-  before_action :set_work_order, only: %i[show update approve reject]
+  before_action :set_work_order, only: %i[show update approve request_amendment]
 
   def index
     authorize WorkOrder, policy_class: WorkOrder::ApprovalPolicy
@@ -30,13 +31,30 @@ class WorkOrder::ApprovalsController < ApplicationController
   def approve
     authorize @work_order, policy_class: WorkOrder::ApprovalPolicy
 
-    # Logic to be implemented later
+    service = WorkOrderServices::ApproveService.new(@work_order, current_user)
+    result = service.call
+
+    # HTML (ERB form) -> redirect to index
+    # JSON (JavaScript) -> redirect to show (stay on current page)
+    handle_result(result,
+                  success_path: work_order_approvals_path,
+                  json_success_path: work_order_approval_path(@work_order),
+                  error_path: work_order_approval_path(@work_order))
   end
 
-  def reject
+  def request_amendment
     authorize @work_order, policy_class: WorkOrder::ApprovalPolicy
 
-    # Logic to be implemented later
+    remarks = params.dig(:work_order_history, :remarks)
+    service = WorkOrderServices::RequestAmendmentService.new(@work_order, remarks)
+    result = service.call
+
+    # HTML (ERB form) -> redirect to index
+    # JSON (JavaScript) -> redirect to show (stay on current page)
+    handle_result(result,
+                  success_path: work_order_approvals_path,
+                  json_success_path: work_order_approval_path(@work_order),
+                  error_path: work_order_approval_path(@work_order))
   end
 
   private

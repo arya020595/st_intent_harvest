@@ -31,7 +31,7 @@ Rails.application.routes.draw do
     resources :approvals, only: %i[index show update] do
       member do
         patch :approve
-        patch :reject
+        patch :request_amendment
       end
     end
     resources :pay_calculations

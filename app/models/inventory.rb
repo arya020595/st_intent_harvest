@@ -2,10 +2,19 @@ class Inventory < ApplicationRecord
   belongs_to :category, optional: true
   belongs_to :unit, optional: true
   has_many :work_order_items, dependent: :nullify
-  
+
   validates :name, presence: true
   validates :stock_quantity, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :price, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+
+  # Ransack configuration
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[id name stock_quantity price currency supplier input_date created_at updated_at category_id unit_id]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[category unit work_order_items]
+  end
 end
 
 # == Schema Information

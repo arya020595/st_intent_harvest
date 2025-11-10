@@ -1,28 +1,28 @@
 <div class="container-fluid px-4 py-4 work-order-details" data-controller="multi-sort">
   <div class="card shadow-sm">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Work Orders</h5>
       <%= link_to new_work_order_detail_path, class: "btn btn-light btn-sm" do %>
-        <i class="bi bi-plus-circle"></i> New Work Order
+        <i class="bi bi-plus-circle"></i> Add Work Order
       <% end %>
     </div>
     <div class="card-body">
       <%= search_form_for @q, url: work_order_details_path, html: { id: 'work-order-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
-            <thead class="table-primary">
+            <thead class="table-success">
               <tr>
                 <th class="text-center">
                   <%= sort_link(@q, :id, 'ID') %>
                 </th>
                 <th>
-                  <%= sort_link(@q, :work_order_rate_work_order_name, 'Work Order Rate') %>
+                  <%= sort_link(@q, :work_order_rate_work_order_name, 'Work Order') %>
                 </th>
                 <th>
-                  <%= sort_link(@q, :block_block_number, 'Block') %>
+                  <%= sort_link(@q, :block_block_number, 'Block No.') %>
                 </th>
                 <th class="text-center">
-                  <%= sort_link(@q, :start_date, 'Start Date') %>
+                  <%= sort_link(@q, :start_date, 'Starting Date') %>
                 </th>
                 <th class="text-center">
                   <%= sort_link(@q, :work_order_status, 'Status') %>
@@ -31,13 +31,13 @@
               </tr>
               <tr>
                 <th class="text-center">
-                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1 %>
+                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'Search Work Order...', min: 1 %>
                 </th>
                 <th>
-                  <%= f.search_field :work_order_rate_work_order_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Rate..' %>
+                  <%= f.search_field :work_order_rate_work_order_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Work Order...' %>
                 </th>
                 <th>
-                  <%= f.search_field :block_block_number_cont, class: 'form-control form-control-sm', placeholder: 'Search Block..' %>
+                  <%= f.search_field :block_block_number_cont, class: 'form-control form-control-sm', placeholder: 'Search Block...' %>
                 </th>
                 <th class="text-center">
                   <%= f.date_field :start_date_eq, class: 'form-control form-control-sm', placeholder: 'Date' %>
@@ -50,7 +50,7 @@
                 </th>
                 <th class="text-center">
                   <div class="d-flex gap-1 justify-content-center">
-                    <%= f.submit 'Search', class: 'btn btn-primary btn-sm' %>
+                    <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
                     <%= link_to 'Reset', work_order_details_path, class: 'btn btn-secondary btn-sm' %>
                   </div>
                 </th>
@@ -79,8 +79,10 @@
                         <%= link_to work_order_detail_path(work_order), class: "btn btn-info btn-sm", title: "View Details" do %>
                           <i class="bi bi-info-circle"></i>
                         <% end %>
-                        <%= link_to edit_work_order_detail_path(work_order), class: "btn btn-warning btn-sm", title: "Edit" do %>
-                          <i class="bi bi-pencil"></i>
+                        <% if work_order.work_order_status.in?(%w[ongoing amendment_required]) %>
+                          <%= link_to edit_work_order_detail_path(work_order), class: "btn btn-warning btn-sm", title: "Edit" do %>
+                            <i class="bi bi-pencil"></i>
+                          <% end %>
                         <% end %>
                         <%= link_to work_order_detail_path(work_order), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this work order?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
                           <i class="bi bi-trash"></i>

@@ -10,5 +10,9 @@ chmod +x /rails/bin/* 2>/dev/null || true
 # Always remove stale PID files to prevent server boot failures
 rm -f ./tmp/pids/server.pid 2>/dev/null || true
 
+# Install missing gems automatically (uses bundle_cache volume)
+# This allows adding new gems without rebuilding the Docker image
+bundle check || bundle install
+
 # Just run the given command, no automatic migration or seeding
 exec "$@"
