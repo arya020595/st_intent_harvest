@@ -112,7 +112,7 @@
             <% work_order.work_order_items.includes(inventory: [:category, :unit]).each_with_index do |item, index| %>
               <tr data-resource-index="<%= index %>">
                 <td>
-                  <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][<%= index %>][inventory_id]" onchange="window.workOrderFormController.updateResourceDetails(this, <%= index %>)">
+                  <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][<%= index %>][inventory_id]" data-action="change->work-order-form#updateResourceDetails">
                     <option value="">Select Resource</option>
                     <% Inventory.includes(:category, :unit).all.each do |inv| %>
                       <option value="<%= inv.id %>" data-category="<%= inv.category&.name %>" data-price="<%= inv.price || 0 %>" data-unit="<%= inv.unit&.name %>" <%= 'selected' if inv.id == item.inventory_id %>><%= inv.name %></option>
