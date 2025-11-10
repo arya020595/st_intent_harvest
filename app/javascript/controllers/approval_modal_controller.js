@@ -124,7 +124,6 @@ export default class extends Controller {
     const options = {
       method: "PATCH",
       headers: this.getRequestHeaders(),
-      redirect: "manual", // Changed from "follow" to prevent auto-redirect
     };
 
     if (body) {
