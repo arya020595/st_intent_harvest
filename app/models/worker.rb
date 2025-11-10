@@ -8,6 +8,8 @@ class Worker < ApplicationRecord
   validates :worker_type, presence: true
   validates :gender, inclusion: { in: %w[Male Female], allow_nil: true }
 
+  scope :active, -> { where(is_active: true) }
+
   # Ransack configuration
   def self.ransackable_attributes(_auth_object = nil)
     %w[id name worker_type gender is_active hired_date nationality identity_number created_at updated_at]
