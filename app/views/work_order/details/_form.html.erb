@@ -7,7 +7,7 @@
 <%= form_with(model: [:work_order, work_order], url: work_order.new_record? ? work_order_details_path : work_order_detail_path(work_order), local: true, data: { 
   controller: "work-order-form",
   work_order_form_inventories_value: Inventory.includes(:category, :unit).all.to_json(include: [:category, :unit]),
-  work_order_form_workers_value: Worker.all.to_json,
+  work_order_form_workers_value: @workers.to_json,
   work_order_form_resource_index_start_value: work_order.work_order_items.size,
   work_order_form_worker_index_start_value: work_order.work_order_workers.size,
   turbo_submits_with: "Submitting..."
@@ -114,10 +114,10 @@
                 <td>
                   <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][<%= index %>][inventory_id]" data-action="change->work-order-form#updateResourceDetails">
                     <option value="">Select Resource</option>
-                    <% Inventory.includes(:category, :unit).all.each do |inv| %>
+                    <% @inventories.each do |inv| %>
                       <option value="<%= inv.id %>" data-category="<%= inv.category&.name %>" data-price="<%= inv.price || 0 %>" data-unit="<%= inv.unit&.name %>" <%= 'selected' if inv.id == item.inventory_id %>><%= inv.name %></option>
-                      <% end %>
-                    </select>
+                    <% end %>
+                  </select>
                     <%= hidden_field_tag "work_order[work_order_items_attributes][#{index}][id]", item.id %>
                   </td>
                   <td>
@@ -172,7 +172,7 @@
                   <td>
                     <select class="form-select form-select-sm" name="work_order[work_order_workers_attributes][<%= index %>][worker_id]" onchange="window.workOrderFormController.updateWorkerDetails(this, <%= index %>)">
                       <option value="">Select Worker</option>
-                      <% Worker.all.each do |w| %>
+                      <% @workers.each do |w| %>
                         <option value="<%= w.id %>" <%= 'selected' if w.id == wow.worker_id %>><%= w.name %></option>
                       <% end %>
                       </select>
