@@ -363,8 +363,8 @@ end
 4. **Include both hidden fields** for ranges:
 
    ```erb
-   <%= f.hidden_field :hired_date_gteq %>
-   <%= f.hidden_field :hired_date_lteq %>
+   <%= f.hidden_field :hired_date_gteq, value: params.dig(:q, :hired_date_gteq) %>
+   <%= f.hidden_field :hired_date_lteq, value: params.dig(:q, :hired_date_lteq) %>
    ```
 
 5. **Add appropriate Bootstrap sizing classes**:
