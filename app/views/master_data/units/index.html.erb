@@ -1,33 +1,110 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>Units</h1>
-      <div class="mb-3">
-        <%= link_to "New Unit", new_master_data_unit_path, class: "btn btn-primary" %>
-      </div>
-      <div class="table-responsive">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Unit Type</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% @units.each do |unit| %>
+<div class="container-fluid px-4 py-4 units-list" data-controller="multi-sort">
+  <div class="card shadow-sm">
+    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Units Management</h5>
+      <%= link_to new_master_data_unit_path, class: "btn btn-light btn-sm" do %>
+        <i class="bi bi-plus-circle"></i> Add Unit
+      <% end %>
+    </div>
+    <div class="card-body">
+      <%= search_form_for @q, url: master_data_units_path, html: { id: 'unit-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
+        <div class="table-responsive">
+          <table class="table table-hover table-sm mb-0">
+            <thead class="table-warning">
               <tr>
-                <td><%= unit.name %></td>
-                <td><%= unit.unit_type %></td>
-                <td>
-                  <%= link_to "Show", master_data_unit_path(unit), class: "btn btn-sm btn-info" %>
-                  <%= link_to "Edit", edit_master_data_unit_path(unit), class: "btn btn-sm btn-warning" %>
-                  <%= link_to "Delete", master_data_unit_path(unit), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-danger" %>
-                </td>
+                <th class="text-center">
+                  <%= sort_link(@q, :id, 'ID') %>
+                </th>
+                <th>
+                  <%= sort_link(@q, :name, 'Name') %>
+                </th>
+                <th>
+                  <%= sort_link(@q, :unit_type, 'Unit Type') %>
+                </th>
+                <th>
+                  <%= sort_link(@q, :created_at, 'Created At') %>
+                </th>
+                <th>
+                  <%= sort_link(@q, :updated_at, 'Updated At') %>
+                </th>
+                <th class="text-center">Actions</th>
               </tr>
-            <% end %>
-          </tbody>
-        </table>
+              <tr>
+                <th class="text-center">
+                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1 %>
+                </th>
+                <th>
+                  <%= f.search_field :name_cont, class: 'form-control form-control-sm', placeholder: 'Search Name..' %>
+                </th>
+                <th>
+                  <%= f.search_field :unit_type_cont, class: 'form-control form-control-sm', placeholder: 'Search Type..' %>
+                </th>
+                <th>
+                  <%= f.search_field :created_at_gteq, class: 'form-control form-control-sm', placeholder: 'From..', type: 'datetime-local' %>
+                </th>
+                <th>
+                  <%= f.search_field :updated_at_lteq, class: 'form-control form-control-sm', placeholder: 'To..', type: 'datetime-local' %>
+                </th>
+                <th class="text-center">
+                  <div class="d-flex gap-1 justify-content-center">
+                    <%= f.submit 'Search', class: 'btn btn-warning btn-sm' %>
+                    <%= link_to 'Reset', master_data_units_path, class: 'btn btn-secondary btn-sm' %>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if @units.any? %>
+                <% @units.each do |unit| %>
+                  <tr>
+                    <td class="text-center"><%= unit.id %></td>
+                    <td><strong><%= unit.name %></strong></td>
+                    <td>
+                      <span class="badge bg-warning text-dark"><%= unit.unit_type %></span>
+                    </td>
+                    <td>
+                      <small class="text-muted"><%= unit.created_at.strftime("%b %d, %Y %H:%M") if unit.created_at %></small>
+                    </td>
+                    <td>
+                      <small class="text-muted"><%= unit.updated_at.strftime("%b %d, %Y %H:%M") if unit.updated_at %></small>
+                    </td>
+                    <td class="text-center">
+                      <div class="btn-group btn-group-sm" role="group">
+                        <%= link_to master_data_unit_path(unit), class: "btn btn-info btn-sm", title: "View Details" do %>
+                          <i class="bi bi-info-circle"></i>
+                        <% end %>
+                        <%= link_to edit_master_data_unit_path(unit), class: "btn btn-warning btn-sm", title: "Edit" do %>
+                          <i class="bi bi-pencil"></i>
+                        <% end %>
+                        <%= link_to master_data_unit_path(unit), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{unit.name}?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
+                          <i class="bi bi-trash"></i>
+                        <% end %>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              <% else %>
+                <tr>
+                  <td colspan="6" class="text-center text-muted py-4">
+                    No units found. <%= link_to 'Add a new unit', new_master_data_unit_path, class: 'text-decoration-none' %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-muted small">Show</span>
+          <%= per_page_selector(current: params[:per_page] || 10) %>
+          <span class="text-muted small">
+            <%= pagination_info(@pagy) %>
+          </span>
+        </div>
+        <div>
+          <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
+        </div>
       </div>
     </div>
   </div>

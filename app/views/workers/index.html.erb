@@ -7,7 +7,7 @@
       <% end %>
     </div>
     <div class="card-body">
-      <%= search_form_for @q, html: { id: 'worker-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
+      <%= search_form_for @q, url: workers_path, html: { id: 'worker-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
             <thead class="table-success">
@@ -63,7 +63,7 @@
               <% if @workers.any? %>
                 <% @workers.each do |worker| %>
                   <tr>
-                    <td class="text-center">IH_<%= worker.id.to_s.rjust(3, '0') %></td>
+                    <td class="text-center"><%= worker.id %></td>
                     <td><%= worker.name %></td>
                     <td><%= worker.worker_type %></td>
                     <td class="text-center">

@@ -24,8 +24,20 @@
 #
 #  fk_rails_...  (role_id => roles.id)
 #
-one: {}
-# column: value
-#
-two: {}
-# column: value
+admin:
+  name: "Admin User"
+  email: "admin@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  is_active: true
+
+one:
+  name: "John Doe"
+  email: "john@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  is_active: true
+
+two:
+  name: "Jane Smith"
+  email: "jane@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  is_active: true

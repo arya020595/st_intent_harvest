@@ -2,11 +2,15 @@
 
 module MasterData
   class VehiclesController < ApplicationController
+    include RansackMultiSort
+
     before_action :set_vehicle, only: %i[show edit update destroy]
 
     def index
-      @vehicles = policy_scope(Vehicle, policy_scope_class: MasterData::VehiclePolicy::Scope)
       authorize Vehicle, policy_class: MasterData::VehiclePolicy
+
+      apply_ransack_search(policy_scope(Vehicle, policy_scope_class: MasterData::VehiclePolicy::Scope).order(id: :desc))
+      @pagy, @vehicles = paginate_results(@q.result)
     end
 
     def show

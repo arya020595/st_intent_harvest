@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class WorkOrderHistory < ApplicationRecord
+  include Denormalizable
+
   belongs_to :work_order
   belongs_to :user, optional: true
 
@@ -8,25 +10,40 @@ class WorkOrderHistory < ApplicationRecord
   validates :from_state, :to_state, presence: true
   validates :action, presence: true
 
+  # Denormalize user name to avoid JOINs when displaying history
+  denormalize :user_name, from: :user, attribute: :name
+
   scope :recent, -> { order(created_at: :desc) }
   scope :for_work_order, ->(work_order_id) { where(work_order_id: work_order_id).recent }
   scope :since, ->(time) { where('created_at >= ?', time).recent }
 
-  def self.record_transition(work_order, from_state, to_state, action, user = nil, remarks = nil)
+  # Simplified transition recording - derives states from AASM
+  def self.record_transition(work_order:, event_name:, user: nil, remarks: nil)
     create(
       work_order: work_order,
-      from_state: from_state,
-      to_state: to_state,
-      action: action,
+      from_state: work_order.aasm.from_state.to_s,
+      to_state: work_order.aasm.to_state.to_s,
+      action: event_name.to_s,
       user: user,
       remarks: remarks,
-      transition_details: {}
+      transition_details: build_transition_details(work_order)
     )
   end
 
   def transition_description
     "#{from_state&.titleize} → #{to_state&.titleize}"
   end
+
+  # Extract relevant data from work order for audit trail
+  def self.build_transition_details(work_order)
+    {
+      workers_count: work_order.work_order_workers.count,
+      items_count: work_order.work_order_items.count,
+      block_number: work_order.block_number,
+      work_order_rate_name: work_order.work_order_rate_name
+    }
+  end
+  private_class_method :build_transition_details
 end
 
 # == Schema Information

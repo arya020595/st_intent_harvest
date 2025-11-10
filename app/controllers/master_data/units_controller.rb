@@ -2,11 +2,15 @@
 
 module MasterData
   class UnitsController < ApplicationController
+    include RansackMultiSort
+
     before_action :set_unit, only: %i[show edit update destroy]
 
     def index
-      @units = policy_scope(Unit, policy_scope_class: MasterData::UnitPolicy::Scope)
       authorize Unit, policy_class: MasterData::UnitPolicy
+
+      apply_ransack_search(policy_scope(Unit, policy_scope_class: MasterData::UnitPolicy::Scope).order(id: :desc))
+      @pagy, @units = paginate_results(@q.result)
     end
 
     def show
