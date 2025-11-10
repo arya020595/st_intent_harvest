@@ -31,7 +31,8 @@ module WorkOrderServices
     end
 
     def update_work_order_history_with_remarks
-      work_order.work_order_histories.last.update(remarks: remarks)
+      last_history = work_order.work_order_histories.last
+      last_history.update(remarks: remarks) if last_history
     end
   end
 end
