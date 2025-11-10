@@ -31,7 +31,6 @@ class WorkOrder < ApplicationRecord
   validates :block_id, presence: true
   validates :work_order_rate_id, presence: true
   validates :work_order_status, inclusion: { in: STATUSES.values, allow_nil: true }
-  validate :must_have_workers_or_items, on: :update, if: :pending?
 
   # Define denormalized fields - auto-populated from associations
   denormalize :block_number, from: :block
@@ -65,13 +64,12 @@ class WorkOrder < ApplicationRecord
     %w[block work_order_rate field_conductor work_order_workers work_order_items work_order_histories]
   end
 
-  # Custom validation method
-  def must_have_workers_or_items
+  # Custom validation method - checks if work order has workers or items
+  # Used as a guard for AASM transitions to pending state
+  def has_workers_or_items?
     workers = work_order_workers.reject(&:marked_for_destruction?)
     items = work_order_items.reject(&:marked_for_destruction?)
-    return unless workers.empty? && items.empty?
-
-    errors.add(:base, 'Work order must have at least one worker or one inventory item')
+    !workers.empty? || !items.empty?
   end
 
   # AASM State Machine Configuration with string column
@@ -83,7 +81,7 @@ class WorkOrder < ApplicationRecord
 
     # Transitions
     event :mark_complete do
-      transitions from: :ongoing, to: :pending do
+      transitions from: :ongoing, to: :pending, guard: :has_workers_or_items? do
         after do
           WorkOrderHistory.record_transition(self, 'ongoing', 'pending', 'mark_complete', Current.user,
                                              'Work order submitted for approval')
@@ -110,7 +108,7 @@ class WorkOrder < ApplicationRecord
     end
 
     event :reopen do
-      transitions from: :amendment_required, to: :pending do
+      transitions from: :amendment_required, to: :pending, guard: :has_workers_or_items? do
         after do
           WorkOrderHistory.record_transition(self, 'amendment_required', 'pending', 'reopen', Current.user,
                                              'Work order resubmitted after amendments')

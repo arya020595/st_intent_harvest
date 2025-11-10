@@ -62,13 +62,20 @@ module WorkOrderServices
     # @param success_context [String] Description for success message
     # @return [Success, Failure] Result monad with success or error message
     def execute_transition(event, success_context)
+      # Check if work order has workers or items before transitioning to pending
+      unless work_order.has_workers_or_items?
+        work_order.errors.add(:base, 'Work order must have at least one worker or one inventory item')
+        return Failure(work_order.errors.full_messages)
+      end
+
       # Dynamically call AASM event method (e.g., work_order.reopen! or work_order.mark_complete!)
       # Using public_send to avoid duplicating error handling for each transition
       work_order.public_send(event)
       Success("Work order was successfully #{success_context}.")
     rescue AASM::InvalidTransition => e
       Rails.logger.error("WorkOrder transition failed: #{e.class}: #{e.message}")
-      Failure("Transition error: #{e.message}")
+      work_order.errors.add(:base, 'Work order must have at least one worker or one inventory item')
+      Failure(work_order.errors.full_messages)
     rescue StandardError => e
       Rails.logger.error("WorkOrder submission failed: #{e.class}: #{e.message}")
       Failure("Submission error: #{e.message}")

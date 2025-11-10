@@ -52,11 +52,17 @@ module WorkOrderServices
     def execute_submit_transition
       # Call AASM event to transition from ongoing -> pending
       # This triggers WorkOrderHistory.record_transition callback
+      unless work_order.has_workers_or_items?
+        work_order.errors.add(:base, 'Work order must have at least one worker or one inventory item')
+        return Failure(work_order.errors.full_messages)
+      end
+
       work_order.mark_complete!
       Success(work_order: work_order, message: 'Work order was successfully submitted.')
     rescue AASM::InvalidTransition => e
       Rails.logger.error("WorkOrder submission transition failed: #{e.class}: #{e.message}")
-      Failure("Transition error: #{e.message}")
+      work_order.errors.add(:base, 'Work order must have at least one worker or one inventory item')
+      Failure(work_order.errors.full_messages)
     rescue StandardError => e
       Rails.logger.error("WorkOrder submission failed: #{e.class}: #{e.message}")
       Failure("Submission error: #{e.message}")
