@@ -30,20 +30,23 @@ module WorkOrderServices
     end
 
     def save_and_submit
+      result = nil
       ActiveRecord::Base.transaction do
         if work_order.save
           begin
             # Use AASM transition to pending so history callbacks run
             work_order.mark_complete!
-            Success(work_order: work_order, message: 'Work order was successfully submitted.')
+            result = Success(work_order: work_order, message: 'Work order was successfully submitted.')
           rescue StandardError => e
             Rails.logger.error("WorkOrder submission transition failed: #{e.class}: #{e.message}")
+            result = Failure(['There was an error submitting the work order. Please try again.'])
             raise ActiveRecord::Rollback
           end
         else
-          Failure(work_order.errors.full_messages)
+          result = Failure(work_order.errors.full_messages)
         end
-      end || Failure(['There was an error submitting the work order. Please try again.'])
+      end
+      result
     end
   end
 end

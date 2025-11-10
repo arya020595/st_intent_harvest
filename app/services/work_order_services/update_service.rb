@@ -30,6 +30,7 @@ module WorkOrderServices
     end
 
     def update_and_submit
+      result = nil
       ActiveRecord::Base.transaction do
         if work_order.update(@work_order_params)
           begin
@@ -41,15 +42,17 @@ module WorkOrderServices
             else
               raise StandardError, "Work order cannot be submitted from '#{work_order.work_order_status}' status."
             end
-            Success('Work order was successfully submitted for approval.')
+            result = Success('Work order was successfully submitted for approval.')
           rescue StandardError => e
             Rails.logger.error("WorkOrder submission transition failed: #{e.class}: #{e.message}")
+            result = Failure(['There was an error submitting the work order. Please try again.'])
             raise ActiveRecord::Rollback
           end
         else
-          Failure(work_order.errors.full_messages)
+          result = Failure(work_order.errors.full_messages)
         end
-      end || Failure(['There was an error submitting the work order. Please try again.'])
+      end
+      result
     end
   end
 end
