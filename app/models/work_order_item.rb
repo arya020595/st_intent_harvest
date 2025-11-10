@@ -4,7 +4,7 @@ class WorkOrderItem < ApplicationRecord
   belongs_to :work_order
   belongs_to :inventory, optional: true
 
-  validates :amount_used, numericality: { greater_than: 0, message: 'must be greater than 0' }, allow_nil: true
+  validates :amount_used, numericality: { greater_than: 0 }, allow_nil: true
 
   # Denormalize inventory details
   denormalize :item_name, from: :inventory, attribute: :name
