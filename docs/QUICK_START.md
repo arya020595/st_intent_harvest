@@ -109,7 +109,7 @@ docker compose logs -f web
 
 **How this works:**
 
-- Your `docker-compose.yml` uses a persistent `bundle_cache` volume (line 52)
+- Your `docker-compose.yml` uses a persistent `bundle_cache` volume (line 56)
 - Gems are stored in this volume, not in the image
 - The entrypoint runs `bundle check || bundle install` on every startup
 - New gems are installed automatically without rebuilding!
