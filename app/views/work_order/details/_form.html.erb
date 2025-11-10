@@ -134,7 +134,7 @@
                   </td>
                   <input type="hidden" id="resource_destroy_<%= index %>" name="work_order[work_order_items_attributes][<%= index %>][_destroy]" value="0">
                   <td class="text-center">
-                    <button type="button" class="btn btn-danger btn-sm" onclick="window.workOrderFormController.removeResource(<%= index %>)">
+                    <button type="button" class="btn btn-danger btn-sm" data-action="click->work-order-form#removeResource">
                       <i class="bi bi-trash"></i>
                     </button>
                   </td>
