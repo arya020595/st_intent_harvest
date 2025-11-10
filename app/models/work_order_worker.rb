@@ -2,9 +2,8 @@ class WorkOrderWorker < ApplicationRecord
   belongs_to :work_order
   belongs_to :worker
 
-  validates :worker_id, presence: true, allow_blank: true
   validates :work_area_size, numericality: { greater_than: 0 }, allow_nil: true
-  validates :rate, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :rate, numericality: { greater_than_or_equal_to: 0, message: 'must be 0 or greater' }, allow_nil: true
 
   before_save :populate_worker_name
   before_save :calculate_amount

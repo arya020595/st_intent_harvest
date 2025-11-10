@@ -30,26 +30,48 @@ module WorkOrderServices
     end
 
     def update_and_submit
+      result = nil
+
       ActiveRecord::Base.transaction do
-        if work_order.update(@work_order_params)
-          begin
-            # Use AASM transition to pending based on current status
-            if work_order.work_order_status == 'amendment_required'
-              work_order.reopen!
-            elsif work_order.work_order_status == 'ongoing'
-              work_order.mark_complete!
-            else
-              raise StandardError, "Work order cannot be submitted from '#{work_order.work_order_status}' status."
-            end
-            Success('Work order was successfully submitted for approval.')
-          rescue StandardError => e
-            Rails.logger.error("WorkOrder submission transition failed: #{e.class}: #{e.message}")
-            raise ActiveRecord::Rollback
-          end
-        else
-          Failure(work_order.errors.full_messages)
+        # Step 1: Update the work order
+        unless work_order.update(@work_order_params)
+          result = Failure(work_order.errors.full_messages)
+          raise ActiveRecord::Rollback
         end
-      end || Failure(['There was an error submitting the work order. Please try again.'])
+
+        # Step 2: Perform state transition based on current AASM state
+        result = perform_transition
+        raise ActiveRecord::Rollback if result.failure?
+      end
+
+      result
+    end
+
+    def perform_transition
+      if work_order.amendment_required?
+        execute_transition(:reopen!, 'resubmitted after amendments')
+      elsif work_order.ongoing?
+        execute_transition(:mark_complete!, 'submitted for approval')
+      else
+        Failure("Work order cannot be submitted from '#{work_order.work_order_status.humanize}' status.")
+      end
+    end
+
+    # Executes AASM state transition event dynamically
+    # @param event [Symbol] AASM event method to call (e.g., :reopen!, :mark_complete!)
+    # @param success_context [String] Description for success message
+    # @return [Success, Failure] Result monad with success or error message
+    def execute_transition(event, success_context)
+      # Dynamically call AASM event method (e.g., work_order.reopen! or work_order.mark_complete!)
+      # Using public_send to avoid duplicating error handling for each transition
+      work_order.public_send(event)
+      Success("Work order was successfully #{success_context}.")
+    rescue AASM::InvalidTransition => e
+      Rails.logger.error("WorkOrder transition failed: #{e.class}: #{e.message}")
+      Failure("Transition error: #{e.message}")
+    rescue StandardError => e
+      Rails.logger.error("WorkOrder submission failed: #{e.class}: #{e.message}")
+      Failure("Submission error: #{e.message}")
     end
   end
 end

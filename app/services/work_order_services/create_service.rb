@@ -30,20 +30,36 @@ module WorkOrderServices
     end
 
     def save_and_submit
+      result = nil
+
       ActiveRecord::Base.transaction do
-        if work_order.save
-          begin
-            # Use AASM transition to pending so history callbacks run
-            work_order.mark_complete!
-            Success(work_order: work_order, message: 'Work order was successfully submitted.')
-          rescue StandardError => e
-            Rails.logger.error("WorkOrder submission transition failed: #{e.class}: #{e.message}")
-            raise ActiveRecord::Rollback
-          end
-        else
-          Failure(work_order.errors.full_messages)
+        # Step 1: Save the work order
+        unless work_order.save
+          result = Failure(work_order.errors.full_messages)
+          raise ActiveRecord::Rollback
         end
-      end || Failure(['There was an error submitting the work order. Please try again.'])
+
+        # Step 2: Transition to pending state (triggers history tracking)
+        result = execute_submit_transition
+        raise ActiveRecord::Rollback if result.failure?
+      end
+
+      result
+    end
+
+    # Executes AASM transition to submit work order for approval
+    # @return [Success, Failure] Result monad with work_order and message or error
+    def execute_submit_transition
+      # Call AASM event to transition from ongoing -> pending
+      # This triggers WorkOrderHistory.record_transition callback
+      work_order.mark_complete!
+      Success(work_order: work_order, message: 'Work order was successfully submitted.')
+    rescue AASM::InvalidTransition => e
+      Rails.logger.error("WorkOrder submission transition failed: #{e.class}: #{e.message}")
+      Failure("Transition error: #{e.message}")
+    rescue StandardError => e
+      Rails.logger.error("WorkOrder submission failed: #{e.class}: #{e.message}")
+      Failure("Submission error: #{e.message}")
     end
   end
 end
