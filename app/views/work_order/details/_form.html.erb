@@ -112,14 +112,14 @@
             <% work_order.work_order_items.includes(inventory: [:category, :unit]).each_with_index do |item, index| %>
               <tr data-resource-index="<%= index %>">
                 <td>
-                  <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][<%= index %>][inventory_id]" data-action="change->work-order-form#updateResourceDetails">
+                  <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][<%= index %>][inventory_id]" data-action="change->work-order-form#updateResourceDetails" data-resource-index="<%= index %>">
                     <option value="">Select Resource</option>
                     <% @inventories.each do |inv| %>
                       <option value="<%= inv.id %>" data-category="<%= inv.category&.name %>" data-price="<%= inv.price || 0 %>" data-unit="<%= inv.unit&.name %>" <%= 'selected' if inv.id == item.inventory_id %>><%= inv.name %></option>
                     <% end %>
                   </select>
-                    <%= hidden_field_tag "work_order[work_order_items_attributes][#{index}][id]", item.id %>
-                  </td>
+                  <%= hidden_field_tag "work_order[work_order_items_attributes][#{index}][id]", item.id %>
+                </td>
                   <td>
                     <input type="text" class="form-control form-control-sm" id="resource_category_<%= index %>" value="<%= item.inventory&.category&.name || 'Auto Filled' %>" disabled style="background-color: #e9ecef;">
                   </td>
@@ -132,12 +132,12 @@
                   <td>
                     <input type="number" class="form-control form-control-sm" name="work_order[work_order_items_attributes][<%= index %>][amount_used]" placeholder="0" step="0.01" min="0" value="<%= item.amount_used %>">
                   </td>
-                  <input type="hidden" id="resource_destroy_<%= index %>" name="work_order[work_order_items_attributes][<%= index %>][_destroy]" value="0">
-                  <td class="text-center">
-                    <button type="button" class="btn btn-danger btn-sm" data-action="click->work-order-form#removeResource">
-                      <i class="bi bi-trash"></i>
-                    </button>
-                  </td>
+                <input type="hidden" id="resource_destroy_<%= index %>" name="work_order[work_order_items_attributes][<%= index %>][_destroy]" value="0">
+                <td class="text-center">
+                  <button type="button" class="btn btn-danger btn-sm" data-action="click->work-order-form#removeResource" data-resource-index="<%= index %>">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
                 </tr>
               <% end %>
             </tbody>
@@ -170,17 +170,17 @@
               <% work_order.work_order_workers.includes(:worker).each_with_index do |wow, index| %>
                 <tr data-worker-index="<%= index %>">
                   <td>
-                    <select class="form-select form-select-sm" name="work_order[work_order_workers_attributes][<%= index %>][worker_id]" onchange="window.workOrderFormController.updateWorkerDetails(this, <%= index %>)">
+                    <select class="form-select form-select-sm" name="work_order[work_order_workers_attributes][<%= index %>][worker_id]" data-action="change->work-order-form#updateWorkerDetails" data-worker-index="<%= index %>">
                       <option value="">Select Worker</option>
                       <% @workers.each do |w| %>
                         <option value="<%= w.id %>" <%= 'selected' if w.id == wow.worker_id %>><%= w.name %></option>
                       <% end %>
-                      </select>
-                      <%= hidden_field_tag "work_order[work_order_workers_attributes][#{index}][id]", wow.id %>
-                    </td>
-                    <td>
-                      <input type="number" class="form-control form-control-sm" id="worker_quantity_<%= index %>" name="work_order[work_order_workers_attributes][<%= index %>][work_area_size]" placeholder="0" step="0.01" min="0" value="<%= wow.work_area_size %>" oninput="window.workOrderFormController.calculateWorkerAmount(<%= index %>)">
-                    </td>
+                    </select>
+                    <%= hidden_field_tag "work_order[work_order_workers_attributes][#{index}][id]", wow.id %>
+                  </td>
+                  <td>
+                    <input type="number" class="form-control form-control-sm" id="worker_quantity_<%= index %>" name="work_order[work_order_workers_attributes][<%= index %>][work_area_size]" placeholder="0" step="0.01" min="0" value="<%= wow.work_area_size %>" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="<%= index %>">
+                  </td>
                     <td>
                       <input type="text" class="form-control form-control-sm" id="worker_rate_<%= index %>" value="<%= wow.rate ? "RM #{sprintf('%.2f', wow.rate)}" : 'Auto Calculate' %>" disabled style="background-color: #e9ecef;">
                       <input type="hidden" id="worker_rate_value_<%= index %>" name="work_order[work_order_workers_attributes][<%= index %>][rate]" value="<%= wow.rate || 0 %>">
@@ -192,12 +192,12 @@
                     <td>
                       <input type="text" class="form-control form-control-sm" name="work_order[work_order_workers_attributes][<%= index %>][remarks]" placeholder="Remarks" value="<%= wow.remarks %>">
                     </td>
-                    <input type="hidden" id="worker_destroy_<%= index %>" name="work_order[work_order_workers_attributes][<%= index %>][_destroy]" value="0">
-                    <td class="text-center">
-                      <button type="button" class="btn btn-danger btn-sm" onclick="window.workOrderFormController.removeWorker(<%= index %>)">
-                        <i class="bi bi-trash"></i>
-                      </button>
-                    </td>
+                  <input type="hidden" id="worker_destroy_<%= index %>" name="work_order[work_order_workers_attributes][<%= index %>][_destroy]" value="0">
+                  <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-sm" data-action="click->work-order-form#removeWorker" data-worker-index="<%= index %>">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
                   </tr>
                 <% end %>
               </tbody>
