@@ -79,7 +79,7 @@ module Denormalizable
                 associated_record.public_send(source_attribute)
               end
 
-      # Apply transformation if provided (even on nil values)
+      # Apply transformation if provided
       value = transform.call(value) if transform
 
       # Set the denormalized field

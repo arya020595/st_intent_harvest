@@ -100,7 +100,7 @@ export default class extends Controller {
         rateDisplay.value =
           rateVal > 0 ? `RM ${rateVal.toFixed(2)}` : "Auto Calculate";
       }
-      this.calculateWorkerAmount(index);
+      this.calculateWorkerAmountByIndex(index);
     });
   }
 
@@ -176,7 +176,7 @@ export default class extends Controller {
     return `
       <tr data-resource-index="${index}">
         <td>
-          <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][${index}][inventory_id]" onchange="window.workOrderFormController.updateResourceDetails(this, ${index})">
+          <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][${index}][inventory_id]" data-action="change->work-order-form#updateResourceDetails" data-resource-index="${index}">
             <option value="">Select Resource</option>
             ${inventoryOptions}
           </select>
@@ -195,7 +195,7 @@ export default class extends Controller {
         </td>
         <input type="hidden" id="resource_destroy_${index}" name="work_order[work_order_items_attributes][${index}][_destroy]" value="0">
         <td class="text-center">
-          <button type="button" class="btn btn-danger btn-sm" onclick="window.workOrderFormController.removeResource(${index})">
+          <button type="button" class="btn btn-danger btn-sm" data-action="click->work-order-form#removeResource" data-resource-index="${index}">
             <i class="bi bi-trash"></i>
           </button>
         </td>
@@ -203,7 +203,10 @@ export default class extends Controller {
     `;
   }
 
-  updateResourceDetails(select, index) {
+  updateResourceDetails(event) {
+    const select = event.currentTarget;
+    const index = select.dataset.resourceIndex;
+    
     if (!select || !select.options || select.selectedIndex < 0) return;
     const selectedOption = select.options[select.selectedIndex];
     if (!selectedOption.value) {
@@ -243,13 +246,13 @@ export default class extends Controller {
     return `
       <tr data-worker-index="${index}">
         <td>
-          <select class="form-select form-select-sm" name="work_order[work_order_workers_attributes][${index}][worker_id]" onchange="window.workOrderFormController.updateWorkerDetails(this, ${index})">
+          <select class="form-select form-select-sm" name="work_order[work_order_workers_attributes][${index}][worker_id]" data-action="change->work-order-form#updateWorkerDetails" data-worker-index="${index}">
             <option value="">Select Worker</option>
             ${workerOptions}
           </select>
         </td>
         <td>
-          <input type="number" class="form-control form-control-sm" id="worker_quantity_${index}" name="work_order[work_order_workers_attributes][${index}][work_area_size]" placeholder="0" step="0.01" min="0" oninput="window.workOrderFormController.calculateWorkerAmount(${index})">
+          <input type="number" class="form-control form-control-sm" id="worker_quantity_${index}" name="work_order[work_order_workers_attributes][${index}][work_area_size]" placeholder="0" step="0.01" min="0" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="${index}">
         </td>
         <td>
           <input type="text" class="form-control form-control-sm" id="worker_rate_${index}" value="${
@@ -270,7 +273,7 @@ export default class extends Controller {
         </td>
         <input type="hidden" id="worker_destroy_${index}" name="work_order[work_order_workers_attributes][${index}][_destroy]" value="0">
         <td class="text-center">
-          <button type="button" class="btn btn-danger btn-sm" onclick="window.workOrderFormController.removeWorker(${index})">
+          <button type="button" class="btn btn-danger btn-sm" data-action="click->work-order-form#removeWorker" data-worker-index="${index}">
             <i class="bi bi-trash"></i>
           </button>
         </td>
@@ -278,7 +281,10 @@ export default class extends Controller {
     `;
   }
 
-  updateWorkerDetails(select, index) {
+  updateWorkerDetails(event) {
+    const select = event.currentTarget;
+    const index = select.dataset.workerIndex;
+    
     if (!select || !select.options || select.selectedIndex < 0) return;
     const selectedOption = select.options[select.selectedIndex];
     if (!selectedOption.value) {
@@ -291,7 +297,7 @@ export default class extends Controller {
     }
 
     // Preserve existing rate; just recalc amount based on quantity and current hidden rate
-    this.calculateWorkerAmount(index);
+    this.calculateWorkerAmountByIndex(index);
   }
 
   applyWorkerRate(index) {
@@ -302,10 +308,15 @@ export default class extends Controller {
       rate.toFixed(2);
 
     // Recalculate amount with the new rate
-    this.calculateWorkerAmount(index);
+    this.calculateWorkerAmountByIndex(index);
   }
 
-  calculateWorkerAmount(index) {
+  calculateWorkerAmount(event) {
+    const index = event.currentTarget.dataset.workerIndex;
+    this.calculateWorkerAmountByIndex(index);
+  }
+
+  calculateWorkerAmountByIndex(index) {
     const quantityEl = document.getElementById(`worker_quantity_${index}`);
     const rateEl = document.getElementById(`worker_rate_value_${index}`);
     const amountEl = document.getElementById(`worker_amount_${index}`);
@@ -322,75 +333,29 @@ export default class extends Controller {
       amountValueEl.value = amount.toFixed(2);
     }
   }
+
+  removeResource(event) {
+    const index = event.currentTarget.dataset.resourceIndex;
+    const destroyField = document.getElementById(`resource_destroy_${index}`);
+    if (destroyField) {
+      destroyField.value = "1";
+    }
+    const row = event.currentTarget.closest("tr");
+    if (row) {
+      row.style.display = "none";
+    }
+  }
+
+  removeWorker(event) {
+    const index = event.currentTarget.dataset.workerIndex;
+    const destroyField = document.getElementById(`worker_destroy_${index}`);
+    if (destroyField) {
+      destroyField.value = "1";
+    }
+    const row = event.currentTarget.closest("tr");
+    if (row) {
+      row.style.display = "none";
+    }
+  }
 }
 
-// Make controller globally accessible for inline event handlers
-window.workOrderFormController = {
-  removeResource: (index) => {
-    const row = document.querySelector(`tr[data-resource-index="${index}"]`);
-    const destroyInput = document.getElementById(`resource_destroy_${index}`);
-    if (destroyInput) {
-      destroyInput.value = "1";
-      if (row) row.style.display = "none";
-    } else if (row) {
-      // New row without id, safe to remove from DOM
-      row.remove();
-    }
-  },
-  removeWorker: (index) => {
-    const row = document.querySelector(`tr[data-worker-index="${index}"]`);
-    const destroyInput = document.getElementById(`worker_destroy_${index}`);
-    if (destroyInput) {
-      destroyInput.value = "1";
-      if (row) row.style.display = "none";
-    } else if (row) {
-      // New row without id, safe to remove from DOM
-      row.remove();
-    }
-  },
-  updateResourceDetails: (select, index) => {
-    const controller = document.querySelector(
-      "[data-controller='work-order-form']"
-    );
-    if (controller) {
-      const stimulusController =
-        window.Stimulus.getControllerForElementAndIdentifier(
-          controller,
-          "work-order-form"
-        );
-      if (stimulusController) {
-        stimulusController.updateResourceDetails(select, index);
-      }
-    }
-  },
-  updateWorkerDetails: (select, index) => {
-    const controller = document.querySelector(
-      "[data-controller='work-order-form']"
-    );
-    if (controller) {
-      const stimulusController =
-        window.Stimulus.getControllerForElementAndIdentifier(
-          controller,
-          "work-order-form"
-        );
-      if (stimulusController) {
-        stimulusController.updateWorkerDetails(select, index);
-      }
-    }
-  },
-  calculateWorkerAmount: (index) => {
-    const controller = document.querySelector(
-      "[data-controller='work-order-form']"
-    );
-    if (controller) {
-      const stimulusController =
-        window.Stimulus.getControllerForElementAndIdentifier(
-          controller,
-          "work-order-form"
-        );
-      if (stimulusController) {
-        stimulusController.calculateWorkerAmount(index);
-      }
-    }
-  },
-};
