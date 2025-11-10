@@ -165,11 +165,11 @@ export default class extends Controller {
     const inventoryOptions = (this.inventories || [])
       .map(
         (inv) =>
-          `<option value="${inv.id}" data-category="${
+          `<option value="${inv.id}" data-category="${this.escapeHTML(
             inv.category?.name || ""
-          }" data-price="${inv.price || 0}" data-unit="${
+          )}" data-price="${inv.price || 0}" data-unit="${this.escapeHTML(
             inv.unit?.name || ""
-          }">${inv.name}</option>`
+          )}">${this.escapeHTML(inv.name)}</option>`
       )
       .join("");
 
