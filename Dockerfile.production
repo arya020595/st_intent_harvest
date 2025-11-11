@@ -62,8 +62,8 @@ COPY --from=builder /usr/local/bundle /usr/local/bundle
 # Copy application from builder
 COPY --from=builder /rails /rails
 
-# ensure pids folder exists
-RUN mkdir -p tmp/pids
+# ensure pids and log folders exist
+RUN mkdir -p tmp/pids log
 
 EXPOSE 3000
 
