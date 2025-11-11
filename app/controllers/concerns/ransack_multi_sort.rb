@@ -17,9 +17,6 @@
 module RansackMultiSort
   extend ActiveSupport::Concern
 
-  # Default pagination value
-  DEFAULT_PER_PAGE = 10
-
   private
 
   # Applies Ransack search without default sort
@@ -30,7 +27,7 @@ module RansackMultiSort
   # @param scope [ActiveRecord::Relation] The base scope to search
   # @return [Ransack::Search] Configured ransack search object
   def apply_ransack_search(scope)
-    @q = build_ransack_search(scope)
+    @q = scope.ransack(params[:q])
   end
 
   # Paginates results using Pagy
@@ -39,14 +36,9 @@ module RansackMultiSort
   # @return [Array<Pagy, ActiveRecord::Relation>] Pagy object and paginated results
   def paginate_results(results)
     pagy(results, limit: sanitized_per_page_param)
-  end
-
-  # Builds Ransack search object from params
-  #
-  # @param scope [ActiveRecord::Relation] The base scope
-  # @return [Ransack::Search] Ransack search object
-  def build_ransack_search(scope)
-    scope.ransack(params[:q])
+  rescue Pagy::OverflowError => e
+    # Fallback: retry with last available page (without mutating params)
+    pagy(results, limit: sanitized_per_page_param, page: e.pagy.last)
   end
 
   # Gets sanitized per_page parameter with default fallback
@@ -54,6 +46,6 @@ module RansackMultiSort
   # @return [Integer] Sanitized per_page value
   def sanitized_per_page_param
     per_page = params[:per_page].to_i
-    per_page.positive? ? per_page : DEFAULT_PER_PAGE
+    per_page.positive? ? per_page : (Pagy.options[:limit] || 10)
   end
 end
