@@ -87,10 +87,10 @@ group :development, :test do
   gem 'faker'
 
   # Bullet gem to help detect N+1 queries and unused eager loading
-  gem 'bullet', '~> 8.1'
+  gem 'bullet'
 
   # Security vulnerability scanner for Ruby on Rails applications
-  gem 'brakeman', '~> 3.3', '>= 3.3.2', require: false
+  gem 'brakeman', require: false
 
   # Strong Migrations to help write safe database migrations
   gem 'strong_migrations'
