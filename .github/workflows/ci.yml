@@ -54,3 +54,7 @@ jobs:
 
       - name: Run Brakeman
         run: bundle exec brakeman -q --no-progress
+
+      # TODO: Fix test fixtures before enabling
+      # - name: Run Tests
+      #   run: bin/rails test
