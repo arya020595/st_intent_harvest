@@ -51,7 +51,7 @@ ENV RAILS_ENV="production" \
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     ca-certificates \
-    libpq5 \
+    libpq-dev \
     libvips \
     curl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
@@ -62,7 +62,10 @@ COPY --from=builder /usr/local/bundle /usr/local/bundle
 # Copy application from builder
 COPY --from=builder /rails /rails
 
+# ensure pids folder exists
+RUN mkdir -p tmp/pids
+
 EXPOSE 3000
 
 # Use Puma in production
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+CMD ["bundle", "exec", "puma", "-C", "config/puma.production.rb"]
