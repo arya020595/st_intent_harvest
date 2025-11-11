@@ -9,6 +9,7 @@
 # For example:
 #
 Pagy.options[:limit] = 10               # Limit the items per page
+Pagy.options[:limit_key] = 'per_page'   # Use 'per_page' as the URL parameter name for limit
 Pagy.options[:client_max_limit] = 100   # The client can request a limit up to 100
 Pagy.options[:max_pages] = 50           # Allow only 50 pages; adjust as needed for performance
 Pagy.options[:jsonapi] = true           # Use JSON:API compliant URLs
