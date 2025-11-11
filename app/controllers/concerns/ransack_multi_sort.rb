@@ -82,6 +82,6 @@ module RansackMultiSort
   # @param options [Hash] Pagination options
   # @return [Array<Pagy, ActiveRecord::Relation>] Pagy object and paginated results
   def pagy_offset(results, options)
-    pagy(:offset, results, **options)
+    pagy(results, **options)
   end
 end
