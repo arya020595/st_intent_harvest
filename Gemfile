@@ -91,6 +91,9 @@ group :development, :test do
 
   # Security vulnerability scanner for Ruby on Rails applications
   gem 'brakeman', '~> 3.3', '>= 3.3.2', require: false
+
+  # Strong Migrations to help write safe database migrations
+  gem 'strong_migrations'
 end
 
 group :development do
