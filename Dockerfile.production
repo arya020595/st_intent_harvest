@@ -2,7 +2,7 @@
 
 ARG RUBY_VERSION=3.4.7
 
-# Builder stage
+# Builder stage - install gems and compile assets
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS builder
 
 WORKDIR /rails
@@ -11,22 +11,25 @@ ENV RAILS_ENV="production" \
     BUNDLE_PATH="/usr/local/bundle" \
     PATH="/rails/bin:/usr/local/bundle/bin:$PATH"
 
-# Build dependencies
+# Install build dependencies
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
+    ca-certificates \
     build-essential \
     git \
     libpq-dev \
     libvips \
     curl && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives && \
+    update-ca-certificates
 
 # Install gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle install --without development test && \
+RUN bundle config set --local without 'development test' && \
+    bundle install && \
     bundle exec bootsnap precompile --gemfile
 
-# Copy app source
+# Copy app
 COPY . .
 
 # Precompile bootsnap and assets
@@ -34,8 +37,8 @@ RUN bundle exec bootsnap precompile app/ lib/
 ENV SECRET_KEY_BASE=placeholder
 RUN bundle exec rails assets:precompile
 
-# Final stage
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim
+# Runtime stage - minimal image with only runtime dependencies
+FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS runtime
 
 WORKDIR /rails
 
@@ -43,16 +46,21 @@ ENV RAILS_ENV="production" \
     BUNDLE_PATH="/usr/local/bundle" \
     PATH="/rails/bin:/usr/local/bundle/bin:$PATH"
 
-# Only runtime dependencies
+# Install only runtime dependencies (no build tools)
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
+    ca-certificates \
     libpq-dev \
     libvips \
     curl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Copy built app and bundle from builder
+# Copy installed gems from builder
+COPY --from=builder /usr/local/bundle /usr/local/bundle
+
+# Copy application from builder
 COPY --from=builder /rails /rails
+
 EXPOSE 3000
 
 # Use Puma in production
