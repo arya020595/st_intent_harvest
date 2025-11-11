@@ -62,7 +62,10 @@ COPY --from=builder /usr/local/bundle /usr/local/bundle
 # Copy application from builder
 COPY --from=builder /rails /rails
 
+# ensure pids and log folders exist
+RUN mkdir -p tmp/pids log
+
 EXPOSE 3000
 
 # Use Puma in production
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+CMD ["bundle", "exec", "puma", "-C", "config/puma.production.rb"]
