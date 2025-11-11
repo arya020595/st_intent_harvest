@@ -42,16 +42,20 @@ jobs:
         with:
           ruby-version: "3.4.7"
           bundler-cache: true
-          bundler-without: ""
+          bundler-without: "production"
 
       - name: Prepare test DB
-        run: bin/rails db:create db:schema:load
-
-      - name: Run Strong Migrations
-        run: bundle exec strong_migrations check
+        run: bundle exec rails db:create db:schema:load
 
       - name: Run Rubocop (fail only on error)
         run: bundle exec rubocop --fail-level error
 
+      - name: Run Strong Migrations
+        run: bundle exec strong_migrations check
+
       - name: Run Brakeman
         run: bundle exec brakeman -q --no-progress
+
+      # TODO: enable after adding tests
+      # - name: Run Tests
+      #   run: bundle exec rails test
