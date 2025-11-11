@@ -74,9 +74,6 @@ gem 'bootstrap', '~> 5.3', '>= 5.3.5'
 # Sass compiler for CSS preprocessing (required for Bootstrap SCSS)
 gem 'sassc-rails'
 
-# Faker for generating fake data (used in seeds)
-gem 'faker'
-
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'byebug', '~> 11.1', '>= 11.1.3'
@@ -85,6 +82,9 @@ group :development, :test do
 
   # Annotate models with schema information
   gem 'annotate', require: false
+
+  # Faker for generating fake data
+  gem 'faker'
 
   # Bullet gem to help detect N+1 queries and unused eager loading
   gem 'bullet', '~> 8.1'
