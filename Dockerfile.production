@@ -51,7 +51,7 @@ ENV RAILS_ENV="production" \
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     ca-certificates \
-    libpq-dev \
+    libpq5 \
     libvips \
     curl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
