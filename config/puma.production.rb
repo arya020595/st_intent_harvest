@@ -20,4 +20,4 @@ worker_shutdown_timeout 30
 pidfile ENV.fetch('PIDFILE', '/rails/tmp/pids/server.pid')
 state_path '/rails/tmp/pids/puma.state'
 
-stdout_redirect 'log/puma.stdout.log', 'log/puma.stderr.log', true unless ENV['RAILS_LOG_TO_STDOUT'] == 'true'
+stdout_redirect '/rails/log/puma.stdout.log', '/rails/log/puma.stderr.log', true unless ENV['RAILS_LOG_TO_STDOUT'] == 'true'
