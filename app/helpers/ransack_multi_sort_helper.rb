@@ -85,7 +85,7 @@ module RansackMultiSortHelper
     options[:aria_label] ||= aria_label if aria_label
     safe_frame_id = ERB::Util.html_escape(frame_id)
     anchor = %(data-turbo-frame="#{safe_frame_id}")
-    pagy_bootstrap_nav(pagy, **options.merge(anchor_string: anchor))
+    super(pagy, **options.merge(anchor_string: anchor))
   end
 
   # Convenience: render series_nav with automatic frame targeting
@@ -93,7 +93,7 @@ module RansackMultiSortHelper
     safe_frame_id = ERB::Util.html_escape(frame_id)
     anchor = %(data-turbo-frame="#{safe_frame_id}")
     if style == :bootstrap
-      pagy_bootstrap_nav(pagy, **options.merge(anchor_string: anchor))
+      super(pagy, **options.merge(anchor_string: anchor))
     else
       pagy_nav(pagy, **options.merge(anchor_string: anchor))
     end
