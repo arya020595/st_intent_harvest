@@ -42,6 +42,7 @@ jobs:
         with:
           ruby-version: "3.4.7"
           bundler-cache: true
+          bundler-without: ""
 
       - name: Prepare test DB
         run: bin/rails db:create db:schema:load
@@ -54,7 +55,3 @@ jobs:
 
       - name: Run Brakeman
         run: bundle exec brakeman -q --no-progress
-
-      # TODO: enable after adding tests
-      # - name: Run Tests
-      #   run: bin/rails test
