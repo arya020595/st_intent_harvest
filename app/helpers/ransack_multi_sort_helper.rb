@@ -10,7 +10,6 @@
 module RansackMultiSortHelper
   # Default per-page options for pagination selector
   DEFAULT_PER_PAGE_OPTIONS = [10, 25, 50, 100].freeze
-  DEFAULT_PER_PAGE = 10
 
   # ===== Per-page selector =====
 
@@ -20,7 +19,8 @@ module RansackMultiSortHelper
   # @param current [Integer] Currently selected per-page value
   # @param frame_id [String] Turbo frame ID for scoped updates
   # @return [String] HTML string
-  def per_page_selector(per_page_options: DEFAULT_PER_PAGE_OPTIONS, current: DEFAULT_PER_PAGE, frame_id: pagy_frame_id)
+  def per_page_selector(per_page_options: DEFAULT_PER_PAGE_OPTIONS, current: nil, frame_id: pagy_frame_id)
+    current ||= Pagy.options[:limit]
     form_with url: request.path, method: :get, local: true,
               html: { class: 'd-inline', data: { turbo_frame: frame_id } } do |f|
       concat hidden_search_fields
@@ -53,7 +53,7 @@ module RansackMultiSortHelper
 
   # ===== Pagination navigation helpers =====
 
-  # Backwards-compatible helper: render a Bootstrap-styled nav using the passed @pagy instance
+  # Renders Bootstrap-styled pagination nav with Turbo Frame support
   # Adds data-turbo-frame to links so nav updates only the frame when present.
   # Usage in views (safe output):
   #   <%== pagy_bootstrap_nav(@pagy) %>
@@ -76,30 +76,6 @@ module RansackMultiSortHelper
       pagy.series_nav(:bootstrap, **options.merge(anchor_string: anchor))
     else
       # Fallback: generate basic nav if series_nav is not available
-      pagy_nav(pagy, **options.merge(anchor_string: anchor))
-    end
-  end
-
-  # Convenience: render series_nav with automatic frame targeting
-  # Supports different navigation styles (bootstrap, tailwind, etc.)
-  # Usage:
-  #   <%== pagy_series_nav(@pagy) %>
-  #   <%== pagy_series_nav(@pagy, style: :tailwind) %>
-  #
-  # @param pagy [Pagy] Pagy instance
-  # @param style [Symbol] Navigation style (:bootstrap, :tailwind, etc.)
-  # @param frame_id [String] Turbo frame ID for link targeting
-  # @param options [Hash] Additional options passed to series_nav
-  # @return [String] HTML string
-  def pagy_series_nav(pagy, style: :bootstrap, frame_id: pagy_frame_id, **options)
-    return '' unless pagy # Guard against nil @pagy
-
-    safe_frame_id = ERB::Util.html_escape(frame_id)
-    anchor = %(data-turbo-frame="#{safe_frame_id}")
-
-    if pagy.respond_to?(:series_nav)
-      pagy.series_nav(style, **options.merge(anchor_string: anchor))
-    else
       pagy_nav(pagy, **options.merge(anchor_string: anchor))
     end
   end
