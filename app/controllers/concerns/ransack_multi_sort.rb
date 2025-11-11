@@ -67,8 +67,7 @@ module RansackMultiSort
   # Override or extend here if needed (e.g. switch to :keyset for very large tables).
   def pagy_options
     {
-      limit: sanitized_per_page_param,
-      limit_key: LIMIT_PARAM
+      limit: sanitized_per_page_param
     }
   end
 
