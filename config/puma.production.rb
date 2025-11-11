@@ -17,7 +17,7 @@ plugin :solid_queue if ENV['SOLID_QUEUE_IN_PUMA']
 worker_timeout 30
 worker_shutdown_timeout 30
 
-pidfile ENV.fetch('PIDFILE', 'tmp/pids/server.pid')
-state_path 'tmp/pids/puma.state'
+pidfile ENV.fetch('PIDFILE', '/rails/tmp/pids/server.pid')
+state_path '/rails/tmp/pids/puma.state'
 
 stdout_redirect 'log/puma.stdout.log', 'log/puma.stderr.log', true unless ENV['RAILS_LOG_TO_STDOUT'] == 'true'
