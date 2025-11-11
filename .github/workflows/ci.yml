@@ -11,6 +11,7 @@ on:
   pull_request:
     branches:
       - develop
+      - main
 
 jobs:
   ci:
@@ -40,9 +41,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.4.7"
-
-      - name: Install gems
-        run: bundle install --jobs 4 --retry 3
+          bundler-cache: true
 
       - name: Prepare DB
         run: bin/rails db:drop db:create db:schema:load
