@@ -6,7 +6,6 @@
 #
 # Usage:
 #   <%= per_page_selector(current: params[:per_page]) %>
-#   <%= pagination_info(@pagy) %>
 module RansackMultiSortHelper
   # Default per-page options for pagination selector
   DEFAULT_PER_PAGE_OPTIONS = [10, 25, 50, 100].freeze
@@ -23,14 +22,6 @@ module RansackMultiSortHelper
       concat hidden_search_fields
       concat render_per_page_select(f, per_page_options, current)
     end
-  end
-
-  # Renders pagination info text
-  #
-  # @param pagy [Pagy] Pagy pagination object
-  # @return [String] Formatted pagination info (e.g., "1 to 10 out of 50 entries")
-  def pagination_info(pagy)
-    "#{pagy.from} to #{pagy.to} out of #{pagy.count} entries"
   end
 
   private
@@ -76,7 +67,6 @@ module RansackMultiSortHelper
   def pagy_frame_id
     controller_path.tr('/', '-')
   end
-
 
   # Wraps content into a Turbo Frame with a consistent id for the current controller
   # Usage:
