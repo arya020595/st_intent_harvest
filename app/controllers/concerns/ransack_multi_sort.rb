@@ -39,7 +39,7 @@ module RansackMultiSort
   # @param results [ActiveRecord::Relation] Results to paginate
   # @return [Array<Pagy, ActiveRecord::Relation>] Pagy object and paginated results
   def paginate_results(results)
-    # Use the v43 pagy(:offset, ...) signature per official docs.
+    # Use standard offset-based pagination (pagy method) for Pagy v7+.
     # Provides graceful fallback if the requested page overflows.
     pagy_offset(results, pagy_options)
   rescue Pagy::OverflowError => e
