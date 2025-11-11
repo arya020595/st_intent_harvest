@@ -87,7 +87,7 @@ group :development, :test do
   gem 'faker'
 
   # Bullet gem to help detect N+1 queries and unused eager loading
-  gem 'bullet'
+  gem 'bullet', '~> 8.1'
 
   # Security vulnerability scanner for Ruby on Rails applications
   gem 'brakeman', require: false
