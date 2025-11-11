@@ -68,7 +68,7 @@
                   <th class="text-center">
                     <div class="d-flex gap-1 justify-content-center">
                       <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
-                      <%= link_to 'Reset', workers_path, class: 'btn btn-secondary btn-sm', data: { turbo_frame: 'workers' } %>
+                      <%= link_to 'Reset', workers_path, class: 'btn btn-secondary btn-sm', data: { turbo_frame: pagy_frame_id } %>
                     </div>
                   </th>
                 </tr>
