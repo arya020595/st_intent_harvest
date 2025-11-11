@@ -1,0 +1,130 @@
+<%= form_with(model: inventory, local: true, class: "needs-validation", novalidate: true) do |form| %>
+  <% if inventory.errors.any? %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <h5 class="alert-heading">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <%= pluralize(inventory.errors.count, "error") %> prohibited this inventory item from being saved:
+      </h5>
+      <ul class="mb-0">
+        <% inventory.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% end %>
+
+  <div class="row g-3">
+    <!-- Item Name -->
+    <div class="col-md-6">
+      <%= form.label :name, class: "form-label" do %>
+        Item Name <span class="text-danger">*</span>
+      <% end %>
+      <%= form.text_field :name, class: "form-control #{'is-invalid' if inventory.errors[:name].any?}", 
+          placeholder: "Enter item name", required: true %>
+      <% if inventory.errors[:name].any? %>
+        <div class="invalid-feedback d-block">
+          <%= inventory.errors[:name].join(', ') %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Category -->
+    <div class="col-md-6">
+      <%= form.label :category_id, class: "form-label" do %>
+        Category
+      <% end %>
+      <%= form.select :category_id, 
+          options_from_collection_for_select(Category.order(:name), :id, :name, inventory.category_id),
+          { include_blank: 'Select category' },
+          { class: "form-select #{'is-invalid' if inventory.errors[:category_id].any?}" } %>
+      <% if inventory.errors[:category_id].any? %>
+        <div class="invalid-feedback d-block">
+          <%= inventory.errors[:category_id].join(', ') %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Stock Quantity -->
+    <div class="col-md-4">
+      <%= form.label :stock_quantity, class: "form-label" do %>
+        Stock Quantity
+      <% end %>
+      <%= form.number_field :stock_quantity, class: "form-control #{'is-invalid' if inventory.errors[:stock_quantity].any?}", 
+          placeholder: "0", min: 0 %>
+      <% if inventory.errors[:stock_quantity].any? %>
+        <div class="invalid-feedback d-block">
+          <%= inventory.errors[:stock_quantity].join(', ') %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Unit -->
+    <div class="col-md-4">
+      <%= form.label :unit_id, class: "form-label" do %>
+        Unit
+      <% end %>
+      <%= form.select :unit_id, 
+          options_from_collection_for_select(Unit.order(:name), :id, :name, inventory.unit_id),
+          { include_blank: 'Select unit' },
+          { class: "form-select #{'is-invalid' if inventory.errors[:unit_id].any?}" } %>
+      <% if inventory.errors[:unit_id].any? %>
+        <div class="invalid-feedback d-block">
+          <%= inventory.errors[:unit_id].join(', ') %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Price -->
+    <div class="col-md-4">
+      <%= form.label :price, class: "form-label" do %>
+        Price per Unit
+      <% end %>
+      <div class="input-group">
+        <%= form.select :currency, 
+            [['RM', 'RM'], ['USD', 'USD'], ['EUR', 'EUR']], 
+            { selected: inventory.currency || 'RM' },
+            { class: "form-select", style: "max-width: 80px;" } %>
+        <%= form.number_field :price, class: "form-control #{'is-invalid' if inventory.errors[:price].any?}", 
+            placeholder: "0.00", step: 0.01, min: 0 %>
+      </div>
+      <% if inventory.errors[:price].any? %>
+        <div class="invalid-feedback d-block">
+          <%= inventory.errors[:price].join(', ') %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Supplier -->
+    <div class="col-md-6">
+      <%= form.label :supplier, class: "form-label" do %>
+        Supplier
+      <% end %>
+      <%= form.text_field :supplier, class: "form-control #{'is-invalid' if inventory.errors[:supplier].any?}", 
+          placeholder: "Enter supplier name" %>
+      <% if inventory.errors[:supplier].any? %>
+        <div class="invalid-feedback d-block">
+          <%= inventory.errors[:supplier].join(', ') %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Input Date -->
+    <div class="col-md-6">
+      <%= form.label :input_date, class: "form-label" do %>
+        Input Date
+      <% end %>
+      <%= form.date_field :input_date, class: "form-control #{'is-invalid' if inventory.errors[:input_date].any?}" %>
+      <% if inventory.errors[:input_date].any? %>
+        <div class="invalid-feedback d-block">
+          <%= inventory.errors[:input_date].join(', ') %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex gap-2">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", inventories_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>

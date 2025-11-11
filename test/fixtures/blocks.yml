@@ -1,0 +1,18 @@
+# == Schema Information
+#
+# Table name: blocks
+#
+#  id           :integer          not null, primary key
+#  block_number :string
+#  hectarage    :decimal(10, 2)
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#
+
+one:
+  block_number: "A-001"
+  hectarage: 25.50
+
+two:
+  block_number: "B-002"
+  hectarage: 30.75

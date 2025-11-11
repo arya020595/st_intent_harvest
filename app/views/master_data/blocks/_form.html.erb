@@ -1,0 +1,23 @@
+<%= form_with(model: [:master_data, block], local: true) do |form| %>
+  <% if block.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(block.errors.count, "error") %> prohibited this block from being saved:</h4>
+      <ul>
+        <% block.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="mb-3">
+    <%= form.label :block_number, class: "form-label" %>
+    <%= form.text_field :block_number, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :hectarage, class: "form-label" %>
+    <%= form.number_field :hectarage, step: 0.01, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

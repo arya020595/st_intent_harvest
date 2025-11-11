@@ -1,0 +1,34 @@
+<%= form_with(model: [:user_management, role], local: true) do |form| %>
+  <% if role.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(role.errors.count, "error") %> prohibited this role from being saved:</h4>
+      <ul>
+        <% role.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="mb-3">
+    <%= form.label :name, class: "form-label" %>
+    <%= form.text_field :name, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :description, class: "form-label" %>
+    <%= form.text_area :description, rows: 3, class: "form-control" %>
+  </div>
+  <div class="mb-3">
+    <%= form.label :permission_ids, "Permissions", class: "form-label" %>
+    <div class="border p-3" style="max-height: 400px; overflow-y: auto;">
+      <%= form.collection_check_boxes :permission_ids, Permission.all, :id, ->(p) { "#{p.subject} - #{p.action}" } do |b| %>
+        <div class="form-check">
+          <%= b.check_box class: "form-check-input" %>
+          <%= b.label class: "form-check-label" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="mb-3">
+    <%= form.submit class: "btn btn-primary" %>
+  </div>
+<% end %>

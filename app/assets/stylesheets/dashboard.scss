@@ -1,0 +1,10 @@
+/* Dashboard Sidebar Styles */
+
+/* Rotate chevron when section expanded */
+.nav-link .collapse-chevron {
+  transition: transform .2s ease;
+}
+
+.nav-link[aria-expanded="true"] .collapse-chevron {
+  transform: rotate(90deg);
+}

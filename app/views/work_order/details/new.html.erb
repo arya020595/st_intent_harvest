@@ -1,0 +1,15 @@
+<div class="container-fluid px-4 py-4">
+  <%= render 'shared/breadcrumb', breadcrumbs: [
+    ['Work Order', '#'],
+    ['Work Order Details', work_order_details_path],
+    ['Add Work Order', nil]
+  ] %>
+  <div class="card shadow-sm">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">Add Work Order</h5>
+    </div>
+    <div class="card-body">
+      <%= render "form", work_order: @work_order %>
+    </div>
+  </div>
+</div>

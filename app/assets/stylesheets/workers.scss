@@ -1,0 +1,131 @@
+// Workers Profile Styles
+
+.workers-profile {
+  .card-header {
+    background: linear-gradient(135deg, #2d7a3e 0%, #35924a 100%);
+    padding: 1rem 1.5rem;
+  }
+
+  // Form inside table should not affect layout
+  form.contents {
+    display: contents;
+  }
+
+  .table {
+    th {
+      font-weight: 600;
+      font-size: 0.875rem;
+      white-space: nowrap;
+      vertical-align: middle;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    td {
+      font-size: 0.875rem;
+      vertical-align: middle;
+      padding: 0.75rem;
+    }
+
+    thead.table-success {
+      background-color: #2d7a3e;
+      color: white;
+
+      th {
+        border-color: #2d7a3e;
+      }
+
+      a {
+        color: white;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    tbody tr:hover {
+      background-color: rgba(45, 122, 62, 0.05);
+    }
+  }
+
+  .btn-group-sm > .btn,
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .badge {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .form-control-sm,
+  .form-select-sm {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+  }
+
+  .pagination {
+    margin-bottom: 0;
+
+    .page-link {
+      color: #2d7a3e;
+
+      &:hover {
+        color: #1f5228;
+        background-color: #e9ecef;
+      }
+    }
+
+    .page-item.active .page-link {
+      background-color: #2d7a3e;
+      border-color: #2d7a3e;
+    }
+  }
+}
+
+// Sort link styles with multi-sort support
+.sort_link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  position: relative;
+
+  &::after {
+    content: "⇅";
+    opacity: 0.3;
+    font-size: 0.75rem;
+  }
+
+  &.asc::after {
+    content: "↑";
+    opacity: 1;
+  }
+
+  &.desc::after {
+    content: "↓";
+    opacity: 1;
+  }
+
+  // Multi-sort indicator (shows sort order number)
+  &[data-sort-order]::before {
+    content: attr(data-sort-order);
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #ffc107;
+    color: #000;
+    font-size: 0.65rem;
+    font-weight: 700;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+  }
+}

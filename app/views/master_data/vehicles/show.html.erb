@@ -1,0 +1,22 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Vehicle Details</h1>
+      <div class="card">
+        <div class="card-body">
+          <dl class="row">
+            <dt class="col-sm-3">Vehicle Number:</dt>
+            <dd class="col-sm-9"><%= @vehicle.vehicle_number %></dd>
+            <dt class="col-sm-3">Vehicle Model:</dt>
+            <dd class="col-sm-9"><%= @vehicle.vehicle_model %></dd>
+          </dl>
+          <div class="mt-3">
+            <%= link_to "Edit", edit_master_data_vehicle_path(@vehicle), class: "btn btn-warning" %>
+            <%= link_to "Back", master_data_vehicles_path, class: "btn btn-secondary" %>
+            <%= link_to "Delete", master_data_vehicle_path(@vehicle), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-danger" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

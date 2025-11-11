@@ -1,0 +1,43 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Payslip Details</h1>
+      <div class="card">
+        <div class="card-body">
+          <dl class="row">
+            <dt class="col-sm-3">Month/Year:</dt>
+            <dd class="col-sm-9"><%= @payslip.month_year %></dd>
+            <dt class="col-sm-3">Overall Total:</dt>
+            <dd class="col-sm-9"><%= @payslip.overall_total %></dd>
+          </dl>
+          <h3 class="mt-4">Worker Details</h3>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Worker Name</th>
+                  <th>Gross Salary</th>
+                  <th>Deductions</th>
+                  <th>Net Salary</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @payslip.pay_calculation_details.each do |detail| %>
+                  <tr>
+                    <td><%= detail.worker.name %></td>
+                    <td><%= detail.gross_salary %></td>
+                    <td><%= detail.deductions %></td>
+                    <td><%= detail.net_salary %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-3">
+            <%= link_to "Back", payslips_path, class: "btn btn-secondary" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

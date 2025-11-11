@@ -1,0 +1,29 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Payslips</h1>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Month/Year</th>
+              <th>Overall Total</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @payslips.each do |payslip| %>
+              <tr>
+                <td><%= payslip.month_year %></td>
+                <td><%= payslip.overall_total %></td>
+                <td>
+                  <%= link_to "Show", payslip_path(payslip), class: "btn btn-sm btn-info" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

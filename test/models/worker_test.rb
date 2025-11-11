@@ -1,0 +1,23 @@
+# == Schema Information
+#
+# Table name: workers
+#
+#  id              :integer          not null, primary key
+#  name            :string
+#  worker_type     :string
+#  gender          :string
+#  is_active       :boolean
+#  hired_date      :date
+#  nationality     :string
+#  identity_number :string
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#
+
+require "test_helper"
+
+class WorkerTest < ActiveSupport::TestCase
+  # test "the truth" do
+  #   assert true
+  # end
+end

@@ -1,0 +1,124 @@
+<div class="d-flex flex-column flex-shrink-0 p-3 bg-light">
+  <ul id="sidebarAccordion" class="nav nav-pills flex-column mb-auto">
+    <% if can_view_menu?('Dashboard') %>
+      <li class="nav-item">
+        <%= link_to root_path, class: "nav-link #{current_page?(root_path) ? 'active' : 'link-dark'}" do %>
+          <i class="bi bi-speedometer2 me-2"></i>
+          Dashboard
+        <% end %>
+      </li>
+      <li>
+        <%= link_to bi_dashboard_path, class: "nav-link #{current_page?(bi_dashboard_path) ? 'active' : 'link-dark'}" do %>
+          <i class="bi bi-bar-chart-line-fill me-2"></i>
+          BI Dashboard
+        <% end %>
+      </li>
+    <% end %>
+    <% # Check if user has access to any work order submenu %>
+    <% has_work_order_access = can_view_menu?('WorkOrder::Detail') || can_view_menu?('WorkOrder::Approval') || can_view_menu?('WorkOrder::PayCalculation') %>
+    <% if has_work_order_access %>
+      <li>
+        <% work_order_active = active_controller?('work_order') %>
+        <a class="nav-link <%= work_order_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#workOrdersCollapse" href="#" role="button" aria-expanded="<%= work_order_active %>" aria-controls="workOrdersCollapse">
+          <i class="bi bi-clipboard-check-fill me-2"></i>
+          Work Orders
+          <i class="bi bi-chevron-right float-end collapse-chevron"></i>
+        </a>
+        <div class="collapse <%= 'show' if work_order_active %>" id="workOrdersCollapse" data-bs-parent="#sidebarAccordion">
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
+            <% if can_view_menu?('WorkOrder::Detail') %>
+              <li><%= link_to "Work Order Details", work_order_details_path, class: "nav-link #{active_controller?('work_order/details') ? 'active' : 'link-dark'}" %></li>
+            <% end %>
+            <% if can_view_menu?('WorkOrder::Approval') %>
+              <li><%= link_to "Work Order Approvals", work_order_approvals_path, class: "nav-link #{active_controller?('work_order/approvals') ? 'active' : 'link-dark'}" %></li>
+            <% end %>
+            <% if can_view_menu?('WorkOrder::PayCalculation') %>
+              <li><%= link_to "Pay Calculation", work_order_pay_calculations_path, class: "nav-link #{active_controller?('work_order/pay_calculations') ? 'active' : 'link-dark'}" %></li>
+            <% end %>
+          </ul>
+        </div>
+      </li>
+    <% end %>
+    <% if can_view_menu?('Payslip') %>
+      <li>
+        <%= link_to payslips_path, class: "nav-link #{active_controller?('payslips') ? 'active' : 'link-dark'}" do %>
+          <i class="bi bi-clipboard-data-fill me-2"></i>
+          Payslip
+        <% end %>
+      </li>
+    <% end %>
+    <% if can_view_menu?('Inventory') %>
+      <li>
+        <%= link_to inventories_path, class: "nav-link #{active_controller?('inventories') ? 'active' : 'link-dark'}" do %>
+          <i class="bi bi-box-seam-fill me-2"></i>
+          Inventory
+        <% end %>
+      </li>
+    <% end %>
+    <% if can_view_menu?('Worker') %>
+      <li>
+        <%= link_to workers_path, class: "nav-link #{active_controller?('workers') ? 'active' : 'link-dark'}" do %>
+          <i class="bi bi-people-fill me-2"></i>
+          Workers
+        <% end %>
+      </li>
+    <% end %>
+    <% # Check if user has access to any master data submenu %>
+    <% has_master_data_access = can_view_menu?('MasterData::Block') || can_view_menu?('MasterData::Unit') || can_view_menu?('MasterData::Category') || can_view_menu?('MasterData::Vehicle') || can_view_menu?('MasterData::WorkOrderRate') %>
+    <% if has_master_data_access %>
+      <li>
+        <% master_data_active = active_controller?('master_data') %>
+        <a class="nav-link <%= master_data_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#masterDataCollapse" href="#" role="button" aria-expanded="<%= master_data_active %>" aria-controls="masterDataCollapse">
+          <i class="bi bi-database-fill me-2"></i>
+          Master Data
+          <i class="bi bi-chevron-right float-end collapse-chevron"></i>
+        </a>
+        <div class="collapse <%= 'show' if master_data_active %>" id="masterDataCollapse" data-bs-parent="#sidebarAccordion">
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
+            <% if can_view_menu?('MasterData::Block') %>
+              <li><%= link_to "Blocks", master_data_blocks_path, class: "nav-link #{active_controller?('master_data/blocks') ? 'active' : 'link-dark'}" %></li>
+            <% end %>
+            <% if can_view_menu?('MasterData::Unit') %>
+              <li><%= link_to "Units", master_data_units_path, class: "nav-link #{active_controller?('master_data/units') ? 'active' : 'link-dark'}" %></li>
+            <% end %>
+            <% if can_view_menu?('MasterData::Category') %>
+              <li><%= link_to "Categories", master_data_categories_path, class: "nav-link #{active_controller?('master_data/categories') ? 'active' : 'link-dark'}" %></li>
+            <% end %>
+            <% if can_view_menu?('MasterData::Vehicle') %>
+              <li><%= link_to "Vehicles", master_data_vehicles_path, class: "nav-link #{active_controller?('master_data/vehicles') ? 'active' : 'link-dark'}" %></li>
+            <% end %>
+            <% if can_view_menu?('MasterData::WorkOrderRate') %>
+              <li><%= link_to "Work Order Rates", master_data_work_order_rates_path, class: "nav-link #{active_controller?('master_data/work_order_rates') ? 'active' : 'link-dark'}" %></li>
+            <% end %>
+          </ul>
+        </div>
+      </li>
+    <% end %>
+    <% # Check if user has access to any user management submenu %>
+    <% has_user_mgmt_access = can_view_menu?('UserManagement::Role') || can_view_menu?('UserManagement::User') %>
+    <% if has_user_mgmt_access %>
+      <li>
+        <% user_management_active = active_controller?('user_management') %>
+        <a class="nav-link <%= user_management_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#userManagementCollapse" href="#" role="button" aria-expanded="<%= user_management_active %>" aria-controls="userManagementCollapse">
+          <i class="bi bi-shield-lock-fill me-2"></i>
+          User Management
+          <i class="bi bi-chevron-right float-end collapse-chevron"></i>
+        </a>
+        <div class="collapse <%= 'show' if user_management_active %>" id="userManagementCollapse" data-bs-parent="#sidebarAccordion">
+          <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
+            <% if can_view_menu?('UserManagement::Role') %>
+              <li><%= link_to "Roles", user_management_roles_path, class: "nav-link #{active_controller?('user_management/roles') ? 'active' : 'link-dark'}" %></li>
+            <% end %>
+            <% if can_view_menu?('UserManagement::User') %>
+              <li><%= link_to "Users", user_management_users_path, class: "nav-link #{active_controller?('user_management/users') ? 'active' : 'link-dark'}" %></li>
+            <% end %>
+          </ul>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+  <!-- Footer Text -->
+  <div class="border-top pt-3 mt-auto text-center fw-bold">
+    <small class="text-dark">Powered By ST Datablu</small>
+  </div>
+</div>
