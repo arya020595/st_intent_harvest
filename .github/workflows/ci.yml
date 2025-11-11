@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "feature/*"
+      - "bugfix/*"
+      - "release/*"
+      - "hotfix/*"
+
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:password@localhost:5432/test_db
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.7"
+
+      - name: Install gems
+        run: bundle install --jobs 4 --retry 3
+
+      - name: Prepare DB
+        run: bin/rails db:drop db:create db:schema:load
+
+      - name: Run Rubocop (fail only on error)
+        run: bundle exec rubocop --fail-level error
+
+      - name: Run Strong Migrations
+        run: bundle exec strong_migrations check
+
+      - name: Run Brakeman
+        run: bundle exec brakeman -q --no-progress
