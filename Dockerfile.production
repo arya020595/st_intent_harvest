@@ -16,9 +16,9 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     ca-certificates \
     build-essential \
+    git \
     libpq-dev \
     libvips \
-    git \
     curl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives && \
     update-ca-certificates
@@ -34,6 +34,7 @@ COPY . .
 
 # Precompile bootsnap and assets
 RUN bundle exec bootsnap precompile app/ lib/
+ENV SECRET_KEY_BASE=placeholder
 RUN bundle exec rails assets:precompile
 
 # Runtime stage - minimal image with only runtime dependencies
