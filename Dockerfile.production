@@ -34,6 +34,7 @@ COPY . .
 
 # Precompile bootsnap and assets
 RUN bundle exec bootsnap precompile app/ lib/
+# Placeholder secret for asset precompilation only - must be set via env var at runtime
 ENV SECRET_KEY_BASE=placeholder
 RUN bundle exec rails assets:precompile
 
