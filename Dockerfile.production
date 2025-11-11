@@ -14,24 +14,22 @@ ENV RAILS_ENV="production" \
 # Install build dependencies
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
-    ca-certificates \
     build-essential \
     git \
     libpq-dev \
     libvips \
     pkg-config \
-    curl && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives && \
-    update-ca-certificates
+    libffi-dev \
+    libyaml-dev && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install gems
 COPY Gemfile Gemfile.lock ./
 RUN bundle config set --local without 'development test' && \
-    bundle config set --local deployment 'true' && \
     bundle install -j4 --retry 3 && \
     rm -rf /usr/local/bundle/cache/*.gem && \
-    find /usr/local/bundle/gems/ -name "*.c" -delete && \
-    find /usr/local/bundle/gems/ -name "*.o" -delete
+    find /usr/local/bundle -name "*.c" -delete 2>/dev/null || true && \
+    find /usr/local/bundle -name "*.o" -delete 2>/dev/null || true
 
 # Copy app
 COPY . .
@@ -57,10 +55,8 @@ ENV RAILS_ENV="production" \
 # Install only runtime dependencies (no build tools)
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
-    ca-certificates \
     libpq5 \
-    libvips \
-    curl && \
+    libvips && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy installed gems from builder
@@ -69,10 +65,16 @@ COPY --from=builder /usr/local/bundle /usr/local/bundle
 # Copy application from builder
 COPY --from=builder /rails /rails
 
-# ensure pids and log folders exist
-RUN mkdir -p tmp/pids log
+# Ensure required folders exist
+RUN mkdir -p tmp/pids tmp/sockets log storage
+
+# Run as non-root user for security
+RUN groupadd --system --gid 1000 rails && \
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
+    chown -R rails:rails /rails
+
+USER rails:rails
 
 EXPOSE 3000
 
-# Use Puma in production
 CMD ["bundle", "exec", "puma", "-C", "config/puma.production.rb"]
