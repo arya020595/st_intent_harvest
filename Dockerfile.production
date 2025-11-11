@@ -34,5 +34,5 @@ RUN bundle exec rails assets:precompile
 
 EXPOSE 3000
 
-# pakai puma di production
+# Use Puma in production
 CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
