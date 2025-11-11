@@ -38,8 +38,10 @@ COPY . .
 RUN bundle exec bootsnap precompile --gemfile && \
     bundle exec bootsnap precompile app/ lib/
 
-# Precompile assets (requires placeholder secret key)
-ENV SECRET_KEY_BASE=placeholder_for_asset_precompilation_only
+# Precompile assets (requires placeholder environment variables)
+# Rails needs these during asset compilation but won't actually connect to database
+ENV SECRET_KEY_BASE=placeholder_for_asset_precompilation_only \
+    DATABASE_URL=postgresql://user:pass@localhost/dbname
 RUN bundle exec rails assets:precompile && \
     rm -rf node_modules tmp/cache
 
