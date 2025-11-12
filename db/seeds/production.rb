@@ -534,33 +534,31 @@ conductor_user = User.find_by(email: 'conductor@example.com')
 manager_user = User.find_by(email: 'manager@example.com')
 
 work_orders_data = [
-  { block: blocks[0], work_order_rate: work_order_rates[0], start_date: Date.today - 45.days,
+  { block: blocks[0], work_order_rate: work_order_rates[0], start_date: Date.new(2024, 10, 1),
     work_order_status: 'completed' },
-  { block: blocks[1], work_order_rate: work_order_rates[1], start_date: Date.today - 40.days,
+  { block: blocks[1], work_order_rate: work_order_rates[1], start_date: Date.new(2024, 10, 6),
     work_order_status: 'completed' },
-  { block: blocks[2], work_order_rate: work_order_rates[2], start_date: Date.today - 35.days,
+  { block: blocks[2], work_order_rate: work_order_rates[2], start_date: Date.new(2024, 10, 11),
     work_order_status: 'ongoing' },
-  { block: blocks[3], work_order_rate: work_order_rates[3], start_date: Date.today - 30.days,
+  { block: blocks[3], work_order_rate: work_order_rates[3], start_date: Date.new(2024, 10, 16),
     work_order_status: 'pending' },
-  { block: blocks[4], work_order_rate: work_order_rates[4], start_date: Date.today - 25.days,
+  { block: blocks[4], work_order_rate: work_order_rates[4], start_date: Date.new(2024, 10, 21),
     work_order_status: 'completed' },
-  { block: blocks[5], work_order_rate: work_order_rates[5], start_date: Date.today - 20.days,
+  { block: blocks[5], work_order_rate: work_order_rates[5], start_date: Date.new(2024, 10, 26),
     work_order_status: 'ongoing' },
-  { block: blocks[6], work_order_rate: work_order_rates[0], start_date: Date.today - 15.days,
+  { block: blocks[6], work_order_rate: work_order_rates[0], start_date: Date.new(2024, 11, 1),
     work_order_status: 'amendment_required' },
-  { block: blocks[7], work_order_rate: work_order_rates[1], start_date: Date.today - 10.days,
+  { block: blocks[7], work_order_rate: work_order_rates[1], start_date: Date.new(2024, 11, 6),
     work_order_status: 'pending' },
-  { block: blocks[8], work_order_rate: work_order_rates[2], start_date: Date.today - 5.days,
+  { block: blocks[8], work_order_rate: work_order_rates[2], start_date: Date.new(2024, 11, 11),
     work_order_status: 'ongoing' },
-  { block: blocks[9], work_order_rate: work_order_rates[3], start_date: Date.today - 2.days,
+  { block: blocks[9], work_order_rate: work_order_rates[3], start_date: Date.new(2024, 11, 14),
     work_order_status: 'pending' }
 ]
 
-work_orders_data.each_with_index do |data, i|
-  WorkOrder.find_or_create_by!(id: i + 1) do |wo|
-    wo.block_id = data[:block].id
+work_orders_data.each do |data|
+  WorkOrder.find_or_create_by!(block_id: data[:block].id, start_date: data[:start_date]) do |wo|
     wo.work_order_rate_id = data[:work_order_rate].id
-    wo.start_date = data[:start_date]
     wo.work_order_status = data[:work_order_status]
     wo.field_conductor_id = conductor_user.id
     wo.field_conductor_name = conductor_user.name
@@ -568,7 +566,7 @@ work_orders_data.each_with_index do |data, i|
     # Add approval info for completed work orders
     if wo.work_order_status == 'completed'
       wo.approved_by = manager_user.id.to_s
-      wo.approved_at = wo.start_date + rand(3..7).days
+      wo.approved_at = wo.start_date + 5.days
     end
   end
 end
@@ -664,7 +662,7 @@ puts "✓ Created #{WorkOrderItem.count} work order items"
 
 # Create Pay Calculations
 puts 'Creating pay calculations...'
-pay_calc = PayCalculation.find_or_create_by!(month_year: Date.today.strftime('%Y-%m')) do |pc|
+pay_calc = PayCalculation.find_or_create_by!(month_year: '2024-11') do |pc|
   pc.overall_total = 0
 end
 
