@@ -90,13 +90,13 @@
                       </td>
                       <td class="text-center">
                         <div class="btn-group btn-group-sm" role="group">
-                          <%= link_to user_management_role_path(role), class: "btn btn-info btn-sm", title: "View Details" do %>
+                          <%= link_to user_management_role_path(role), class: "btn btn-info btn-sm", title: "View Details", data: { turbo_frame: "_top" } do %>
                             <i class="bi bi-info-circle"></i>
                           <% end %>
-                          <%= link_to edit_user_management_role_path(role), class: "btn btn-warning btn-sm", title: "Edit" do %>
+                          <%= link_to edit_user_management_role_path(role), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: "_top" } do %>
                             <i class="bi bi-pencil"></i>
                           <% end %>
-                          <%= link_to user_management_role_path(role), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{role.name}?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
+                          <%= link_to user_management_role_path(role), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{role.name}?", turbo_frame: "_top" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
                             <i class="bi bi-trash"></i>
                           <% end %>
                         </div>
