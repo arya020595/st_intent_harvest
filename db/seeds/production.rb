@@ -411,7 +411,7 @@ fertilizer_data.each do |data|
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.new(2023, 11, 20)
+    inventory.input_date = Date.new(2024, 10, 1)
   end
 end
 
@@ -434,7 +434,7 @@ pesticide_data.each do |data|
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.new(2023, 11, 25)
+    inventory.input_date = Date.new(2024, 10, 1)
   end
 end
 
@@ -459,7 +459,7 @@ tool_data.each do |data|
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.new(2023, 9, 1)
+    inventory.input_date = Date.new(2024, 7, 1)
   end
 end
 
@@ -482,7 +482,7 @@ equipment_data.each do |data|
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.new(2023, 6, 1)
+    inventory.input_date = Date.new(2024, 1, 1)
   end
 end
 
@@ -534,25 +534,25 @@ conductor_user = User.find_by(email: 'conductor@example.com')
 manager_user = User.find_by(email: 'manager@example.com')
 
 work_orders_data = [
-  { block: blocks[0], work_order_rate: work_order_rates[0], start_date: Date.new(2023, 11, 1),
+  { block: blocks[0], work_order_rate: work_order_rates[0], start_date: Date.new(2024, 10, 1),
     work_order_status: 'completed' },
-  { block: blocks[1], work_order_rate: work_order_rates[1], start_date: Date.new(2023, 11, 6),
+  { block: blocks[1], work_order_rate: work_order_rates[1], start_date: Date.new(2024, 10, 6),
     work_order_status: 'completed' },
-  { block: blocks[2], work_order_rate: work_order_rates[2], start_date: Date.new(2023, 11, 11),
+  { block: blocks[2], work_order_rate: work_order_rates[2], start_date: Date.new(2024, 10, 11),
     work_order_status: 'ongoing' },
-  { block: blocks[3], work_order_rate: work_order_rates[3], start_date: Date.new(2023, 11, 16),
+  { block: blocks[3], work_order_rate: work_order_rates[3], start_date: Date.new(2024, 10, 16),
     work_order_status: 'pending' },
-  { block: blocks[4], work_order_rate: work_order_rates[4], start_date: Date.new(2023, 11, 21),
+  { block: blocks[4], work_order_rate: work_order_rates[4], start_date: Date.new(2024, 10, 21),
     work_order_status: 'completed' },
-  { block: blocks[5], work_order_rate: work_order_rates[5], start_date: Date.new(2023, 11, 26),
+  { block: blocks[5], work_order_rate: work_order_rates[5], start_date: Date.new(2024, 10, 26),
     work_order_status: 'ongoing' },
-  { block: blocks[6], work_order_rate: work_order_rates[0], start_date: Date.new(2023, 12, 1),
+  { block: blocks[6], work_order_rate: work_order_rates[0], start_date: Date.new(2024, 11, 1),
     work_order_status: 'amendment_required' },
-  { block: blocks[7], work_order_rate: work_order_rates[1], start_date: Date.new(2023, 12, 6),
+  { block: blocks[7], work_order_rate: work_order_rates[1], start_date: Date.new(2024, 11, 6),
     work_order_status: 'pending' },
-  { block: blocks[8], work_order_rate: work_order_rates[2], start_date: Date.new(2023, 12, 11),
+  { block: blocks[8], work_order_rate: work_order_rates[2], start_date: Date.new(2024, 11, 11),
     work_order_status: 'ongoing' },
-  { block: blocks[9], work_order_rate: work_order_rates[3], start_date: Date.new(2023, 12, 14),
+  { block: blocks[9], work_order_rate: work_order_rates[3], start_date: Date.new(2024, 11, 14),
     work_order_status: 'pending' }
 ]
 
@@ -662,7 +662,7 @@ puts "✓ Created #{WorkOrderItem.count} work order items"
 
 # Create Pay Calculations
 puts 'Creating pay calculations...'
-pay_calc = PayCalculation.find_or_create_by!(month_year: '2024-01') do |pc|
+pay_calc = PayCalculation.find_or_create_by!(month_year: '2024-11') do |pc|
   pc.overall_total = 0
 end
 
