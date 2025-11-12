@@ -1,5 +1,5 @@
 # Production Seeds - Minimal essential data only
-# Usage: rails db:seed:production
+# Usage: SEED_ENV=production rails db:seed
 
 puts '🌱 Starting production seed process...'
 
