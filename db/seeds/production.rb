@@ -411,7 +411,7 @@ fertilizer_data.each do |data|
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.today - rand(30..90).days
+    inventory.input_date = Date.new(2023, 11, 20)
   end
 end
 
@@ -434,7 +434,7 @@ pesticide_data.each do |data|
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.today - rand(30..90).days
+    inventory.input_date = Date.new(2023, 11, 25)
   end
 end
 
@@ -459,7 +459,7 @@ tool_data.each do |data|
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.today - rand(90..180).days
+    inventory.input_date = Date.new(2023, 9, 1)
   end
 end
 
@@ -482,7 +482,7 @@ equipment_data.each do |data|
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.today - rand(180..365).days
+    inventory.input_date = Date.new(2023, 6, 1)
   end
 end
 
@@ -534,25 +534,25 @@ conductor_user = User.find_by(email: 'conductor@example.com')
 manager_user = User.find_by(email: 'manager@example.com')
 
 work_orders_data = [
-  { block: blocks[0], work_order_rate: work_order_rates[0], start_date: Date.today - 45.days,
+  { block: blocks[0], work_order_rate: work_order_rates[0], start_date: Date.new(2023, 11, 1),
     work_order_status: 'completed' },
-  { block: blocks[1], work_order_rate: work_order_rates[1], start_date: Date.today - 40.days,
+  { block: blocks[1], work_order_rate: work_order_rates[1], start_date: Date.new(2023, 11, 6),
     work_order_status: 'completed' },
-  { block: blocks[2], work_order_rate: work_order_rates[2], start_date: Date.today - 35.days,
+  { block: blocks[2], work_order_rate: work_order_rates[2], start_date: Date.new(2023, 11, 11),
     work_order_status: 'ongoing' },
-  { block: blocks[3], work_order_rate: work_order_rates[3], start_date: Date.today - 30.days,
+  { block: blocks[3], work_order_rate: work_order_rates[3], start_date: Date.new(2023, 11, 16),
     work_order_status: 'pending' },
-  { block: blocks[4], work_order_rate: work_order_rates[4], start_date: Date.today - 25.days,
+  { block: blocks[4], work_order_rate: work_order_rates[4], start_date: Date.new(2023, 11, 21),
     work_order_status: 'completed' },
-  { block: blocks[5], work_order_rate: work_order_rates[5], start_date: Date.today - 20.days,
+  { block: blocks[5], work_order_rate: work_order_rates[5], start_date: Date.new(2023, 11, 26),
     work_order_status: 'ongoing' },
-  { block: blocks[6], work_order_rate: work_order_rates[0], start_date: Date.today - 15.days,
+  { block: blocks[6], work_order_rate: work_order_rates[0], start_date: Date.new(2023, 12, 1),
     work_order_status: 'amendment_required' },
-  { block: blocks[7], work_order_rate: work_order_rates[1], start_date: Date.today - 10.days,
+  { block: blocks[7], work_order_rate: work_order_rates[1], start_date: Date.new(2023, 12, 6),
     work_order_status: 'pending' },
-  { block: blocks[8], work_order_rate: work_order_rates[2], start_date: Date.today - 5.days,
+  { block: blocks[8], work_order_rate: work_order_rates[2], start_date: Date.new(2023, 12, 11),
     work_order_status: 'ongoing' },
-  { block: blocks[9], work_order_rate: work_order_rates[3], start_date: Date.today - 2.days,
+  { block: blocks[9], work_order_rate: work_order_rates[3], start_date: Date.new(2023, 12, 14),
     work_order_status: 'pending' }
 ]
 
