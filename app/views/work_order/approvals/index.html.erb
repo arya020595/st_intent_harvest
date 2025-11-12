@@ -68,30 +68,7 @@
             </thead>
             <tbody>
               <% if @work_orders.any? %>
-                <% @work_orders.each do |work_order| %>
-                  <tr>
-                    <td class="text-center"><%= work_order.id %></td>
-                    <td><%= work_order.work_order_rate_name %></td>
-                    <td><%= work_order.block_number %></td>
-                    <td class="text-center"><%= work_order.start_date&.strftime('%d-%m-%Y') || '-' %></td>
-                    <td class="text-center">
-                      <% badge_class = case work_order.work_order_status
-                        when 'pending' then 'bg-warning'
-                        when 'amendment_required' then 'bg-danger'
-                        when 'completed' then 'bg-success'
-                        else 'bg-secondary'
-                      end %>
-                      <span class="badge <%= badge_class %>"><%= work_order.work_order_status&.humanize %></span>
-                    </td>
-                    <td class="text-center">
-                      <div class="btn-group btn-group-sm" role="group">
-                        <%= link_to work_order_approval_path(work_order), class: "btn btn-info btn-sm", title: "View Details" do %>
-                          <i class="bi bi-info-circle"></i>
-                        <% end %>
-                      </div>
-                    </td>
-                  </tr>
-                <% end %>
+                <%= render partial: 'work_order_approval_row', collection: @work_orders, as: :work_order %>
               <% else %>
                 <tr>
                   <td colspan="6" class="text-center text-muted py-4">
