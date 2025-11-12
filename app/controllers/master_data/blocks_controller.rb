@@ -26,7 +26,11 @@ module MasterData
       @block = Block.new(block_params)
       authorize @block, policy_class: MasterData::BlockPolicy
 
-      # Logic to be implemented later
+      if @block.save
+        redirect_to master_data_block_path(@block), notice: 'Block was successfully created.'
+      else
+        render :new, status: :unprocessable_entity
+      end
     end
 
     def edit
@@ -36,13 +40,18 @@ module MasterData
     def update
       authorize @block, policy_class: MasterData::BlockPolicy
 
-      # Logic to be implemented later
+      if @block.update(block_params)
+        redirect_to master_data_block_path(@block), notice: 'Block was successfully updated.'
+      else
+        render :edit, status: :unprocessable_entity
+      end
     end
 
     def destroy
       authorize @block, policy_class: MasterData::BlockPolicy
 
-      # Logic to be implemented later
+      @block.destroy!
+      redirect_to master_data_blocks_url, notice: 'Block was successfully deleted.'
     end
 
     private

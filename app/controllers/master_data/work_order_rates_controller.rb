@@ -27,7 +27,12 @@ module MasterData
       @work_order_rate = WorkOrderRate.new(work_order_rate_params)
       authorize @work_order_rate, policy_class: MasterData::WorkOrderRatePolicy
 
-      # Logic to be implemented later
+      if @work_order_rate.save
+        redirect_to master_data_work_order_rate_path(@work_order_rate),
+                    notice: 'Work order rate was successfully created.'
+      else
+        render :new, status: :unprocessable_entity
+      end
     end
 
     def edit
@@ -37,13 +42,19 @@ module MasterData
     def update
       authorize @work_order_rate, policy_class: MasterData::WorkOrderRatePolicy
 
-      # Logic to be implemented later
+      if @work_order_rate.update(work_order_rate_params)
+        redirect_to master_data_work_order_rate_path(@work_order_rate),
+                    notice: 'Work order rate was successfully updated.'
+      else
+        render :edit, status: :unprocessable_entity
+      end
     end
 
     def destroy
       authorize @work_order_rate, policy_class: MasterData::WorkOrderRatePolicy
 
-      # Logic to be implemented later
+      @work_order_rate.destroy!
+      redirect_to master_data_work_order_rates_url, notice: 'Work order rate was successfully deleted.'
     end
 
     private

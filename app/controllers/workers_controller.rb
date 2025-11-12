@@ -25,7 +25,11 @@ class WorkersController < ApplicationController
     @worker = Worker.new(worker_params)
     authorize @worker
 
-    # Logic to be implemented later
+    if @worker.save
+      redirect_to @worker, notice: 'Worker was successfully created.'
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
   def edit
@@ -35,13 +39,18 @@ class WorkersController < ApplicationController
   def update
     authorize @worker
 
-    # Logic to be implemented later
+    if @worker.update(worker_params)
+      redirect_to @worker, notice: 'Worker was successfully updated.'
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   def destroy
     authorize @worker
 
-    # Logic to be implemented later
+    @worker.destroy!
+    redirect_to workers_url, notice: 'Worker was successfully deleted.'
   end
 
   private

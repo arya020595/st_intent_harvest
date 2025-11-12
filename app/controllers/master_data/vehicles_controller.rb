@@ -26,7 +26,11 @@ module MasterData
       @vehicle = Vehicle.new(vehicle_params)
       authorize @vehicle, policy_class: MasterData::VehiclePolicy
 
-      # Logic to be implemented later
+      if @vehicle.save
+        redirect_to master_data_vehicle_path(@vehicle), notice: 'Vehicle was successfully created.'
+      else
+        render :new, status: :unprocessable_entity
+      end
     end
 
     def edit
@@ -36,13 +40,18 @@ module MasterData
     def update
       authorize @vehicle, policy_class: MasterData::VehiclePolicy
 
-      # Logic to be implemented later
+      if @vehicle.update(vehicle_params)
+        redirect_to master_data_vehicle_path(@vehicle), notice: 'Vehicle was successfully updated.'
+      else
+        render :edit, status: :unprocessable_entity
+      end
     end
 
     def destroy
       authorize @vehicle, policy_class: MasterData::VehiclePolicy
 
-      # Logic to be implemented later
+      @vehicle.destroy!
+      redirect_to master_data_vehicles_url, notice: 'Vehicle was successfully deleted.'
     end
 
     private
