@@ -7,7 +7,6 @@
       <% end %>
     </div>
     <div class="card-body">
-      <%= turbo_pagy_frame do %>
         <%= search_form_for @q, url: master_data_blocks_path, html: { id: 'block-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
           <div class="table-responsive">
             <table class="table table-hover table-sm mb-0">
@@ -77,39 +76,14 @@
                   <th class="text-center">
                     <div class="d-flex gap-1 justify-content-center">
                       <%= f.submit 'Search', class: 'btn btn-info btn-sm' %>
-                      <%= link_to 'Reset', master_data_blocks_path, class: 'btn btn-secondary btn-sm', data: { turbo_frame: pagy_frame_id } %>
+                      <%= link_to 'Reset', master_data_blocks_path, class: 'btn btn-secondary btn-sm' %>
                     </div>
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <% if @blocks.any? %>
-                  <% @blocks.each do |block| %>
-                    <tr>
-                      <td class="text-center"><%= block.id %></td>
-                      <td><%= block.block_number %></td>
-                      <td class="text-center"><%= number_with_precision(block.hectarage, precision: 2) if block.hectarage %></td>
-                      <td>
-                        <small class="text-muted"><%= block.created_at.strftime("%b %d, %Y %H:%M") if block.created_at %></small>
-                      </td>
-                      <td>
-                        <small class="text-muted"><%= block.updated_at.strftime("%b %d, %Y %H:%M") if block.updated_at %></small>
-                      </td>
-                      <td class="text-center">
-                        <div class="btn-group btn-group-sm" role="group">
-                          <%= link_to master_data_block_path(block), class: "btn btn-info btn-sm", title: "View Details", data: { turbo_frame: "_top" } do %>
-                            <i class="bi bi-info-circle"></i>
-                          <% end %>
-                          <%= link_to edit_master_data_block_path(block), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: "_top" } do %>
-                            <i class="bi bi-pencil"></i>
-                          <% end %>
-                          <%= link_to master_data_block_path(block), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{block.block_number}?", turbo_frame: "_top" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
-                            <i class="bi bi-trash"></i>
-                          <% end %>
-                        </div>
-                      </td>
-                    </tr>
-                  <% end %>
+                  <%= render partial: 'block_row', collection: @blocks, as: :block %>
                 <% else %>
                   <tr>
                     <td colspan="6" class="text-center text-muted py-4">
@@ -133,7 +107,6 @@
             <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
           </div>
         </div>
-      <% end %>
     </div>
   </div>
 </div>

@@ -7,7 +7,6 @@
       <% end %>
     </div>
     <div class="card-body">
-      <%= turbo_pagy_frame do %>
         <%= search_form_for @q, url: master_data_categories_path, html: { id: 'category-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
           <div class="table-responsive">
             <table class="table table-hover table-sm mb-0">
@@ -83,48 +82,14 @@
                   <th class="text-center">
                     <div class="d-flex gap-1 justify-content-center">
                       <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
-                      <%= link_to 'Reset', master_data_categories_path, class: 'btn btn-secondary btn-sm', data: { turbo_frame: pagy_frame_id } %>
+                      <%= link_to 'Reset', master_data_categories_path, class: 'btn btn-secondary btn-sm' %>
                     </div>
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <% if @categories.any? %>
-                  <% @categories.each do |category| %>
-                    <tr>
-                      <td class="text-center"><%= category.id %></td>
-                      <td><strong><%= category.name %></strong></td>
-                      <td>
-                        <span class="badge bg-info"><%= category.category_type %></span>
-                      </td>
-                      <td>
-                        <% if category.parent %>
-                          <%= link_to category.parent.name, master_data_category_path(category.parent), class: 'text-decoration-none' %>
-                        <% else %>
-                          <span class="text-muted">—</span>
-                        <% end %>
-                      </td>
-                      <td>
-                        <small class="text-muted"><%= category.created_at.strftime("%b %d, %Y %H:%M") if category.created_at %></small>
-                      </td>
-                      <td>
-                        <small class="text-muted"><%= category.updated_at.strftime("%b %d, %Y %H:%M") if category.updated_at %></small>
-                      </td>
-                      <td class="text-center">
-                        <div class="btn-group btn-group-sm" role="group">
-                          <%= link_to master_data_category_path(category), class: "btn btn-info btn-sm", title: "View Details", data: { turbo_frame: "_top" } do %>
-                            <i class="bi bi-info-circle"></i>
-                          <% end %>
-                          <%= link_to edit_master_data_category_path(category), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: "_top" } do %>
-                            <i class="bi bi-pencil"></i>
-                          <% end %>
-                          <%= link_to master_data_category_path(category), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{category.name}?", turbo_frame: "_top" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
-                            <i class="bi bi-trash"></i>
-                          <% end %>
-                        </div>
-                      </td>
-                    </tr>
-                  <% end %>
+                  <%= render partial: 'category_row', collection: @categories, as: :category %>
                 <% else %>
                   <tr>
                     <td colspan="7" class="text-center text-muted py-4">
@@ -148,7 +113,6 @@
             <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
           </div>
         </div>
-      <% end %>
     </div>
   </div>
 </div>

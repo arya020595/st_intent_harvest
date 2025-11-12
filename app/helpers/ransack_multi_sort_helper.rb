@@ -17,67 +17,38 @@ module RansackMultiSortHelper
   #
   # @param per_page_options [Array<Integer>] Available per-page options
   # @param current [Integer] Currently selected per-page value
-  # @param frame_id [String] Turbo frame ID for scoped updates
   # @return [String] HTML string
-  def per_page_selector(per_page_options: DEFAULT_PER_PAGE_OPTIONS, current: nil, frame_id: pagy_frame_id)
+  def per_page_selector(per_page_options: DEFAULT_PER_PAGE_OPTIONS, current: nil)
     current ||= Pagy.options[:limit]
     form_with url: request.path, method: :get, local: true,
-              html: { class: 'd-inline', data: { turbo_frame: frame_id } } do |f|
+              html: { class: 'd-inline' } do |f|
       concat hidden_search_fields
       concat render_per_page_select(f, per_page_options, current)
     end
   end
 
-  # ===== Turbo Frame helpers =====
-
-  # Returns a stable default Turbo Frame id for the current controller scope
-  # e.g., 'workers', 'user-management-roles', 'work-order-details'
-  #
-  # @return [String] Frame ID derived from controller path
-  def pagy_frame_id
-    controller_path.tr('/', '-')
-  end
-
-  # Wraps content into a Turbo Frame with a consistent id for the current controller
-  # Usage:
-  #   <%= turbo_pagy_frame do %>
-  #     ... table + filters + footer ...
-  #   <% end %>
-  #
-  # @param id [String] Custom frame ID (defaults to pagy_frame_id)
-  # @yield Block content to wrap in the frame
-  # @return [String] HTML string
-  def turbo_pagy_frame(id: pagy_frame_id, &block)
-    turbo_frame_tag(id, &block)
-  end
+  # ===== (Removed) Turbo Frame helpers =====
+  # Note: We are not using Turbo Frames for pagination anymore, so the
+  # previous pagy_frame_id and turbo_pagy_frame helpers have been removed.
 
   # ===== Pagination navigation helpers =====
 
-  # Renders Bootstrap-styled pagination nav with Turbo Frame support
-  # Adds data-turbo-frame to links so nav updates only the frame when present.
+  # Renders Bootstrap-styled pagination nav (Pagy 43 object helper)
   # Usage in views (safe output):
   #   <%== pagy_bootstrap_nav(@pagy) %>
   #   <%== pagy_bootstrap_nav(@pagy, aria_label: 'Product pages') %>
   #
   # @param pagy [Pagy] Pagy instance
   # @param aria_label [String] Optional ARIA label for accessibility
-  # @param frame_id [String] Turbo frame ID for link targeting
   # @param options [Hash] Additional options passed to series_nav
   # @return [String] HTML string
-  def pagy_bootstrap_nav(pagy, aria_label: nil, frame_id: pagy_frame_id, **options)
+  def pagy_bootstrap_nav(pagy, aria_label: nil, **options)
     return '' unless pagy # Guard against nil @pagy
 
     options[:aria_label] ||= aria_label if aria_label
-    safe_frame_id = ERB::Util.html_escape(frame_id)
-    anchor = %(data-turbo-frame="#{safe_frame_id}")
 
-    # Use the modern Pagy object helper (series_nav) instead of the removed extra
-    if pagy.respond_to?(:series_nav)
-      pagy.series_nav(:bootstrap, **options.merge(anchor_string: anchor))
-    else
-      # Fallback: generate basic nav if series_nav is not available
-      pagy_nav(pagy, **options.merge(anchor_string: anchor))
-    end
+    # Pagy 43 provides the @pagy object helpers; use series_nav with :bootstrap style
+    pagy.series_nav(:bootstrap, **options)
   end
 
   private
