@@ -45,6 +45,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Avoid failing the build on transient cache export errors (e.g., 5xx from GHA cache)
+          # Use a smaller cache (mode=min) and ignore export errors to improve reliability
+          cache-to: type=gha,mode=min,ignore-error=true
           build-args: |
             BUILDKIT_PROGRESS=plain
