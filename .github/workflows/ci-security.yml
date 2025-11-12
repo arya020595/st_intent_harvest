@@ -1,0 +1,47 @@
+name: Security Scan
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+  schedule:
+    # Run every Monday at 00:00 UTC to catch new vulnerabilities
+    - cron: "0 0 * * 1"
+  workflow_dispatch: # Allow manual trigger
+
+# Cancel in-progress runs when new commit is pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.7"
+          bundler-cache: true
+
+      - name: Install bundler-audit
+        run: gem install bundler-audit
+
+      - name: Update vulnerability database
+        run: bundle audit --update
+
+      - name: Check for vulnerable gems
+        run: bundle audit --verbose
+        continue-on-error: false
+
+      - name: Run Brakeman security scanner
+        run: bundle exec brakeman -q --no-progress --format text
+
+      - name: Security scan summary
+        if: success()
+        run: echo "✅ No security vulnerabilities detected!"
