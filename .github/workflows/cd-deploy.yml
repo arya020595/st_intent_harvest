@@ -31,7 +31,31 @@ jobs:
             docker compose up -d
 
             echo "⏳ Waiting for services to be ready..."
-            sleep 15
+            # Wait for web service to be healthy with retry logic
+            MAX_RETRIES=30
+            RETRY_COUNT=0
+            RETRY_INTERVAL=5
+            
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+              # Check if web service is healthy
+              if docker compose ps web | grep -q "healthy"; then
+                echo "✓ Web service is healthy and ready!"
+                break
+              fi
+              
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+                echo "❌ Web service failed to become healthy after $((MAX_RETRIES * RETRY_INTERVAL)) seconds"
+                echo "Current service status:"
+                docker compose ps
+                echo "Recent logs:"
+                docker compose logs --tail=50 web
+                exit 1
+              fi
+              
+              echo "Waiting for web service to be healthy (attempt $RETRY_COUNT/$MAX_RETRIES)..."
+              sleep $RETRY_INTERVAL
+            done
 
             echo "🗄️  Running database migrations..."
             docker compose exec -T web rails db:migrate
