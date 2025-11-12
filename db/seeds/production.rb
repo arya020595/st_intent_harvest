@@ -411,7 +411,7 @@ fertilizer_data.each_with_index do |data, index|
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.new(2024, 1, 1) - (30 + (index * 10)).days
+    inventory.input_date = Date.new(2024, 1, 1) - 60.days
   end
 end
 
@@ -434,7 +434,7 @@ pesticide_data.each_with_index do |data, index|
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.new(2024, 1, 1) - (40 + (index * 10)).days
+    inventory.input_date = Date.new(2024, 1, 1) - 60.days
   end
 end
 
@@ -459,7 +459,7 @@ tool_data.each_with_index do |data, index|
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.new(2024, 1, 1) - (90 + (index * 15)).days
+    inventory.input_date = Date.new(2024, 1, 1) - 135.days
   end
 end
 
@@ -482,7 +482,7 @@ equipment_data.each_with_index do |data, index|
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.new(2024, 1, 1) - (180 + (index * 30)).days
+    inventory.input_date = Date.new(2024, 1, 1) - 270.days
   end
 end
 
