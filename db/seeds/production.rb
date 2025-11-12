@@ -556,11 +556,9 @@ work_orders_data = [
     work_order_status: 'pending' }
 ]
 
-work_orders_data.each_with_index do |data, i|
-  WorkOrder.find_or_create_by!(id: i + 1) do |wo|
-    wo.block_id = data[:block].id
+work_orders_data.each do |data|
+  WorkOrder.find_or_create_by!(block_id: data[:block].id, start_date: data[:start_date]) do |wo|
     wo.work_order_rate_id = data[:work_order_rate].id
-    wo.start_date = data[:start_date]
     wo.work_order_status = data[:work_order_status]
     wo.field_conductor_id = conductor_user.id
     wo.field_conductor_name = conductor_user.name
@@ -664,7 +662,7 @@ puts "✓ Created #{WorkOrderItem.count} work order items"
 
 # Create Pay Calculations
 puts 'Creating pay calculations...'
-pay_calc = PayCalculation.find_or_create_by!(month_year: '2023-12') do |pc|
+pay_calc = PayCalculation.find_or_create_by!(month_year: '2024-01') do |pc|
   pc.overall_total = 0
 end
 
