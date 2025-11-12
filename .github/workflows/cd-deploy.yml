@@ -31,7 +31,13 @@ jobs:
             docker compose up -d
 
             echo "⏳ Waiting for services to be ready..."
-            sleep 10
+            sleep 15
+
+            echo "🗄️  Running database migrations..."
+            docker compose exec -T web rails db:migrate
 
             echo "✅ Deployment completed!"
             docker compose ps
+
+            echo "📝 Recent logs:"
+            docker compose logs --tail=20 web
