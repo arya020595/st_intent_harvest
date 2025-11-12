@@ -311,7 +311,7 @@ Same as `ci-test.yml` - cancels old runs on new commits.
 
 - **Day:** Monday
 - **Time:** 00:00 UTC (midnight)
-- **Timezone:** UTC (Universal Time Coordinated)
+- **Timezone:** UTC (Coordinated Universal Time)
 
 **Purpose:**
 
