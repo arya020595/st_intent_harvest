@@ -1,0 +1,26 @@
+<tr id="<%= dom_id(worker) %>">
+  <td class="text-center"><%= worker.id %></td>
+  <td><%= worker.name %></td>
+  <td><%= worker.worker_type %></td>
+  <td class="text-center">
+    <% if worker.is_active %>
+      <span class="badge bg-success">Active</span>
+    <% else %>
+      <span class="badge bg-secondary">Inactive</span>
+    <% end %>
+  </td>
+  <td class="text-center"><%= worker.hired_date&.strftime('%d-%m-%Y') || '-' %></td>
+  <td class="text-center">
+    <div class="btn-group btn-group-sm" role="group">
+      <%= link_to worker_path(worker), class: "btn btn-info btn-sm", title: "View Details" do %>
+        <i class="bi bi-info-circle"></i>
+      <% end %>
+      <%= link_to edit_worker_path(worker), class: "btn btn-warning btn-sm", title: "Edit" do %>
+        <i class="bi bi-pencil"></i>
+      <% end %>
+      <%= link_to worker_path(worker), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{worker.name}?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
+        <i class="bi bi-trash"></i>
+      <% end %>
+    </div>
+  </td>
+</tr>
