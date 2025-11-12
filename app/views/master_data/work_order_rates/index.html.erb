@@ -2,7 +2,7 @@
   <div class="card shadow-sm">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Work Order Rates Management</h5>
-      <%= link_to new_master_data_work_order_rate_path, class: "btn btn-light btn-sm", data: { turbo_frame: "_top" } do %>
+      <%= link_to new_master_data_work_order_rate_path, class: "btn btn-light btn-sm" do %>
         <i class="bi bi-plus-circle"></i> Add Work Order Rate
       <% end %>
     </div>
@@ -118,7 +118,7 @@
                           <%= link_to edit_master_data_work_order_rate_path(work_order_rate), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: "_top" } do %>
                             <i class="bi bi-pencil"></i>
                           <% end %>
-                          <%= button_to master_data_work_order_rate_path(work_order_rate), form: { data: { turbo_confirm: "Are you sure you want to delete #{work_order_rate.work_order_name}?", turbo_frame: "_top" } }, class: "btn btn-danger btn-sm", title: "Delete" do %>
+                          <%= link_to master_data_work_order_rate_path(work_order_rate), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{work_order_rate.work_order_name}?", turbo_frame: "_top" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
                             <i class="bi bi-trash"></i>
                           <% end %>
                         </div>
@@ -128,7 +128,7 @@
                 <% else %>
                   <tr>
                     <td colspan="7" class="text-center text-muted py-4">
-                      No work order rates found. <%= link_to 'Add a new rate', new_master_data_work_order_rate_path, class: 'text-decoration-none', data: { turbo_frame: "_top" } %>
+                      No work order rates found. <%= link_to 'Add a new rate', new_master_data_work_order_rate_path, class: 'text-decoration-none' %>
                     </td>
                   </tr>
                 <% end %>
