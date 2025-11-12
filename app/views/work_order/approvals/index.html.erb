@@ -86,7 +86,7 @@
                       </td>
                       <td class="text-center">
                         <div class="btn-group btn-group-sm" role="group">
-                          <%= link_to work_order_approval_path(work_order), class: "btn btn-info btn-sm", title: "View Details" do %>
+                          <%= link_to work_order_approval_path(work_order), class: "btn btn-info btn-sm", title: "View Details", data: { turbo_frame: "_top" } do %>
                             <i class="bi bi-info-circle"></i>
                           <% end %>
                         </div>
