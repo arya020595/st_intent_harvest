@@ -26,12 +26,15 @@ jobs:
           bundler-cache: true
 
       - name: Run Rubocop (fail only on error)
+        id: rubocop
         run: bundle exec rubocop --fail-level error
 
       - name: Run Brakeman security scanner
+        id: brakeman
         run: bundle exec brakeman -q --no-progress
 
       - name: Precompile assets
+        id: assets
         run: bundle exec rails assets:precompile
 
       - name: Generate job summary
@@ -39,9 +42,24 @@ jobs:
         run: |
           echo "## 📊 Code Quality Check Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Rubocop: Passed" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Brakeman: Passed" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Assets: Compiled successfully" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.rubocop.outcome }}" == "success" ]; then
+            echo "✅ Rubocop: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Rubocop: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ steps.brakeman.outcome }}" == "success" ]; then
+            echo "✅ Brakeman: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Brakeman: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ steps.assets.outcome }}" == "success" ]; then
+            echo "✅ Assets: Compiled successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Assets: Compilation failed" >> $GITHUB_STEP_SUMMARY
+          fi
 
       # TODO: enable after adding tests
       # - name: Run Tests
