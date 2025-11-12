@@ -9,6 +9,11 @@ on:
       - main
   workflow_dispatch:
 
+# Prevent concurrent deployments (CRITICAL for production!)
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false # Don't cancel, queue instead
+
 jobs:
   deploy:
     runs-on: ubuntu-latest

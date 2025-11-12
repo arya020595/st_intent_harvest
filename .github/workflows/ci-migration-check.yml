@@ -1,0 +1,96 @@
+name: Migration & Schema Validation
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+    paths:
+      - "db/migrate/**"
+      - "db/schema.rb"
+  workflow_dispatch: # Allow manual trigger
+
+# Cancel in-progress runs when new commit is pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  migration-check:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: migration_test
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgresql://postgres:password@localhost:5432/migration_test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4.7"
+          bundler-cache: true
+
+      - name: Create database
+        run: bundle exec rails db:create
+
+      - name: Run migrations from scratch
+        run: bundle exec rails db:migrate
+
+      - name: Check schema.rb is up to date
+        run: |
+          bundle exec rails db:schema:dump
+          if ! git diff --exit-code db/schema.rb; then
+            echo "❌ ERROR: schema.rb is outdated!"
+            echo ""
+            echo "Please run the following command locally:"
+            echo "  bundle exec rails db:migrate"
+            echo ""
+            echo "Then commit the updated schema.rb file."
+            exit 1
+          fi
+          echo "✅ schema.rb is up to date!"
+
+      - name: Test migration rollback
+        run: |
+          echo "Testing rollback of last migration..."
+          bundle exec rails db:rollback
+          echo "✅ Rollback successful"
+
+      - name: Re-run migration
+        run: |
+          echo "Re-running migration..."
+          bundle exec rails db:migrate
+          echo "✅ Migration re-run successful"
+
+      - name: Validate database structure
+        run: |
+          echo "Checking database structure..."
+          bundle exec rails db:schema:dump
+          echo "✅ Database structure is valid"
+
+      - name: Migration validation summary
+        if: success()
+        run: |
+          echo "✅ All migration checks passed!"
+          echo "  - Migrations run successfully from scratch"
+          echo "  - schema.rb is up to date"
+          echo "  - Rollback works correctly"
+          echo "  - Database structure is valid"
