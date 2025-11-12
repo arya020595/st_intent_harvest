@@ -2,7 +2,7 @@
   <div class="card shadow-sm">
     <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Units Management</h5>
-      <%= link_to new_master_data_unit_path, class: "btn btn-light btn-sm" do %>
+      <%= link_to new_master_data_unit_path, class: "btn btn-light btn-sm", data: { turbo_frame: "_top" } do %>
         <i class="bi bi-plus-circle"></i> Add Unit
       <% end %>
     </div>
@@ -105,7 +105,7 @@
                           <%= link_to edit_master_data_unit_path(unit), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: "_top" } do %>
                             <i class="bi bi-pencil"></i>
                           <% end %>
-                          <%= link_to master_data_unit_path(unit), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{unit.name}?", turbo_frame: "_top" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
+                          <%= button_to master_data_unit_path(unit), form: { data: { turbo_confirm: "Are you sure you want to delete #{unit.name}?", turbo_frame: "_top" } }, class: "btn btn-danger btn-sm", title: "Delete" do %>
                             <i class="bi bi-trash"></i>
                           <% end %>
                         </div>
@@ -115,7 +115,7 @@
                 <% else %>
                   <tr>
                     <td colspan="6" class="text-center text-muted py-4">
-                      No units found. <%= link_to 'Add a new unit', new_master_data_unit_path, class: 'text-decoration-none' %>
+                      No units found. <%= link_to 'Add a new unit', new_master_data_unit_path, class: 'text-decoration-none', data: { turbo_frame: "_top" } %>
                     </td>
                   </tr>
                 <% end %>
