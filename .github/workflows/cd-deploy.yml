@@ -25,13 +25,13 @@ jobs:
             cd /home/stadmin/st_intent_harvest
 
             echo "📦 Pulling latest Docker image..."
-            docker compose -f docker-compose.production.yml pull
+            docker compose pull
 
             echo "🔄 Restarting services..."
-            docker compose -f docker-compose.production.yml up -d
+            docker compose up -d
 
             echo "⏳ Waiting for services to be ready..."
             sleep 10
 
             echo "✅ Deployment completed!"
-            docker compose -f docker-compose.production.yml ps
+            docker compose ps
