@@ -68,7 +68,4 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  <<: *default
-  database: st_intent_harvest_production
-  username: st_intent_harvest
-  password: <%= ENV["ST_INTENT_HARVEST_DATABASE_PASSWORD"] %>
+  url: <%= ENV.fetch("DATABASE_URL") { "postgresql://postgres:password@localhost:5432/st_intent_harvest_production" } %>

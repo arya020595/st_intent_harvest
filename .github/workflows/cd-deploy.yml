@@ -1,0 +1,68 @@
+name: Deploy to Production
+
+on:
+  workflow_run:
+    workflows: ["Build & Push Docker Image"]
+    types:
+      - completed
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Deploy to production server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          script: |
+            set -e
+            cd /home/stadmin/st_intent_harvest
+
+            echo "📦 Pulling latest Docker image..."
+            docker compose pull
+
+            echo "🔄 Restarting services..."
+            docker compose up -d
+
+            echo "⏳ Waiting for services to be ready..."
+            # Wait for web service to be healthy with retry logic
+            MAX_RETRIES=30
+            RETRY_COUNT=0
+            RETRY_INTERVAL=5
+            
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+              # Check if web service is healthy
+              if docker compose ps web | grep -q "healthy"; then
+                echo "✓ Web service is healthy and ready!"
+                break
+              fi
+              
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+                echo "❌ Web service failed to become healthy after $((MAX_RETRIES * RETRY_INTERVAL)) seconds"
+                echo "Current service status:"
+                docker compose ps
+                echo "Recent logs:"
+                docker compose logs --tail=50 web
+                exit 1
+              fi
+              
+              echo "Waiting for web service to be healthy (attempt $RETRY_COUNT/$MAX_RETRIES)..."
+              sleep $RETRY_INTERVAL
+            done
+
+            echo "🗄️  Running database migrations..."
+            docker compose exec -T web rails db:migrate
+
+            echo "✅ Deployment completed!"
+            docker compose ps
+
+            echo "📝 Recent logs:"
+            docker compose logs --tail=20 web
