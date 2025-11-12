@@ -927,8 +927,8 @@ docker compose logs --tail=20 web
   if: success()
   run: |
     echo "## 🚀 Deployment Successful!" >> $GITHUB_STEP_SUMMARY
-    echo "**Server:** 46.202.163.155" >> $GITHUB_STEP_SUMMARY
-    echo "**URL:** http://46.202.163.155:3005" >> $GITHUB_STEP_SUMMARY
+    echo "**Server:** ${{ secrets.PRODUCTION_HOST }}" >> $GITHUB_STEP_SUMMARY
+    echo "**URL:** ${{ secrets.PRODUCTION_URL }}" >> $GITHUB_STEP_SUMMARY
     # ... more details
 ```
 
