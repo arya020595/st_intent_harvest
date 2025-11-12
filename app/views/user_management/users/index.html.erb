@@ -7,7 +7,6 @@
       <% end %>
     </div>
     <div class="card-body">
-      <%= turbo_pagy_frame do %>
         <%= search_form_for @q, url: user_management_users_path, html: { id: 'user-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
           <div class="table-responsive">
             <table class="table table-hover table-sm mb-0">
@@ -95,7 +94,7 @@
                   <th class="text-center">
                     <div class="d-flex gap-1 justify-content-center">
                       <%= f.submit 'Search', class: 'btn btn-primary btn-sm' %>
-                      <%= link_to 'Reset', user_management_users_path, class: 'btn btn-secondary btn-sm', data: { turbo_frame: "_top" } %>
+                      <%= link_to 'Reset', user_management_users_path, class: 'btn btn-secondary btn-sm' %>
                     </div>
                   </th>
                 </tr>
@@ -106,7 +105,7 @@
                 <% else %>
                   <tr>
                     <td colspan="8" class="text-center text-muted py-4">
-                      No users found. <%= link_to 'Add a new user', new_user_management_user_path, class: 'text-decoration-none', data: { turbo_frame: "_top" } %>
+                      No users found. <%= link_to 'Add a new user', new_user_management_user_path, class: 'text-decoration-none' %>
                     </td>
                   </tr>
                 <% end %>
@@ -126,7 +125,6 @@
             <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
           </div>
         </div>
-      <% end %>
     </div>
   </div>
 </div>

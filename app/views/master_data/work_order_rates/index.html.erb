@@ -7,7 +7,6 @@
       <% end %>
     </div>
     <div class="card-body">
-      <%= turbo_pagy_frame do %>
         <%= search_form_for @q, url: master_data_work_order_rates_path, html: { id: 'work_order_rate-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
           <div class="table-responsive">
             <table class="table table-hover table-sm mb-0">
@@ -83,7 +82,7 @@
                   <th class="text-center">
                     <div class="d-flex gap-1 justify-content-center">
                       <%= f.submit 'Search', class: 'btn btn-primary btn-sm' %>
-                      <%= link_to 'Reset', master_data_work_order_rates_path, class: 'btn btn-secondary btn-sm', data: { turbo_frame: "_top" } %>
+                      <%= link_to 'Reset', master_data_work_order_rates_path, class: 'btn btn-secondary btn-sm' %>
                     </div>
                   </th>
                 </tr>
@@ -94,7 +93,7 @@
                 <% else %>
                   <tr>
                     <td colspan="7" class="text-center text-muted py-4">
-                      No work order rates found. <%= link_to 'Add a new work order rate', new_master_data_work_order_rate_path, class: 'text-decoration-none', data: { turbo_frame: "_top" } %>
+                      No work order rates found. <%= link_to 'Add a new work order rate', new_master_data_work_order_rate_path, class: 'text-decoration-none' %>
                     </td>
                   </tr>
                 <% end %>
@@ -114,7 +113,6 @@
             <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
           </div>
         </div>
-      <% end %>
     </div>
   </div>
 </div>
