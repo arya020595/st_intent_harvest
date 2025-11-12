@@ -1,43 +1,77 @@
-<%= form_with(model: worker, local: true) do |form| %>
-  <% if worker.errors.any? %>
-    <div class="alert alert-danger">
-      <h4><%= pluralize(worker.errors.count, "error") %> prohibited this worker from being saved:</h4>
-      <ul>
-        <% worker.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+<%= form_with(model: worker) do |form| %>
+  <div class="modal-header">
+    <h5 class="modal-title" id="workerModalLabel">
+      <%= worker.persisted? ? 'Edit Worker' : 'Add New Worker' %>
+    </h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    <% if worker.errors.any? %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h6 class="alert-heading">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <%= pluralize(worker.errors.count, "error") %> prohibited this worker from being saved:
+        </h6>
+        <ul class="mb-0 mt-2">
+          <% worker.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% end %>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <%= form.label :name, "Worker Name", class: "form-label fw-semibold" %>
+        <%= form.text_field :name, class: "form-control", placeholder: "Enter worker name", required: true %>
+      </div>
+      <div class="col-md-6 mb-3">
+        <%= form.label :worker_type, "Worker Type", class: "form-label fw-semibold" %>
+        <%= form.select :worker_type,
+            [['Part - Time', 'Part - Time'], ['Full - Time', 'Full - Time']],
+            { include_blank: "Select Worker Type" },
+            { class: "form-select", required: true } %>
+      </div>
     </div>
-  <% end %>
-  <div class="mb-3">
-    <%= form.label :name, class: "form-label" %>
-    <%= form.text_field :name, class: "form-control" %>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <%= form.label :gender, class: "form-label fw-semibold" %>
+        <%= form.select :gender,
+            [["Male", "Male"], ["Female", "Female"]],
+            { include_blank: "Select Gender" },
+            { class: "form-select", required: true } %>
+      </div>
+      <div class="col-md-6 mb-3">
+        <%= form.label :hired_date, class: "form-label fw-semibold" %>
+        <%= form.date_field :hired_date, class: "form-control", required: true %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <%= form.label :nationality, class: "form-label fw-semibold" %>
+        <%= form.text_field :nationality, class: "form-control", placeholder: "e.g., Indonesian" %>
+      </div>
+      <div class="col-md-6 mb-3">
+        <%= form.label :identity_number, "IC/Passport No.", class: "form-label fw-semibold" %>
+        <%= form.text_field :identity_number, class: "form-control", placeholder: "Enter IC or Passport number" %>
+      </div>
+    </div>
+    <div class="mb-3">
+      <div class="form-check form-switch">
+        <%= form.check_box :is_active, class: "form-check-input", role: "switch" %>
+        <%= form.label :is_active, "Active Status", class: "form-check-label" %>
+        <small class="form-text text-muted d-block">Toggle to set worker as active or inactive</small>
+      </div>
+    </div>
   </div>
-  <div class="mb-3">
-    <%= form.label :worker_type, class: "form-label" %>
-    <%= form.text_field :worker_type, class: "form-control" %>
-  </div>
-  <div class="mb-3">
-    <%= form.label :gender, class: "form-label" %>
-    <%= form.select :gender, [["Male", "Male"], ["Female", "Female"]], { include_blank: "Select Gender" }, class: "form-select" %>
-  </div>
-  <div class="mb-3">
-    <%= form.label :identity_number, class: "form-label" %>
-    <%= form.text_field :identity_number, class: "form-control" %>
-  </div>
-  <div class="mb-3">
-    <%= form.label :nationality, class: "form-label" %>
-    <%= form.text_field :nationality, class: "form-control" %>
-  </div>
-  <div class="mb-3">
-    <%= form.label :hired_date, class: "form-label" %>
-    <%= form.date_field :hired_date, class: "form-control" %>
-  </div>
-  <div class="mb-3 form-check">
-    <%= form.check_box :is_active, class: "form-check-input" %>
-    <%= form.label :is_active, "Active", class: "form-check-label" %>
-  </div>
-  <div class="mb-3">
-    <%= form.submit class: "btn btn-primary" %>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+      <i class="bi bi-x-circle"></i> Cancel
+    </button>
+    <% if worker.persisted? %>
+      <%= form.submit 'Update Worker', class: "btn btn-success" %>
+    <% else %>
+      <%= form.submit 'Save Worker', class: "btn btn-success" %>
+    <% end %>
   </div>
 <% end %>

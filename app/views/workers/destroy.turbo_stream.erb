@@ -1,0 +1,8 @@
+<%= turbo_stream.remove dom_id(@worker) %>
+<%= turbo_stream.replace "flash-messages" do %>
+  <div class="alert alert-info alert-dismissible fade show" role="alert">
+    <i class="bi bi-info-circle-fill"></i>
+    <%= flash[:notice] || flash.now[:notice] || 'Worker deleted.' %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>

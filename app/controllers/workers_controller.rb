@@ -19,30 +19,48 @@ class WorkersController < ApplicationController
   def new
     @worker = Worker.new
     authorize @worker
+    # When requested inside a Turbo Frame (modal), render without layout
+    render layout: false if turbo_frame_request?
   end
 
   def create
     @worker = Worker.new(worker_params)
     authorize @worker
 
-    if @worker.save
-      redirect_to @worker, notice: 'Worker was successfully created.'
-    else
-      render :new, status: :unprocessable_entity
+    respond_to do |format|
+      if @worker.save
+        format.turbo_stream do
+          # Use flash.now so it renders in the same request
+          flash.now[:notice] = 'Worker was successfully created.'
+        end
+        format.html { redirect_to workers_path, notice: 'Worker was successfully created.' }
+      else
+        # Re-render the form in the frame without layout for validation errors
+        format.turbo_stream { render :new, status: :unprocessable_entity, layout: false }
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
   def edit
     authorize @worker
+    # Render modal body only when loaded via Turbo Frame
+    render layout: false if turbo_frame_request?
   end
 
   def update
     authorize @worker
 
-    if @worker.update(worker_params)
-      redirect_to @worker, notice: 'Worker was successfully updated.'
-    else
-      render :edit, status: :unprocessable_entity
+    respond_to do |format|
+      if @worker.update(worker_params)
+        format.turbo_stream do
+          flash.now[:notice] = 'Worker was successfully updated.'
+        end
+        format.html { redirect_to workers_path, notice: 'Worker was successfully updated.' }
+      else
+        format.turbo_stream { render :edit, status: :unprocessable_entity, layout: false }
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -50,7 +68,12 @@ class WorkersController < ApplicationController
     authorize @worker
 
     @worker.destroy!
-    redirect_to workers_url, notice: 'Worker was successfully deleted.'
+    respond_to do |format|
+      format.turbo_stream do
+        flash.now[:notice] = 'Worker was successfully deleted.'
+      end
+      format.html { redirect_to workers_url, notice: 'Worker was successfully deleted.' }
+    end
   end
 
   private
