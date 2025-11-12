@@ -26,12 +26,18 @@ docker compose exec web rails db:seed
 
 ### 📚 Documentation
 
+#### Development
+
 - **[Quick Start Guide](docs/QUICK_START.md)** - Get up and running in 5 minutes
 - **[Docker Guide](docs/DOCKER_GUIDE.md)** - Comprehensive Docker documentation
 - **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues and solutions
 - **[Denormalizable Usage Guide](docs/DENORMALIZABLE_USAGE_GUIDE.md)** - Clean denormalization pattern
 - **[Pundit Authorization](docs/PUNDIT_AUTHORIZATION.md)** - Permission system details
 - **[Work Order Status Flow](docs/WORK_ORDER_STATUS_FLOW.md)** - State machine documentation
+
+#### Production Deployment
+
+- **[Production Deployment Guide](docs/PRODUCTION_DEPLOYMENT_GUIDE.md)** - Complete step-by-step deployment to production server using GHCR and GitHub Actions CI/CD
 
 ### Common Commands
 
@@ -97,6 +103,18 @@ docker compose exec db psql -U postgres -d st_intent_harvest_development
 - **Role-based Access Control**: Admin, Manager, Staff roles with granular permissions
 - **State Machine**: Automatic status transitions with history tracking
 - **Dashboard**: Real-time statistics and recent activity
+- **CI/CD Pipeline**: Automated testing and deployment with GitHub Actions
+- **Dockerized**: Easy deployment to any server with Docker support
+
+## 🌐 Production Deployment
+
+Want to deploy to production? See our **[Production Deployment Guide](docs/PRODUCTION_DEPLOYMENT_GUIDE.md)** for complete instructions on:
+
+- Setting up production server
+- Configuring GitHub Container Registry (GHCR)
+- Automated CI/CD with GitHub Actions
+- SSL/HTTPS setup with Nginx
+- Database management and backups
 
 ## 📝 Default Users (from seed data)
 
