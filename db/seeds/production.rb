@@ -404,14 +404,14 @@ fertilizer_data = [
     supplier: 'PT Pupuk Indonesia' }
 ]
 
-fertilizer_data.each do |data|
+fertilizer_data.each_with_index do |data, index|
   Inventory.find_or_create_by!(name: data[:name]) do |inventory|
     inventory.stock_quantity = data[:stock_quantity]
     inventory.category = data[:category]
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.today - rand(30..90).days
+    inventory.input_date = Date.new(2024, 1, 1) - (30 + (index * 10)).days
   end
 end
 
@@ -427,14 +427,14 @@ pesticide_data = [
     supplier: 'PT Agro Kimia' }
 ]
 
-pesticide_data.each do |data|
+pesticide_data.each_with_index do |data, index|
   Inventory.find_or_create_by!(name: data[:name]) do |inventory|
     inventory.stock_quantity = data[:stock_quantity]
     inventory.category = data[:category]
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.today - rand(30..90).days
+    inventory.input_date = Date.new(2024, 1, 1) - (40 + (index * 10)).days
   end
 end
 
@@ -452,14 +452,14 @@ tool_data = [
     supplier: 'CV Perkakas Pertanian' }
 ]
 
-tool_data.each do |data|
+tool_data.each_with_index do |data, index|
   Inventory.find_or_create_by!(name: data[:name]) do |inventory|
     inventory.stock_quantity = data[:stock_quantity]
     inventory.category = data[:category]
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.today - rand(90..180).days
+    inventory.input_date = Date.new(2024, 1, 1) - (90 + (index * 15)).days
   end
 end
 
@@ -475,14 +475,14 @@ equipment_data = [
     supplier: 'CV Teknik Jaya' }
 ]
 
-equipment_data.each do |data|
+equipment_data.each_with_index do |data, index|
   Inventory.find_or_create_by!(name: data[:name]) do |inventory|
     inventory.stock_quantity = data[:stock_quantity]
     inventory.category = data[:category]
     inventory.unit = data[:unit]
     inventory.price = data[:price]
     inventory.supplier = data[:supplier]
-    inventory.input_date = Date.today - rand(180..365).days
+    inventory.input_date = Date.new(2024, 1, 1) - (180 + (index * 30)).days
   end
 end
 
