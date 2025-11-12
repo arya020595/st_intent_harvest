@@ -1014,7 +1014,7 @@ cat backup.sql | docker compose exec -T db psql -U postgres st_intent_harvest_pr
   - SSH connection: ~2 seconds
   - Pull image: ~30 seconds
   - Restart services: ~20 seconds
-  - Wait: 15 seconds
+  - Health check: 5–150 seconds (retry logic: up to 30 retries × 5 seconds, depending on service readiness)
   - Migrations: ~10 seconds (if any)
   - Logs: ~5 seconds
 
