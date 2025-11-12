@@ -2,7 +2,7 @@
   <div class="card shadow-sm">
     <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Workers Profile</h5>
-      <%= link_to new_worker_path, class: "btn btn-light btn-sm" do %>
+      <%= link_to new_worker_path, class: "btn btn-light btn-sm", data: { turbo_frame: "_top" } do %>
         <i class="bi bi-plus-circle"></i> Add Worker
       <% end %>
     </div>
@@ -68,45 +68,18 @@
                   <th class="text-center">
                     <div class="d-flex gap-1 justify-content-center">
                       <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
-                      <%= link_to 'Reset', workers_path, class: 'btn btn-secondary btn-sm', data: { turbo_frame: pagy_frame_id } %>
+                      <%= link_to 'Reset', workers_path, class: 'btn btn-secondary btn-sm', data: { turbo_frame: "_top" } %>
                     </div>
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody id="workers-table-body">
                 <% if @workers.any? %>
-                  <% @workers.each do |worker| %>
-                    <tr>
-                      <td class="text-center"><%= worker.id %></td>
-                      <td><%= worker.name %></td>
-                      <td><%= worker.worker_type %></td>
-                      <td class="text-center">
-                        <% if worker.is_active %>
-                          <span class="badge bg-success">Active</span>
-                        <% else %>
-                          <span class="badge bg-secondary">Inactive</span>
-                        <% end %>
-                      </td>
-                      <td class="text-center"><%= worker.hired_date&.strftime('%d-%m-%Y') || '-' %></td>
-                      <td class="text-center">
-                        <div class="btn-group btn-group-sm" role="group">
-                          <%= link_to worker_path(worker), class: "btn btn-info btn-sm", title: "View Details", data: { turbo_frame: "_top" } do %>
-                            <i class="bi bi-info-circle"></i>
-                          <% end %>
-                          <%= link_to edit_worker_path(worker), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: "_top" } do %>
-                            <i class="bi bi-pencil"></i>
-                          <% end %>
-                          <%= link_to worker_path(worker), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{worker.name}?", turbo_frame: "_top" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
-                            <i class="bi bi-trash"></i>
-                          <% end %>
-                        </div>
-                      </td>
-                    </tr>
-                  <% end %>
+                  <%= render partial: 'worker_row', collection: @workers, as: :worker %>
                 <% else %>
                   <tr>
                     <td colspan="6" class="text-center text-muted py-4">
-                      No workers found. <%= link_to 'Add a new worker', new_worker_path, class: 'text-decoration-none' %>
+                      No workers found. <%= link_to 'Add a new worker', new_worker_path, class: 'text-decoration-none', data: { turbo_frame: "_top" } %>
                     </td>
                   </tr>
                 <% end %>

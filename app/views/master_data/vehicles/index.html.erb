@@ -77,43 +77,18 @@
                   <th class="text-center">
                     <div class="d-flex gap-1 justify-content-center">
                       <%= f.submit 'Search', class: 'btn btn-danger btn-sm' %>
-                      <%= link_to 'Reset', master_data_vehicles_path, class: 'btn btn-secondary btn-sm', data: { turbo_frame: pagy_frame_id } %>
+                      <%= link_to 'Reset', master_data_vehicles_path, class: 'btn btn-secondary btn-sm', data: { turbo_frame: "_top" } %>
                     </div>
                   </th>
                 </tr>
               </thead>
               <tbody>
                 <% if @vehicles.any? %>
-                  <% @vehicles.each do |vehicle| %>
-                    <tr>
-                      <td class="text-center"><%= vehicle.id %></td>
-                      <td><strong><%= vehicle.vehicle_number %></strong></td>
-                      <td><%= vehicle.vehicle_model %></td>
-                      <td>
-                        <small class="text-muted"><%= vehicle.created_at.strftime("%b %d, %Y %H:%M") if vehicle.created_at %></small>
-                      </td>
-                      <td>
-                        <small class="text-muted"><%= vehicle.updated_at.strftime("%b %d, %Y %H:%M") if vehicle.updated_at %></small>
-                      </td>
-                      <td class="text-center">
-                        <div class="btn-group btn-group-sm" role="group">
-                          <%= link_to master_data_vehicle_path(vehicle), class: "btn btn-info btn-sm", title: "View Details", data: { turbo_frame: "_top" } do %>
-                            <i class="bi bi-info-circle"></i>
-                          <% end %>
-                          <%= link_to edit_master_data_vehicle_path(vehicle), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: "_top" } do %>
-                            <i class="bi bi-pencil"></i>
-                          <% end %>
-                          <%= link_to master_data_vehicle_path(vehicle), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{vehicle.vehicle_number}?", turbo_frame: "_top" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
-                            <i class="bi bi-trash"></i>
-                          <% end %>
-                        </div>
-                      </td>
-                    </tr>
-                  <% end %>
+                  <%= render partial: 'vehicle_row', collection: @vehicles, as: :vehicle %>
                 <% else %>
                   <tr>
                     <td colspan="6" class="text-center text-muted py-4">
-                      No vehicles found. <%= link_to 'Add a new vehicle', new_master_data_vehicle_path, class: 'text-decoration-none' %>
+                      No vehicles found. <%= link_to 'Add a new vehicle', new_master_data_vehicle_path, class: 'text-decoration-none', data: { turbo_frame: "_top" } %>
                     </td>
                   </tr>
                 <% end %>
