@@ -662,7 +662,7 @@ puts "✓ Created #{WorkOrderItem.count} work order items"
 
 # Create Pay Calculations
 puts 'Creating pay calculations...'
-pay_calc = PayCalculation.find_or_create_by!(month_year: Date.today.strftime('%Y-%m')) do |pc|
+pay_calc = PayCalculation.find_or_create_by!(month_year: '2024-01') do |pc|
   pc.overall_total = 0
 end
 
