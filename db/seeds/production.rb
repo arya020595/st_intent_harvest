@@ -566,7 +566,7 @@ work_orders_data.each do |data|
     # Add approval info for completed work orders
     if wo.work_order_status == 'completed'
       wo.approved_by = manager_user.id.to_s
-      wo.approved_at = wo.start_date + rand(3..7).days
+      wo.approved_at = wo.start_date + 5.days
     end
   end
 end
