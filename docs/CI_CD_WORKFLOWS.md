@@ -854,19 +854,18 @@ docker compose up -d
 - `db` - PostgreSQL 16 database
 - `web` - Rails application (Puma server)
 
-##### 4. Wait for Services
+##### 4. Wait for Services (Health Check)
 
 ```bash
-sleep 15
-```
-
-- **Duration:** 15 seconds
-- **Purpose:** Allow containers to fully start
-- **Why Needed:**
-  - Database initialization
-  - Rails application boot
-  - Health check grace period
-
+# Wait for the web service to become healthy (up to 30 retries, 5s interval)
+for i in {1..30}; do
+  if docker compose exec -T web curl -fs http://localhost:3000/health; then
+    echo "Web service is healthy."
+    break
+  fi
+  echo "Waiting for web service to become healthy... ($i/30)"
+  sleep 5
+done
 ##### 5. Run Database Migrations
 
 ```bash
