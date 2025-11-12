@@ -38,7 +38,20 @@
                     <%= f.search_field :block_block_number_cont, class: 'form-control form-control-sm', placeholder: 'Search Block..' %>
                   </th>
                   <th class="text-center">
-                    <%= f.date_field :start_date_eq, class: 'form-control form-control-sm', placeholder: 'Date' %>
+                    <div class="input-group input-group-sm">
+                      <input type="text" 
+                           class="form-control form-control-sm cursor-pointer" 
+                           placeholder="Select Date Range"
+                           data-controller="flatpickr"
+                           data-flatpickr-mode-value="range"
+                           data-flatpickr-date-format-value="d-m-Y"
+                           data-flatpickr-field-name-value="q[start_date]">
+                      <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
+                        <i class="bi bi-calendar-range"></i>
+                      </span>
+                    </div>
+                    <%= f.hidden_field :start_date_gteq, value: params.dig(:q, :start_date_gteq) %>
+                    <%= f.hidden_field :start_date_lteq, value: params.dig(:q, :start_date_lteq) %>
                   </th>
                   <th class="text-center">
                     <%= f.select :work_order_status_eq,
