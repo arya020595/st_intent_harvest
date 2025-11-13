@@ -1,0 +1,3 @@
+<%= turbo_stream.prepend "work_order_rate_rows", partial: "master_data/work_order_rates/work_order_rate_row", locals: { work_order_rate: @work_order_rate } %>
+<%= turbo_stream.update "modal", "" %>
+<%= turbo_stream.update "flash_messages", partial: "shared/flash" %>

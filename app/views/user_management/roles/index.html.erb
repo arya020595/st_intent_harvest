@@ -34,10 +34,38 @@
                   <%= f.search_field :name_cont, class: 'form-control form-control-sm', placeholder: 'Search Name..' %>
                 </th>
                 <th>
-                  <%= f.search_field :created_at_gteq, class: 'form-control form-control-sm', placeholder: 'From..', type: 'datetime-local' %>
+                  <div class="input-group input-group-sm">
+                    <input type="text" 
+                           class="form-control form-control-sm cursor-pointer" 
+                           placeholder="Select Date Range"
+                           data-controller="flatpickr"
+                           data-flatpickr-mode-value="range"
+                           data-flatpickr-date-format-value="d-m-Y H:i"
+                           data-flatpickr-enable-time-value="true"
+                           data-flatpickr-field-name-value="q[created_at]">
+                    <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
+                      <i class="bi bi-calendar-range"></i>
+                    </span>
+                  </div>
+                  <%= f.hidden_field :created_at_gteq, value: params.dig(:q, :created_at_gteq) %>
+                  <%= f.hidden_field :created_at_lteq, value: params.dig(:q, :created_at_lteq) %>
                 </th>
                 <th>
-                  <%= f.search_field :updated_at_lteq, class: 'form-control form-control-sm', placeholder: 'To..', type: 'datetime-local' %>
+                  <div class="input-group input-group-sm">
+                    <input type="text" 
+                           class="form-control form-control-sm cursor-pointer" 
+                           placeholder="Select Date Range"
+                           data-controller="flatpickr"
+                           data-flatpickr-mode-value="range"
+                           data-flatpickr-date-format-value="d-m-Y H:i"
+                           data-flatpickr-enable-time-value="true"
+                           data-flatpickr-field-name-value="q[updated_at]">
+                    <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
+                      <i class="bi bi-calendar-range"></i>
+                    </span>
+                  </div>
+                  <%= f.hidden_field :updated_at_gteq, value: params.dig(:q, :updated_at_gteq) %>
+                  <%= f.hidden_field :updated_at_lteq, value: params.dig(:q, :updated_at_lteq) %>
                 </th>
                 <th class="text-center">
                   <div class="d-flex gap-1 justify-content-center">
@@ -49,31 +77,7 @@
             </thead>
             <tbody>
               <% if @roles.any? %>
-                <% @roles.each do |role| %>
-                  <tr>
-                    <td class="text-center"><%= role.id %></td>
-                    <td><%= role.name %></td>
-                    <td>
-                      <small class="text-muted"><%= role.created_at.strftime("%b %d, %Y %H:%M") if role.created_at %></small>
-                    </td>
-                    <td>
-                      <small class="text-muted"><%= role.updated_at.strftime("%b %d, %Y %H:%M") if role.updated_at %></small>
-                    </td>
-                    <td class="text-center">
-                      <div class="btn-group btn-group-sm" role="group">
-                        <%= link_to user_management_role_path(role), class: "btn btn-info btn-sm", title: "View Details" do %>
-                          <i class="bi bi-info-circle"></i>
-                        <% end %>
-                        <%= link_to edit_user_management_role_path(role), class: "btn btn-warning btn-sm", title: "Edit" do %>
-                          <i class="bi bi-pencil"></i>
-                        <% end %>
-                        <%= link_to user_management_role_path(role), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{role.name}?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
-                          <i class="bi bi-trash"></i>
-                        <% end %>
-                      </div>
-                    </td>
-                  </tr>
-                <% end %>
+                <%= render partial: 'role_row', collection: @roles, as: :role %>
               <% else %>
                 <tr>
                   <td colspan="5" class="text-center text-muted py-4">
@@ -90,7 +94,7 @@
           <span class="text-muted small">Show</span>
           <%= per_page_selector(current: params[:per_page] || 10) %>
           <span class="text-muted small">
-            <%= pagination_info(@pagy) %>
+            <%== @pagy.info_tag(item_name: 'Roles') %>
           </span>
         </div>
         <div>

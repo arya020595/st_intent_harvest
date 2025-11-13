@@ -42,7 +42,7 @@ gem 'tzinfo-data', platforms: %i[windows jruby]
 gem 'bootsnap', require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-# gem "image_processing", "~> 1.2"
+gem 'image_processing', '~> 1.2'
 
 # Authentication
 gem 'devise'
@@ -78,13 +78,22 @@ group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'byebug', '~> 11.1', '>= 11.1.3'
   gem 'debug', platforms: %i[mri windows]
-  gem 'rubocop', '~> 1.71', '>= 1.71.2'
+  gem 'rubocop', '~> 1.71', '>= 1.71.2', require: false
 
   # Annotate models with schema information
-  gem 'annotate'
+  gem 'annotate', require: false
 
   # Faker for generating fake data
   gem 'faker'
+
+  # Bullet gem to help detect N+1 queries and unused eager loading
+  gem 'bullet', '~> 8.1'
+
+  # Security vulnerability scanner for Ruby on Rails applications
+  gem 'brakeman', require: false
+
+  # Strong Migrations to help write safe database migrations
+  gem 'strong_migrations'
 end
 
 group :development do
@@ -98,10 +107,10 @@ group :development do
   # gem "spring"
 
   # Code completion and inline documentation for Ruby/Rails [https://solargraph.org]
-  gem 'solargraph', '~> 0.57.0'
+  gem 'solargraph', '~> 0.57.0', require: false
 
   # HTML formatter for Ruby/Rails code [https://github.com/threedaymonk/htmlbeautifier]
-  gem 'htmlbeautifier'
+  gem 'htmlbeautifier', require: false
 end
 
 group :test do

@@ -15,7 +15,7 @@ class WorkOrder::ApprovalsController < ApplicationController
                  .order(id: :desc)
 
     apply_ransack_search(base_scope)
-    @pagy, @work_orders = paginate_results(@q.result.includes(:block, :work_order_rate, :field_conductor))
+    @pagy, @work_orders = paginate_results(@q.result)
   end
 
   def show

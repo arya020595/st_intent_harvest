@@ -10,7 +10,7 @@ module UserManagement
       authorize User, policy_class: UserManagement::UserPolicy
 
       apply_ransack_search(policy_scope(User, policy_scope_class: UserManagement::UserPolicy::Scope).order(id: :desc))
-      @pagy, @users = paginate_results(@q.result)
+      @pagy, @users = paginate_results(@q.result.includes(:role))
     end
 
     def show
@@ -26,7 +26,16 @@ module UserManagement
       @user = User.new(user_params)
       authorize @user, policy_class: UserManagement::UserPolicy
 
-      # Logic to be implemented later
+      if @user.save
+        respond_to do |format|
+          format.turbo_stream do
+            flash.now[:notice] = 'User created successfully.'
+          end
+          format.html { redirect_to user_management_users_path, notice: 'User created successfully.' }
+        end
+      else
+        render :new, status: :unprocessable_entity
+      end
     end
 
     def edit
@@ -36,13 +45,31 @@ module UserManagement
     def update
       authorize @user, policy_class: UserManagement::UserPolicy
 
-      # Logic to be implemented later
+      if @user.update(user_params)
+        respond_to do |format|
+          format.turbo_stream do
+            flash.now[:notice] = 'User updated successfully.'
+          end
+          format.html { redirect_to user_management_users_path, notice: 'User updated successfully.' }
+        end
+      else
+        render :edit, status: :unprocessable_entity
+      end
     end
 
     def destroy
       authorize @user, policy_class: UserManagement::UserPolicy
 
-      # Logic to be implemented later
+      if @user.destroy
+        respond_to do |format|
+          format.turbo_stream do
+            flash.now[:notice] = 'User deleted successfully.'
+          end
+          format.html { redirect_to user_management_users_path, notice: 'User deleted successfully.' }
+        end
+      else
+        redirect_to user_management_users_path, alert: 'Failed to delete user.'
+      end
     end
 
     private

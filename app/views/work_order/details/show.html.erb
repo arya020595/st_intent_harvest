@@ -11,6 +11,20 @@
       <i class="bi bi-arrow-left me-2"></i> Back to Work Order Details
     <% end %>
   </div>
+  <!-- Amendment Required Alert -->
+  <% if @work_order.work_order_status == 'amendment_required' %>
+    <% if @amendment_history&.remarks.present? %>
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <h5 class="alert-heading">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>This work order must be amended!
+        </h5>
+        <hr>
+        <p class="mb-0"><strong>Remarks:</strong></p>
+        <p class="mb-0"><%= @amendment_history.remarks %></p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% end %>
+  <% end %>
   <!-- Action Buttons Above Details -->
   <div class="d-flex justify-content-end gap-2 mb-3">
     <% if @work_order.work_order_status.in?(%w[ongoing amendment_required]) %>
@@ -52,7 +66,7 @@
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Block No.</label>
-          <div class="bg-light p-2 rounded"><%= @work_order.block.block_number %></div>
+          <div class="bg-light p-2 rounded"><%= @work_order.block_number %></div>
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Field Conductor</label>
@@ -99,10 +113,10 @@
             <% if @work_order.work_order_items.any? %>
               <% @work_order.work_order_items.each do |item| %>
                 <tr>
-                  <td><%= item.inventory.name %></td>
-                  <td><%= item.inventory.category&.name || '-' %></td>
-                  <td><%= number_with_precision(item.inventory.price, precision: 2) %></td>
-                  <td><%= item.inventory.unit&.name || '-' %></td>
+                  <td><%= item.item_name %></td>
+                  <td><%= item.category_name || '-' %></td>
+                  <td><%= number_with_precision(item.price, precision: 2) %></td>
+                  <td><%= item.unit_name || '-' %></td>
                   <td><%= item.amount_used %></td>
                 </tr>
               <% end %>
@@ -139,7 +153,7 @@
               <% @work_order.work_order_workers.each_with_index do |worker, index| %>
                 <tr>
                   <td><%= index + 1 %></td>
-                  <td><%= worker.worker.name %></td>
+                  <td><%= worker.worker_name %></td>
                   <td><%= number_with_precision(worker.work_area_size, precision: 2) %></td>
                   <td><%= number_with_precision(worker.rate, precision: 2) %></td>
                   <td><%= number_with_precision(worker.amount, precision: 2) %></td>

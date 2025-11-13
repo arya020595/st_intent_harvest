@@ -2,34 +2,53 @@
 
 # RansackMultiSortHelper
 #
-# Provides view helpers for rendering multi-sort UI components.
+# Provides view helpers for rendering multi-sort UI components and pagination.
 #
 # Usage:
 #   <%= per_page_selector(current: params[:per_page]) %>
-#   <%= pagination_info(@pagy) %>
+#   <%== pagy_bootstrap_nav(@pagy) %>
 module RansackMultiSortHelper
   # Default per-page options for pagination selector
   DEFAULT_PER_PAGE_OPTIONS = [10, 25, 50, 100].freeze
-  DEFAULT_PER_PAGE = 10
+
+  # ===== Per-page selector =====
 
   # Renders a per-page dropdown that preserves search params
   #
   # @param per_page_options [Array<Integer>] Available per-page options
   # @param current [Integer] Currently selected per-page value
   # @return [String] HTML string
-  def per_page_selector(per_page_options: DEFAULT_PER_PAGE_OPTIONS, current: DEFAULT_PER_PAGE)
-    form_with url: request.path, method: :get, local: true, html: { class: 'd-inline' } do |f|
+  def per_page_selector(per_page_options: DEFAULT_PER_PAGE_OPTIONS, current: nil)
+    current ||= Pagy.options[:limit]
+    form_with url: request.path, method: :get, local: true,
+              html: { class: 'd-inline' } do |f|
       concat hidden_search_fields
       concat render_per_page_select(f, per_page_options, current)
     end
   end
 
-  # Renders pagination info text
+  # ===== (Removed) Turbo Frame helpers =====
+  # Note: We are not using Turbo Frames for pagination anymore, so the
+  # previous pagy_frame_id and turbo_pagy_frame helpers have been removed.
+
+  # ===== Pagination navigation helpers =====
+
+  # Renders Bootstrap-styled pagination nav (Pagy 43 object helper)
+  # Usage in views (safe output):
+  #   <%== pagy_bootstrap_nav(@pagy) %>
+  #   <%== pagy_bootstrap_nav(@pagy, aria_label: 'Product pages') %>
   #
-  # @param pagy [Pagy] Pagy pagination object
-  # @return [String] Formatted pagination info (e.g., "1 to 10 out of 50 entries")
-  def pagination_info(pagy)
-    "#{pagy.from} to #{pagy.to} out of #{pagy.count} entries"
+  # @param pagy [Pagy] Pagy instance
+  # @param aria_label [String] Optional ARIA label for accessibility
+  # @param options [Hash] Additional options passed to series_nav
+  # @return [String] HTML string
+  def pagy_bootstrap_nav(pagy, aria_label: nil, **options)
+    return '' unless pagy # Guard against nil @pagy
+
+    options[:aria_label] ||= aria_label if aria_label
+
+    # Pagy 43 provides the @pagy object helpers; use series_nav with :bootstrap style
+    pagy.series_nav(:bootstrap, **options)
   end
 
   private

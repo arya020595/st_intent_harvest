@@ -1,31 +1,36 @@
-<%= form_with(model: [:master_data, work_order_rate], local: true) do |form| %>
-  <% if work_order_rate.errors.any? %>
-    <div class="alert alert-danger">
-      <h4><%= pluralize(work_order_rate.errors.count, "error") %> prohibited this work order rate from being saved:</h4>
-      <ul>
-        <% work_order_rate.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+<div class="modal-content">
+  <%= form_with(model: [:master_data, work_order_rate], class: "needs-validation", novalidate: true, data: { action: "turbo:submit-end->modal#formSubmitted" }) do |form| %>
+    <div class="modal-header">
+      <h5 class="modal-title"><%= work_order_rate.persisted? ? 'Edit Work Order Rate' : 'New Work Order Rate' %></h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <% if work_order_rate.errors.any? %>
+        <div class="alert alert-danger">
+          <h5><%= pluralize(work_order_rate.errors.count, "error") %> prohibited this work order rate from being saved:</h5>
+          <ul>
+            <% work_order_rate.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <div class="mb-3">
+        <%= form.label :work_order_name, "Work Order Name", class: "form-label" %>
+        <%= form.text_field :work_order_name, class: "form-control", required: true %>
+      </div>
+      <div class="mb-3">
+        <%= form.label :rate, "Rate (RM)", class: "form-label" %>
+        <%= form.number_field :rate, step: 0.01, class: "form-control", required: true %>
+      </div>
+      <div class="mb-3">
+        <%= form.label :unit_id, "Unit of Measurement", class: "form-label" %>
+        <%= form.collection_select :unit_id, Unit.all, :id, :name, { include_blank: "Select Unit" }, class: "form-select", required: true %>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      <%= form.submit "Save Work Order Rate", class: "btn btn-primary" %>
     </div>
   <% end %>
-  <div class="mb-3">
-    <%= form.label :work_order_name, class: "form-label" %>
-    <%= form.text_field :work_order_name, class: "form-control" %>
-  </div>
-  <div class="mb-3">
-    <%= form.label :rate, class: "form-label" %>
-    <%= form.number_field :rate, step: 0.01, class: "form-control" %>
-  </div>
-  <div class="mb-3">
-    <%= form.label :unit_id, class: "form-label" %>
-    <%= form.collection_select :unit_id, Unit.all, :id, :name, { include_blank: "Select Unit" }, class: "form-select" %>
-  </div>
-  <div class="mb-3">
-    <%= form.label :currency, class: "form-label" %>
-    <%= form.text_field :currency, class: "form-control" %>
-  </div>
-  <div class="mb-3">
-    <%= form.submit class: "btn btn-primary" %>
-  </div>
-<% end %>
+</div>

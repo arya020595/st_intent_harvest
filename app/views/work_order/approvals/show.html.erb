@@ -43,7 +43,7 @@
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Block No.</label>
-          <div class="bg-light p-2 rounded"><%= @work_order.block.block_number %></div>
+          <div class="bg-light p-2 rounded"><%= @work_order.block_number %></div>
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Field Conductor</label>
@@ -100,10 +100,10 @@
             <% if @work_order.work_order_items.any? %>
               <% @work_order.work_order_items.each do |item| %>
                 <tr>
-                  <td><%= item.inventory.name %></td>
-                  <td><%= item.inventory.category&.name || '-' %></td>
-                  <td><%= number_with_precision(item.inventory.price, precision: 2) %></td>
-                  <td><%= item.inventory.unit&.name || '-' %></td>
+                  <td><%= item.item_name %></td>
+                  <td><%= item.category_name || '-' %></td>
+                  <td><%= number_with_precision(item.price, precision: 2) %></td>
+                  <td><%= item.unit_name || '-' %></td>
                   <td><%= item.amount_used %></td>
                 </tr>
               <% end %>
@@ -140,7 +140,7 @@
               <% @work_order.work_order_workers.each_with_index do |worker, index| %>
                 <tr>
                   <td><%= index + 1 %></td>
-                  <td><%= worker.worker.name %></td>
+                  <td><%= worker.worker_name %></td>
                   <td><%= number_with_precision(worker.work_area_size, precision: 2) %></td>
                   <td><%= number_with_precision(worker.rate, precision: 2) %></td>
                   <td><%= number_with_precision(worker.amount, precision: 2) %></td>

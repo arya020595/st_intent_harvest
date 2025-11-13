@@ -25,8 +25,7 @@ module WorkOrderServices
     private
 
     def request_amendment
-      # Pass remarks using keyword arguments
-      # The after callback will receive this and use it for WorkOrderHistory
+      # Pass remarks as keyword argument - AASM will forward it to callbacks
       work_order.request_amendment!(remarks: remarks)
     end
   end
