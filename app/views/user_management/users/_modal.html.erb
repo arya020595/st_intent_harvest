@@ -1,0 +1,16 @@
+<!-- Modal container kept on the page; content is loaded via Turbo Frame -->
+<div class="modal fade"
+     id="userModal"
+     tabindex="-1"
+     aria-labelledby="userModalLabel"
+     aria-hidden="true"
+     data-controller="modal"
+     data-modal-frame-id-value="modal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <%= turbo_frame_tag "modal", data: { action: "turbo:frame-load->modal#show" } do %>
+        <!-- Form content will be injected here -->
+      <% end %>
+    </div>
+  </div>
+</div>
