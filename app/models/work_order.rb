@@ -87,63 +87,54 @@ class WorkOrder < ApplicationRecord
     # Transitions
     event :mark_complete do
       transitions from: :ongoing, to: :pending, guard: :workers_or_items? do
-        after do |**options|
-          custom_remarks = options[:remarks] || 'Work order submitted for approval'
-
-          WorkOrderHistory.record_transition(
-            work_order: self,
-            event_name: :mark_complete,
-            user: Current.user,
-            remarks: custom_remarks
-          )
+        after do |*args|
+          remarks = args.last.is_a?(Hash) ? args.last[:remarks] : nil
+          record_work_order_history(:mark_complete, remarks, 'Work order submitted for approval')
         end
       end
     end
 
     event :approve do
       transitions from: :pending, to: :completed do
-        after do |**options|
-          custom_remarks = options[:remarks] || 'Work order approved and completed'
-
-          WorkOrderHistory.record_transition(
-            work_order: self,
-            event_name: :approve,
-            user: Current.user,
-            remarks: custom_remarks
-          )
+        after do |*args|
+          remarks = args.last.is_a?(Hash) ? args.last[:remarks] : nil
+          record_work_order_history(:approve, remarks, 'Work order approved and completed')
         end
       end
     end
 
     event :request_amendment do
       transitions from: :pending, to: :amendment_required do
-        after do |**options|
-          custom_remarks = options[:remarks] || 'Amendment requested by approver'
-
-          WorkOrderHistory.record_transition(
-            work_order: self,
-            event_name: :request_amendment,
-            user: Current.user,
-            remarks: custom_remarks
-          )
+        after do |*args|
+          remarks = args.last.is_a?(Hash) ? args.last[:remarks] : nil
+          record_work_order_history(:request_amendment, remarks, 'Amendment requested by approver')
         end
       end
     end
 
     event :reopen do
       transitions from: :amendment_required, to: :pending, guard: :workers_or_items? do
-        after do |**options|
-          custom_remarks = options[:remarks] || 'Work order resubmitted after amendments'
-
-          WorkOrderHistory.record_transition(
-            work_order: self,
-            event_name: :reopen,
-            user: Current.user,
-            remarks: custom_remarks
-          )
+        after do |*args|
+          remarks = args.last.is_a?(Hash) ? args.last[:remarks] : nil
+          record_work_order_history(:reopen, remarks, 'Work order resubmitted after amendments')
         end
       end
     end
+  end
+
+  private
+
+  # Helper method to record work order history with optional custom remarks
+  # Follows AASM callback parameter passing convention
+  def record_work_order_history(event_name, custom_remarks, default_remarks)
+    final_remarks = custom_remarks.presence || default_remarks
+
+    WorkOrderHistory.record_transition(
+      work_order: self,
+      event_name: event_name,
+      user: Current.user,
+      remarks: final_remarks
+    )
   end
 end
 
