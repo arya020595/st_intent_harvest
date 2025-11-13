@@ -28,7 +28,7 @@
       <div class="col-md-6 mb-3">
         <%= form.label :worker_type, "Worker Type", class: "form-label fw-semibold" %>
         <%= form.select :worker_type,
-            [['Part - Time', 'Part - Time'], ['Full - Time', 'Full - Time']],
+            Worker::WORKER_TYPES.map { |t| [t, t] },
             { include_blank: "Select Worker Type" },
             { class: "form-select", required: true } %>
       </div>
@@ -37,7 +37,7 @@
       <div class="col-md-6 mb-3">
         <%= form.label :gender, class: "form-label fw-semibold" %>
         <%= form.select :gender,
-            [["Male", "Male"], ["Female", "Female"]],
+            Worker::GENDERS.map { |g| [g, g] },
             { include_blank: "Select Gender" },
             { class: "form-select", required: true } %>
       </div>
