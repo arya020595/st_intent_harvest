@@ -1,11 +1,17 @@
 import { Controller } from "@hotwired/stimulus";
 
-// data-controller="worker-modal"
-// Best practice: keep modal container persistent in DOM; load content via <turbo-frame id="modal">
+// Shared/Generic Modal Controller
+// Usage: data-controller="modal"
+// Works with any Turbo Frame - just specify the frame ID via data-modal-frame-id-value
+// Best practice: keep modal container persistent in DOM; load content via <turbo-frame>
 export default class extends Controller {
   static values = {
-    focusSelector: { type: String, default: "input:not([type=hidden]), select, textarea" }
-  }
+    frameId: { type: String, default: "modal" },
+    focusSelector: {
+      type: String,
+      default: "input:not([type=hidden]), select, textarea",
+    },
+  };
 
   connect() {
     // Prefer Bootstrap UMD global when using importmap pin to bootstrap.min.js
@@ -41,7 +47,9 @@ export default class extends Controller {
     });
 
     // Focus first input when shown
-    this.element.addEventListener("shown.bs.modal", () => this.focusFirstField());
+    this.element.addEventListener("shown.bs.modal", () =>
+      this.focusFirstField()
+    );
   }
 
   show() {
@@ -64,12 +72,16 @@ export default class extends Controller {
   }
 
   clearFrame() {
-    const frame = this.element.querySelector("turbo-frame#modal");
+    const frame = this.element.querySelector(
+      `turbo-frame#${this.frameIdValue}`
+    );
     if (frame) frame.innerHTML = "";
   }
 
   focusFirstField() {
-    const frame = this.element.querySelector("turbo-frame#modal");
+    const frame = this.element.querySelector(
+      `turbo-frame#${this.frameIdValue}`
+    );
     if (!frame) return;
     const el = frame.querySelector(this.focusSelectorValue);
     if (el && typeof el.focus === "function") el.focus();
