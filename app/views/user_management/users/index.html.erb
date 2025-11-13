@@ -1,8 +1,11 @@
+<div id="flash_messages">
+  <%= render "shared/flash" %>
+</div>
 <div class="container-fluid px-4 py-4 users-list" data-controller="multi-sort">
   <div class="card shadow-sm">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Users Management</h5>
-      <%= link_to new_user_management_user_path, class: "btn btn-light btn-sm" do %>
+      <%= link_to new_user_management_user_path, data: { turbo_frame: "modal" }, class: "btn btn-light btn-sm" do %>
         <i class="bi bi-plus-circle"></i> Add User
       <% end %>
     </div>
@@ -99,13 +102,13 @@
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="users-table-body">
               <% if @users.any? %>
                 <%= render partial: 'user_row', collection: @users, as: :user %>
               <% else %>
                 <tr>
                   <td colspan="8" class="text-center text-muted py-4">
-                    No users found. <%= link_to 'Add a new user', new_user_management_user_path, class: 'text-decoration-none' %>
+                    No users found. <%= link_to 'Add a new user', new_user_management_user_path, data: { turbo_frame: "modal" }, class: 'text-decoration-none' %>
                   </td>
                 </tr>
               <% end %>
@@ -128,3 +131,4 @@
     </div>
   </div>
 </div>
+<%= render 'modal' %>
