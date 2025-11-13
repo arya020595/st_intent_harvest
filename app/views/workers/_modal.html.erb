@@ -6,8 +6,8 @@
      aria-hidden="true"
      data-controller="worker-modal"
      data-action="turbo:frame-load->worker-modal#show turbo:submit-end->worker-modal#formSubmitted hidden.bs.modal->worker-modal#clearFrame"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false">
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <%= turbo_frame_tag "modal", data: { action: "turbo:frame-load->worker-modal#show" } do %>
