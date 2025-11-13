@@ -27,7 +27,11 @@ module MasterData
       @category = Category.new(category_params)
       authorize @category, policy_class: MasterData::CategoryPolicy
 
-      # Logic to be implemented later
+      if @category.save
+        redirect_to master_data_category_path(@category), notice: 'Category was successfully created.'
+      else
+        render :new, status: :unprocessable_entity
+      end
     end
 
     def edit
@@ -37,13 +41,18 @@ module MasterData
     def update
       authorize @category, policy_class: MasterData::CategoryPolicy
 
-      # Logic to be implemented later
+      if @category.update(category_params)
+        redirect_to master_data_category_path(@category), notice: 'Category was successfully updated.'
+      else
+        render :edit, status: :unprocessable_entity
+      end
     end
 
     def destroy
       authorize @category, policy_class: MasterData::CategoryPolicy
 
-      # Logic to be implemented later
+      @category.destroy!
+      redirect_to master_data_categories_url, notice: 'Category was successfully deleted.'
     end
 
     private

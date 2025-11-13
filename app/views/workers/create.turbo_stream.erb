@@ -1,0 +1,9 @@
+<%= turbo_stream.prepend "workers-table-body", partial: "worker_row", locals: { worker: @worker } %>
+<%= turbo_stream.update "modal", "" %>
+<%= turbo_stream.replace "flash-messages" do %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert" data-controller="flash" data-flash-delay-value="5000">
+    <i class="bi bi-check-circle-fill"></i>
+    <%= flash[:notice] || flash.now[:notice] || 'Worker created successfully.' %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
