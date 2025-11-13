@@ -12,3 +12,7 @@ else
   puts 'Loading development seeds (full fake data with Faker)...'
   load(Rails.root.join('db', 'seeds', 'development.rb'))
 end
+
+# Always reset sequences after seeding to prevent duplicate key errors
+# This runs LAST to ensure all data is inserted first
+load(Rails.root.join('db', 'seeds', '999_reset_sequences.rb'))
