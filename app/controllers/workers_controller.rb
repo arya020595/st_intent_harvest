@@ -20,7 +20,7 @@ class WorkersController < ApplicationController
     @worker = Worker.new
     authorize @worker
     # When requested inside a Turbo Frame (modal), render without layout
-    render layout: false if request.headers['Turbo-Frame'].present?
+    render layout: false if turbo_frame_request?
   end
 
   def create
@@ -45,7 +45,7 @@ class WorkersController < ApplicationController
   def edit
     authorize @worker
     # Render modal body only when loaded via Turbo Frame
-    render layout: false if request.headers['Turbo-Frame'].present?
+    render layout: false if turbo_frame_request?
   end
 
   def update
