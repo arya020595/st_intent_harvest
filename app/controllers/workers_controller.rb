@@ -67,12 +67,23 @@ class WorkersController < ApplicationController
   def destroy
     authorize @worker
 
-    @worker.destroy!
     respond_to do |format|
-      format.turbo_stream do
-        flash.now[:notice] = 'Worker was successfully deleted.'
+      if @worker.destroy
+        format.turbo_stream do
+          flash.now[:notice] = 'Worker was successfully deleted.'
+        end
+        format.html { redirect_to workers_url, notice: 'Worker was successfully deleted.' }
+      else
+        format.turbo_stream do
+          flash.now[:alert] = "Unable to delete worker: #{@worker.errors.full_messages.join(', ')}"
+          render turbo_stream: [
+            turbo_stream.replace('flash-messages', partial: 'shared/flash')
+          ]
+        end
+        format.html do
+          redirect_to workers_url, alert: "Unable to delete worker: #{@worker.errors.full_messages.join(', ')}"
+        end
       end
-      format.html { redirect_to workers_url, notice: 'Worker was successfully deleted.' }
     end
   end
 
