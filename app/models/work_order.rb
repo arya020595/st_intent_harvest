@@ -87,8 +87,8 @@ class WorkOrder < ApplicationRecord
     # Transitions
     event :mark_complete do
       transitions from: :ongoing, to: :pending, guard: :workers_or_items? do
-        after do |*args|
-          remarks = args.last.is_a?(Hash) ? args.last[:remarks] : nil
+        after do |**options|
+          remarks = options[:remarks]
           record_work_order_history(:mark_complete, remarks, 'Work order submitted for approval')
         end
       end
@@ -96,8 +96,8 @@ class WorkOrder < ApplicationRecord
 
     event :approve do
       transitions from: :pending, to: :completed do
-        after do |*args|
-          remarks = args.last.is_a?(Hash) ? args.last[:remarks] : nil
+        after do |**options|
+          remarks = options[:remarks]
           record_work_order_history(:approve, remarks, 'Work order approved and completed')
         end
       end
@@ -105,8 +105,8 @@ class WorkOrder < ApplicationRecord
 
     event :request_amendment do
       transitions from: :pending, to: :amendment_required do
-        after do |*args|
-          remarks = args.last.is_a?(Hash) ? args.last[:remarks] : nil
+        after do |**options|
+          remarks = options[:remarks]
           record_work_order_history(:request_amendment, remarks, 'Amendment requested by approver')
         end
       end
@@ -114,8 +114,8 @@ class WorkOrder < ApplicationRecord
 
     event :reopen do
       transitions from: :amendment_required, to: :pending, guard: :workers_or_items? do
-        after do |*args|
-          remarks = args.last.is_a?(Hash) ? args.last[:remarks] : nil
+        after do |**options|
+          remarks = options[:remarks]
           record_work_order_history(:reopen, remarks, 'Work order resubmitted after amendments')
         end
       end
