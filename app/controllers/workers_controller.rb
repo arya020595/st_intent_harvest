@@ -76,9 +76,7 @@ class WorkersController < ApplicationController
       else
         format.turbo_stream do
           flash.now[:alert] = "Unable to delete worker: #{@worker.errors.full_messages.join(', ')}"
-          render turbo_stream: [
-            turbo_stream.replace('flash-messages', partial: 'shared/flash')
-          ]
+          render :destroy, status: :unprocessable_entity
         end
         format.html do
           redirect_to workers_url, alert: "Unable to delete worker: #{@worker.errors.full_messages.join(', ')}"
