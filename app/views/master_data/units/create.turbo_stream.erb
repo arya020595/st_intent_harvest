@@ -1,0 +1,3 @@
+<%= turbo_stream.prepend "unit_rows", partial: "master_data/units/unit_row", locals: { unit: @unit } %>
+<%= turbo_stream.update "modal", "" %>
+<%= turbo_stream.update "flash_messages", partial: "shared/flash" %>

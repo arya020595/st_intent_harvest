@@ -1,4 +1,4 @@
-<tr id="<%= dom_id(block) %>">
+<tr id="block_<%= block.id %>">
   <td class="text-center"><%= block.id %></td>
   <td><%= block.block_number %></td>
   <td class="text-center"><%= number_with_precision(block.hectarage, precision: 2) if block.hectarage %></td>
@@ -13,7 +13,7 @@
       <%= link_to master_data_block_path(block), class: "btn btn-info btn-sm", title: "View Details" do %>
         <i class="bi bi-info-circle"></i>
       <% end %>
-      <%= link_to edit_master_data_block_path(block), class: "btn btn-warning btn-sm", title: "Edit" do %>
+      <%= link_to edit_master_data_block_path(block), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: 'modal' } do %>
         <i class="bi bi-pencil"></i>
       <% end %>
       <%= link_to master_data_block_path(block), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{block.block_number}?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>

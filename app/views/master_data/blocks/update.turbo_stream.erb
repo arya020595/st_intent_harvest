@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "block_#{@block.id}", partial: "master_data/blocks/block_row", locals: { block: @block } %>
+<%= turbo_stream.update "modal", "" %>
+<%= turbo_stream.update "flash_messages", partial: "shared/flash" %>

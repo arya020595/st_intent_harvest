@@ -20,4 +20,9 @@ module ApplicationHelper
     permission_checker = PermissionChecker.new(current_user)
     permission_checker.allowed?(action, subject)
   end
+
+  # Check if request is coming from a Turbo Frame
+  def turbo_frame_request?
+    request.headers['Turbo-Frame'].present?
+  end
 end

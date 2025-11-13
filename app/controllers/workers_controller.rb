@@ -19,8 +19,12 @@ class WorkersController < ApplicationController
   def new
     @worker = Worker.new
     authorize @worker
-    # When requested inside a Turbo Frame (modal), render without layout
-    render layout: false if turbo_frame_request?
+
+    if turbo_frame_request?
+      render layout: false
+    else
+      redirect_to workers_path
+    end
   end
 
   def create
@@ -35,8 +39,11 @@ class WorkersController < ApplicationController
         end
         format.html { redirect_to workers_path, notice: 'Worker was successfully created.' }
       else
-        # Re-render the form in the frame without layout for validation errors
-        format.turbo_stream { render :new, status: :unprocessable_entity, layout: false }
+        # Re-render the form in the modal for validation errors
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace('modal', partial: 'workers/form', locals: { worker: @worker }),
+                 status: :unprocessable_entity
+        end
         format.html { render :new, status: :unprocessable_entity }
       end
     end
@@ -44,8 +51,12 @@ class WorkersController < ApplicationController
 
   def edit
     authorize @worker
-    # Render modal body only when loaded via Turbo Frame
-    render layout: false if turbo_frame_request?
+
+    if turbo_frame_request?
+      render layout: false
+    else
+      redirect_to workers_path
+    end
   end
 
   def update
@@ -58,7 +69,10 @@ class WorkersController < ApplicationController
         end
         format.html { redirect_to workers_path, notice: 'Worker was successfully updated.' }
       else
-        format.turbo_stream { render :edit, status: :unprocessable_entity, layout: false }
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace('modal', partial: 'workers/form', locals: { worker: @worker }),
+                 status: :unprocessable_entity
+        end
         format.html { render :edit, status: :unprocessable_entity }
       end
     end

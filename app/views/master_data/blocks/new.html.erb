@@ -1,9 +1,3 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>New Block</h1>
-      <%= render "form", block: @block %>
-      <%= link_to "Back", master_data_blocks_path, class: "btn btn-secondary mt-3" %>
-    </div>
-  </div>
-</div>
+<%= turbo_frame_tag "modal" do %>
+  <%= render "form", block: @block %>
+<% end %>
