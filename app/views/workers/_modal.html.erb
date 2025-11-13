@@ -10,7 +10,7 @@
      data-bs-keyboard="false">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <%= turbo_frame_tag "modal", data: { action: "turbo:frame-load->worker-modal#show" } do %>
+      <%= turbo_frame_tag "modal", data: { action: "turbo:frame-load->modal#show" } do %>
         <!-- Form content will be injected here -->
       <% end %>
     </div>
