@@ -116,7 +116,8 @@ module MasterData
       params.require(:work_order_rate).permit(
         :work_order_name,
         :rate,
-        :unit_id
+        :unit_id,
+        :currency
       )
     end
   end

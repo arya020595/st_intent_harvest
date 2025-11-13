@@ -1,2 +1,2 @@
-<%= turbo_stream.remove "category_#{@category.id}" %>
+<%= turbo_stream.remove dom_id(@category) %>
 <%= turbo_stream.update "flash_messages", partial: "shared/flash" %>

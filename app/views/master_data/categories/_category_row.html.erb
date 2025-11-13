@@ -1,4 +1,4 @@
-<tr id="category_<%= category.id %>">
+<tr id="<%= dom_id(category) %>">
   <td class="text-center"><%= category.id %></td>
   <td><strong><%= category.name %></strong></td>
   <td>
@@ -25,7 +25,7 @@
       <%= link_to edit_master_data_category_path(category), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: 'modal' } do %>
         <i class="bi bi-pencil"></i>
       <% end %>
-      <%= link_to master_data_category_path(category), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{category.name}?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
+      <%= button_to master_data_category_path(category), data: { turbo_confirm: "Are you sure you want to delete #{category.name}?" }, class: "btn btn-danger btn-sm", title: "Delete", form: { data: { turbo_frame: "_top" }, class: "d-inline" } do %>
         <i class="bi bi-trash"></i>
       <% end %>
     </div>
