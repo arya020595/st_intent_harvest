@@ -1,4 +1,17 @@
-<%= form_with(model: [:work_order, work_order], url: work_order.new_record? ? work_order_details_path : work_order_detail_path(work_order), local: true) do |form| %>
+<!-- Back to Work Order Details Link -->
+<div class="mb-3">
+  <%= link_to work_order_details_path, class: "text-decoration-none text-success d-inline-flex align-items-center" do %>
+    <i class="bi bi-arrow-left me-2"></i> Back to Work Order Details
+  <% end %>
+</div>
+<%= form_with(model: [:work_order, work_order], url: work_order.new_record? ? work_order_details_path : work_order_detail_path(work_order), local: true, data: { 
+  controller: "work-order-form",
+  work_order_form_inventories_value: Inventory.includes(:category, :unit).all.to_json(include: [:category, :unit]),
+  work_order_form_workers_value: @workers.to_json,
+  work_order_form_resource_index_start_value: work_order.work_order_items.size,
+  work_order_form_worker_index_start_value: work_order.work_order_workers.size,
+  turbo_submits_with: "Submitting..."
+}) do |form| %>
   <% if work_order.errors.any? %>
     <div class="alert alert-danger">
       <h4><%= pluralize(work_order.errors.count, "error") %> prohibited this work order from being saved:</h4>
@@ -9,23 +22,203 @@
       </ul>
     </div>
   <% end %>
-  <div class="mb-3">
-    <%= form.label :block_id, class: "form-label" %>
-    <%= form.collection_select :block_id, Block.all, :id, :block_number, { include_blank: "Select Block" }, class: "form-select" %>
+  <!-- Work Order Details Section -->
+  <div class="card mb-4">
+    <div class="card-header bg-white border-bottom">
+      <h5 class="mb-0 text-dark">Work Order Details</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Work Order ID</label>
+          <input type="text" class="form-control" value="Auto Filled" disabled style="background-color: #e9ecef;">
+        </div>
+        <div class="col-md-6 mb-3">
+          <%= form.label :work_order_rate_id, "Work Order", class: "form-label" %>
+          <%= form.collection_select :work_order_rate_id, 
+              WorkOrderRate.includes(:unit).all, 
+              :id, 
+              :work_order_name, 
+              { include_blank: "Select Work Order" }, 
+              { 
+                class: "form-select", 
+                data: { 
+                  action: "change->work-order-form#updateWorkOrderRate",
+                  work_order_rates: WorkOrderRate.includes(:unit).all.to_json(include: :unit).html_safe
+                } 
+              } %>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Work Order Rate (RM)</label>
+          <input type="text" class="form-control" id="work_order_rate_display" value="Auto Filled" disabled style="background-color: #e9ecef;">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Unit of Measurement</label>
+          <input type="text" class="form-control" id="work_order_unit_display" value="Auto Filled" disabled style="background-color: #e9ecef;">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <%= form.label :block_id, "Block No.", class: "form-label" %>
+          <%= form.collection_select :block_id, 
+              Block.all, 
+              :id, 
+              :block_number, 
+              { include_blank: "Select Block No." }, 
+              { class: "form-select" } %>
+        </div>
+        <div class="col-md-6 mb-3">
+          <%= form.label :field_conductor_id, "Field Conductor", class: "form-label" %>
+          <%= form.collection_select :field_conductor_id, 
+              User.joins(:role).where(roles: { name: 'Field Conductor' }), 
+              :id, 
+              :name, 
+              { include_blank: "Select Field Conductor" }, 
+              { class: "form-select" } %>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <%= form.label :start_date, "Starting Date", class: "form-label" %>
+          <%= form.date_field :start_date, class: "form-control", placeholder: "DD-MM-YYYY" %>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="mb-3">
-    <%= form.label :work_order_rate_id, class: "form-label" %>
-    <%= form.collection_select :work_order_rate_id, WorkOrderRate.all, :id, :work_order_name, { include_blank: "Select Work Order Rate" }, class: "form-select" %>
-  </div>
-  <div class="mb-3">
-    <%= form.label :start_date, class: "form-label" %>
-    <%= form.date_field :start_date, class: "form-control" %>
-  </div>
-  <div class="mb-3">
-    <%= form.label :field_conductor_id, class: "form-label" %>
-    <%= form.collection_select :field_conductor_id, User.all, :id, :name, { include_blank: "Select Field Conductor" }, class: "form-select" %>
-  </div>
-  <div class="mb-3">
-    <%= form.submit class: "btn btn-primary" %>
-  </div>
-<% end %>
+  <!-- Resources & Machineries Section -->
+  <div class="card mb-4">
+    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+      <h5 class="mb-0 text-dark">Resources & Machineries</h5>
+      <button type="button" class="btn btn-success btn-sm" data-action="click->work-order-form#addResource">
+        <i class="bi bi-plus-circle"></i> Add Resource
+      </button>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered mb-0">
+          <thead class="table-success">
+            <tr>
+              <th style="width: 25%">Resources Name</th>
+              <th style="width: 20%">Resource Category</th>
+              <th style="width: 15%">Price (RM)</th>
+              <th style="width: 15%">Unit</th>
+              <th style="width: 15%">Amount Used</th>
+              <th style="width: 10%" class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="resources-tbody" data-work-order-form-target="resourcesContainer">
+            <% work_order.work_order_items.each_with_index do |item, index| %>
+              <tr data-resource-index="<%= index %>">
+                <td>
+                  <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][<%= index %>][inventory_id]" data-action="change->work-order-form#updateResourceDetails" data-resource-index="<%= index %>">
+                    <option value="">Select Resource</option>
+                    <% @inventories.each do |inv| %>
+                      <option value="<%= inv.id %>" data-category="<%= inv.category&.name %>" data-price="<%= inv.price || 0 %>" data-unit="<%= inv.unit&.name %>" <%= 'selected' if inv.id == item.inventory_id %>><%= inv.name %></option>
+                      <% end %>
+                    </select>
+                    <%= hidden_field_tag "work_order[work_order_items_attributes][#{index}][id]", item.id %>
+                  </td>
+                  <td>
+                    <input type="text" class="form-control form-control-sm" id="resource_category_<%= index %>" value="<%= item.category_name || 'Auto Filled' %>" disabled style="background-color: #e9ecef;">
+                  </td>
+                  <td>
+                    <input type="text" class="form-control form-control-sm" id="resource_price_<%= index %>" value="<%= item.price ? "RM #{sprintf('%.2f', item.price)}" : 'Auto Filled' %>" disabled style="background-color: #e9ecef;">
+                  </td>
+                  <td>
+                    <input type="text" class="form-control form-control-sm" id="resource_unit_<%= index %>" value="<%= item.unit_name || 'Auto Filled' %>" disabled style="background-color: #e9ecef;">
+                  </td>
+                  <td>
+                    <input type="number" class="form-control form-control-sm" name="work_order[work_order_items_attributes][<%= index %>][amount_used]" placeholder="0" step="0.01" min="0" value="<%= item.amount_used %>">
+                  </td>
+                  <input type="hidden" id="resource_destroy_<%= index %>" name="work_order[work_order_items_attributes][<%= index %>][_destroy]" value="0">
+                  <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-sm" data-action="click->work-order-form#removeResource" data-resource-index="<%= index %>">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Worker Details Section -->
+    <div class="card mb-4">
+      <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-dark">Worker Details</h5>
+        <button type="button" class="btn btn-success btn-sm" data-action="click->work-order-form#addWorker">
+          <i class="bi bi-plus-circle"></i> Add Worker
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered mb-0">
+            <thead class="table-success">
+              <tr>
+                <th style="width: 30%">Worker Name</th>
+                <th style="width: 15%">Quantity(Ha)</th>
+                <th style="width: 15%">Rate (RM)</th>
+                <th style="width: 15%">Amount (RM)</th>
+                <th style="width: 20%">Remarks</th>
+                <th style="width: 5%" class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="workers-tbody" data-work-order-form-target="workersContainer">
+              <% work_order.work_order_workers.each_with_index do |wow, index| %>
+                <tr data-worker-index="<%= index %>">
+                  <td>
+                    <select class="form-select form-select-sm" name="work_order[work_order_workers_attributes][<%= index %>][worker_id]" data-action="change->work-order-form#updateWorkerDetails" data-worker-index="<%= index %>">
+                      <option value="">Select Worker</option>
+                      <% @workers.each do |w| %>
+                        <option value="<%= w.id %>" <%= 'selected' if w.id == wow.worker_id %>><%= w.name %></option>
+                        <% end %>
+                      </select>
+                      <%= hidden_field_tag "work_order[work_order_workers_attributes][#{index}][id]", wow.id %>
+                    </td>
+                    <td>
+                      <input type="number" class="form-control form-control-sm" id="worker_quantity_<%= index %>" name="work_order[work_order_workers_attributes][<%= index %>][work_area_size]" placeholder="0" step="0.01" min="0" value="<%= wow.work_area_size %>" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="<%= index %>">
+                    </td>
+                    <td>
+                      <input type="text" class="form-control form-control-sm" id="worker_rate_<%= index %>" value="<%= wow.rate ? "RM #{sprintf('%.2f', wow.rate)}" : 'Auto Calculate' %>" disabled style="background-color: #e9ecef;">
+                      <input type="hidden" id="worker_rate_value_<%= index %>" name="work_order[work_order_workers_attributes][<%= index %>][rate]" value="<%= wow.rate || 0 %>">
+                    </td>
+                    <td>
+                      <input type="text" class="form-control form-control-sm" id="worker_amount_<%= index %>" value="<%= wow.amount ? "RM #{sprintf('%.2f', wow.amount)}" : 'Auto Calculate' %>" disabled style="background-color: #e9ecef;">
+                      <input type="hidden" id="worker_amount_value_<%= index %>" name="work_order[work_order_workers_attributes][<%= index %>][amount]" value="<%= wow.amount || 0 %>">
+                    </td>
+                    <td>
+                      <input type="text" class="form-control form-control-sm" name="work_order[work_order_workers_attributes][<%= index %>][remarks]" placeholder="Remarks" value="<%= wow.remarks %>">
+                    </td>
+                    <input type="hidden" id="worker_destroy_<%= index %>" name="work_order[work_order_workers_attributes][<%= index %>][_destroy]" value="0">
+                    <td class="text-center">
+                      <button type="button" class="btn btn-danger btn-sm" data-action="click->work-order-form#removeWorker" data-worker-index="<%= index %>">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- Action Buttons -->
+      <div class="d-flex justify-content-end gap-2 mb-4">
+        <% if work_order.persisted? %>
+          <!-- For edit form -->
+          <%= form.submit "Save Changes", class: "btn btn-warning" %>
+          <%= button_tag type: "submit", name: "submit", value: "true", class: "btn btn-success" do %>
+            <i class="bi bi-check-circle"></i> Submit Work Order
+          <% end %>
+        <% else %>
+          <!-- For new form -->
+          <%= button_tag type: "submit", name: "draft", value: "true", class: "btn btn-warning" do %>
+            <i class="bi bi-save"></i> Save as Draft
+          <% end %>
+          <%= form.submit "Submit Work Order", class: "btn btn-success" %>
+        <% end %>
+      </div>
+    <% end %>

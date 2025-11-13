@@ -1,10 +1,19 @@
 class PayCalculationDetail < ApplicationRecord
   belongs_to :pay_calculation
   belongs_to :worker
-  
+
   validates :gross_salary, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :deductions, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :net_salary, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+
+  # Ransack configuration
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[id gross_salary deductions net_salary currency created_at updated_at pay_calculation_id worker_id]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[pay_calculation worker]
+  end
 end
 
 # == Schema Information

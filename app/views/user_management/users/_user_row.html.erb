@@ -1,0 +1,32 @@
+<tr id="<%= dom_id(user) %>">
+  <td class="text-center"><%= user.id %></td>
+  <td><%= user.name %></td>
+  <td><%= user.email %></td>
+  <td><%= user.role&.name || 'N/A' %></td>
+  <td class="text-center">
+    <% if user.is_active %>
+      <span class="badge bg-success">Active</span>
+    <% else %>
+      <span class="badge bg-secondary">Inactive</span>
+    <% end %>
+  </td>
+  <td>
+    <small class="text-muted"><%= user.created_at.strftime("%b %d, %Y %H:%M") if user.created_at %></small>
+  </td>
+  <td>
+    <small class="text-muted"><%= user.updated_at.strftime("%b %d, %Y %H:%M") if user.updated_at %></small>
+  </td>
+  <td class="text-center">
+    <div class="btn-group btn-group-sm" role="group">
+      <%= link_to user_management_user_path(user), class: "btn btn-info btn-sm", title: "View Details" do %>
+        <i class="bi bi-info-circle"></i>
+      <% end %>
+      <%= link_to edit_user_management_user_path(user), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: 'modal' } do %>
+        <i class="bi bi-pencil"></i>
+      <% end %>
+      <%= link_to user_management_user_path(user), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{user.name}?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
+        <i class="bi bi-trash"></i>
+      <% end %>
+    </div>
+  </td>
+</tr>

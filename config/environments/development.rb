@@ -1,6 +1,21 @@
-require "active_support/core_ext/integer/time"
+require 'active_support/core_ext/integer/time'
 
 Rails.application.configure do
+  config.after_initialize do
+    # Enable bullet gem to detect N+1 queries and unused eager loading
+    Bullet.enable        = true
+    # Show JavaScript alert in browser when N+1 query is detected
+    Bullet.alert         = false
+    # Log warnings to log/bullet.log file
+    Bullet.bullet_logger = false
+    # Print warnings to Rails server console output
+    Bullet.console       = true
+    # Add warnings to Rails log (log/development.log)
+    Bullet.rails_logger  = true
+    # Append notification details to page footer in HTML responses
+    Bullet.add_footer    = false
+  end
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Make code changes take effect immediately without server restart.
@@ -16,14 +31,16 @@ Rails.application.configure do
   # This fixes: "Cannot render console from 172.x.x.x! Allowed networks: 127.0.0.0/127.255.255.255, ::1"
   # Caution: Only for development. Do NOT copy to production.
   config.web_console.allowed_ips = [
-    "127.0.0.1",
-    "::1",
-    "10.0.0.0/8",
-    "172.16.0.0/12",
-    "192.168.0.0/16",
+    '127.0.0.1',
+    '::1',
+    '10.0.0.0/8',
+    '172.16.0.0/12',
+    '192.168.0.0/16'
   ]
   # Back-compat for older web-console versions
-  config.web_console.whitelisted_ips = config.web_console.allowed_ips if config.web_console.respond_to?(:whitelisted_ips=)
+  if config.web_console.respond_to?(:whitelisted_ips=)
+    config.web_console.whitelisted_ips = config.web_console.allowed_ips
+  end
   config.web_console.permissions = config.web_console.allowed_ips if config.web_console.respond_to?(:permissions=)
 
   # Enable server timing.
@@ -31,10 +48,10 @@ Rails.application.configure do
 
   # Enable/disable Action Controller caching. By default Action Controller caching is disabled.
   # Run rails dev:cache to toggle Action Controller caching.
-  if Rails.root.join("tmp/caching-dev.txt").exist?
+  if Rails.root.join('tmp/caching-dev.txt').exist?
     config.action_controller.perform_caching = true
     config.action_controller.enable_fragment_cache_logging = true
-    config.public_file_server.headers = { "cache-control" => "public, max-age=#{2.days.to_i}" }
+    config.public_file_server.headers = { 'cache-control' => "public, max-age=#{2.days.to_i}" }
   else
     config.action_controller.perform_caching = false
   end
@@ -52,7 +69,7 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
 
   # Set localhost to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log

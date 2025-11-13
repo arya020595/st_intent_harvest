@@ -62,6 +62,38 @@ docker compose exec web bundle install
 docker compose exec web bash
 ```
 
+### Interactive Debugging
+
+When you need to debug with `binding.pry` or `byebug`:
+
+```bash
+# Stop the background web service
+docker compose stop web
+
+# Run interactively with ports exposed
+docker compose run --service-ports web
+
+# Now you can interact with debugger in terminal!
+# Press Ctrl+C when done
+
+# Restart background service
+docker compose up -d web
+```
+
+**What `docker compose run --service-ports web` does:**
+
+- Runs Rails server in **interactive mode** (you can see output and type input)
+- Exposes ports (so `http://localhost:3000` still works)
+- Allows you to interact with debuggers like `binding.pry` or `byebug`
+- Perfect for debugging, running console, or any interactive task
+
+**Use cases:**
+
+- Debugging with `binding.pry` in controllers/models
+- Running interactive Rails console
+- Running generators that need input
+- Any task that needs to see real-time output
+
 ## Troubleshooting
 
 ### Port already in use?
@@ -89,7 +121,46 @@ docker compose exec db psql -U postgres -c "SELECT version();"
 ### Code changes not reflecting?
 
 - No restart needed! Volume mounts sync code in real-time.
-- For gem changes: `docker compose exec web bundle install` then `docker compose restart web`
+- For gem changes: Just restart the container `docker compose restart web`
+
+### New gem added - "Run `bundle install` to install missing gems"?
+
+This happens when someone added a new gem and you pulled their changes.
+
+**Solution: Just restart the container** 🎉
+
+```bash
+# The entrypoint automatically runs bundle install on startup
+docker compose restart web
+
+# Or if you want to see the bundle install output:
+docker compose down
+docker compose up -d
+docker compose logs -f web
+```
+
+**How this works:**
+
+- Your `docker-compose.yml` uses a persistent `bundle_cache` volume (line 56)
+- Gems are stored in this volume, not in the image
+- The entrypoint runs `bundle check || bundle install` on every startup
+- New gems are installed automatically without rebuilding!
+
+**If container is stuck restarting:**
+
+```bash
+# Check logs first to see the error
+docker compose logs web
+
+# Force restart
+docker compose down
+docker compose up -d
+```
+
+**Prevention for team:**
+When you add a new gem, mention in PR/commit message:
+
+> "Added new gem - teammates need to restart: `docker compose restart web`"
 
 ### Reset everything?
 
@@ -99,6 +170,18 @@ docker compose build    # Rebuild images
 docker compose up -d    # Start fresh
 ```
 
-## 📚 Full Documentation
+## 📚 Documentation
 
-See [DOCKER_GUIDE.md](./DOCKER_GUIDE.md) for comprehensive documentation.
+- **[DOCKER_GUIDE.md](./DOCKER_GUIDE.md)** - Comprehensive Docker documentation
+- **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Common issues and solutions
+
+## 🆘 Need Help?
+
+Having issues? Check the **[Troubleshooting Guide](./TROUBLESHOOTING.md)** for:
+
+- Images not rendering or updating
+- Container startup problems
+- Database connection issues
+- Gem installation errors
+- Performance problems
+- And more...

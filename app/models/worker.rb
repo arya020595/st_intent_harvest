@@ -1,12 +1,20 @@
 class Worker < ApplicationRecord
+  # Constants for form options
+  WORKER_TYPES = ['Part - Time', 'Full - Time'].freeze
+  GENDERS = %w[Male Female].freeze
+
   has_many :work_order_workers, dependent: :destroy
   has_many :work_orders, through: :work_order_workers
   has_many :pay_calculation_details, dependent: :destroy
   has_many :pay_calculations, through: :pay_calculation_details
 
   validates :name, presence: true
-  validates :worker_type, presence: true
-  validates :gender, inclusion: { in: %w[Male Female], allow_nil: true }
+  validates :worker_type, presence: true, inclusion: { in: WORKER_TYPES }
+  validates :gender, inclusion: { in: GENDERS, allow_nil: true }
+
+  scope :active, -> { where(is_active: true) }
+  scope :inactive, -> { where(is_active: false) }
+  scope :by_type, ->(type) { where(worker_type: type) if type.present? }
 
   # Ransack configuration
   def self.ransackable_attributes(_auth_object = nil)

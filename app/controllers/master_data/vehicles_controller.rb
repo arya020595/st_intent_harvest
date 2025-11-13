@@ -2,11 +2,15 @@
 
 module MasterData
   class VehiclesController < ApplicationController
+    include RansackMultiSort
+
     before_action :set_vehicle, only: %i[show edit update destroy]
 
     def index
-      @vehicles = policy_scope(Vehicle, policy_scope_class: MasterData::VehiclePolicy::Scope)
       authorize Vehicle, policy_class: MasterData::VehiclePolicy
+
+      apply_ransack_search(policy_scope(Vehicle, policy_scope_class: MasterData::VehiclePolicy::Scope).order(id: :desc))
+      @pagy, @vehicles = paginate_results(@q.result)
     end
 
     def show
@@ -16,29 +20,83 @@ module MasterData
     def new
       @vehicle = Vehicle.new
       authorize @vehicle, policy_class: MasterData::VehiclePolicy
+
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to master_data_vehicles_path
+      end
     end
 
     def create
       @vehicle = Vehicle.new(vehicle_params)
       authorize @vehicle, policy_class: MasterData::VehiclePolicy
 
-      # Logic to be implemented later
+      respond_to do |format|
+        if @vehicle.save
+          format.turbo_stream do
+            flash.now[:notice] = 'Vehicle was successfully created.'
+          end
+          format.html { redirect_to master_data_vehicles_path, notice: 'Vehicle was successfully created.' }
+        else
+          format.turbo_stream do
+            render turbo_stream: turbo_stream.replace('modal', partial: 'master_data/vehicles/form', locals: { vehicle: @vehicle }),
+                   status: :unprocessable_entity
+          end
+          format.html { render :new, status: :unprocessable_entity }
+        end
+      end
     end
 
     def edit
       authorize @vehicle, policy_class: MasterData::VehiclePolicy
+
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to master_data_vehicles_path
+      end
     end
 
     def update
       authorize @vehicle, policy_class: MasterData::VehiclePolicy
 
-      # Logic to be implemented later
+      respond_to do |format|
+        if @vehicle.update(vehicle_params)
+          format.turbo_stream do
+            flash.now[:notice] = 'Vehicle was successfully updated.'
+          end
+          format.html { redirect_to master_data_vehicles_path, notice: 'Vehicle was successfully updated.' }
+        else
+          format.turbo_stream do
+            render turbo_stream: turbo_stream.replace('modal', partial: 'master_data/vehicles/form', locals: { vehicle: @vehicle }),
+                   status: :unprocessable_entity
+          end
+          format.html { render :edit, status: :unprocessable_entity }
+        end
+      end
     end
 
     def destroy
       authorize @vehicle, policy_class: MasterData::VehiclePolicy
 
-      # Logic to be implemented later
+      respond_to do |format|
+        if @vehicle.destroy
+          format.turbo_stream do
+            flash.now[:notice] = 'Vehicle was successfully deleted.'
+          end
+          format.html { redirect_to master_data_vehicles_url, notice: 'Vehicle was successfully deleted.' }
+        else
+          format.turbo_stream do
+            flash.now[:alert] = "Unable to delete vehicle: #{@vehicle.errors.full_messages.join(', ')}"
+            render :destroy, status: :unprocessable_entity
+          end
+          format.html do
+            redirect_to master_data_vehicles_url,
+                        alert: "Unable to delete vehicle: #{@vehicle.errors.full_messages.join(', ')}"
+          end
+        end
+      end
     end
 
     private

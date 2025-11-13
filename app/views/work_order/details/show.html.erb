@@ -1,27 +1,179 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>Work Order Details</h1>
-      <div class="card">
-        <div class="card-body">
-          <dl class="row">
-            <dt class="col-sm-3">Block:</dt>
-            <dd class="col-sm-9"><%= @work_order.block.block_number %></dd>
-            <dt class="col-sm-3">Work Order Rate:</dt>
-            <dd class="col-sm-9"><%= @work_order.work_order_rate.work_order_name %></dd>
-            <dt class="col-sm-3">Start Date:</dt>
-            <dd class="col-sm-9"><%= @work_order.start_date %></dd>
-            <dt class="col-sm-3">Status:</dt>
-            <dd class="col-sm-9"><span class="badge bg-<%= @work_order.work_order_status %>"><%= @work_order.work_order_status %></span></dd>
-            <dt class="col-sm-3">Field Conductor:</dt>
-            <dd class="col-sm-9"><%= @work_order.field_conductor_name %></dd>
-          </dl>
-          <div class="mt-3">
-            <%= link_to "Edit", edit_work_order_detail_path(@work_order), class: "btn btn-warning" %>
-            <%= link_to "Back", work_order_details_path, class: "btn btn-secondary" %>
-            <%= link_to "Delete", work_order_detail_path(@work_order), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-danger" %>
+<div class="container-fluid px-4 py-4">
+  <!-- Breadcrumb -->
+  <%= render 'shared/breadcrumb', breadcrumbs: [
+    ['Work Order', work_order_details_path],
+    ['Work Order Details', nil],
+    ['View Work Order', nil]
+  ] %>
+  <!-- Back Button -->
+  <div class="mb-3">
+    <%= link_to work_order_details_path, class: "text-decoration-none text-success d-inline-flex align-items-center" do %>
+      <i class="bi bi-arrow-left me-2"></i> Back to Work Order Details
+    <% end %>
+  </div>
+  <!-- Amendment Required Alert -->
+  <% if @work_order.work_order_status == 'amendment_required' %>
+    <% if @amendment_history&.remarks.present? %>
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <h5 class="alert-heading">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>This work order must be amended!
+        </h5>
+        <hr>
+        <p class="mb-0"><strong>Remarks:</strong></p>
+        <p class="mb-0"><%= @amendment_history.remarks %></p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% end %>
+  <% end %>
+  <!-- Action Buttons Above Details -->
+  <div class="d-flex justify-content-end gap-2 mb-3">
+    <% if @work_order.work_order_status.in?(%w[ongoing amendment_required]) %>
+      <%= link_to edit_work_order_detail_path(@work_order), class: "btn btn-warning" do %>
+        <i class="bi bi-pencil"></i> Edit
+      <% end %>
+    <% end %>
+    <%= link_to work_order_detail_path(@work_order), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-danger" do %>
+      <i class="bi bi-trash"></i> Delete
+    <% end %>
+    <% if @work_order.work_order_status.in?(%w[ongoing amendment_required]) %>
+      <%= link_to mark_complete_work_order_detail_path(@work_order), method: :patch, data: { turbo_method: :patch }, class: "btn btn-primary" do %>
+        <i class="bi bi-check-circle"></i> Work Order Complete
+      <% end %>
+    <% end %>
+  </div>
+  <!-- Work Order Details Card -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">Work Order Details</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Work Order ID</label>
+          <div class="bg-light p-2 rounded"><%= @work_order.id %></div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Work Order</label>
+          <div class="bg-light p-2 rounded"><%= @work_order.work_order_rate.work_order_name %></div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Work Order Rate (RM)</label>
+          <div class="bg-light p-2 rounded">RM <%= number_with_precision(@work_order.work_order_rate.rate, precision: 2) %></div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Unit of Measurement</label>
+          <div class="bg-light p-2 rounded"><%= @work_order.work_order_rate.unit&.name || '-' %></div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Block No.</label>
+          <div class="bg-light p-2 rounded"><%= @work_order.block_number %></div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Field Conductor</label>
+          <div class="bg-light p-2 rounded"><%= @work_order.field_conductor_name || '-' %></div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Starting Date</label>
+          <div class="bg-light p-2 rounded"><%= @work_order.start_date&.strftime('%d-%m-%Y') || '-' %></div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Status</label>
+          <div>
+            <% badge_class = case @work_order.work_order_status
+              when 'ongoing' then 'bg-info'
+              when 'pending' then 'bg-warning'
+              when 'amendment_required' then 'bg-danger'
+              when 'completed' then 'bg-success'
+              else 'bg-secondary'
+            end %>
+            <span class="badge <%= badge_class %>"><%= @work_order.work_order_status&.humanize %></span>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+  <!-- Resources & Machineries Table -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">Resources & Machineries</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead class="table-success">
+            <tr>
+              <th>Resources Name</th>
+              <th>Resource Category</th>
+              <th>Price (RM)</th>
+              <th>Unit</th>
+              <th>Amount Used</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if @work_order.work_order_items.any? %>
+              <% @work_order.work_order_items.each do |item| %>
+                <tr>
+                  <td><%= item.item_name %></td>
+                  <td><%= item.category_name || '-' %></td>
+                  <td><%= number_with_precision(item.price, precision: 2) %></td>
+                  <td><%= item.unit_name || '-' %></td>
+                  <td><%= item.amount_used %></td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="5" class="text-center text-muted">No resources used</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Workers Details Table -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">Workers Details</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead class="table-success">
+            <tr>
+              <th>No</th>
+              <th>Worker Name</th>
+              <th>Quantity(Ha)</th>
+              <th>Rate (RM)</th>
+              <th>Amount (RM)</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if @work_order.work_order_workers.any? %>
+              <% @work_order.work_order_workers.each_with_index do |worker, index| %>
+                <tr>
+                  <td><%= index + 1 %></td>
+                  <td><%= worker.worker_name %></td>
+                  <td><%= number_with_precision(worker.work_area_size, precision: 2) %></td>
+                  <td><%= number_with_precision(worker.rate, precision: 2) %></td>
+                  <td><%= number_with_precision(worker.amount, precision: 2) %></td>
+                  <td><%= worker.remarks || '-' %></td>
+                </tr>
+              <% end %>
+              <tr class="table-secondary fw-bold">
+                <td colspan="2" class="text-center">Total</td>
+                <td><%= number_with_precision(@work_order.work_order_workers.sum(:work_area_size), precision: 2) %></td>
+                <td></td>
+                <td><%= number_with_precision(@work_order.work_order_workers.sum(:amount), precision: 2) %></td>
+                <td></td>
+              </tr>
+            <% else %>
+              <tr>
+                <td colspan="6" class="text-center text-muted">No workers assigned</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

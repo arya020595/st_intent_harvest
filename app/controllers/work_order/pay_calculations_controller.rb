@@ -1,14 +1,16 @@
 # frozen_string_literal: true
 
 class WorkOrder::PayCalculationsController < ApplicationController
+  include RansackMultiSort
+
   before_action :set_pay_calculation, only: %i[show edit update destroy]
 
   def index
-    @pay_calculations = policy_scope(
-      PayCalculation,
-      policy_scope_class: WorkOrder::PayCalculationPolicy::Scope
-    )
     authorize PayCalculation, policy_class: WorkOrder::PayCalculationPolicy
+
+    apply_ransack_search(policy_scope(PayCalculation,
+                                      policy_scope_class: WorkOrder::PayCalculationPolicy::Scope).order(id: :desc))
+    @pagy, @pay_calculations = paginate_results(@q.result)
   end
 
   def show

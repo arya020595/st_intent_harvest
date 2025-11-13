@@ -3,10 +3,19 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable, :trackable
-  
+
   belongs_to :role, optional: true
-  
+
   validates :name, presence: true
+
+  # Ransack configuration - excluding sensitive fields
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[id name email is_active created_at updated_at role_id]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[role]
+  end
 end
 
 # == Schema Information

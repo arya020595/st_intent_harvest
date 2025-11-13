@@ -1,0 +1,3 @@
+<%= turbo_stream.prepend "users-table-body", partial: "user_row", locals: { user: @user } %>
+<%= turbo_stream.update "modal", "" %>
+<%= turbo_stream.update "flash_messages", partial: "shared/flash" %>

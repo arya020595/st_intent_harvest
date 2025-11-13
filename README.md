@@ -26,10 +26,18 @@ docker compose exec web rails db:seed
 
 ### 📚 Documentation
 
+#### Development
+
 - **[Quick Start Guide](docs/QUICK_START.md)** - Get up and running in 5 minutes
 - **[Docker Guide](docs/DOCKER_GUIDE.md)** - Comprehensive Docker documentation
+- **[Troubleshooting](docs/TROUBLESHOOTING.md)** - Common issues and solutions
+- **[Denormalizable Usage Guide](docs/DENORMALIZABLE_USAGE_GUIDE.md)** - Clean denormalization pattern
 - **[Pundit Authorization](docs/PUNDIT_AUTHORIZATION.md)** - Permission system details
 - **[Work Order Status Flow](docs/WORK_ORDER_STATUS_FLOW.md)** - State machine documentation
+
+#### Production Deployment
+
+- **[Production Deployment Guide](docs/PRODUCTION_DEPLOYMENT_GUIDE.md)** - Complete step-by-step deployment to production server using GHCR and GitHub Actions CI/CD
 
 ### Common Commands
 
@@ -95,6 +103,18 @@ docker compose exec db psql -U postgres -d st_intent_harvest_development
 - **Role-based Access Control**: Admin, Manager, Staff roles with granular permissions
 - **State Machine**: Automatic status transitions with history tracking
 - **Dashboard**: Real-time statistics and recent activity
+- **CI/CD Pipeline**: Automated testing and deployment with GitHub Actions
+- **Dockerized**: Easy deployment to any server with Docker support
+
+## 🌐 Production Deployment
+
+Want to deploy to production? See our **[Production Deployment Guide](docs/PRODUCTION_DEPLOYMENT_GUIDE.md)** for complete instructions on:
+
+- Setting up production server
+- Configuring GitHub Container Registry (GHCR)
+- Automated CI/CD with GitHub Actions
+- SSL/HTTPS setup with Nginx
+- Database management and backups
 
 ## 📝 Default Users (from seed data)
 
@@ -106,29 +126,34 @@ Staff:   staff@example.com   / password123
 
 ## 🐛 Troubleshooting
 
-See [Docker Guide](docs/DOCKER_GUIDE.md#troubleshooting) for detailed troubleshooting steps.
+Having issues? Check the **[Troubleshooting Guide](docs/TROUBLESHOOTING.md)** for detailed solutions:
 
-### Common Issues
+- 🖼️ Images not rendering or updating
+- 🐳 Container startup problems
+- 💾 Database connection errors
+- 💎 Gem installation issues
+- 🐌 Performance problems
+- And more common issues...
 
-**Port conflicts?**
+### Quick Fixes
+
+**Images not showing or updating?**
 
 ```bash
-# Stop local services
-sudo systemctl stop postgresql redis-server
-
-# Or change ports in docker-compose.yml
+docker compose exec web rails assets:clobber && docker compose restart web
 ```
 
-**Database connection errors?**
+**New gems not installed?**
+
+```bash
+docker compose restart web  # Auto-installs missing gems
+```
+
+**Database issues?**
 
 ```bash
 docker compose restart web
 ```
-
-**Code changes not showing?**
-
-- Code syncs automatically via volume mounts
-- For gem changes: `docker compose exec web bundle install && docker compose restart web`
 
 ## 📄 License
 
