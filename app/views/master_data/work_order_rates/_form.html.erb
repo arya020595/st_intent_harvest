@@ -16,20 +16,16 @@
         </div>
       <% end %>
       <div class="mb-3">
-        <%= form.label :work_order_name, class: "form-label" %>
+        <%= form.label :work_order_name, "Work Order Name", class: "form-label" %>
         <%= form.text_field :work_order_name, class: "form-control", required: true %>
       </div>
       <div class="mb-3">
-        <%= form.label :rate, class: "form-label" %>
+        <%= form.label :rate, "Rate (RM)", class: "form-label" %>
         <%= form.number_field :rate, step: 0.01, class: "form-control", required: true %>
       </div>
       <div class="mb-3">
-        <%= form.label :unit_id, class: "form-label" %>
+        <%= form.label :unit_id, "Unit of Measurement", class: "form-label" %>
         <%= form.collection_select :unit_id, Unit.all, :id, :name, { include_blank: "Select Unit" }, class: "form-select", required: true %>
-      </div>
-      <div class="mb-3">
-        <%= form.label :currency, class: "form-label" %>
-        <%= form.text_field :currency, class: "form-control" %>
       </div>
     </div>
     <div class="modal-footer">
