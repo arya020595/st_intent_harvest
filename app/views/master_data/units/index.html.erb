@@ -1,8 +1,11 @@
+<div id="flash_messages">
+  <%= render "shared/flash" %>
+</div>
 <div class="container-fluid px-4 py-4 units-list" data-controller="multi-sort">
   <div class="card shadow-sm">
     <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Units Management</h5>
-      <%= link_to new_master_data_unit_path, class: "btn btn-light btn-sm" do %>
+      <%= link_to new_master_data_unit_path, class: "btn btn-light btn-sm", data: { turbo_frame: 'modal' } do %>
         <i class="bi bi-plus-circle"></i> Add Unit
       <% end %>
     </div>
@@ -81,13 +84,13 @@
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="unit_rows">
               <% if @units.any? %>
                 <%= render partial: 'unit_row', collection: @units, as: :unit %>
               <% else %>
                 <tr>
                   <td colspan="6" class="text-center text-muted py-4">
-                    No units found. <%= link_to 'Add a new unit', new_master_data_unit_path, class: 'text-decoration-none' %>
+                    No units found. <%= link_to 'Add a new unit', new_master_data_unit_path, class: 'text-decoration-none', data: { turbo_frame: 'modal' } %>
                   </td>
                 </tr>
               <% end %>
@@ -110,3 +113,4 @@
     </div>
   </div>
 </div>
+<%= render "modal" %>
