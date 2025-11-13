@@ -15,7 +15,7 @@
       <%= link_to worker_path(worker), class: "btn btn-info btn-sm", title: "View Details" do %>
         <i class="bi bi-info-circle"></i>
       <% end %>
-      <%= link_to edit_worker_path(worker), class: "btn btn-warning btn-sm", title: "Edit" do %>
+      <%= link_to edit_worker_path(worker), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: 'modal' } do %>
         <i class="bi bi-pencil"></i>
       <% end %>
       <%= link_to worker_path(worker), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{worker.name}?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>

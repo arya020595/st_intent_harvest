@@ -26,7 +26,11 @@ module MasterData
       @unit = Unit.new(unit_params)
       authorize @unit, policy_class: MasterData::UnitPolicy
 
-      # Logic to be implemented later
+      if @unit.save
+        redirect_to master_data_unit_path(@unit), notice: 'Unit was successfully created.'
+      else
+        render :new, status: :unprocessable_entity
+      end
     end
 
     def edit
@@ -36,13 +40,18 @@ module MasterData
     def update
       authorize @unit, policy_class: MasterData::UnitPolicy
 
-      # Logic to be implemented later
+      if @unit.update(unit_params)
+        redirect_to master_data_unit_path(@unit), notice: 'Unit was successfully updated.'
+      else
+        render :edit, status: :unprocessable_entity
+      end
     end
 
     def destroy
       authorize @unit, policy_class: MasterData::UnitPolicy
 
-      # Logic to be implemented later
+      @unit.destroy!
+      redirect_to master_data_units_url, notice: 'Unit was successfully deleted.'
     end
 
     private
