@@ -45,7 +45,7 @@ docker compose exec web rails assets:clobber && docker compose restart web
 
 - **NEVER run `rails assets:precompile` in development!**
 - A safeguard rake task will warn you if you try (`lib/tasks/assets.rake`)
-- Only precompile assets for production (done automatically in Docker build)
+- Only precompile assets for production (this is done automatically during production Docker builds, typically via a `rails assets:precompile` step in the Dockerfile)
 - In development, Rails serves assets directly from source files
 - If you accidentally precompile: `rails assets:clobber && docker compose restart web`
 
