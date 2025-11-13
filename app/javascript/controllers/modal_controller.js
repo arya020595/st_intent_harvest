@@ -25,7 +25,6 @@ export default class extends Controller {
       );
     }
     // Bind handlers once so we can remove them later
-    this._showHandler = this.show.bind(this);
     this._clearHandler = this.clearFrame.bind(this);
     this._submitHandler = this.formSubmitted.bind(this);
 
@@ -88,7 +87,6 @@ export default class extends Controller {
   }
 
   disconnect() {
-    this.element.removeEventListener("turbo:frame-load", this._showHandler);
     this.element.removeEventListener("hidden.bs.modal", this._clearHandler);
     this.element.removeEventListener("turbo:submit-end", this._submitHandler);
 
