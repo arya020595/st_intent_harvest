@@ -390,8 +390,9 @@ day_based_work_orders = %w[Harvesting Spraying Fertilizing Weeding Pruning Plant
 day_based_work_orders.each do |work_order_name|
   WorkOrderRate.find_or_create_by!(work_order_name: work_order_name) do |rate|
     rate.rate = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal('50.0'), BigDecimal('100.0'))
-    rate.unit_id = day_unit.id.to_s
-    rate.work_order_rate_type = rate_types.sample
+    sampled_rate_type = rate_types.sample
+    rate.work_order_rate_type = sampled_rate_type
+    rate.unit_id = day_unit.id.to_s unless sampled_rate_type == 'work_days'
   end
 end
 
