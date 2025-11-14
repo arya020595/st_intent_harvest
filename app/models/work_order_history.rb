@@ -47,7 +47,7 @@ class WorkOrderHistory < ApplicationRecord
   end
   private_class_method :build_transition_details
 
-  # Return the most recent WorkOrderHistory for a work order that amendment
+  # Return the most recent amendment WorkOrderHistory for a work order
   def self.latest_amendment_for(work_order_or_id)
     id = work_order_or_id.respond_to?(:id) ? work_order_or_id.id : work_order_or_id
     for_work_order(id).amendments.first
