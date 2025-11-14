@@ -278,7 +278,7 @@ puts 'Creating blocks...'
   block_number = "BLK-#{(i + 1).to_s.rjust(3, '0')}"
 
   Block.find_or_create_by!(block_number: block_number) do |block|
-    block.hectarage = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal("5.0"), BigDecimal("50.0"))
+    block.hectarage = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal('5.0'), BigDecimal('50.0'))
   end
 end
 puts "✓ Created #{Block.count} blocks"
@@ -332,7 +332,7 @@ fertilizer_names.each do |name|
     inventory.stock_quantity = Faker::Number.between(from: 100, to: 500)
     inventory.category = fertilizer_category
     inventory.unit = kg_unit
-    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal("45.0"), BigDecimal("85.0"))
+    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal('45.0'), BigDecimal('85.0'))
     inventory.supplier = Faker::Company.name
     inventory.input_date = Faker::Date.between(from: 90.days.ago, to: Date.today)
   end
@@ -345,7 +345,7 @@ pesticide_names.each do |name|
     inventory.stock_quantity = Faker::Number.between(from: 50, to: 200)
     inventory.category = pesticide_category
     inventory.unit = liter_unit
-    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal("30.0"), BigDecimal("60.0"))
+    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal('30.0'), BigDecimal('60.0'))
     inventory.supplier = Faker::Company.name
     inventory.input_date = Faker::Date.between(from: 90.days.ago, to: Date.today)
   end
@@ -358,7 +358,7 @@ tool_names.each do |name|
     inventory.stock_quantity = Faker::Number.between(from: 20, to: 100)
     inventory.category = tools_category
     inventory.unit = piece_unit
-    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal("15.0"), BigDecimal("50.0"))
+    inventory.price = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal('15.0'), BigDecimal('50.0'))
     inventory.supplier = Faker::Company.name
     inventory.input_date = Faker::Date.between(from: 180.days.ago, to: Date.today)
   end
@@ -371,7 +371,7 @@ equipment_names.each do |name|
     inventory.stock_quantity = Faker::Number.between(from: 5, to: 15)
     inventory.category = equipment_category
     inventory.unit = piece_unit
-    inventory.price = Faker::Number.decimal(l_digits: 4, r_digits: 2).clamp(BigDecimal("800.0"), BigDecimal("2500.0"))
+    inventory.price = Faker::Number.decimal(l_digits: 4, r_digits: 2).clamp(BigDecimal('800.0'), BigDecimal('2500.0'))
     inventory.supplier = Faker::Company.name
     inventory.input_date = Faker::Date.between(from: 365.days.ago, to: Date.today)
   end
@@ -383,13 +383,15 @@ puts "✓ Created #{Inventory.count} inventory items"
 puts 'Creating work order rates...'
 day_unit = Unit.find_by(name: 'Day')
 hectare_unit = Unit.find_by(name: 'Hectare')
+rate_types = %w[normal resources work_days]
 
 # Day-based rates
 day_based_work_orders = %w[Harvesting Spraying Fertilizing Weeding Pruning Planting]
 day_based_work_orders.each do |work_order_name|
   WorkOrderRate.find_or_create_by!(work_order_name: work_order_name) do |rate|
-    rate.rate = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal("50.0"), BigDecimal("100.0"))
+    rate.rate = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal('50.0'), BigDecimal('100.0'))
     rate.unit_id = day_unit.id.to_s
+    rate.work_order_rate_type = rate_types.sample
   end
 end
 
@@ -397,8 +399,9 @@ end
 hectare_based_work_orders = ['Land Preparation', 'Land Clearing', 'Irrigation Setup']
 hectare_based_work_orders.each do |work_order_name|
   WorkOrderRate.find_or_create_by!(work_order_name: work_order_name) do |rate|
-    rate.rate = Faker::Number.decimal(l_digits: 3, r_digits: 2).clamp(BigDecimal("200.0"), BigDecimal("400.0"))
+    rate.rate = Faker::Number.decimal(l_digits: 3, r_digits: 2).clamp(BigDecimal('200.0'), BigDecimal('400.0'))
     rate.unit_id = hectare_unit.id.to_s
+    rate.work_order_rate_type = rate_types.sample
   end
 end
 
@@ -411,11 +414,15 @@ work_order_rates = WorkOrderRate.all.to_a
 conductor_user = User.find_by(email: 'conductor@example.com')
 work_order_statuses = %w[ongoing pending amendment_required completed]
 
+# Generate work months for last 6 months
+work_months = (0..5).map { |i| (Date.today - i.months).beginning_of_month }
+
 20.times do |i|
   WorkOrder.find_or_create_by!(id: i + 1) do |wo|
     wo.block_id = blocks.sample.id
     wo.work_order_rate_id = work_order_rates.sample.id
     wo.start_date = Faker::Date.between(from: 60.days.ago, to: Date.today)
+    wo.work_month = work_months.sample # Assign random month from last 6 months
     wo.work_order_status = work_order_statuses.sample
     wo.field_conductor_id = conductor_user.id
     wo.field_conductor_name = conductor_user.name
@@ -443,8 +450,9 @@ work_orders.each do |work_order|
   assigned_workers.each do |worker|
     WorkOrderWorker.find_or_create_by!(work_order: work_order, worker: worker) do |wow|
       wow.worker_name = worker.name
-      wow.rate = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal("50.0"), BigDecimal("100.0"))
-      wow.amount = wow.rate * rand(3..8) # amount = rate * days worked
+      wow.work_days = rand(1..26) # Random days worked in month (1-26)
+      wow.rate = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal('50.0'), BigDecimal('100.0'))
+      wow.amount = wow.rate * wow.work_days # amount = rate * days worked
       wow.remarks = Faker::Lorem.sentence(word_count: 5)
     end
   end
@@ -484,9 +492,9 @@ puts 'Creating pay calculation details...'
 Worker.where(is_active: true).limit(30).each do |worker|
   PayCalculationDetail.find_or_create_by!(pay_calculation: pay_calc, worker: worker) do |detail|
     gross = Faker::Number.decimal(l_digits: 4, r_digits: 2)
-    gross = [[gross, BigDecimal("3000.00")].max, BigDecimal("10000.00")].min
+    gross = [[gross, BigDecimal('3000.00')].max, BigDecimal('10000.00')].min
     deduct = Faker::Number.decimal(l_digits: 3, r_digits: 2)
-    deduct = [[deduct, BigDecimal("500.00")].max, BigDecimal("2500.00")].min
+    deduct = [[deduct, BigDecimal('500.00')].max, BigDecimal('2500.00')].min
     detail.gross_salary = gross
     detail.deductions = deduct
     detail.net_salary = gross - deduct
