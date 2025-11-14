@@ -16,9 +16,9 @@ class WorkOrderWorker < ApplicationRecord
 
   def calculate_amount
     # Calculate based on work_order_rate_type
-    rate_type = work_order&.work_order_rate&.work_order_rate_type
+    # Use enum predicate method for rate type checking
 
-    self.amount = if rate_type == 'work_days'
+    self.amount = if work_order&.work_order_rate&.work_days?
                     # For work_days type: amount = rate * work_days
                     (work_days || 0) * (rate || 0)
                   else
