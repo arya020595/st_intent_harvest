@@ -11,42 +11,65 @@ import { Controller } from "@hotwired/stimulus";
  * - Auto-fill worker rate and calculate amount
  */
 export default class extends Controller {
-  static targets = ["resourcesContainer", "workersContainer"];
+  static targets = [
+    "resourcesContainer",
+    "workersContainer",
+    "resourcesSection",
+    "workersSection",
+    "rateDetailsSection",
+    "unitSection",
+    "normalFieldsSection",
+    "workMonthSection",
+    "quantityHeader",
+    "quantityCell",
+    "amountUsedHeader",
+    "amountUsedCell",
+  ];
   static values = {
     inventories: Array,
     workers: Array,
     resourceIndexStart: Number,
     workerIndexStart: Number,
+    currentRateType: String,
   };
 
   connect() {
-    console.log("WorkOrderFormController connected");
-    // Start indexes after any pre-rendered rows from the server
-    const existingResourceRows = this.resourcesContainerTarget.querySelectorAll(
-      "tr[data-resource-index]"
-    ).length;
-    const existingWorkerRows = this.workersContainerTarget.querySelectorAll(
-      "tr[data-worker-index]"
-    ).length;
-
-    this.resourceIndex = Number.isInteger(this.resourceIndexStartValue)
-      ? this.resourceIndexStartValue
-      : existingResourceRows;
-    this.workerIndex = Number.isInteger(this.workerIndexStartValue)
-      ? this.workerIndexStartValue
-      : existingWorkerRows;
-    // Use Stimulus values - they're automatically parsed from JSON
+    // Initialize values first
     this.inventories = this.inventoriesValue || [];
     this.workers = this.workersValue || [];
-    // Store the current work order rate
     this.currentWorkOrderRate = 0;
+    this.currentRateType = this.currentRateTypeValue || "normal";
+
+    // Check if required targets exist and initialize indexes
+    if (this.hasResourcesContainerTarget) {
+      const existingResourceRows =
+        this.resourcesContainerTarget.querySelectorAll(
+          "tr[data-resource-index]"
+        ).length;
+      this.resourceIndex = Number.isInteger(this.resourceIndexStartValue)
+        ? this.resourceIndexStartValue
+        : existingResourceRows;
+    } else {
+      this.resourceIndex = 0;
+    }
+
+    if (this.hasWorkersContainerTarget) {
+      const existingWorkerRows = this.workersContainerTarget.querySelectorAll(
+        "tr[data-worker-index]"
+      ).length;
+      this.workerIndex = Number.isInteger(this.workerIndexStartValue)
+        ? this.workerIndexStartValue
+        : existingWorkerRows;
+    } else {
+      this.workerIndex = 0;
+    }
 
     // Initialize current work order rate from the selected option on load (edit/new with preselected)
     this.initializeWorkOrderRateFromSelect();
     // Preserve per-worker saved rates on load; just refresh displays and amounts
     this.refreshAllWorkerDisplays();
-    console.log("Loaded inventories:", this.inventories.length);
-    console.log("Loaded workers:", this.workers.length);
+    // Apply initial conditional display based on rate type
+    this.updateConditionalSections();
   }
 
   initializeWorkOrderRateFromSelect() {
@@ -68,6 +91,7 @@ export default class extends Controller {
       if (selectedRate) {
         const rateValue = parseFloat(selectedRate.rate) || 0;
         this.currentWorkOrderRate = rateValue;
+        this.currentRateType = selectedRate.work_order_rate_type || "normal";
 
         // Update header displays
         const rateDisplay = document.getElementById("work_order_rate_display");
@@ -81,6 +105,8 @@ export default class extends Controller {
             : "N/A";
 
         // On initial load, do not overwrite saved per-worker rates
+        // Update conditional sections
+        this.updateConditionalSections();
       }
     } catch (e) {
       console.warn("Failed to initialize work order rate from select", e);
@@ -88,6 +114,8 @@ export default class extends Controller {
   }
 
   refreshAllWorkerDisplays() {
+    if (!this.hasWorkersContainerTarget) return;
+
     const workerRows = this.workersContainerTarget.querySelectorAll(
       "tr[data-worker-index]"
     );
@@ -124,6 +152,8 @@ export default class extends Controller {
       if (selectedRate) {
         const rateValue = parseFloat(selectedRate.rate) || 0;
         this.currentWorkOrderRate = rateValue;
+        this.currentRateType = selectedRate.work_order_rate_type || "normal";
+
         document.getElementById("work_order_rate_display").value =
           rateValue > 0 ? `RM ${rateValue.toFixed(2)}` : "N/A";
         document.getElementById("work_order_unit_display").value =
@@ -131,13 +161,133 @@ export default class extends Controller {
 
         // Update all existing worker rates
         this.updateAllWorkerRates();
+
+        // Update conditional sections visibility
+        this.updateConditionalSections();
       }
     } catch (error) {
       console.error("Error updating work order rate:", error);
     }
   }
 
+  updateConditionalSections() {
+    console.log("=== UPDATE CONDITIONAL SECTIONS ===");
+    console.log("Current rate type:", this.currentRateType);
+
+    // Get all sections - use built-in Stimulus has* methods
+    const resourcesSection = this.hasResourcesSectionTarget
+      ? this.resourcesSectionTarget
+      : null;
+    const workersSection = this.hasWorkersSectionTarget
+      ? this.workersSectionTarget
+      : null;
+    const normalFieldsSection = this.hasNormalFieldsSectionTarget
+      ? this.normalFieldsSectionTargets
+      : [];
+    const workMonthSection = this.hasWorkMonthSectionTarget
+      ? this.workMonthSectionTarget
+      : null;
+    const unitSection = this.hasUnitSectionTarget
+      ? this.unitSectionTarget
+      : null;
+    const quantityHeaders = this.hasQuantityHeaderTarget
+      ? this.quantityHeaderTargets
+      : [];
+    const amountUsedHeaders = this.hasAmountUsedHeaderTarget
+      ? this.amountUsedHeaderTargets
+      : [];
+
+    console.log("Targets found:", {
+      resources: !!resourcesSection,
+      workers: !!workersSection,
+      normalFields: normalFieldsSection.length,
+      workMonth: !!workMonthSection,
+      unit: !!unitSection,
+    });
+
+    if (this.currentRateType === "resources") {
+      console.log(">>> RESOURCES MODE - Hiding workers");
+      // Show: Work Order ID, Work Order, Resources (without amount used)
+      if (resourcesSection) {
+        resourcesSection.style.display = "block";
+        console.log("Resources section shown");
+      }
+      if (workersSection) {
+        workersSection.style.display = "none";
+        console.log("Workers section HIDDEN");
+      }
+      normalFieldsSection.forEach((el) => (el.style.display = "none"));
+      if (workMonthSection) workMonthSection.style.display = "none";
+      if (unitSection) unitSection.style.display = "block";
+
+      // Hide amount used column in resources
+      amountUsedHeaders.forEach((header) => (header.style.display = "none"));
+      if (this.hasAmountUsedCellTarget) {
+        this.amountUsedCellTargets.forEach(
+          (cell) => (cell.style.display = "none")
+        );
+      }
+    } else if (this.currentRateType === "work_days") {
+      // Show: Work Order ID, Work Order, Work Month, Worker Details (Days instead of Quantity)
+      // HIDE Resources & Machineries
+      if (resourcesSection) resourcesSection.style.display = "none";
+      if (workersSection) workersSection.style.display = "block";
+      normalFieldsSection.forEach((el) => (el.style.display = "none"));
+      if (workMonthSection) workMonthSection.style.display = "flex";
+      if (unitSection) unitSection.style.display = "none";
+
+      // Change header to "Days" and show work_days input
+      quantityHeaders.forEach((header) => (header.textContent = "Days"));
+      this.toggleWorkerQuantityFields(true); // true = show days
+    } else {
+      // Normal: Show all fields
+      if (resourcesSection) resourcesSection.style.display = "block";
+      if (workersSection) workersSection.style.display = "block";
+      normalFieldsSection.forEach((el) => (el.style.display = "flex"));
+      if (workMonthSection) workMonthSection.style.display = "none";
+      if (unitSection) unitSection.style.display = "block";
+
+      // Show amount used in resources
+      amountUsedHeaders.forEach(
+        (header) => (header.style.display = "table-cell")
+      );
+      if (this.hasAmountUsedCellTarget) {
+        this.amountUsedCellTargets.forEach(
+          (cell) => (cell.style.display = "table-cell")
+        );
+      }
+
+      // Show Quantity(Ha) for workers
+      quantityHeaders.forEach(
+        (header) => (header.textContent = "Quantity(Ha)")
+      );
+      this.toggleWorkerQuantityFields(false); // false = show work_area_size
+    }
+  }
+
+  toggleWorkerQuantityFields(showDays) {
+    if (!this.hasQuantityCellTarget) return;
+
+    // Toggle between work_area_size and work_days inputs
+    this.quantityCellTargets.forEach((cell) => {
+      const quantityInput = cell.querySelector('input[id^="worker_quantity_"]');
+      const daysInput = cell.querySelector('input[id^="worker_days_"]');
+
+      if (quantityInput && daysInput) {
+        if (showDays) {
+          quantityInput.style.display = "none";
+          daysInput.style.display = "block";
+        } else {
+          quantityInput.style.display = "block";
+          daysInput.style.display = "none";
+        }
+      }
+    });
+  }
+
   updateAllWorkerRates() {
+    if (!this.hasWorkersContainerTarget) return;
+
     // Update rate for all existing worker rows
     const workerRows = this.workersContainerTarget.querySelectorAll(
       "tr[data-worker-index]"
@@ -178,6 +328,9 @@ export default class extends Controller {
       )
       .join("");
 
+    const hideAmountUsed =
+      this.currentRateType === "resources" ? "none" : "table-cell";
+
     return `
       <tr data-resource-index="${index}">
         <td>
@@ -195,7 +348,7 @@ export default class extends Controller {
         <td>
           <input type="text" class="form-control form-control-sm" id="resource_unit_${index}" value="Auto Filled" disabled style="background-color: #e9ecef;">
         </td>
-        <td>
+        <td data-work-order-form-target="amountUsedCell" style="display: ${hideAmountUsed};">
           <input type="number" class="form-control form-control-sm" name="work_order[work_order_items_attributes][${index}][amount_used]" placeholder="0" step="0.01" min="0">
         </td>
         <input type="hidden" id="resource_destroy_${index}" name="work_order[work_order_items_attributes][${index}][_destroy]" value="0">
@@ -263,6 +416,7 @@ export default class extends Controller {
 
   createWorkerRow(index) {
     const workerOptions = this.buildWorkerOptions();
+    const isWorkDays = this.currentRateType === "work_days";
 
     return `
       <tr data-worker-index="${index}">
@@ -271,8 +425,13 @@ export default class extends Controller {
             ${workerOptions}
           </select>
         </td>
-        <td>
-          <input type="number" class="form-control form-control-sm" id="worker_quantity_${index}" name="work_order[work_order_workers_attributes][${index}][work_area_size]" placeholder="0" step="0.01" min="0" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="${index}">
+        <td data-work-order-form-target="quantityCell">
+          <input type="number" class="form-control form-control-sm" id="worker_quantity_${index}" name="work_order[work_order_workers_attributes][${index}][work_area_size]" placeholder="0" step="0.01" min="0" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="${index}" style="display: ${
+      isWorkDays ? "none" : "block"
+    };">
+          <input type="number" class="form-control form-control-sm" id="worker_days_${index}" name="work_order[work_order_workers_attributes][${index}][work_days]" placeholder="0" step="1" min="0" max="31" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="${index}" style="display: ${
+      isWorkDays ? "block" : "none"
+    };">
         </td>
         <td>
           <input type="text" class="form-control form-control-sm" id="worker_rate_${index}" value="${
@@ -338,13 +497,18 @@ export default class extends Controller {
 
   calculateWorkerAmountByIndex(index) {
     const quantityEl = document.getElementById(`worker_quantity_${index}`);
+    const daysEl = document.getElementById(`worker_days_${index}`);
     const rateEl = document.getElementById(`worker_rate_value_${index}`);
     const amountEl = document.getElementById(`worker_amount_${index}`);
     const amountValueEl = document.getElementById(
       `worker_amount_value_${index}`
     );
 
-    const quantity = parseFloat(quantityEl?.value) || 0;
+    // Use days if work_days type, otherwise use quantity (work_area_size)
+    const quantity =
+      this.currentRateType === "work_days"
+        ? parseFloat(daysEl?.value) || 0
+        : parseFloat(quantityEl?.value) || 0;
     const rate = parseFloat(rateEl?.value) || 0;
     const amount = quantity * rate;
 
