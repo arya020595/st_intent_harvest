@@ -455,8 +455,8 @@ work_orders.each do |work_order|
       wow.rate = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal('50.0'), BigDecimal('100.0'))
 
       # Calculate amount based on work_order_rate_type
-      rate_type = work_order.work_order_rate.work_order_rate_type
-      if rate_type == 'work_days'
+      # Use Rails enum predicate method for clarity and convention
+      if work_order.work_order_rate.work_days?
         # For work_days type: use work_days field
         wow.work_days = rand(1..26) # Random days worked in month (1-26)
         wow.amount = wow.rate * wow.work_days
