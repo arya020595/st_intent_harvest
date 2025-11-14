@@ -15,6 +15,8 @@ class WorkOrderHistory < ApplicationRecord
 
   scope :recent, -> { order(created_at: :desc) }
   scope :for_work_order, ->(work_order_id) { where(work_order_id: work_order_id).recent }
+  # Histories that indicate the work order moved to amendment_required
+  scope :amendments, -> { where(to_state: 'amendment_required') }
   scope :since, ->(time) { where('created_at >= ?', time).recent }
 
   # Simplified transition recording - derives states from AASM
@@ -44,6 +46,12 @@ class WorkOrderHistory < ApplicationRecord
     }
   end
   private_class_method :build_transition_details
+
+  # Return the most recent amendment WorkOrderHistory for a work order
+  def self.latest_amendment_for(work_order_or_id)
+    id = work_order_or_id.respond_to?(:id) ? work_order_or_id.id : work_order_or_id
+    for_work_order(id).amendments.first
+  end
 end
 
 # == Schema Information
