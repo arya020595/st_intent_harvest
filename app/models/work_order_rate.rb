@@ -31,24 +31,24 @@ class WorkOrderRate < ApplicationRecord
     self.unit_id = nil if work_days?
   end
 end
-
 # == Schema Information
 #
 # Table name: work_order_rates
 #
-#  id              :bigint           not null, primary key
-#  currency        :string           default("RM")
-#  rate            :decimal(10, 2)
-#  work_order_name :string
-#  created_at      :datetime         not null
-#  updated_at      :datetime         not null
-#  unit_id         :bigint
+#  id                   :integer , not null
+#  created_at           :datetime, not null
+#  currency             :string  , default("RM")
+#  rate                 :decimal , precision: 10, scale: 2
+#  unit_id              :integer
+#  updated_at           :datetime, not null
+#  work_order_name      :string
+#  work_order_rate_type :string  , default("normal"), comment: "Type of work order rate: normal (all fields), resources (resource fields only), work_days (worker details only)"
 #
 # Indexes
 #
-#  index_work_order_rates_on_unit_id  (unit_id)
+#  index_work_order_rates_on_unit_id                  (unit_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (unit_id => units.id)
+#  fk_rails_26d0d8d5ca                                (unit_id => units.id)
 #
