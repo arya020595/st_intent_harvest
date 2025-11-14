@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_10_050701) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_14_084869) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -182,6 +182,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_10_050701) do
     t.bigint "unit_id"
     t.datetime "updated_at", null: false
     t.string "work_order_name"
+    t.string "work_order_rate_type", default: "normal", comment: "Type of work order rate: normal (all fields), resources (resource fields only), work_days (worker details only)"
     t.index ["unit_id"], name: "index_work_order_rates_on_unit_id"
   end
 
@@ -192,6 +193,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_10_050701) do
     t.text "remarks"
     t.datetime "updated_at", null: false
     t.integer "work_area_size"
+    t.integer "work_days", default: 0, null: false, comment: "How many days worker works in given month"
     t.bigint "work_order_id", null: false
     t.bigint "worker_id", null: false
     t.string "worker_name"
@@ -210,6 +212,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_10_050701) do
     t.string "field_conductor_name"
     t.date "start_date"
     t.datetime "updated_at", null: false
+    t.date "work_month", comment: "First day of the month for Mandays calculation"
     t.bigint "work_order_rate_id"
     t.string "work_order_rate_name"
     t.decimal "work_order_rate_price", precision: 10, scale: 2
