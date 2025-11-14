@@ -15,6 +15,8 @@ class WorkOrder::DetailsController < ApplicationController
 
   def show
     authorize @work_order, policy_class: WorkOrder::DetailPolicy
+    # Use model helper to keep controller clean
+    @amendment_history = @work_order.latest_amendment_history
   end
 
   def new
