@@ -454,17 +454,15 @@ work_orders.each do |work_order|
       wow.worker_name = worker.name
       wow.rate = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal('50.0'), BigDecimal('100.0'))
 
-      # Calculate amount based on work_order_rate_type
-      # Use Rails enum predicate method for clarity and convention
+      # Set appropriate field based on work_order_rate_type
+      # Amount will be calculated automatically by the model's before_save callback
       if work_order.work_order_rate.work_days?
-        # For work_days type: use work_days field
+        # For work_days type: set work_days field
         wow.work_days = rand(1..26) # Random days worked in month (1-26)
-        wow.amount = wow.rate * wow.work_days
       else
-        # For normal/resources type: use work_area_size field
+        # For normal/resources type: set work_area_size field
         wow.work_area_size = Faker::Number.decimal(l_digits: 2, r_digits: 2).clamp(BigDecimal('5.0'),
                                                                                    BigDecimal('50.0'))
-        wow.amount = wow.rate * wow.work_area_size
       end
 
       wow.remarks = Faker::Lorem.sentence(word_count: 5)

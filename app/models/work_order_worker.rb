@@ -15,7 +15,14 @@ class WorkOrderWorker < ApplicationRecord
   private
 
   def calculate_amount
-    self.amount = (work_area_size || 0) * (rate || 0)
+    # Calculate amount based on work_order's rate type
+    if work_order&.work_order_rate&.work_days?
+      # For work_days type: amount = rate * work_days
+      self.amount = (rate || 0) * (work_days || 0)
+    else
+      # For normal/resources type: amount = rate * work_area_size
+      self.amount = (work_area_size || 0) * (rate || 0)
+    end
   end
 end
 
