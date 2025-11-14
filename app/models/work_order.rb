@@ -122,6 +122,10 @@ class WorkOrder < ApplicationRecord
     end
   end
 
+  def latest_amendment_history
+    WorkOrderHistory.latest_amendment_for(self)
+  end
+
   private
 
   # Helper method to record work order history with optional custom remarks
