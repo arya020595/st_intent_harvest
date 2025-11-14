@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class AddMandaysFields < ActiveRecord::Migration[7.0]
+class AddMandaysFields < ActiveRecord::Migration[8.1]
   def change
     # Add work_month to work_orders for tracking which month the work was done
     add_column :work_orders, :work_month, :date,
