@@ -117,7 +117,8 @@ module MasterData
         :work_order_name,
         :rate,
         :unit_id,
-        :currency
+        :currency,
+        :work_order_rate_type
       )
     end
   end
