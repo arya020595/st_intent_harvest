@@ -14,6 +14,7 @@ class WorkOrderRate < ApplicationRecord
   validates :work_order_name, presence: true
   validates :rate, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :work_order_rate_type, presence: true, inclusion: { in: work_order_rate_types.keys }
+  validates :unit_id, presence: true, unless: :work_days?
 
   # Ransack configuration
   def self.ransackable_attributes(_auth_object = nil)
