@@ -31,7 +31,7 @@ module WorkOrderServices
       else
         AppLogger.service_failure('CreateWorkOrder',
                                   context: self.class.name,
-                                  error: result.failure.join(', '),
+                                  error: result.failure,
                                   work_order_params: @work_order_params.except(:work_order_workers_attributes,
                                                                                :work_order_items_attributes))
       end
