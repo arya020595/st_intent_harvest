@@ -3,6 +3,7 @@
 class WorkOrder < ApplicationRecord
   include AASM
   include Denormalizable
+  include WorkOrderTypeBehavior
 
   # Status constants
   STATUSES = {
@@ -16,7 +17,7 @@ class WorkOrder < ApplicationRecord
   # audited # Temporarily disabled due to Psych::DisallowedClass issue with Date serialization
   # TODO: Re-enable audited after fixing Psych::DisallowedClass issue. See tracking ticket: TICKET-1234
 
-  belongs_to :block
+  belongs_to :block, optional: true
   belongs_to :work_order_rate
   # The user responsible for the field (used for scoping/assignment)
   belongs_to :field_conductor, class_name: 'User', optional: true
@@ -28,8 +29,8 @@ class WorkOrder < ApplicationRecord
   accepts_nested_attributes_for :work_order_workers, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :work_order_items, allow_destroy: true, reject_if: :all_blank
 
-  validates :start_date, presence: true
-  validates :block_id, presence: true
+  # Type-based validations using custom validator (Single Responsibility Principle)
+  validates_with WorkOrderTypeValidator
   validates :work_order_rate_id, presence: true
   validates :work_order_status, inclusion: { in: STATUSES.values, allow_nil: true }
 
@@ -53,6 +54,7 @@ class WorkOrder < ApplicationRecord
       field_conductor_name
       approved_by
       approved_at
+      work_month
       created_at
       updated_at
       block_id
@@ -65,16 +67,10 @@ class WorkOrder < ApplicationRecord
     %w[block work_order_rate field_conductor work_order_workers work_order_items work_order_histories]
   end
 
-  # Custom validation method - checks if work order has workers or items
-  # Used as a guard for AASM transitions to pending state
-  # Filters out records marked for destruction (when user removes them via nested form)
+  # Guard method for AASM transitions - delegates to concern
+  # Follows Single Responsibility and Open/Closed Principles
   def workers_or_items?
-    # Count existing workers not marked for deletion
-    workers_count = work_order_workers.reject(&:marked_for_destruction?).count
-    # Count existing items not marked for deletion
-    items_count = work_order_items.reject(&:marked_for_destruction?).count
-
-    workers_count.positive? || items_count.positive?
+    has_required_associations?
   end
 
   # AASM State Machine Configuration with string column

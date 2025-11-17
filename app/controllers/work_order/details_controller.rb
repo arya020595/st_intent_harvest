@@ -100,11 +100,13 @@ class WorkOrder::DetailsController < ApplicationController
       :block_id,
       :work_order_rate_id,
       :start_date,
+      :work_month,
       :field_conductor_id,
       work_order_workers_attributes: %i[
         id
         worker_id
         work_area_size
+        work_days
         rate
         amount
         remarks

@@ -7,8 +7,8 @@ module WorkOrderServices
     attr_reader :work_order
 
     def initialize(work_order_params)
-      @work_order_params = work_order_params
-      @work_order = WorkOrder.new(work_order_params)
+      @work_order_params = ParamsNormalizer.call(work_order_params)
+      @work_order = WorkOrder.new(@work_order_params)
     end
 
     def call(draft: false)
