@@ -40,7 +40,7 @@
           <% else %>
             <%# Resources/Work Days type: Simplified workflow with 2 steps %>
             <tr>
-              <td><%= work_order.created_at&.strftime('%d-%m-%Y') || '-' %></td>
+              <td><%= work_order.created_at.strftime('%d-%m-%Y') %></td>
               <td>Work Order Created</td>
             </tr>
             <% verification_history = work_order.work_order_histories.where(action: 'approve').order(created_at: :desc).first %>
