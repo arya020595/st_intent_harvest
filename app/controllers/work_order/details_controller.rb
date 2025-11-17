@@ -20,9 +20,7 @@ class WorkOrder::DetailsController < ApplicationController
     @amendment_history = @work_order.latest_amendment_history
 
     # If the work order is completed, render the completed view layout
-    return unless @work_order.work_order_status == 'completed'
-
-    render :show_completed
+    render :show_completed and return if @work_order.work_order_status == 'completed'
   end
 
   def new
