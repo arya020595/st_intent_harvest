@@ -122,6 +122,10 @@ class WorkOrder < ApplicationRecord
     end
   end
 
+  def latest_amendment_history
+    WorkOrderHistory.latest_amendment_for(self)
+  end
+
   private
 
   # Helper method to record work order history with optional custom remarks
@@ -142,32 +146,33 @@ end
 #
 # Table name: work_orders
 #
-#  id                    :bigint           not null, primary key
+#  id                    :integer , not null
 #  approved_at           :datetime
 #  approved_by           :string
 #  block_hectarage       :string
+#  block_id              :integer
 #  block_number          :string
+#  created_at            :datetime, not null
+#  field_conductor_id    :integer
 #  field_conductor_name  :string
 #  start_date            :date
+#  updated_at            :datetime, not null
+#  work_month            :date    , comment: "First day of the month for Mandays calculation"
+#  work_order_rate_id    :integer
 #  work_order_rate_name  :string
-#  work_order_rate_price :decimal(10, 2)
-#  work_order_status     :string           default("ongoing")
-#  created_at            :datetime         not null
-#  updated_at            :datetime         not null
-#  block_id              :bigint
-#  field_conductor_id    :bigint
-#  work_order_rate_id    :bigint
+#  work_order_rate_price :decimal , precision: 10, scale: 2
+#  work_order_status     :string  , default("ongoing")
 #
 # Indexes
 #
-#  index_work_orders_on_block_and_rate       (block_id,work_order_rate_id)
-#  index_work_orders_on_block_id             (block_id)
-#  index_work_orders_on_field_conductor_id   (field_conductor_id)
-#  index_work_orders_on_work_order_rate_id   (work_order_rate_id)
+#  index_work_orders_on_block_and_rate                (block_id, work_order_rate_id)
+#  index_work_orders_on_block_id                      (block_id)
+#  index_work_orders_on_field_conductor_id            (field_conductor_id)
+#  index_work_orders_on_work_order_rate_id            (work_order_rate_id)
 #
 # Foreign Keys
 #
-#  fk_rails_...  (block_id => blocks.id)
-#  fk_rails_...  (field_conductor_id => users.id)
-#  fk_rails_...  (work_order_rate_id => work_order_rates.id)
+#  fk_rails_8a5d10c0ab                                (work_order_rate_id => work_order_rates.id)
+#  fk_rails_ada4e43333                                (block_id => blocks.id)
+#  fk_rails_d5db43ba21                                (field_conductor_id => users.id)
 #
