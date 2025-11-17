@@ -1,50 +1,88 @@
-import { Controller } from "@hotwired/stimulus"
+import { Controller } from "@hotwired/stimulus";
 
+// Connects to data-controller="sidebar"
+// Handles sidebar toggle, navigation link clicks, and Turbo navigation
 export default class extends Controller {
+  static targets = ["sidebar"];
+  static values = {
+    collapsedClass: { type: String, default: "sidebar-collapsed" },
+  };
+
   connect() {
-    this.setupToggle()
-    this.setupTurboListeners()
+    this.boundHandleDocumentClick = this.handleDocumentClick.bind(this);
+    this.boundHandleTurboNavigation = this.handleTurboNavigation.bind(this);
+    this.addEventListeners();
   }
 
-  setupToggle() {
-    // Use event delegation on document to avoid null references
-    document.addEventListener("click", (event) => {
-      const sidebarToggle = event.target.closest("#sidebarToggle")
-      if (sidebarToggle) {
-        const sidebar = document.getElementById("sidebar")
-        if (sidebar) {
-          sidebar.classList.toggle("sidebar-collapsed")
-        }
-        return
-      }
-
-      // When a regular link inside the sidebar is clicked, close the sidebar
-      const anchor = event.target.closest("a")
-      if (!anchor) return
-      
-      const sidebar = document.getElementById("sidebar")
-      if (!sidebar) return
-      
-      // Only consider clicks on links inside the sidebar
-      if (!anchor.closest("#sidebar")) return
-      
-      // Ignore collapse toggles and placeholder links
-      if (anchor.dataset.bsToggle || anchor.getAttribute("href") === "#") return
-      
-      this.closeSidebar()
-    })
+  disconnect() {
+    this.removeEventListeners();
   }
 
-  setupTurboListeners() {
-    // Close sidebar on Turbo navigation (handles Turbo Drive page changes)
-    document.addEventListener("turbo:load", () => this.closeSidebar())
-    document.addEventListener("turbo:render", () => this.closeSidebar())
+  // Public Actions
+  toggle(event) {
+    event?.preventDefault();
+    this.sidebar?.classList.toggle(this.collapsedClassValue);
   }
 
-  closeSidebar() {
-    const sidebar = document.getElementById("sidebar")
-    if (sidebar && sidebar.classList.contains("sidebar-collapsed")) {
-      sidebar.classList.remove("sidebar-collapsed")
+  open() {
+    this.sidebar?.classList.remove(this.collapsedClassValue);
+  }
+
+  close() {
+    this.sidebar?.classList.add(this.collapsedClassValue);
+  }
+
+  // Event Listener Management
+  addEventListeners() {
+    document.addEventListener("click", this.boundHandleDocumentClick);
+    document.addEventListener("turbo:load", this.boundHandleTurboNavigation);
+    document.addEventListener("turbo:render", this.boundHandleTurboNavigation);
+  }
+
+  removeEventListeners() {
+    document.removeEventListener("click", this.boundHandleDocumentClick);
+    document.removeEventListener("turbo:load", this.boundHandleTurboNavigation);
+    document.removeEventListener(
+      "turbo:render",
+      this.boundHandleTurboNavigation
+    );
+  }
+
+  // Event Handlers
+  handleDocumentClick(event) {
+    if (this.isToggleButtonClick(event)) {
+      this.toggle(event);
+      return;
     }
+
+    if (this.isSidebarNavigationLink(event)) {
+      this.open();
+    }
+  }
+
+  handleTurboNavigation() {
+    this.open();
+  }
+
+  // Query Methods
+  isToggleButtonClick(event) {
+    return event.target.closest("#sidebarToggle") !== null;
+  }
+
+  isSidebarNavigationLink(event) {
+    const link = event.target.closest("a");
+    if (!link || !this.sidebar || !link.closest("#sidebar")) {
+      return false;
+    }
+
+    // Exclude Bootstrap collapse toggles and placeholder links
+    return !link.dataset.bsToggle && link.getAttribute("href") !== "#";
+  }
+
+  // Getters
+  get sidebar() {
+    return this.hasSidebarTarget
+      ? this.sidebarTarget
+      : document.getElementById("sidebar");
   }
 }
