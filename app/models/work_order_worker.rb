@@ -34,15 +34,15 @@ end
 #
 #  id             :bigint           not null, primary key
 #  amount         :decimal(10, 2)
+#  created_at     :datetime         not null
 #  rate           :decimal(10, 2)
 #  remarks        :text
-#  work_area_size :integer
-#  work_days      :integer          default(0), not null
-#  worker_name    :string
-#  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  work_area_size :integer
+#  work_days      :integer
 #  work_order_id  :bigint           not null
 #  worker_id      :bigint           not null
+#  worker_name    :string
 #
 # Indexes
 #

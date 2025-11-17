@@ -12,11 +12,30 @@ module WorkOrderServices
     end
 
     def call(submit: false)
-      if submit
-        update_and_submit
+      AppLogger.service_start('UpdateWorkOrder',
+                              context: self.class.name,
+                              work_order_id: work_order.id,
+                              submit: submit)
+
+      result = if submit
+                 update_and_submit
+               else
+                 update_only
+               end
+
+      if result.success?
+        AppLogger.service_success('UpdateWorkOrder',
+                                  context: self.class.name,
+                                  work_order_id: work_order.id,
+                                  status: work_order.work_order_status)
       else
-        update_only
+        AppLogger.service_failure('UpdateWorkOrder',
+                                  context: self.class.name,
+                                  error: result.failure,
+                                  work_order_id: work_order.id)
       end
+
+      result
     end
 
     private
@@ -51,26 +70,32 @@ module WorkOrderServices
       if work_order.amendment_required?
         begin
           work_order.public_send(:reopen!)
+          AppLogger.info('Work order reopened after amendments', context: self.class.name, work_order_id: work_order.id)
           Success('Work order was successfully resubmitted after amendments.')
         rescue AASM::InvalidTransition => e
-          Rails.logger.error("WorkOrder transition failed: #{e.class}: #{e.message}")
+          AppLogger.error('Reopen transition failed', context: self.class.name, error: e.message,
+                                                      current_state: work_order.work_order_status)
           Failure("Transition error: #{e.message}")
         rescue StandardError => e
-          Rails.logger.error("WorkOrder submission failed: #{e.class}: #{e.message}")
-          Failure("Submission error: #{e.message}")
+          AppLogger.error('Reopen failed', context: self.class.name, error: e.message, work_order_id: work_order.id)
+          Failure("Reopen error: #{e.message}")
         end
       elsif work_order.ongoing?
         begin
           work_order.public_send(:mark_complete!)
+          AppLogger.info('Work order marked complete', context: self.class.name, work_order_id: work_order.id)
           Success('Work order was successfully submitted for approval.')
         rescue AASM::InvalidTransition => e
-          Rails.logger.error("WorkOrder transition failed: #{e.class}: #{e.message}")
+          AppLogger.error('Mark complete transition failed', context: self.class.name, error: e.message,
+                                                             current_state: work_order.work_order_status)
           Failure("Transition error: #{e.message}")
         rescue StandardError => e
-          Rails.logger.error("WorkOrder submission failed: #{e.class}: #{e.message}")
+          AppLogger.error('Submit failed', context: self.class.name, error: e.message, work_order_id: work_order.id)
           Failure("Submission error: #{e.message}")
         end
       else
+        AppLogger.warn('Invalid state for submission', context: self.class.name, work_order_id: work_order.id,
+                                                       current_state: work_order.work_order_status)
         Failure("Work order cannot be submitted from '#{work_order.work_order_status.humanize}' status.")
       end
     end
