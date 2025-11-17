@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_14_084869) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_17_064803) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -193,7 +193,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_14_084869) do
     t.text "remarks"
     t.datetime "updated_at", null: false
     t.integer "work_area_size"
-    t.integer "work_days", default: 0, null: false, comment: "How many days worker works in given month"
+    t.integer "work_days", comment: "How many days worker works in given month"
     t.bigint "work_order_id", null: false
     t.bigint "worker_id", null: false
     t.string "worker_name"
