@@ -26,7 +26,7 @@ class WorkOrder::DetailsController < ApplicationController
     @verification_history = @work_order.work_order_histories.where(action: 'approve').order(created_at: :desc).first
     @completion_history = @work_order.work_order_histories.where(action: 'mark_complete').order(created_at: :desc).first
 
-    render :show_completed and return
+    render :show_completed
   end
 
   def new
@@ -101,7 +101,7 @@ class WorkOrder::DetailsController < ApplicationController
   private
 
   def set_work_order
-    @work_order = WorkOrder.includes(:work_order_histories).find(params[:id])
+    @work_order = WorkOrder.find(params[:id])
   end
 
   def work_order_params
