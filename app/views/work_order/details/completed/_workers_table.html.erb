@@ -38,7 +38,7 @@
               <td colspan="2" class="text-center">Total</td>
               <td>
                 <%= if work_order.work_days_type?
-                      work_order.work_order_workers.sum { |w| w.work_days || 0 }
+                      work_order.work_order_workers.sum("COALESCE(work_days, 0)")
                     else
                       number_with_precision(work_order.work_order_workers.sum(:work_area_size), precision: 2)
                     end %>
