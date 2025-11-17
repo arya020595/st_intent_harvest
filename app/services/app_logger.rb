@@ -143,9 +143,10 @@ class AppLogger
     # Sanitize sensitive parameters
     def sanitize_params(params)
       sensitive_keys = %i[password password_confirmation token secret api_key]
-      params.transform_values do |value|
+      sanitized = params.except(*sensitive_keys)
+      sanitized.transform_values do |value|
         if value.is_a?(Hash)
-          value.except(*sensitive_keys)
+          sanitize_params(value)  # Recursive call
         else
           value
         end
