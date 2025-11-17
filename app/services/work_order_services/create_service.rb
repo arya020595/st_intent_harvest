@@ -7,16 +7,36 @@ module WorkOrderServices
     attr_reader :work_order
 
     def initialize(work_order_params)
-      @work_order_params = work_order_params
-      @work_order = WorkOrder.new(work_order_params)
+      @work_order_params = ParamsNormalizer.call(work_order_params)
+      @work_order = WorkOrder.new(@work_order_params)
     end
 
     def call(draft: false)
-      if draft
-        save_as_draft
+      AppLogger.service_start('CreateWorkOrder',
+                              context: self.class.name,
+                              draft: draft,
+                              work_order_rate_type: @work_order.work_order_rate&.work_order_rate_type)
+
+      result = if draft
+                 save_as_draft
+               else
+                 save_and_submit
+               end
+
+      if result.success?
+        AppLogger.service_success('CreateWorkOrder',
+                                  context: self.class.name,
+                                  work_order_id: @work_order.id,
+                                  status: @work_order.work_order_status)
       else
-        save_and_submit
+        AppLogger.service_failure('CreateWorkOrder',
+                                  context: self.class.name,
+                                  error: result.failure,
+                                  work_order_params: @work_order_params.except(:work_order_workers_attributes,
+                                                                               :work_order_items_attributes))
       end
+
+      result
     end
 
     private
@@ -53,12 +73,15 @@ module WorkOrderServices
       # Call AASM event to transition from ongoing -> pending
       # This triggers WorkOrderHistory.record_transition callback
       work_order.mark_complete!
+      AppLogger.info('Work order transitioned to pending', context: self.class.name, work_order_id: work_order.id)
       Success(work_order: work_order, message: 'Work order was successfully submitted.')
     rescue AASM::InvalidTransition => e
-      Rails.logger.error("WorkOrder submission transition failed: #{e.class}: #{e.message}")
+      AppLogger.error('AASM transition failed', context: self.class.name, error: e.message,
+                                                from_state: work_order.aasm.current_state)
       Failure("Transition error: #{e.message}")
     rescue StandardError => e
-      Rails.logger.error("WorkOrder submission failed: #{e.class}: #{e.message}")
+      AppLogger.error('Work order submission failed', context: self.class.name, error: e.message,
+                                                      work_order_id: work_order.id)
       Failure("Submission error: #{e.message}")
     end
   end

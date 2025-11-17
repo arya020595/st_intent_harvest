@@ -18,6 +18,15 @@ class WorkOrder::DetailsController < ApplicationController
 
     # Load the latest amendment history for display
     @amendment_history = @work_order.latest_amendment_history
+
+    # If the work order is completed, render the completed view layout
+    return unless @work_order.work_order_status == 'completed'
+
+    # Compute history values once to avoid N+1 queries in partials
+    @verification_history = @work_order.work_order_histories.where(action: 'approve').order(created_at: :desc).first
+    @completion_history = @work_order.work_order_histories.where(action: 'mark_complete').order(created_at: :desc).first
+
+    render :show_completed
   end
 
   def new
@@ -100,11 +109,13 @@ class WorkOrder::DetailsController < ApplicationController
       :block_id,
       :work_order_rate_id,
       :start_date,
+      :work_month,
       :field_conductor_id,
       work_order_workers_attributes: %i[
         id
         worker_id
         work_area_size
+        work_days
         rate
         amount
         remarks

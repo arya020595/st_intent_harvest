@@ -1,0 +1,60 @@
+<%# Work Order Details Card - displays type-specific fields %>
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Work Order ID</label>
+        <div class="bg-light p-2 rounded"><%= work_order.id %></div>
+      </div>
+      <% if work_order.normal_type? %>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Block No.</label>
+          <div class="bg-light p-2 rounded"><%= work_order.block_number.presence || 'N/A' %></div>
+        </div>
+      <% end %>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Work Order</label>
+        <div class="bg-light p-2 rounded"><%= work_order.work_order_rate.work_order_name %></div>
+      </div>
+      <% if work_order.normal_type? %>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Rate (RM)</label>
+          <div class="bg-light p-2 rounded">RM <%= number_with_precision(work_order.work_order_rate.rate, precision: 2) %></div>
+        </div>
+      <% end %>
+      <%# Date field - varies by work order type %>
+      <% if work_order.normal_type? %>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Date</label>
+          <div class="bg-light p-2 rounded"><%= @completion_history&.created_at&.strftime('%d-%m-%Y') || work_order.start_date&.strftime('%d-%m-%Y') || '-' %></div>
+        </div>
+      <% else %>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Date</label>
+          <div class="bg-light p-2 rounded"><%= work_order.created_at&.strftime('%d-%m-%Y') %></div>
+        </div>
+      <% end %>
+      <%# Total Amount - varies by work order type %>
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Total Amount</label>
+        <div class="bg-light p-2 rounded">
+          RM <%= if work_order.resources_type?
+                   number_with_precision(work_order.work_order_items.sum(:price), precision: 2)
+                 else
+                   number_with_precision(work_order.work_order_workers.sum(:amount), precision: 2)
+                 end %>
+        </div>
+      </div>
+      <% if work_order.normal_type? %>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Field Conductor</label>
+          <div class="bg-light p-2 rounded"><%= work_order.field_conductor_name || '-' %></div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Total No. of Workers</label>
+          <div class="bg-light p-2 rounded"><%= work_order.work_order_workers.count %></div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
