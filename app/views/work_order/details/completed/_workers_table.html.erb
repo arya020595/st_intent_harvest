@@ -1,0 +1,59 @@
+<%# Workers Details Table - For normal_type and work_days_type work orders %>
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-success text-white">
+    <h5 class="mb-0">Workers Details</h5>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead class="table-success">
+          <tr>
+            <th>No</th>
+            <th>Worker Name</th>
+            <th><%= work_order.work_days_type? ? 'Days' : 'Quantity(Ha)' %></th>
+            <th>Rate (RM)</th>
+            <th>Amount (RM)</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if work_order.work_order_workers.any? %>
+            <% work_order.work_order_workers.each_with_index do |worker, index| %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td><%= worker.worker_name %></td>
+                <td>
+                  <%= if work_order.work_days_type?
+                        worker.work_days || 0
+                      else
+                        number_with_precision(worker.work_area_size, precision: 2)
+                      end %>
+                </td>
+                <td><%= number_with_precision(worker.rate, precision: 2) %></td>
+                <td><%= number_with_precision(worker.amount, precision: 2) %></td>
+                <td><%= worker.remarks || '-' %></td>
+              </tr>
+            <% end %>
+            <tr class="table-secondary fw-bold">
+              <td colspan="2" class="text-center">Total</td>
+              <td>
+                <%= if work_order.work_days_type?
+                      work_order.work_order_workers.sum { |w| w.work_days || 0 }
+                    else
+                      number_with_precision(work_order.work_order_workers.sum(:work_area_size), precision: 2)
+                    end %>
+              </td>
+              <td></td>
+              <td><%= number_with_precision(work_order.work_order_workers.sum(:amount), precision: 2) %></td>
+              <td></td>
+            </tr>
+          <% else %>
+            <tr>
+              <td colspan="6" class="text-center text-muted">No workers assigned</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

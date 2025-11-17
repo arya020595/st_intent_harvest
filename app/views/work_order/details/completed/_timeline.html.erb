@@ -1,0 +1,58 @@
+<%# Work Order Process Timeline - varies by work order type %>
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-success text-white">
+    <h5 class="mb-0">Work Order Process</h5>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead class="table-success">
+          <tr>
+            <th>Date</th>
+            <th>Work Order Process</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if work_order.normal_type? %>
+            <%# Normal type: Full workflow with 4 steps %>
+            <tr>
+              <td><%= work_order.created_at.strftime('%d-%m-%Y') %></td>
+              <td>Distributing Work Order</td>
+            </tr>
+            <tr>
+              <td><%= work_order.start_date&.strftime('%d-%m-%Y') || '-' %></td>
+              <td>Work Order Starting Date</td>
+            </tr>
+            <% verification_history = work_order.work_order_histories.where(action: 'approve').order(created_at: :desc).first %>
+            <% if verification_history.present? %>
+              <tr>
+                <td><%= verification_history.created_at.strftime('%d-%m-%Y') %></td>
+                <td>Work Order Verification</td>
+              </tr>
+            <% end %>
+            <% completion_history = work_order.work_order_histories.where(action: 'mark_complete').order(created_at: :desc).first %>
+            <% if completion_history.present? %>
+              <tr>
+                <td><%= completion_history.created_at.strftime('%d-%m-%Y') %></td>
+                <td>Work Order End Date</td>
+              </tr>
+            <% end %>
+          <% else %>
+            <%# Resources/Work Days type: Simplified workflow with 2 steps %>
+            <tr>
+              <td><%= work_order.created_at&.strftime('%d-%m-%Y') || '-' %></td>
+              <td>Work Order Created</td>
+            </tr>
+            <% verification_history = work_order.work_order_histories.where(action: 'approve').order(created_at: :desc).first %>
+            <% if verification_history.present? %>
+              <tr>
+                <td><%= verification_history.created_at.strftime('%d-%m-%Y') %></td>
+                <td>Work Order Verification</td>
+              </tr>
+            <% end %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
