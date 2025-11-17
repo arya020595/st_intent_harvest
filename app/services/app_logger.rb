@@ -64,12 +64,16 @@ class AppLogger
 
     # Log service operation failure
     # @param operation [String] Name of the operation
-    # @param error [Exception, String] Error that occurred
+    # @param error [Exception, String, Array] Error that occurred
     # @param data [Hash] Additional context
     def service_failure(operation, error:, **data)
       error_data = {
-        error_message: error.is_a?(Exception) ? error.message : error,
-        error_class: error.is_a?(Exception) ? error.class.name : 'String',
+        error_message: case error
+                       when Exception then error.message
+                       when Array then error.join(', ')
+                       else error.to_s
+                       end,
+        error_class: error.class.name,
         **data
       }
       error_data[:backtrace] = error.backtrace.first(5) if error.is_a?(Exception)
@@ -139,9 +143,10 @@ class AppLogger
     # Sanitize sensitive parameters
     def sanitize_params(params)
       sensitive_keys = %i[password password_confirmation token secret api_key]
-      params.transform_values do |value|
+      sanitized = params.except(*sensitive_keys)
+      sanitized.transform_values do |value|
         if value.is_a?(Hash)
-          value.except(*sensitive_keys)
+          sanitize_params(value)  # Recursive call
         else
           value
         end
