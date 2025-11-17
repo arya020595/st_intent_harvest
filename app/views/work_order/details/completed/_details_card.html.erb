@@ -41,7 +41,7 @@
         <label class="form-label fw-bold">Total Amount</label>
         <div class="bg-light p-2 rounded">
           RM <%= if work_order.resources_type?
-                   number_with_precision(work_order.work_order_items.sum { |item| item.price.to_f }, precision: 2)
+                   number_with_precision(work_order.work_order_items.sum(:price), precision: 2)
                  else
                    number_with_precision(work_order.work_order_workers.sum(:amount), precision: 2)
                  end %>
