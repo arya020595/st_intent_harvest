@@ -14,7 +14,7 @@
   <!-- Header: Company Logo and Status Badge -->
   <%= render 'work_order/details/completed/header', work_order: @work_order %>
   <!-- Work Order Details Card -->
-  <%= render 'work_order/details/completed/details_card', work_order: @work_order %>
+  <%= render 'work_order/details/completed/details_card', work_order: @work_order, verification_history: @verification_history, completion_history: @completion_history %>
   <!-- Resources & Machineries Table (resources_type only) -->
   <% if @work_order.resources_type? %>
     <%= render 'work_order/details/completed/resources_table', work_order: @work_order %>
@@ -24,5 +24,5 @@
     <%= render 'work_order/details/completed/workers_table', work_order: @work_order %>
   <% end %>
   <!-- Work Order Process Timeline -->
-  <%= render 'work_order/details/completed/timeline', work_order: @work_order %>
+  <%= render 'work_order/details/completed/timeline', work_order: @work_order, verification_history: @verification_history, completion_history: @completion_history %>
 </div>

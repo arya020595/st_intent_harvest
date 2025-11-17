@@ -20,7 +20,13 @@ class WorkOrder::DetailsController < ApplicationController
     @amendment_history = @work_order.latest_amendment_history
 
     # If the work order is completed, render the completed view layout
-    render :show_completed and return if @work_order.work_order_status == 'completed'
+    if @work_order.work_order_status == 'completed'
+      # Compute history values once to avoid N+1 queries in partials
+      @verification_history = @work_order.work_order_histories.where(action: 'approve').order(created_at: :desc).first
+      @completion_history = @work_order.work_order_histories.where(action: 'mark_complete').order(created_at: :desc).first
+      
+      render :show_completed and return
+    end
   end
 
   def new
@@ -95,7 +101,7 @@ class WorkOrder::DetailsController < ApplicationController
   private
 
   def set_work_order
-    @work_order = WorkOrder.find(params[:id])
+    @work_order = WorkOrder.includes(:work_order_histories).find(params[:id])
   end
 
   def work_order_params
