@@ -11,7 +11,7 @@
 # 0 = "zero days worked" (actual value)
 #
 # This also fixes the PG::NotNullViolation when empty string comes from forms
-class AllowNullWorkDaysInWorkOrderWorkers < ActiveRecord::Migration[8.0]
+class AllowNullWorkDaysInWorkOrderWorkers < ActiveRecord::Migration[8.1]
   def change
     # Allow NULL values in work_days
     change_column_null :work_order_workers, :work_days, true
