@@ -1,4 +1,8 @@
-<div class="d-flex flex-column flex-shrink-0 p-3 bg-light">
+<div id="sidebar" class="d-flex flex-column flex-shrink-0 p-3 sidebar-bg" style="width: 280px; height: auto; transition: all 0.3s;">
+  <a href="<%= root_path %>" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+    <!-- <span class="fs-4">ST Dashboard</span> -->
+  </a>
+   <!-- <hr> -->
   <ul id="sidebarAccordion" class="nav nav-pills flex-column mb-auto">
     <% if can_view_menu?('Dashboard') %>
       <li class="nav-item">
@@ -59,7 +63,7 @@
       <li>
         <%= link_to workers_path, class: "nav-link #{active_controller?('workers') ? 'active' : 'link-dark'}" do %>
           <i class="bi bi-people-fill me-2"></i>
-          Workers
+          Workers Profile
         <% end %>
       </li>
     <% end %>
@@ -117,8 +121,6 @@
       </li>
     <% end %>
   </ul>
-  <!-- Footer Text -->
-  <div class="border-top pt-3 mt-auto text-center fw-bold">
-    <small class="text-dark">Powered By ST Datablu</small>
-  </div>
+  <hr/>
+  <p class="powered-by">Powered By ST Datablu</p>
 </div>
