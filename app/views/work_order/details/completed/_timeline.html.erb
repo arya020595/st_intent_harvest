@@ -23,14 +23,12 @@
               <td><%= work_order.start_date&.strftime('%d-%m-%Y') || '-' %></td>
               <td>Work Order Starting Date</td>
             </tr>
-            <% verification_history = work_order.work_order_histories.where(action: 'approve').order(created_at: :desc).first %>
             <% if verification_history.present? %>
               <tr>
                 <td><%= verification_history.created_at.strftime('%d-%m-%Y') %></td>
                 <td>Work Order Verification</td>
               </tr>
             <% end %>
-            <% completion_history = work_order.work_order_histories.where(action: 'mark_complete').order(created_at: :desc).first %>
             <% if completion_history.present? %>
               <tr>
                 <td><%= completion_history.created_at.strftime('%d-%m-%Y') %></td>
@@ -43,7 +41,6 @@
               <td><%= work_order.created_at.strftime('%d-%m-%Y') %></td>
               <td>Work Order Created</td>
             </tr>
-            <% verification_history = work_order.work_order_histories.where(action: 'approve').order(created_at: :desc).first %>
             <% if verification_history.present? %>
               <tr>
                 <td><%= verification_history.created_at.strftime('%d-%m-%Y') %></td>
