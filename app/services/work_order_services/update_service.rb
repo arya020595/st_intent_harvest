@@ -78,7 +78,7 @@ module WorkOrderServices
           Failure("Transition error: #{e.message}")
         rescue StandardError => e
           AppLogger.error('Reopen failed', context: self.class.name, error: e.message, work_order_id: work_order.id)
-          Failure("Submission error: #{e.message}")
+          Failure("Reopen error: #{e.message}")
         end
       elsif work_order.ongoing?
         begin
