@@ -24,13 +24,13 @@
       <% end %>
       <%# Date field - varies by work order type %>
       <% if work_order.normal_type? %>
-        <%# completion_history is now passed in as a local variable from the controller %>
+        <% completion_history = work_order.work_order_histories.where(action: 'mark_complete').order(created_at: :desc).first %>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Date</label>
           <div class="bg-light p-2 rounded"><%= completion_history&.created_at&.strftime('%d-%m-%Y') || work_order.start_date&.strftime('%d-%m-%Y') || '-' %></div>
         </div>
       <% else %>
-        <%# verification_history is now passed in as a local variable from the controller %>
+        <% verification_history = work_order.work_order_histories.where(action: 'approve').order(created_at: :desc).first %>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Date</label>
           <div class="bg-light p-2 rounded"><%= verification_history&.created_at&.strftime('%d-%m-%Y') || work_order.start_date&.strftime('%d-%m-%Y') || '-' %></div>
