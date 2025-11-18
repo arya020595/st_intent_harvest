@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module WorkOrder
+module WorkOrders
   class PayCalculationPolicy < ApplicationPolicy
     # Inherits all default behavior from ApplicationPolicy
 

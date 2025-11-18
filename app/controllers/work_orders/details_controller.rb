@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module WorkOrder
+module WorkOrders
   class DetailsController < ApplicationController
     include RansackMultiSort
     include ResponseHandling
@@ -8,14 +8,15 @@ module WorkOrder
     before_action :set_work_order, only: %i[show edit update destroy mark_complete]
 
     def index
-      authorize WorkOrder, policy_class: WorkOrder::DetailPolicy
+      authorize WorkOrder, policy_class: WorkOrders::DetailPolicy
 
-      apply_ransack_search(policy_scope(WorkOrder, policy_scope_class: WorkOrder::DetailPolicy::Scope).order(id: :desc))
+      apply_ransack_search(policy_scope(WorkOrder,
+                                        policy_scope_class: WorkOrders::DetailPolicy::Scope).order(id: :desc))
       @pagy, @work_orders = paginate_results(@q.result)
     end
 
     def show
-      authorize @work_order, policy_class: WorkOrder::DetailPolicy
+      authorize @work_order, policy_class: WorkOrders::DetailPolicy
 
       # Load the latest amendment history for display
       @amendment_history = @work_order.latest_amendment_history
@@ -32,7 +33,7 @@ module WorkOrder
 
     def new
       @work_order = WorkOrder.new
-      authorize @work_order, policy_class: WorkOrder::DetailPolicy
+      authorize @work_order, policy_class: WorkOrders::DetailPolicy
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
     end
@@ -40,7 +41,7 @@ module WorkOrder
     def create
       service = WorkOrderServices::CreateService.new(work_order_params)
       @work_order = service.work_order
-      authorize @work_order, policy_class: WorkOrder::DetailPolicy
+      authorize @work_order, policy_class: WorkOrders::DetailPolicy
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
 
@@ -49,19 +50,19 @@ module WorkOrder
 
       handle_result(
         result,
-        success_path: ->(data) { work_order_detail_path(data[:work_order]) },
+        success_path: ->(data) { work_orders_detail_path(data[:work_order]) },
         error_action: :new
       )
     end
 
     def edit
-      authorize @work_order, policy_class: WorkOrder::DetailPolicy
+      authorize @work_order, policy_class: WorkOrders::DetailPolicy
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
     end
 
     def update
-      authorize @work_order, policy_class: WorkOrder::DetailPolicy
+      authorize @work_order, policy_class: WorkOrders::DetailPolicy
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
 
@@ -71,31 +72,31 @@ module WorkOrder
 
       handle_result(
         result,
-        success_path: work_order_detail_path(@work_order),
+        success_path: work_orders_detail_path(@work_order),
         error_action: :edit
       )
     end
 
     def destroy
-      authorize @work_order, policy_class: WorkOrder::DetailPolicy
+      authorize @work_order, policy_class: WorkOrders::DetailPolicy
 
       if @work_order.destroy
-        redirect_to work_order_details_path, notice: 'Work order was successfully deleted.'
+        redirect_to work_orders_details_path, notice: 'Work order was successfully deleted.'
       else
-        redirect_to work_order_detail_path(@work_order), alert: 'There was an error deleting the work order.'
+        redirect_to work_orders_detail_path(@work_order), alert: 'There was an error deleting the work order.'
       end
     end
 
     def mark_complete
-      authorize @work_order, policy_class: WorkOrder::DetailPolicy
+      authorize @work_order, policy_class: WorkOrders::DetailPolicy
 
       service = WorkOrderServices::MarkCompleteService.new(@work_order)
       result = service.call
 
       handle_result(
         result,
-        success_path: work_order_detail_path(@work_order),
-        error_path: work_order_detail_path(@work_order)
+        success_path: work_orders_detail_path(@work_order),
+        error_path: work_orders_detail_path(@work_order)
       )
     end
 

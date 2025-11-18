@@ -1,22 +1,22 @@
 # frozen_string_literal: true
 
-module WorkOrder
+module WorkOrders
   class PayCalculationsController < ApplicationController
     include RansackMultiSort
 
     before_action :set_pay_calculation, only: %i[show edit update destroy]
 
     def index
-      authorize PayCalculation, policy_class: WorkOrder::PayCalculationPolicy
+      authorize PayCalculation, policy_class: WorkOrders::PayCalculationPolicy
 
       apply_ransack_search(policy_scope(PayCalculation,
-                                        policy_scope_class: WorkOrder::PayCalculationPolicy::Scope).order(id: :desc))
+                                        policy_scope_class: WorkOrders::PayCalculationPolicy::Scope).order(id: :desc))
 
       @pagy, @pay_calculations = paginate_results(@q.result)
     end
 
     def show
-      authorize @pay_calculation, policy_class: WorkOrder::PayCalculationPolicy
+      authorize @pay_calculation, policy_class: WorkOrders::PayCalculationPolicy
 
       apply_ransack_search(@pay_calculation.pay_calculation_details.includes(:worker).order(id: :asc))
 
@@ -25,28 +25,28 @@ module WorkOrder
 
     def new
       @pay_calculation = PayCalculation.new
-      authorize @pay_calculation, policy_class: WorkOrder::PayCalculationPolicy
+      authorize @pay_calculation, policy_class: WorkOrders::PayCalculationPolicy
     end
 
     def create
       @pay_calculation = PayCalculation.new(pay_calculation_params)
-      authorize @pay_calculation, policy_class: WorkOrder::PayCalculationPolicy
+      authorize @pay_calculation, policy_class: WorkOrders::PayCalculationPolicy
 
       # Logic to be implemented later
     end
 
     def edit
-      authorize @pay_calculation, policy_class: WorkOrder::PayCalculationPolicy
+      authorize @pay_calculation, policy_class: WorkOrders::PayCalculationPolicy
     end
 
     def update
-      authorize @pay_calculation, policy_class: WorkOrder::PayCalculationPolicy
+      authorize @pay_calculation, policy_class: WorkOrders::PayCalculationPolicy
 
       # Logic to be implemented later
     end
 
     def destroy
-      authorize @pay_calculation, policy_class: WorkOrder::PayCalculationPolicy
+      authorize @pay_calculation, policy_class: WorkOrders::PayCalculationPolicy
 
       # Logic to be implemented later
     end

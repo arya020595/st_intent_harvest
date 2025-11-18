@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module WorkOrder
+module WorkOrders
   class DetailPolicy < ApplicationPolicy
     # Custom action for marking work order as complete (ongoing -> pending)
     def mark_complete?

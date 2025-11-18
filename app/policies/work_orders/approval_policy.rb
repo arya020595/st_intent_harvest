@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module WorkOrder
+module WorkOrders
   class ApprovalPolicy < ApplicationPolicy
     # Custom action for approving work orders (pending -> completed)
     def approve?

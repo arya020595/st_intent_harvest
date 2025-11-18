@@ -1,13 +1,10 @@
-<div class="container-fluid px-4 py-4 work-order-details" data-controller="multi-sort">
+<div class="container-fluid px-4 py-4 work-order-approvals" data-controller="multi-sort">
   <div class="card shadow-sm">
     <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Work Orders</h5>
-      <%= link_to new_work_order_detail_path, class: "btn btn-light btn-sm" do %>
-        <i class="bi bi-plus-circle"></i> Add Work Order
-      <% end %>
+      <h5 class="mb-0">Work Order Approvals</h5>
     </div>
     <div class="card-body">
-      <%= search_form_for @q, url: work_order_details_path, html: { id: 'work-order-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
+      <%= search_form_for @q, url: work_orders_approvals_path, html: { id: 'work-order-approval-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
             <thead class="table-success">
@@ -16,13 +13,13 @@
                   <%= sort_link(@q, :id, 'ID') %>
                 </th>
                 <th>
-                  <%= sort_link(@q, :work_order_rate_work_order_name, 'Work Order') %>
+                  <%= sort_link(@q, :work_order_rate_work_order_name, 'Work Order Rate') %>
                 </th>
                 <th>
-                  <%= sort_link(@q, :block_block_number, 'Block No.') %>
+                  <%= sort_link(@q, :block_block_number, 'Block') %>
                 </th>
                 <th class="text-center">
-                  <%= sort_link(@q, :start_date, 'Starting Date') %>
+                  <%= sort_link(@q, :start_date, 'Start Date') %>
                 </th>
                 <th class="text-center">
                   <%= sort_link(@q, :work_order_status, 'Status') %>
@@ -31,13 +28,13 @@
               </tr>
               <tr>
                 <th class="text-center">
-                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'Search Work Order...', min: 1 %>
+                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1 %>
                 </th>
                 <th>
-                  <%= f.search_field :work_order_rate_work_order_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Work Order...' %>
+                  <%= f.search_field :work_order_rate_work_order_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Rate..' %>
                 </th>
                 <th>
-                  <%= f.search_field :block_block_number_cont, class: 'form-control form-control-sm', placeholder: 'Search Block...' %>
+                  <%= f.search_field :block_block_number_cont, class: 'form-control form-control-sm', placeholder: 'Search Block..' %>
                 </th>
                 <th class="text-center">
                   <div class="input-group input-group-sm">
@@ -57,25 +54,25 @@
                 </th>
                 <th class="text-center">
                   <%= f.select :work_order_status_eq,
-                      options_for_select([['Ongoing', 'ongoing'], ['Pending', 'pending'], ['Amendment Required', 'amendment_required'], ['Completed', 'completed']], f.object.work_order_status_eq),
+                      options_for_select([['Pending', 'pending'], ['Amendment Required', 'amendment_required'], ['Completed', 'completed']], f.object.work_order_status_eq),
                       { include_blank: 'Select Status..' },
                       { class: 'form-select form-select-sm' } %>
                 </th>
                 <th class="text-center">
                   <div class="d-flex gap-1 justify-content-center">
                     <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
-                    <%= link_to 'Reset', work_order_details_path, class: 'btn btn-secondary btn-sm' %>
+                    <%= link_to 'Reset', work_orders_approvals_path, class: 'btn btn-secondary btn-sm' %>
                   </div>
                 </th>
               </tr>
             </thead>
             <tbody>
               <% if @work_orders.any? %>
-                <%= render partial: 'work_order_detail_row', collection: @work_orders, as: :work_order %>
+                <%= render partial: 'work_orders_approval_row', collection: @work_orders, as: :work_order %>
               <% else %>
                 <tr>
                   <td colspan="6" class="text-center text-muted py-4">
-                    No work orders found. <%= link_to 'Create a new work order', new_work_order_detail_path, class: 'text-decoration-none' %>
+                    No work orders found for approval.
                   </td>
                 </tr>
               <% end %>
@@ -86,7 +83,7 @@
       <div class="d-flex justify-content-between align-items-center mt-3">
         <div class="d-flex align-items-center gap-2">
           <span class="text-muted small">Show</span>
-          <%= per_page_selector %>
+          <%= per_page_selector(current: params[:per_page] || 10) %>
           <span class="text-muted small">
             <%== @pagy.info_tag(item_name: 'Work Orders') %>
           </span>

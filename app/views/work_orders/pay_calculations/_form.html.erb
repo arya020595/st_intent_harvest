@@ -1,4 +1,4 @@
-<%= form_with(model: [:work_order, pay_calculation], url: pay_calculation.new_record? ? work_order_pay_calculations_path : work_order_pay_calculation_path(pay_calculation), local: true) do |form| %>
+<%= form_with(model: [:work_order, pay_calculation], url: pay_calculation.new_record? ? work_orders_pay_calculations_path : work_orders_pay_calculation_path(pay_calculation), local: true) do |form| %>
   <% if pay_calculation.errors.any? %>
     <div class="alert alert-danger">
       <h4><%= pluralize(pay_calculation.errors.count, "error") %> prohibited this pay calculation from being saved:</h4>
