@@ -350,13 +350,13 @@ end
 # test/fixtures/workers.yml
 one:
   name: John Doe
-  worker_type: Full - Time
+  worker_type: "Full - Time"
   is_active: true
   hired_date: <%= 1.year.ago.to_date %>
 
 two:
   name: Jane Smith
-  worker_type: Part - Time
+  worker_type: "Part - Time"
   is_active: true
 ```
 
