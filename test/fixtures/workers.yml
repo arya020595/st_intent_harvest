@@ -14,8 +14,20 @@
 #  updated_at      :datetime         not null
 #
 
-one: {}
-# column: value
-#
-two: {}
-# column: value
+one:
+  name: "John Worker"
+  worker_type: "permanent"
+  gender: "male"
+  is_active: true
+  hired_date: 2024-01-01
+  nationality: "Malaysian"
+  identity_number: "123456-78-9012"
+
+two:
+  name: "Jane Worker"
+  worker_type: "contract"
+  gender: "female"
+  is_active: true
+  hired_date: 2024-02-01
+  nationality: "Malaysian"
+  identity_number: "234567-89-0123"

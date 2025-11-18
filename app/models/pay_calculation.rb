@@ -4,12 +4,32 @@ class PayCalculation < ApplicationRecord
 
   validates :month_year, presence: true
 
+  # Class method to find or create pay calculation by month_year
+  def self.find_or_create_for_month(month_year)
+    find_or_create_by!(month_year: month_year) do |pc|
+      pc.total_gross_salary = 0
+      pc.total_deductions = 0
+      pc.total_net_salary = 0
+    end
+  end
+
+  # Recalculate all totals from pay calculation details
+  def recalculate_overall_total!
+    update!(
+      total_gross_salary: pay_calculation_details.sum(:gross_salary),
+      total_deductions: pay_calculation_details.sum(:deductions),
+      total_net_salary: pay_calculation_details.sum(:net_salary)
+    )
+  end
+
   # Ransack configuration
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       id
       month_year
-      overall_total
+      total_gross_salary
+      total_deductions
+      total_net_salary
       created_at
       updated_at
     ]
@@ -24,9 +44,11 @@ end
 #
 # Table name: pay_calculations
 #
-#  id            :integer          not null, primary key
-#  month_year    :string           not null
-#  overall_total :decimal(10, 2)
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
+#  id                  :integer          not null, primary key
+#  month_year          :string           not null
+#  total_gross_salary  :decimal(10, 2)   default(0), not null
+#  total_deductions    :decimal(10, 2)   default(0), not null
+#  total_net_salary    :decimal(10, 2)   default(0), not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
 #

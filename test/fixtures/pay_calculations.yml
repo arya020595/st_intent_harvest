@@ -2,15 +2,29 @@
 #
 # Table name: pay_calculations
 #
-#  id            :integer          not null, primary key
-#  month_year    :string           not null
-#  overall_total :decimal(10, 2)
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
+#  id                  :integer          not null, primary key
+#  month_year          :string           not null
+#  total_gross_salary  :decimal(10, 2)   default(0), not null
+#  total_deductions    :decimal(10, 2)   default(0), not null
+#  total_net_salary    :decimal(10, 2)   default(0), not null
+#  created_at          :datetime         not null
+#  updated_at          :datetime         not null
 #
 
-one: {}
-# column: value
-#
-two: {}
-# column: value
+pay_calc_nov_2024:
+  month_year: "2024-11"
+  total_gross_salary: 0
+  total_deductions: 0
+  total_net_salary: 0
+
+january_2025:
+  month_year: "2025-01"
+  total_gross_salary: 5000
+  total_deductions: 521.25
+  total_net_salary: 4478.75
+
+february_2025:
+  month_year: "2025-02"
+  total_gross_salary: 0
+  total_deductions: 0
+  total_net_salary: 0
