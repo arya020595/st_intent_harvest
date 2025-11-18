@@ -46,7 +46,7 @@ module PayCalculationServices
     end
 
     def process_all_workers(pay_calculation)
-      work_order.work_order_workers.includes(:worker).find_each do |work_order_worker|
+      work_order.work_order_workers.includes(:worker).each do |work_order_worker|
         WorkerPayCalculator.new(work_order_worker, work_order, pay_calculation).process
       end
     end
