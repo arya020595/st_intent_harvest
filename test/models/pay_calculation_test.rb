@@ -56,6 +56,8 @@ class PayCalculationTest < ActiveSupport::TestCase
     assert_equal 0, pay_calc.total_deductions
     assert_equal 0, pay_calc.total_net_salary
   end
+
+  # Test recalculate_overall_total!
   test 'should recalculate all totals from pay_calculation_details' do
     pay_calculation = pay_calculations(:pay_calc_nov_2024)
 
