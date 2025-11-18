@@ -32,7 +32,7 @@ end
 #
 # Table name: work_order_workers
 #
-#  id             :bigint           not null, primary key
+#  id             :integer          not null, primary key
 #  amount         :decimal(10, 2)
 #  created_at     :datetime         not null
 #  rate           :decimal(10, 2)
@@ -40,17 +40,12 @@ end
 #  updated_at     :datetime         not null
 #  work_area_size :integer
 #  work_days      :integer
-#  work_order_id  :bigint           not null
-#  worker_id      :bigint           not null
+#  work_order_id  :integer          not null
+#  worker_id      :integer          not null
 #  worker_name    :string
 #
 # Indexes
 #
 #  index_work_order_workers_on_work_order_id  (work_order_id)
 #  index_work_order_workers_on_worker_id      (worker_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (work_order_id => work_orders.id)
-#  fk_rails_...  (worker_id => workers.id)
 #

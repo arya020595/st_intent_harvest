@@ -15,8 +15,10 @@
 #  index_roles_permissions_on_role_id_and_permission_id  (role_id,permission_id) UNIQUE
 #
 
-one: {}
-# column: value
-#
-two: {}
-# column: value
+one:
+  role: one
+  permission: one
+
+two:
+  role: two
+  permission: two
