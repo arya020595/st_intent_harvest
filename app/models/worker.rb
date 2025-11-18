@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Worker < ApplicationRecord
   # Constants for form options
   WORKER_TYPES = ['Part - Time', 'Full - Time'].freeze

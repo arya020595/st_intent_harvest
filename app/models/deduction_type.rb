@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DeductionType < ApplicationRecord
   validates :name, presence: true
   validates :code, presence: true, uniqueness: true

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class WorkOrderRate < ApplicationRecord
   belongs_to :unit, optional: true
 

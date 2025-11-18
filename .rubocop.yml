@@ -1,0 +1,69 @@
+# RuboCop configuration for st_intent_harvest
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.4
+  SuggestExtensions: false
+  Exclude:
+    - "db/schema.rb"
+    - "db/migrate/*"
+    - "node_modules/**/*"
+    - "vendor/**/*"
+    - "bin/**/*"
+    - "tmp/**/*"
+    - "log/**/*"
+    - "storage/**/*"
+    - ".git/**/*"
+
+# Disable cops that commonly cause internal errors
+Layout/EmptyComment:
+  Enabled: false
+
+Layout/LineEndStringConcatenationIndentation:
+  Enabled: false
+
+Lint/Debugger:
+  Enabled: false
+
+# Disable cops that may cause nil comparison errors
+Style/NumericPredicate:
+  Enabled: false
+
+Style/ZeroLengthPredicate:
+  Enabled: false
+
+# Metrics - adjust these based on your preferences
+Metrics/MethodLength:
+  Max: 25
+  Exclude:
+    - "db/migrate/*"
+
+Metrics/BlockLength:
+  Exclude:
+    - "config/**/*"
+    - "test/**/*"
+    - "spec/**/*"
+
+Metrics/AbcSize:
+  Max: 20
+  Exclude:
+    - "db/migrate/*"
+    - "test/**/*"
+
+# Style preferences
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+
+# Layout preferences
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - "db/migrate/*"
+    - "config/**/*"

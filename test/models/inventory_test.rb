@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: inventories
@@ -24,7 +26,7 @@
 #  fk_rails_...  (category_id => categories.id)
 #  fk_rails_...  (unit_id => units.id)
 #
-require "test_helper"
+require 'test_helper'
 
 class InventoryTest < ActiveSupport::TestCase
   # test "the truth" do

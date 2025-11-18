@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Configure YAML to permit additional classes for Audited
 # This fixes the "Tried to dump unspecified class" error in Rails 8+
 Rails.application.config.after_initialize do

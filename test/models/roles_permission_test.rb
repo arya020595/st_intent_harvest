@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: roles_permissions
@@ -15,7 +17,7 @@
 #  index_roles_permissions_on_role_id_and_permission_id  (role_id,permission_id) UNIQUE
 #
 
-require "test_helper"
+require 'test_helper'
 
 class RolesPermissionTest < ActiveSupport::TestCase
   # test "the truth" do

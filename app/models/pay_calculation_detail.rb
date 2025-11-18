@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PayCalculationDetail < ApplicationRecord
   belongs_to :pay_calculation
   belongs_to :worker
