@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+epf:
+  name: "EPF"
+  code: "EPF"
+  description: "Employee Provident Fund"
+  is_active: false
+  worker_amount: 50.00
+  employee_amount: 150.00
+
+socso:
+  name: "SOCSO"
+  code: "SOCSO"
+  description: "Social Security Organization"
+  is_active: true
+  worker_amount: 21.25
+  employee_amount: 74.35
+
+sip:
+  name: "SIP"
+  code: "SIP"
+  description: "Skim Insurans Pekerjaan"
+  is_active: false
+  worker_amount: 10.00
+  employee_amount: 30.00

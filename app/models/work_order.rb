@@ -95,6 +95,7 @@ class WorkOrder < ApplicationRecord
         after do |*args|
           remarks = args.last.is_a?(Hash) ? args.last[:remarks] : nil
           record_work_order_history(:approve, remarks, 'Work order approved and completed')
+          process_pay_calculation
         end
       end
     end
@@ -123,6 +124,17 @@ class WorkOrder < ApplicationRecord
   end
 
   private
+
+  # Process pay calculation when work order is completed
+  def process_pay_calculation
+    result = PayCalculationServices::ProcessWorkOrderService.new(self).call
+
+    if result.failure?
+      AppLogger.error("Pay calculation failed for WorkOrder ##{id}: #{result.failure}")
+    else
+      AppLogger.info("Pay calculation processed for WorkOrder ##{id}: #{result.value!}")
+    end
+  end
 
   # Helper method to record work order history with optional custom remarks
   # Follows AASM callback parameter passing convention

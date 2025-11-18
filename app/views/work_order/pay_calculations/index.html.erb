@@ -19,7 +19,7 @@
                   <%= sort_link(@q, :month_year, 'Month/Year') %>
                 </th>
                 <th class="text-end">
-                  <%= sort_link(@q, :overall_total, 'Overall Total') %>
+                  <%= sort_link(@q, :total_gross_salary, 'Overall Total') %>
                 </th>
                 <th class="text-center">
                   <%= sort_link(@q, :updated_at, 'Updated At') %>
@@ -34,7 +34,7 @@
                   <%= f.search_field :month_year_cont, class: 'form-control form-control-sm', placeholder: 'Search Month/Year..' %>
                 </th>
                 <th class="text-end">
-                  <%= f.number_field :overall_total_eq, class: 'form-control form-control-sm', placeholder: 'Total', step: '0.01' %>
+                  <%= f.number_field :total_gross_salary_eq, class: 'form-control form-control-sm', placeholder: 'Total', step: '0.01' %>
                 </th>
                 <th class="text-center">
                   <%= f.date_field :updated_at_eq, class: 'form-control form-control-sm', placeholder: 'Date' %>

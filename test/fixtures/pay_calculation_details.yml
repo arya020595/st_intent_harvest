@@ -22,8 +22,20 @@
 #  fk_rails_...  (pay_calculation_id => pay_calculations.id)
 #  fk_rails_...  (worker_id => workers.id)
 #
-one: {}
-# column: value
-#
-two: {}
-# column: value
+john_january:
+  pay_calculation: january_2025
+  worker: one
+  gross_salary: 4500.00
+  worker_deductions: 21.25
+  employee_deductions: 74.35
+  net_salary: 4478.75
+  deduction_breakdown: '{"SOCSO":{"name":"SOCSO","worker":21.25,"employee":74.35}}'
+
+jane_january:
+  pay_calculation: january_2025
+  worker: two
+  gross_salary: 3000.00
+  worker_deductions: 21.25
+  employee_deductions: 74.35
+  net_salary: 2978.75
+  deduction_breakdown: '{"SOCSO":{"name":"SOCSO","worker":21.25,"employee":74.35}}'
