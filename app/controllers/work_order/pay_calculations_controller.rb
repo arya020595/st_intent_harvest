@@ -10,11 +10,16 @@ class WorkOrder::PayCalculationsController < ApplicationController
 
     apply_ransack_search(policy_scope(PayCalculation,
                                       policy_scope_class: WorkOrder::PayCalculationPolicy::Scope).order(id: :desc))
+
     @pagy, @pay_calculations = paginate_results(@q.result)
   end
 
   def show
     authorize @pay_calculation, policy_class: WorkOrder::PayCalculationPolicy
+
+    apply_ransack_search(@pay_calculation.pay_calculation_details.includes(:worker).order(id: :asc))
+
+    @pagy, @pay_calculation_details = paginate_results(@q.result)
   end
 
   def new
