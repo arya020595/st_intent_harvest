@@ -4,12 +4,12 @@ module PayCalculationServices
   class WorkerPayCalculator
     DEFAULT_CURRENCY = 'RM'
 
-    attr_reader :pay_calculation, :work_order_worker, :work_order
+    attr_reader :work_order_worker, :work_order, :pay_calculation
 
-    def initialize(pay_calculation, work_order_worker, work_order)
-      @pay_calculation = pay_calculation
+    def initialize(work_order_worker, work_order, pay_calculation)
       @work_order_worker = work_order_worker
       @work_order = work_order
+      @pay_calculation = pay_calculation
     end
 
     def process
