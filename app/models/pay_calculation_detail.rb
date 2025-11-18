@@ -4,7 +4,7 @@ class PayCalculationDetail < ApplicationRecord
 
   validates :gross_salary, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :deductions, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
-  validates :net_salary, numericality: true, allow_nil: true
+  validates :net_salary, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :worker_deductions, numericality: { greater_than_or_equal_to: 0 }
   validates :employee_deductions, numericality: { greater_than_or_equal_to: 0 }
 
