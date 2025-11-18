@@ -29,7 +29,12 @@ module PayCalculationServices
     end
 
     def accumulate_gross_salary(detail)
-      detail.gross_salary = (detail.gross_salary || 0) + calculated_gross_salary
+      if detail.persisted?
+        # Use atomic increment to avoid race conditions
+        detail.increment!(:gross_salary, calculated_gross_salary)
+      else
+        detail.gross_salary = calculated_gross_salary
+      end
     end
 
     def calculated_gross_salary
