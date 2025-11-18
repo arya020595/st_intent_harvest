@@ -68,6 +68,9 @@ gem 'aasm', '~> 5.5', '>= 5.5.2'
 # Audit trail for models - tracks who created/updated records and what changed
 gem 'audited', '~> 5.8'
 
+# Strong Migrations to help write safe database migrations
+gem 'strong_migrations'
+
 # Bootstrap 5 framework integration
 gem 'bootstrap', '~> 5.3', '>= 5.3.5'
 
@@ -91,9 +94,6 @@ group :development, :test do
 
   # Security vulnerability scanner for Ruby on Rails applications
   gem 'brakeman', require: false
-
-  # Strong Migrations to help write safe database migrations
-  gem 'strong_migrations'
 end
 
 group :development do
