@@ -54,7 +54,7 @@
                   <tr>
                     <td class="text-center"><%= detail.worker.id %></td>
                     <td><%= detail.worker.name %></td>
-                    <td class="text-end">RM <%= number_with_precision(detail.net_salary, precision: 2) %></td>
+                    <td class="text-end"><%= number_to_currency(detail.net_salary, unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %></td>
                     <td class="text-center">
                       <%= link_to worker_detail_work_order_pay_calculation_path(@pay_calculation, worker_id: detail.worker_id), class: "text-decoration-none" do %>
                         <i class="bi bi-info-circle text-primary" title="View Details" role="button"></i>
