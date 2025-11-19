@@ -667,7 +667,6 @@ puts "✓ Created #{WorkOrderItem.count} work order items"
 
 # Create Pay Calculations
 puts 'Creating pay calculations...'
-puts 'Creating pay calculations...'
 # Use PayCalculation API compatible with current model
 pay_calc = PayCalculation.find_or_create_for_month('2024-11')
 
