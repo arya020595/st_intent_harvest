@@ -17,7 +17,7 @@ class PayCalculation < ApplicationRecord
   def recalculate_overall_total!
     update!(
       total_gross_salary: pay_calculation_details.sum(:gross_salary),
-      total_deductions: pay_calculation_details.sum(:worker_deductions),
+      total_deductions: pay_calculation_details.sum(:employee_deductions),
       total_net_salary: pay_calculation_details.sum(:net_salary)
     )
   end

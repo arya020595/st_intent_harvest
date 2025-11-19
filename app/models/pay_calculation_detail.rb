@@ -5,14 +5,16 @@ class PayCalculationDetail < ApplicationRecord
   validates :gross_salary, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :deductions, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :net_salary, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
-  validates :worker_deductions, numericality: { greater_than_or_equal_to: 0 }
   validates :employee_deductions, numericality: { greater_than_or_equal_to: 0 }
+  validates :employer_deductions, numericality: { greater_than_or_equal_to: 0 }
 
-  before_save :apply_deductions
+  # Only apply deductions on creation - makes deductions immutable after initial calculation
+  before_create :apply_deductions
+  # Calculate net salary on every save
   before_save :calculate_net_salary
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[id gross_salary deductions net_salary currency worker_deductions employee_deductions created_at updated_at
+    %w[id gross_salary deductions net_salary currency employee_deductions employer_deductions created_at updated_at
        pay_calculation_id worker_id]
   end
 
@@ -20,19 +22,49 @@ class PayCalculationDetail < ApplicationRecord
     %w[pay_calculation worker]
   end
 
+  # Manually recalculate deductions - only for admin corrections
+  # This bypasses the immutability constraint
+  def recalculate_deductions!
+    # Worker nationality: 'Local' -> 'local', 'Foreigner' -> 'foreigner'
+    result = PayCalculationServices::DeductionCalculator.calculate(
+      pay_calculation.month_year,
+      gross_salary: gross_salary || 0,
+      nationality: worker.nationality&.downcase || 'local'
+    )
+
+    update_columns(
+      employee_deductions: result.employee_deduction,
+      employer_deductions: result.employer_deduction,
+      deduction_breakdown: result.deduction_breakdown,
+      net_salary: (gross_salary || 0) - result.employee_deduction,
+      deductions: result.employee_deduction,
+      updated_at: Time.current
+    )
+  end
+
   private
 
   def apply_deductions
-    result = PayCalculationServices::DeductionCalculator.calculate
+    # Calculate deductions based on the pay calculation's month
+    # This ensures we use the deduction types that were active during that month
+    # Worker nationality: 'Local' -> 'local', 'Foreigner' -> 'foreigner'
+    result = PayCalculationServices::DeductionCalculator.calculate(
+      pay_calculation.month_year,
+      gross_salary: gross_salary || 0,
+      nationality: worker.nationality&.downcase || 'local'
+    )
 
-    self.worker_deductions = result.worker_deduction
     self.employee_deductions = result.employee_deduction
+    self.employer_deductions = result.employer_deduction
     self.deduction_breakdown = result.deduction_breakdown
+
+    # Calculate net salary immediately after setting deductions
+    calculate_net_salary
   end
 
   def calculate_net_salary
-    self.net_salary = (gross_salary || 0) - worker_deductions
-    self.deductions = worker_deductions # Legacy compatibility
+    self.net_salary = (gross_salary || 0) - employee_deductions
+    self.deductions = employee_deductions # Legacy compatibility
   end
 end
 
