@@ -19,7 +19,7 @@
       <% if work_order.normal_type? %>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Rate (RM)</label>
-          <div class="bg-light p-2 rounded">RM <%= number_with_precision(work_order.work_order_rate.rate, precision: 2) %></div>
+          <div class="bg-light p-2 rounded"><%= number_to_currency(work_order.work_order_rate.rate, unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %></div>
         </div>
       <% end %>
       <%# Date field - varies by work order type %>
@@ -39,9 +39,9 @@
         <label class="form-label fw-bold">Total Amount</label>
         <div class="bg-light p-2 rounded">
           RM <%= if work_order.resources_type?
-                   number_with_precision(work_order.work_order_items.sum(:price), precision: 2)
+                   number_to_currency(work_order.work_order_items.sum(:price), unit: '', separator: '.', delimiter: ',', precision: 2)
                  else
-                   number_with_precision(work_order.work_order_workers.sum(:amount), precision: 2)
+                   number_to_currency(work_order.work_order_workers.sum(:amount), unit: '', separator: '.', delimiter: ',', precision: 2)
                  end %>
         </div>
       </div>

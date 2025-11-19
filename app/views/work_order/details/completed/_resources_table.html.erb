@@ -20,13 +20,13 @@
               <tr>
                 <td><%= item.item_name %></td>
                 <td><%= item.category_name || '-' %></td>
-                <td><%= number_with_precision(item.price, precision: 2) %></td>
+                <td><%= number_to_currency(item.price, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
                 <td><%= item.unit_name || '-' %></td>
               </tr>
             <% end %>
             <tr class="table-secondary fw-bold">
               <td colspan="2" class="text-center">Total</td>
-              <td colspan="2"><%= number_with_precision(work_order.work_order_items.sum(:price), precision: 2) %></td>
+              <td colspan="2"><%= number_to_currency(work_order.work_order_items.sum(:price), unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
             </tr>
           <% else %>
             <tr>
