@@ -12,6 +12,14 @@ class WorkOrderWorker < ApplicationRecord
 
   before_save :calculate_amount
 
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[id amount rate remarks work_area_size work_days worker_name created_at updated_at work_order_id worker_id]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[work_order worker]
+  end
+
   private
 
   def calculate_amount

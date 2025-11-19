@@ -1,0 +1,24 @@
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-sm mb-0">
+        <thead class="table-success">
+          <tr>
+            <th>Deduction</th>
+            <th class="text-end">Worker (RM)</th>
+            <th class="text-end">Employee (RM)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% pay_calculation_detail.deduction_breakdown.each do |deduction_code, data| %>
+            <tr>
+              <td><%= data['name'] %></td>
+              <td class="text-end"><%= data['worker_amount'] == 0 ? '-' : number_with_precision(data['worker_amount'], precision: 2) %></td>
+              <td class="text-end"><%= data['employer_amount'] == 0 ? '-' : number_with_precision(data['employer_amount'], precision: 2) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

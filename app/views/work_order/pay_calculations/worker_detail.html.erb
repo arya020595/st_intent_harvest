@@ -1,0 +1,23 @@
+<div class="container-fluid px-4 py-4" data-controller="multi-sort">
+  <%= render 'shared/breadcrumb', breadcrumbs: [
+    ['Work Order', '#'],
+    ['Pay Calculation', work_order_pay_calculations_path],
+    [(Date.strptime(@pay_calculation.month_year, '%Y-%m').strftime('%B %Y') rescue @pay_calculation.month_year), work_order_pay_calculation_path(@pay_calculation)],
+    [@worker.name, nil]
+  ] %>
+  <div class="mb-3">
+    <%= link_to work_order_pay_calculation_path(@pay_calculation), class: "text-decoration-none text-success d-inline-flex align-items-center" do %>
+      <i class="bi bi-arrow-left me-2"></i> Back to <%= (Date.strptime(@pay_calculation.month_year, '%Y-%m').strftime('%B %Y') rescue @pay_calculation.month_year) %>
+    <% end %>
+  </div>
+  <%= render 'work_order/pay_calculations/worker_detail/worker_info', worker: @worker %>
+  <%= render 'work_order/pay_calculations/worker_detail/work_order_details', 
+             pay_calculation: @pay_calculation, 
+             work_order_workers: @work_order_workers, 
+             pay_calculation_detail: @pay_calculation_detail,
+             q: @q,
+             pagy: @pagy,
+             worker: @worker %>
+  <%= render 'work_order/pay_calculations/worker_detail/deduction_details', pay_calculation_detail: @pay_calculation_detail %>
+  <%= render 'work_order/pay_calculations/worker_detail/deduction_summary', pay_calculation_detail: @pay_calculation_detail %>
+</div>

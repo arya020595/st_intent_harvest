@@ -1,0 +1,18 @@
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-4">
+        <p class="mb-2"><strong>Worker Name</strong></p>
+        <p class="text-muted"><%= worker.name %></p>
+      </div>
+      <div class="col-md-4">
+        <p class="mb-2"><strong>Worker Type</strong></p>
+        <p class="text-muted"><%= worker.worker_type&.titleize || 'N/A' %></p>
+      </div>
+      <div class="col-md-4">
+        <p class="mb-2"><strong>Nationality</strong></p>
+        <p class="text-muted"><%= worker.nationality&.titleize || 'N/A' %></p>
+      </div>
+    </div>
+  </div>
+</div>
