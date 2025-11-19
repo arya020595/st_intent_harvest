@@ -1,163 +1,332 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 class DeductionTypeTest < ActiveSupport::TestCase
-  # Only load deduction_types fixtures for this test
-  fixtures :deduction_types
-
   def setup
-    @epf = deduction_types(:epf)
-    @socso = deduction_types(:socso)
+    # Clean up existing deduction types to avoid conflicts
+    DeductionType.delete_all
+
+    @effective_date = Date.parse('2025-01-01')
+    @epf = DeductionType.create!(
+      code: 'EPF',
+      name: 'Employees Provident Fund',
+      description: 'EPF for all employees',
+      employee_contribution: 11.0,
+      employer_contribution: 12.0,
+      calculation_type: 'percentage',
+      applies_to_nationality: 'all',
+      is_active: true,
+      effective_from: @effective_date,
+      effective_until: nil
+    )
+
+    @socso_malaysian = DeductionType.create!(
+      code: 'SOCSO_MY',
+      name: 'SOCSO Malaysian',
+      description: 'SOCSO for Malaysian employees',
+      employee_contribution: 0.5,
+      employer_contribution: 1.75,
+      calculation_type: 'percentage',
+      applies_to_nationality: 'local',
+      is_active: true,
+      effective_from: @effective_date,
+      effective_until: nil
+    )
+
+    @socso_foreign = DeductionType.create!(
+      code: 'SOCSO_FOREIGN',
+      name: 'SOCSO Foreign',
+      description: 'SOCSO for Foreign employees',
+      employee_contribution: 0.0,
+      employer_contribution: 1.25,
+      calculation_type: 'percentage',
+      applies_to_nationality: 'foreigner',
+      is_active: true,
+      effective_from: @effective_date,
+      effective_until: nil
+    )
+
+    @sip = DeductionType.create!(
+      code: 'SIP',
+      name: 'SIP',
+      description: 'SIP for Malaysian employees only',
+      employee_contribution: 0.2,
+      employer_contribution: 0.2,
+      calculation_type: 'percentage',
+      applies_to_nationality: 'local',
+      is_active: true,
+      effective_from: @effective_date,
+      effective_until: nil
+    )
   end
 
-  # Validation Tests
-  test 'should be valid with valid attributes' do
-    deduction = DeductionType.new(
-      name: 'Test Deduction',
-      code: 'TEST',
-      worker_amount: 10.0,
-      employee_amount: 20.0,
-      is_active: true
-    )
-    assert deduction.valid?
-  end
+  # ============================================================================
+  # VALIDATIONS
+  # ============================================================================
 
   test 'should require name' do
-    deduction = DeductionType.new(
-      code: 'TEST',
-      worker_amount: 10.0,
-      employee_amount: 20.0,
-      is_active: true
-    )
+    deduction = DeductionType.new(code: 'TEST', effective_from: Date.current, calculation_type: 'percentage')
     assert_not deduction.valid?
     assert_includes deduction.errors[:name], "can't be blank"
   end
 
   test 'should require code' do
-    deduction = DeductionType.new(
-      name: 'Test',
-      worker_amount: 10.0,
-      employee_amount: 20.0,
-      is_active: true
-    )
+    deduction = DeductionType.new(name: 'Test Deduction', effective_from: Date.current, calculation_type: 'percentage')
     assert_not deduction.valid?
     assert_includes deduction.errors[:code], "can't be blank"
   end
 
-  test 'should require unique code' do
-    deduction = DeductionType.new(
-      name: 'Another EPF',
-      code: 'EPF', # Same as fixture
-      worker_amount: 10.0,
-      employee_amount: 20.0,
-      is_active: true
-    )
+  test 'should require effective_from' do
+    deduction = DeductionType.new(code: 'TEST', name: 'Test', calculation_type: 'percentage')
     assert_not deduction.valid?
-    assert_includes deduction.errors[:code], 'has already been taken'
+    assert_includes deduction.errors[:effective_from], "can't be blank"
   end
 
-  test 'should validate worker_amount is non-negative' do
+  test 'should require calculation_type' do
+    deduction = DeductionType.new(code: 'TEST', name: 'Test', effective_from: Date.current, calculation_type: nil)
+    assert_not deduction.valid?
+    assert_includes deduction.errors[:calculation_type], "can't be blank"
+  end
+
+  test 'should validate calculation_type is percentage or fixed' do
     deduction = DeductionType.new(
-      name: 'Test',
       code: 'TEST',
-      worker_amount: -10.0,
-      employee_amount: 20.0,
-      is_active: true
+      name: 'Test',
+      calculation_type: 'invalid',
+      effective_from: Date.current
     )
     assert_not deduction.valid?
-    assert_includes deduction.errors[:worker_amount], 'must be greater than or equal to 0'
+    assert_includes deduction.errors[:calculation_type], 'is not included in the list'
+  end
+
+  test 'should validate applies_to_nationality' do
+    deduction = DeductionType.new(
+      code: 'TEST',
+      name: 'Test',
+      calculation_type: 'percentage',
+      applies_to_nationality: 'invalid',
+      effective_from: Date.current
+    )
+    assert_not deduction.valid?
+    assert_includes deduction.errors[:applies_to_nationality], 'is not included in the list'
+  end
+
+  test 'should validate employee_contribution is non-negative' do
+    deduction = DeductionType.new(
+      code: 'TEST',
+      name: 'Test',
+      employee_contribution: -1,
+      calculation_type: 'percentage',
+      effective_from: Date.current
+    )
+    assert_not deduction.valid?
+    assert_includes deduction.errors[:employee_contribution], 'must be greater than or equal to 0'
   end
 
   test 'should validate employee_amount is non-negative' do
     deduction = DeductionType.new(
-      name: 'Test',
       code: 'TEST',
-      worker_amount: 10.0,
-      employee_amount: -20.0,
-      is_active: true
+      name: 'Test',
+      employer_contribution: -1,
+      calculation_type: 'percentage',
+      effective_from: Date.current
     )
     assert_not deduction.valid?
-    assert_includes deduction.errors[:employee_amount], 'must be greater than or equal to 0'
+    assert_includes deduction.errors[:employer_contribution], 'must be greater than or equal to 0'
   end
 
-  test 'should allow zero amounts' do
-    deduction = DeductionType.new(
-      name: 'Test',
-      code: 'TEST',
-      worker_amount: 0.0,
-      employee_amount: 0.0,
-      is_active: true
+  test 'should allow multiple deductions with same code but different effective dates' do
+    # End the current EPF first
+    @epf.update!(effective_until: Date.parse('2025-12-31'))
+
+    DeductionType.create!(
+      code: 'EPF',
+      name: 'EPF Old Rate',
+      employee_contribution: 11.0,
+      employer_contribution: 12.0,
+      calculation_type: 'percentage',
+      applies_to_nationality: 'all',
+      is_active: true,
+      effective_from: Date.parse('2024-01-01'),
+      effective_until: Date.parse('2024-12-31')
     )
-    assert deduction.valid?
-  end
 
-  test 'should validate is_active is boolean' do
-    deduction = DeductionType.new(
-      name: 'Test',
-      code: 'TEST',
-      worker_amount: 10.0,
-      employee_amount: 20.0,
-      is_active: nil
+    new_epf = DeductionType.new(
+      code: 'EPF',
+      name: 'EPF New Rate',
+      employee_contribution: 9.0,
+      employer_contribution: 12.0,
+      calculation_type: 'percentage',
+      applies_to_nationality: 'all',
+      is_active: true,
+      effective_from: Date.parse('2026-01-01'),
+      effective_until: nil
     )
-    assert_not deduction.valid?
-    assert_includes deduction.errors[:is_active], 'is not included in the list'
+
+    assert new_epf.valid?
+    assert new_epf.save
   end
 
-  # Scope Tests
+  test 'should not allow multiple deductions with same code and no end date' do
+    duplicate_epf = DeductionType.new(
+      code: 'EPF',
+      name: 'EPF Duplicate',
+      employee_contribution: 9.0,
+      employer_contribution: 12.0,
+      calculation_type: 'percentage',
+      applies_to_nationality: 'all',
+      is_active: true,
+      effective_from: Date.current,
+      effective_until: nil
+    )
+
+    assert_not duplicate_epf.valid?
+    assert_includes duplicate_epf.errors[:code],
+                    'already has an active record with no end date. End the current record first.'
+  end
+
+  # ============================================================================
+  # SCOPES
+  # ============================================================================
+
   test 'active scope should return only active deductions' do
+    inactive_deduction = DeductionType.create!(
+      code: 'INACTIVE',
+      name: 'Inactive Deduction',
+      employee_contribution: 10.0,
+      employer_contribution: 10.0,
+      calculation_type: 'percentage',
+      is_active: false,
+      effective_from: @effective_date
+    )
+
     active_deductions = DeductionType.active
-    assert_includes active_deductions, @socso
-    assert_not_includes active_deductions, @epf
+    assert_includes active_deductions, @epf
+    assert_not_includes active_deductions, inactive_deduction
   end
 
-  test 'active scope should be empty when no active deductions' do
-    DeductionType.update_all(is_active: false)
-    assert_empty DeductionType.active
+  test 'active_on scope should return deductions active on specific date' do
+    old_deduction = DeductionType.create!(
+      code: 'OLD',
+      name: 'Old Deduction',
+      employee_contribution: 5.0,
+      employer_contribution: 5.0,
+      calculation_type: 'percentage',
+      is_active: true,
+      effective_from: Date.parse('2024-01-01'),
+      effective_until: Date.parse('2024-12-31')
+    )
+
+    deductions_2024 = DeductionType.active_on(Date.parse('2024-06-15'))
+    assert_includes deductions_2024, old_deduction
+    assert_not_includes deductions_2024, @epf
+
+    deductions_2025 = DeductionType.active_on(Date.parse('2025-06-15'))
+    assert_includes deductions_2025, @epf
+    assert_not_includes deductions_2025, old_deduction
   end
 
-  # Method Tests
-  test 'worker_amount should be accessible' do
-    assert_equal 21.25, @socso.worker_amount
+  test 'active_on scope should handle nil effective_until as ongoing' do
+    future_deductions = DeductionType.active_on(Date.parse('2030-01-01'))
+    assert_includes future_deductions, @epf
   end
 
-  test 'employee_amount should be accessible' do
-    assert_equal 74.35, @socso.employee_amount
+  test 'for_nationality scope should filter by nationality' do
+    local_deductions = DeductionType.for_nationality('local')
+    assert_includes local_deductions, @epf # applies_to: all
+    assert_includes local_deductions, @socso_malaysian
+    assert_includes local_deductions, @sip
+    assert_not_includes local_deductions, @socso_foreign
+
+    foreign_deductions = DeductionType.for_nationality('foreigner')
+    assert_includes foreign_deductions, @epf # applies_to: all
+    assert_includes foreign_deductions, @socso_foreign
+    assert_not_includes foreign_deductions, @socso_malaysian
+    assert_not_includes foreign_deductions, @sip
   end
 
-  test 'should calculate total deduction (worker + employee)' do
-    total = @socso.worker_amount + @socso.employee_amount
-    assert_equal 95.60, total
+  # ============================================================================
+  # CALCULATION METHODS
+  # ============================================================================
+
+  test 'calculate_amount should calculate percentage correctly for worker' do
+    gross_salary = 3000
+    expected_amount = (3000 * 11.0 / 100).round(2) # 330.00
+
+    amount = @epf.calculate_amount(gross_salary, field: :employee_contribution)
+    assert_equal expected_amount, amount
   end
 
-  # Ransack Configuration Tests
-  test 'ransackable_attributes should include expected attributes' do
-    expected_attrs = %w[id name code description is_active worker_amount employee_amount created_at updated_at]
-    assert_equal expected_attrs, DeductionType.ransackable_attributes
+  test 'calculate_amount should calculate percentage correctly for employee' do
+    gross_salary = 3000
+    expected_amount = (3000 * 12.0 / 100).round(2) # 360.00
+
+    amount = @epf.calculate_amount(gross_salary, field: :employer_contribution)
+    assert_equal expected_amount, amount
   end
 
-  test 'ransackable_associations should be empty' do
-    assert_empty DeductionType.ransackable_associations
+  test 'calculate_amount should handle fixed calculation type' do
+    fixed_deduction = DeductionType.create!(
+      code: 'FIXED',
+      name: 'Fixed Deduction',
+      employee_contribution: 50.0,
+      employer_contribution: 50.0,
+      calculation_type: 'fixed',
+      is_active: true,
+      effective_from: @effective_date
+    )
+
+    amount = fixed_deduction.calculate_amount(3000, field: :employee_contribution)
+    assert_equal 50.0, amount
   end
 
-  # Business Logic Tests
-  test 'should calculate correct deductions for SOCSO' do
-    assert_equal 21.25, @socso.worker_amount
-    assert_equal 74.35, @socso.employee_amount
-    total = @socso.worker_amount + @socso.employee_amount
-    assert_equal 95.60, total
+  test 'calculate_amount should return 0 if rate is zero' do
+    amount = @socso_foreign.calculate_amount(3000, field: :employee_contribution)
+    assert_equal 0, amount
   end
 
-  test 'inactive deductions should not appear in active scope' do
-    assert_not @epf.is_active
-    assert_not_includes DeductionType.active, @epf
+  test 'calculate_amount should round to 2 decimal places' do
+    gross_salary = 3333.33
+    amount = @epf.calculate_amount(gross_salary, field: :employee_contribution)
+
+    assert_equal 366.67, amount
+    assert_equal 2, amount.to_s.split('.').last.length if amount.to_s.include?('.')
   end
 
-  test 'activating a deduction should include it in active scope' do
-    @epf.update!(is_active: true)
-    assert_includes DeductionType.active, @epf
+  test 'should handle zero gross_salary' do
+    amount = @epf.calculate_amount(0, field: :employee_contribution)
+    assert_equal 0, amount
   end
 
-  test 'deactivating a deduction should remove it from active scope' do
-    @socso.update!(is_active: false)
-    assert_not_includes DeductionType.active, @socso
+  test 'should handle very large gross_salary' do
+    large_salary = 1_000_000
+    expected_amount = (large_salary * 11.0 / 100).round(2)
+
+    amount = @epf.calculate_amount(large_salary, field: :employee_contribution)
+    assert_equal expected_amount, amount
+  end
+
+  test 'should handle very small percentage rates' do
+    amount = @sip.calculate_amount(3000, field: :employee_contribution)
+    assert_equal 6.0, amount # 3000 * 0.2 / 100 = 6.00
+  end
+
+  test 'should handle effective date boundaries' do
+    bounded_deduction = DeductionType.create!(
+      code: 'BOUNDED',
+      name: 'Bounded Deduction',
+      employee_contribution: 5.0,
+      employer_contribution: 5.0,
+      calculation_type: 'percentage',
+      is_active: true,
+      effective_from: Date.parse('2025-01-01'),
+      effective_until: Date.parse('2025-06-30')
+    )
+
+    assert_includes DeductionType.active_on(Date.parse('2025-01-01')), bounded_deduction
+    assert_includes DeductionType.active_on(Date.parse('2025-06-30')), bounded_deduction
+    assert_not_includes DeductionType.active_on(Date.parse('2025-07-01')), bounded_deduction
+    assert_not_includes DeductionType.active_on(Date.parse('2024-12-31')), bounded_deduction
   end
 end

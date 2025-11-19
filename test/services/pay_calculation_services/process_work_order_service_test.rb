@@ -111,8 +111,8 @@ module PayCalculationServices
       detail = PayCalculationDetail.find_by(worker: @worker1)
 
       # Net salary is calculated automatically via callbacks
-      # gross_salary (1000) - worker_deductions (21.25) = 978.75
-      expected_net = detail.gross_salary - detail.worker_deductions
+      # gross_salary (1000) - employee_deductions (percentage-based) = net_salary
+      expected_net = detail.gross_salary - detail.employee_deductions
       assert_equal expected_net.to_f, detail.net_salary.to_f
     end
 

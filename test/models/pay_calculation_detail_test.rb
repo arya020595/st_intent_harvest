@@ -51,8 +51,8 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
       pay_calculation: @pay_calc,
       worker: @worker,
       gross_salary: 1000.00,
-      worker_deductions: 0.00,
       employee_deductions: 0.00,
+      employer_deductions: 0.00,
       net_salary: 1000.00
     )
     assert detail.valid?
@@ -83,9 +83,10 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
       gross_salary: 5000.00
     )
 
-    # Should have SOCSO deduction from fixtures (active)
-    assert_equal 21.25, detail.worker_deductions
-    assert_equal 74.35, detail.employee_deductions
+    # Should have EPF (11% = 550) + SOCSO (0.5% = 25) + SIP (0.2% = 10) = 585
+    assert_equal 585.0, detail.employee_deductions
+    # Should have EPF (12% = 600) + SOCSO (1.75% = 87.5) + SIP (0.2% = 10) = 697.5
+    assert_equal 697.5, detail.employer_deductions
   end
 
   test 'should have zero deductions when no active deductions' do
@@ -98,11 +99,11 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
       gross_salary: 5000.00
     )
 
-    assert_equal 0, detail.worker_deductions
     assert_equal 0, detail.employee_deductions
+    assert_equal 0, detail.employer_deductions
 
     # Reset for other tests
-    DeductionType.find_by(code: 'SOCSO').update!(is_active: true)
+    DeductionType.update_all(is_active: true)
   end
 
   test 'should populate deduction_breakdown with active deductions' do
@@ -114,27 +115,21 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
     )
 
     assert_not_nil detail.deduction_breakdown
-    assert_includes detail.deduction_breakdown.keys, 'SOCSO'
-
-    socso_breakdown = detail.deduction_breakdown['SOCSO']
-    assert_equal 'SOCSO', socso_breakdown['name']
-    assert_equal 21.25, socso_breakdown['worker']
-    assert_equal 74.35, socso_breakdown['employee']
+    # We have EPF, SOCSO_MALAYSIAN, and SIP active by default
+    assert_includes detail.deduction_breakdown.keys, 'EPF'
+    assert_includes detail.deduction_breakdown.keys, 'SOCSO_MALAYSIAN'
+    assert_includes detail.deduction_breakdown.keys, 'SIP'
   end
 
   test 'should recalculate deductions when updated' do
     @detail.update!(gross_salary: 6000.00)
 
     # Deductions should be recalculated
-    assert_equal 21.25, @detail.worker_deductions
-    assert_equal 74.35, @detail.employee_deductions
+    assert_equal 21.25, @detail.employee_deductions
+    assert_equal 74.35, @detail.employer_deductions
   end
 
   test 'should handle multiple active deductions' do
-    # Activate EPF
-    epf = deduction_types(:epf)
-    epf.update!(is_active: true)
-
     may_calc = PayCalculation.create!(month_year: '2025-05')
     detail = PayCalculationDetail.create!(
       pay_calculation: may_calc,
@@ -142,23 +137,19 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
       gross_salary: 5000.00
     )
 
-    # Should have both SOCSO and EPF
-    expected_worker = 21.25 + 50.00 # SOCSO + EPF
-    expected_employee = 74.35 + 150.00 # SOCSO + EPF
-
-    assert_equal expected_worker, detail.worker_deductions
-    assert_equal expected_employee, detail.employee_deductions
-    assert_includes detail.deduction_breakdown.keys, 'SOCSO'
+    # Should have EPF (11% = 550) + SOCSO (0.5% = 25) + SIP (0.2% = 10) = 585
+    assert_equal 585.0, detail.employee_deductions
+    # Should have EPF (12% = 600) + SOCSO (1.75% = 87.5) + SIP (0.2% = 10) = 697.5
+    assert_equal 697.5, detail.employer_deductions
+    assert_includes detail.deduction_breakdown.keys, 'SOCSO_MALAYSIAN'
     assert_includes detail.deduction_breakdown.keys, 'EPF'
-
-    # Reset
-    epf.update!(is_active: false)
+    assert_includes detail.deduction_breakdown.keys, 'SIP'
   end
 
   # Net Salary Calculation Tests
-  test 'net_salary should equal gross minus worker_deductions' do
+  test 'net_salary should equal gross minus employee_deductions' do
     assert_equal 4478.75, @detail.net_salary
-    assert_equal @detail.gross_salary - @detail.worker_deductions, @detail.net_salary
+    assert_equal @detail.gross_salary - @detail.employee_deductions, @detail.net_salary
   end
 
   test 'should calculate correct net_salary with zero deductions' do
@@ -174,13 +165,10 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
     assert_equal 5000.00, detail.net_salary
 
     # Reset
-    DeductionType.find_by(code: 'SOCSO').update!(is_active: true)
+    DeductionType.update_all(is_active: true)
   end
 
   test 'should calculate correct net_salary with multiple deductions' do
-    # Activate all deductions
-    DeductionType.update_all(is_active: true)
-
     july_calc = PayCalculation.create!(month_year: '2025-07')
     detail = PayCalculationDetail.create!(
       pay_calculation: july_calc,
@@ -188,16 +176,12 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
       gross_salary: 5000.00
     )
 
-    # EPF: 50, SOCSO: 21.25, SIP: 10 = 81.25 total worker deductions
-    expected_worker_deductions = 50.00 + 21.25 + 10.00
-    expected_net = 5000.00 - expected_worker_deductions
+    # EPF: 11% = 550, SOCSO: 0.5% = 25, SIP: 0.2% = 10 = 585 total employee deductions
+    expected_employee_deductions = 585.0
+    expected_net = 5000.00 - expected_employee_deductions
 
-    assert_equal expected_worker_deductions, detail.worker_deductions
+    assert_equal expected_employee_deductions, detail.employee_deductions
     assert_equal expected_net, detail.net_salary
-
-    # Reset
-    DeductionType.update_all(is_active: false)
-    DeductionType.find_by(code: 'SOCSO').update!(is_active: true)
   end
 
   # JSONB Deduction Breakdown Tests
@@ -223,8 +207,10 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
     breakdown.each do |_code, data|
       assert_instance_of Hash, data
       assert_includes data.keys, 'name'
-      assert_includes data.keys, 'worker'
-      assert_includes data.keys, 'employee'
+      assert_includes data.keys, 'employee_rate'
+      assert_includes data.keys, 'employer_rate'
+      assert_includes data.keys, 'employee_amount'
+      assert_includes data.keys, 'employer_amount'
     end
   end
 
@@ -241,7 +227,7 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
     assert_empty detail.deduction_breakdown
 
     # Reset
-    DeductionType.find_by(code: 'SOCSO').update!(is_active: true)
+    DeductionType.update_all(is_active: true)
   end
 
   # Currency Tests
@@ -259,10 +245,10 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
       gross_salary: 0.00
     )
 
-    # Should still apply fixed deductions
-    assert_equal 21.25, detail.worker_deductions
-    assert_equal 74.35, detail.employee_deductions
-    assert_equal(-21.25, detail.net_salary) # Negative because deductions exceed gross
+    # With 0 gross salary, all percentage-based deductions should be 0
+    assert_equal 0.0, detail.employee_deductions
+    assert_equal 0.0, detail.employer_deductions
+    assert_equal 0.0, detail.net_salary
   end
 
   test 'should update net_salary when gross_salary changes' do
@@ -273,6 +259,6 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
 
     # Net salary should be recalculated
     assert_not_equal original_net, @detail.net_salary
-    assert_equal 5000.00 - @detail.worker_deductions, @detail.net_salary
+    assert_equal 5000.00 - @detail.employee_deductions, @detail.net_salary
   end
 end
