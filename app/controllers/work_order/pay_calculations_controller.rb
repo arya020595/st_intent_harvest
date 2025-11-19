@@ -63,10 +63,11 @@ class WorkOrder::PayCalculationsController < ApplicationController
     month_end = month_date.end_of_month
 
     # Get all work order workers for this worker created in the pay calculation month
-    # Only include work orders with rate type "normal" or "work_days"
+    # Only include work orders with rate type "normal" or "work_days" and status "completed"
     work_order_workers_query = @worker.work_order_workers
                                       .eager_load(work_order: :work_order_rate)
-                                      .where(work_orders: { created_at: month_start..month_end })
+                                      .where(work_orders: { created_at: month_start..month_end,
+                                                            work_order_status: 'completed' })
                                       .where(work_order_rates: { work_order_rate_type: %w[normal work_days] })
                                       .includes(work_order: :block)
 
