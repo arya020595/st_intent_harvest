@@ -26,7 +26,7 @@ class DenormalizableTest < ActiveSupport::TestCase
     denormalize :block_number, from: :test_parent, attribute: :block_number, force_refresh: false
 
     # Test denormalization with force_refresh using block_hectarage (also exists)
-    denormalize :block_hectarage, from: :test_parent, attribute: :hectarage, transform: lambda(&:to_s),
+    denormalize :block_hectarage, from: :test_parent, attribute: :hectarage, transform: lambda { |val| val.to_s },
                                   force_refresh: true
   end
 
