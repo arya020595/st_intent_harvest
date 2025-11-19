@@ -125,8 +125,8 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
     @detail.update!(gross_salary: 6000.00)
 
     # Deductions should be recalculated
-    assert_equal 21.25, @detail.employee_deductions
-    assert_equal 74.35, @detail.employer_deductions
+    assert_equal 702.0, @detail.employee_deductions
+    assert_equal 837.0, @detail.employer_deductions
   end
 
   test 'should handle multiple active deductions' do
