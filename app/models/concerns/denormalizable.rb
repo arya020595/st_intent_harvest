@@ -77,8 +77,9 @@ module Denormalizable
 
       # Skip if foreign key hasn't changed, unless force_refresh is enabled
       foreign_key = "#{association}_id"
-      next if respond_to?("#{foreign_key}_changed?") && !(force_refresh || public_send("#{foreign_key}_changed?"))
-
+      if respond_to?("#{foreign_key}_changed?")
+        next unless force_refresh || public_send("#{foreign_key}_changed?")
+      end
       associated_record = public_send(association)
       next unless associated_record
 
