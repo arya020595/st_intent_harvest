@@ -36,8 +36,11 @@ module RansackMultiSort
   # @return [Array<Pagy, ActiveRecord::Relation>] Pagy object and paginated results
   def paginate_results(results)
     pagy(results, limit: sanitized_per_page_param)
-  rescue Pagy::OverflowError => e
-    # Fallback: retry with last available page (without mutating params)
+  rescue StandardError => e
+    # Handle pagination overflow - return to last valid page
+    # Works with all Pagy versions (OverflowError class name changed across versions)
+    raise unless e.class.name.include?('Overflow') && e.respond_to?(:pagy)
+
     pagy(results, limit: sanitized_per_page_param, page: e.pagy.last)
   end
 

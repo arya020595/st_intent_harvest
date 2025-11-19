@@ -57,7 +57,7 @@
               <% @recent_work_orders.each do |work_order| %>
                 <tr>
                   <td>#<%= work_order.id %></td>
-                  <td><%= work_order.start_date&.strftime("%d %b %Y") %></td>
+                  <td><%= work_order.start_date&.strftime("%d %b %Y").presence || 'N/A' %></td>
                   <td><%= work_order.block&.block_number.presence || 'N/A' %></td>
                   <td>
                     <span class="badge 

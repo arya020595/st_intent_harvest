@@ -1,0 +1,18 @@
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-sm mb-0">
+        <tbody>
+          <tr class="table-secondary">
+            <td><strong>Overall Deduction (RM)</strong></td>
+            <td class="text-end"><strong><%= number_with_precision(pay_calculation_detail.worker_deductions, precision: 2) %></strong></td>
+          </tr>
+          <tr class="table-secondary">
+            <td><strong>Total Net Salary (RM)</strong></td>
+            <td class="text-end"><strong><%= number_with_precision(pay_calculation_detail.net_salary, precision: 2) %></strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

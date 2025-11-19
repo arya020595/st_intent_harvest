@@ -35,7 +35,11 @@ Rails.application.routes.draw do
         patch :request_amendment
       end
     end
-    resources :pay_calculations
+    resources :pay_calculations do
+      member do
+        get :worker_detail
+      end
+    end
   end
 
   # Payslips
