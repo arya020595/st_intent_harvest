@@ -263,6 +263,10 @@ equipment_category = Category.find_or_create_by!(name: 'Equipment', category_typ
 
 puts "✓ Created #{Category.count} categories"
 
+# Load Deduction Types
+puts 'Loading deduction types...'
+load Rails.root.join('db', 'seeds', 'deduction_types.rb')
+
 # Create Blocks
 puts 'Creating blocks...'
 blocks_data = [
@@ -379,7 +383,8 @@ workers_data.each do |data|
     worker.gender = data[:gender]
     worker.is_active = data[:is_active]
     worker.hired_date = Date.parse(data[:hired_date])
-    worker.nationality = data[:nationality]
+    # Normalize various country strings to the allowed Worker nationalities
+    worker.nationality = (data[:nationality] == 'Malaysian' ? 'Local' : 'Foreigner')
   end
 end
 puts "✓ Created #{Worker.count} workers"
@@ -404,7 +409,7 @@ fertilizer_data = [
     supplier: 'PT Pupuk Indonesia' }
 ]
 
-fertilizer_data.each_with_index do |data, index|
+fertilizer_data.each_with_index do |data, _index|
   Inventory.find_or_create_by!(name: data[:name]) do |inventory|
     inventory.stock_quantity = data[:stock_quantity]
     inventory.category = data[:category]
@@ -427,7 +432,7 @@ pesticide_data = [
     supplier: 'PT Agro Kimia' }
 ]
 
-pesticide_data.each_with_index do |data, index|
+pesticide_data.each_with_index do |data, _index|
   Inventory.find_or_create_by!(name: data[:name]) do |inventory|
     inventory.stock_quantity = data[:stock_quantity]
     inventory.category = data[:category]
@@ -452,7 +457,7 @@ tool_data = [
     supplier: 'CV Perkakas Pertanian' }
 ]
 
-tool_data.each_with_index do |data, index|
+tool_data.each_with_index do |data, _index|
   Inventory.find_or_create_by!(name: data[:name]) do |inventory|
     inventory.stock_quantity = data[:stock_quantity]
     inventory.category = data[:category]
@@ -475,7 +480,7 @@ equipment_data = [
     supplier: 'CV Teknik Jaya' }
 ]
 
-equipment_data.each_with_index do |data, index|
+equipment_data.each_with_index do |data, _index|
   Inventory.find_or_create_by!(name: data[:name]) do |inventory|
     inventory.stock_quantity = data[:stock_quantity]
     inventory.category = data[:category]
@@ -662,9 +667,9 @@ puts "✓ Created #{WorkOrderItem.count} work order items"
 
 # Create Pay Calculations
 puts 'Creating pay calculations...'
-pay_calc = PayCalculation.find_or_create_by!(month_year: '2024-11') do |pc|
-  pc.overall_total = 0
-end
+puts 'Creating pay calculations...'
+# Use PayCalculation API compatible with current model
+pay_calc = PayCalculation.find_or_create_for_month('2024-11')
 
 # Create Pay Calculation Details
 puts 'Creating pay calculation details...'
@@ -699,8 +704,8 @@ pay_calc_details_data.each do |data|
   end
 end
 
-# Update overall total
-pay_calc.update!(overall_total: pay_calc.pay_calculation_details.sum(:gross_salary))
+# Recalculate totals via model method
+pay_calc.recalculate_overall_total!
 
 puts "✓ Created pay calculation with #{PayCalculationDetail.count} details"
 
