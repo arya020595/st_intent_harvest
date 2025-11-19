@@ -124,8 +124,13 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
   test 'should recalculate deductions when updated' do
     @detail.update!(gross_salary: 6000.00)
 
-    # Deductions should be recalculated
+    # Manually recalculate deductions (using frozen snapshot rates)
+    @detail.recalculate_deductions!
+
+    # Deductions should be recalculated based on snapshot rates
+    # EPF: 11% = 660, SOCSO: 0.5% = 30, SIP: 0.2% = 12 = 702 total
     assert_equal 702.0, @detail.employee_deductions
+    # EPF: 12% = 720, SOCSO: 1.75% = 105, SIP: 0.2% = 12 = 837 total
     assert_equal 837.0, @detail.employer_deductions
   end
 
