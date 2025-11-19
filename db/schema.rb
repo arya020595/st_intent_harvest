@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_18_075823) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_19_083811) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -52,15 +52,24 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_18_075823) do
   end
 
   create_table "deduction_types", force: :cascade do |t|
+    t.string "applies_to_nationality", comment: "Nationality filter: all, malaysian, foreign"
+    t.string "calculation_type", default: "percentage", null: false, comment: "Type of calculation: percentage (multiply by gross_salary) or fixed (use amount as-is)"
     t.string "code", null: false
     t.datetime "created_at", null: false
     t.text "description"
-    t.decimal "employee_amount", precision: 10, scale: 2, default: "0.0", null: false, comment: "Fixed employer contribution amount in RM"
+    t.date "effective_from"
+    t.date "effective_until"
+    t.decimal "employee_contribution", precision: 10, scale: 2, default: "0.0", null: false, comment: "Employee's contribution rate (percentage) or fixed amount (RM)"
+    t.decimal "employer_contribution", precision: 10, scale: 2, default: "0.0", null: false, comment: "Employer's contribution rate (percentage) or fixed amount (RM)"
     t.boolean "is_active", default: true, null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
-    t.decimal "worker_amount", precision: 10, scale: 2, default: "0.0", null: false, comment: "Fixed worker contribution amount in RM"
-    t.index ["code"], name: "index_deduction_types_on_code", unique: true
+    t.index ["applies_to_nationality"], name: "index_deduction_types_on_applies_to_nationality"
+    t.index ["calculation_type"], name: "index_deduction_types_on_calculation_type"
+    t.index ["code", "effective_until"], name: "index_deduction_types_on_code_and_effective_until"
+    t.index ["code"], name: "index_deduction_types_on_code"
+    t.index ["effective_from"], name: "index_deduction_types_on_effective_from"
+    t.index ["effective_until"], name: "index_deduction_types_on_effective_until"
     t.index ["is_active"], name: "index_deduction_types_on_is_active"
   end
 
@@ -84,12 +93,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_18_075823) do
     t.string "currency", default: "RM"
     t.jsonb "deduction_breakdown", comment: "JSON breakdown of deductions: {EPF: {worker: 0, employee: 0}, SOCSO: {...}}"
     t.decimal "deductions", precision: 10, scale: 2
-    t.decimal "employee_deductions", precision: 10, scale: 2, default: "0.0", null: false, comment: "Total employer deductions (company cost)"
+    t.decimal "employee_deductions", precision: 10, scale: 2, default: "0.0", null: false, comment: "Employee's total deductions (deducted from salary)"
+    t.decimal "employer_deductions", precision: 10, scale: 2, default: "0.0", null: false, comment: "Employer's total contributions (company cost)"
     t.decimal "gross_salary", precision: 10, scale: 2
     t.decimal "net_salary", precision: 10, scale: 2
     t.bigint "pay_calculation_id", null: false
     t.datetime "updated_at", null: false
-    t.decimal "worker_deductions", precision: 10, scale: 2, default: "0.0", null: false, comment: "Total worker deductions (deducted from salary)"
     t.bigint "worker_id", null: false
     t.index ["pay_calculation_id"], name: "index_pay_calculation_details_on_pay_calculation_id"
     t.index ["worker_id"], name: "index_pay_calculation_details_on_worker_id"

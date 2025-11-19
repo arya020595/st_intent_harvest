@@ -4,22 +4,42 @@ epf:
   name: "EPF"
   code: "EPF"
   description: "Employee Provident Fund"
-  is_active: false
-  worker_amount: 50.00
-  employee_amount: 150.00
+  is_active: true
+  employee_contribution: 11.0
+  employer_contribution: 12.0
+  calculation_type: "percentage"
+  applies_to_nationality: "all"
+  effective_from: <%= Date.parse('2025-01-01') %>
 
 socso:
-  name: "SOCSO"
-  code: "SOCSO"
-  description: "Social Security Organization"
+  name: "SOCSO_MALAYSIAN"
+  code: "SOCSO_MALAYSIAN"
+  description: "Social Security Organization for Malaysian employees"
   is_active: true
-  worker_amount: 21.25
-  employee_amount: 74.35
+  employee_contribution: 0.5
+  employer_contribution: 1.75
+  calculation_type: "percentage"
+  applies_to_nationality: "local"
+  effective_from: <%= Date.parse('2025-01-01') %>
 
 sip:
   name: "SIP"
   code: "SIP"
   description: "Skim Insurans Pekerjaan"
-  is_active: false
-  worker_amount: 10.00
-  employee_amount: 30.00
+  is_active: true
+  employee_contribution: 0.2
+  employer_contribution: 0.2
+  calculation_type: "percentage"
+  applies_to_nationality: "local"
+  effective_from: <%= Date.parse('2025-01-01') %>
+
+socso_foreign:
+  name: "SOCSO_FOREIGN"
+  code: "SOCSO_FOREIGN"
+  description: "Social Security Organization for Foreign employees"
+  is_active: true
+  employee_contribution: 0.0
+  employer_contribution: 1.25
+  calculation_type: "percentage"
+  applies_to_nationality: "foreigner"
+  effective_from: <%= Date.parse('2025-01-01') %>

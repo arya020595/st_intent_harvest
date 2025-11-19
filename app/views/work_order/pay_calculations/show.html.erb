@@ -26,7 +26,7 @@
                   <%= sort_link(@q, :worker_name, 'Worker Name') %>
                 </th>
                 <th class="text-end">
-                  <%= sort_link(@q, :gross_salary, 'Overall Total (RM)') %>
+                  <%= sort_link(@q, :net_salary, 'Nett Salary (RM)') %>
                 </th>
                 <th class="text-center">Actions</th>
               </tr>
@@ -38,7 +38,7 @@
                   <%= f.search_field :worker_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Worker Name..' %>
                 </th>
                 <th class="text-end">
-                  <%= f.number_field :gross_salary_eq, class: 'form-control form-control-sm', placeholder: 'Total', step: '0.01' %>
+                  <%= f.number_field :net_salary_eq, class: 'form-control form-control-sm', placeholder: 'Nett Salary', step: '0.01' %>
                 </th>
                 <th class="text-center">
                   <div class="d-flex gap-1 justify-content-center">
@@ -54,7 +54,7 @@
                   <tr>
                     <td class="text-center"><%= detail.worker.id %></td>
                     <td><%= detail.worker.name %></td>
-                    <td class="text-end">RM <%= number_with_precision(detail.gross_salary, precision: 2) %></td>
+                    <td class="text-end">RM <%= number_with_precision(detail.net_salary, precision: 2) %></td>
                     <td class="text-center">
                       <%= link_to worker_detail_work_order_pay_calculation_path(@pay_calculation, worker_id: detail.worker_id), class: "text-decoration-none" do %>
                         <i class="bi bi-info-circle text-primary" title="View Details" role="button"></i>
