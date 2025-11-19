@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Main seeds file - delegates to environment-specific seeds
 #
 # Usage:

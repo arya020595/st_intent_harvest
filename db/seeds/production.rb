@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Production Seeds - Complete data without Faker
 # Usage: SEED_ENV=production rails db:seed
 
@@ -404,7 +406,7 @@ fertilizer_data = [
     supplier: 'PT Pupuk Indonesia' }
 ]
 
-fertilizer_data.each_with_index do |data, index|
+fertilizer_data.each_with_index do |data, _index|
   Inventory.find_or_create_by!(name: data[:name]) do |inventory|
     inventory.stock_quantity = data[:stock_quantity]
     inventory.category = data[:category]
@@ -427,7 +429,7 @@ pesticide_data = [
     supplier: 'PT Agro Kimia' }
 ]
 
-pesticide_data.each_with_index do |data, index|
+pesticide_data.each_with_index do |data, _index|
   Inventory.find_or_create_by!(name: data[:name]) do |inventory|
     inventory.stock_quantity = data[:stock_quantity]
     inventory.category = data[:category]
@@ -452,7 +454,7 @@ tool_data = [
     supplier: 'CV Perkakas Pertanian' }
 ]
 
-tool_data.each_with_index do |data, index|
+tool_data.each_with_index do |data, _index|
   Inventory.find_or_create_by!(name: data[:name]) do |inventory|
     inventory.stock_quantity = data[:stock_quantity]
     inventory.category = data[:category]
@@ -475,7 +477,7 @@ equipment_data = [
     supplier: 'CV Teknik Jaya' }
 ]
 
-equipment_data.each_with_index do |data, index|
+equipment_data.each_with_index do |data, _index|
   Inventory.find_or_create_by!(name: data[:name]) do |inventory|
     inventory.stock_quantity = data[:stock_quantity]
     inventory.category = data[:category]

@@ -8,7 +8,7 @@ if Rails.env.development?
   namespace :assets do
     desc 'Precompile assets (with development warning)'
     task precompile: :environment do
-      puts "\n" + ('=' * 80)
+      puts "\n#{'=' * 80}"
       puts '⚠️  WARNING: You are trying to precompile assets in DEVELOPMENT mode!'
       puts('=' * 80)
       puts

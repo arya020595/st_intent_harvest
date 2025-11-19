@@ -2,12 +2,12 @@
   <div class="card shadow-sm">
     <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Pay Calculations</h5>
-      <%= link_to new_work_order_pay_calculation_path, class: "btn btn-light btn-sm" do %>
+      <%= link_to new_work_orders_pay_calculation_path, class: "btn btn-light btn-sm" do %>
         <i class="bi bi-plus-circle"></i> New Pay Calculation
       <% end %>
     </div>
     <div class="card-body">
-      <%= search_form_for @q, url: work_order_pay_calculations_path, html: { id: 'pay-calculation-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
+      <%= search_form_for @q, url: work_orders_pay_calculations_path, html: { id: 'pay-calculation-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
             <thead class="table-info">
@@ -42,7 +42,7 @@
                 <th class="text-center">
                   <div class="d-flex gap-1 justify-content-center">
                     <%= f.submit 'Search', class: 'btn btn-info btn-sm' %>
-                    <%= link_to 'Reset', work_order_pay_calculations_path, class: 'btn btn-secondary btn-sm' %>
+                    <%= link_to 'Reset', work_orders_pay_calculations_path, class: 'btn btn-secondary btn-sm' %>
                   </div>
                 </th>
               </tr>
@@ -53,7 +53,7 @@
               <% else %>
                 <tr>
                   <td colspan="5" class="text-center text-muted py-4">
-                    No pay calculations found. <%= link_to 'Create a new pay calculation', new_work_order_pay_calculation_path, class: 'text-decoration-none' %>
+                    No pay calculations found. <%= link_to 'Create a new pay calculation', new_work_orders_pay_calculation_path, class: 'text-decoration-none' %>
                   </td>
                 </tr>
               <% end %>
