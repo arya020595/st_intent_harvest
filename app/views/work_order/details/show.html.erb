@@ -58,7 +58,7 @@
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Work Order Rate (RM)</label>
-          <div class="bg-light p-2 rounded">RM <%= number_with_precision(@work_order.work_order_rate.rate, precision: 2) %></div>
+          <div class="bg-light p-2 rounded"><%= number_to_currency(@work_order.work_order_rate.rate, unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %></div>
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Unit of Measurement</label>
@@ -115,7 +115,7 @@
                 <tr>
                   <td><%= item.item_name %></td>
                   <td><%= item.category_name || '-' %></td>
-                  <td><%= number_with_precision(item.price, precision: 2) %></td>
+                  <td><%= number_to_currency(item.price, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
                   <td><%= item.unit_name || '-' %></td>
                   <td><%= item.amount_used %></td>
                 </tr>
@@ -155,8 +155,8 @@
                   <td><%= index + 1 %></td>
                   <td><%= worker.worker_name %></td>
                   <td><%= number_with_precision(worker.work_area_size, precision: 2) %></td>
-                  <td><%= number_with_precision(worker.rate, precision: 2) %></td>
-                  <td><%= number_with_precision(worker.amount, precision: 2) %></td>
+                  <td><%= number_to_currency(worker.rate, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+                  <td><%= number_to_currency(worker.amount, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
                   <td><%= worker.remarks || '-' %></td>
                 </tr>
               <% end %>
@@ -164,7 +164,7 @@
                 <td colspan="2" class="text-center">Total</td>
                 <td><%= number_with_precision(@work_order.work_order_workers.sum(:work_area_size), precision: 2) %></td>
                 <td></td>
-                <td><%= number_with_precision(@work_order.work_order_workers.sum(:amount), precision: 2) %></td>
+                <td><%= number_to_currency(@work_order.work_order_workers.sum(:amount), unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
                 <td></td>
               </tr>
             <% else %>

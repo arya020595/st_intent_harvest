@@ -2,32 +2,33 @@
   <td class="text-center"><%= work_order_rate.id %></td>
   <td><strong><%= work_order_rate.work_order_name %></strong></td>
   <td class="text-center">
-    <span class="badge bg-info"><%= number_with_precision(work_order_rate.rate, precision: 2) %></span>
-  </td>
-  <td>
-    <% if work_order_rate.unit %>
-      <%= link_to work_order_rate.unit.name, master_data_unit_path(work_order_rate.unit), class: 'text-decoration-none' %>
-    <% else %>
-      <span class="text-muted">—</span>
+    <%= number_to_currency(work_order_rate.rate, unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %>
+  </span>
+</td>
+<td>
+  <% if work_order_rate.unit %>
+    <%= link_to work_order_rate.unit.name, master_data_unit_path(work_order_rate.unit), class: 'text-decoration-none' %>
+  <% else %>
+    <span class="text-muted">—</span>
+  <% end %>
+</td>
+<td>
+  <small class="text-muted"><%= work_order_rate.created_at.strftime("%b %d, %Y %H:%M") if work_order_rate.created_at %></small>
+</td>
+<td>
+  <small class="text-muted"><%= work_order_rate.updated_at.strftime("%b %d, %Y %H:%M") if work_order_rate.updated_at %></small>
+</td>
+<td class="text-center">
+  <div class="btn-group btn-group-sm" role="group">
+    <%= link_to master_data_work_order_rate_path(work_order_rate), class: "btn btn-info btn-sm", title: "View Details" do %>
+      <i class="bi bi-info-circle"></i>
     <% end %>
-  </td>
-  <td>
-    <small class="text-muted"><%= work_order_rate.created_at.strftime("%b %d, %Y %H:%M") if work_order_rate.created_at %></small>
-  </td>
-  <td>
-    <small class="text-muted"><%= work_order_rate.updated_at.strftime("%b %d, %Y %H:%M") if work_order_rate.updated_at %></small>
-  </td>
-  <td class="text-center">
-    <div class="btn-group btn-group-sm" role="group">
-      <%= link_to master_data_work_order_rate_path(work_order_rate), class: "btn btn-info btn-sm", title: "View Details" do %>
-        <i class="bi bi-info-circle"></i>
-      <% end %>
-      <%= link_to edit_master_data_work_order_rate_path(work_order_rate), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: 'modal' } do %>
-        <i class="bi bi-pencil"></i>
-      <% end %>
-      <%= link_to master_data_work_order_rate_path(work_order_rate), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{work_order_rate.work_order_name}?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
-        <i class="bi bi-trash"></i>
-      <% end %>
-    </div>
-  </td>
+    <%= link_to edit_master_data_work_order_rate_path(work_order_rate), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: 'modal' } do %>
+      <i class="bi bi-pencil"></i>
+    <% end %>
+    <%= link_to master_data_work_order_rate_path(work_order_rate), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{work_order_rate.work_order_name}?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
+      <i class="bi bi-trash"></i>
+    <% end %>
+  </div>
+</td>
 </tr>
