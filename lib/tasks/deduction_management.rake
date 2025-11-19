@@ -206,7 +206,6 @@ namespace :deductions do
       puts "✓ Successfully created #{code} deduction"
       puts "  Employee: #{deduction.employee_contribution}% | Employer: #{deduction.employer_contribution}%"
       puts "  Type: #{deduction.calculation_type}"
-      puts "  Worker: #{deduction.worker_amount}% | Employer: #{deduction.employee_amount}%"
       puts "  Nationality: #{deduction.applies_to_nationality}"
       puts "  Effective from: #{deduction.effective_from}"
     rescue ActiveRecord::RecordInvalid => e

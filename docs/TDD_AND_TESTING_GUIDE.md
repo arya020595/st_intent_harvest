@@ -172,7 +172,7 @@ before_save :calculate_net_salary
 private
 
 def calculate_net_salary
-  self.net_salary = (gross_salary || 0) - worker_deductions
+  self.net_salary = (gross_salary || 0) - employee_deductions
 end
 ```
 
@@ -484,12 +484,12 @@ test 'should apply deductions before save' do
   )
 
   # Deductions not applied yet
-  assert_nil detail.worker_deductions
+  assert_nil detail.employee_deductions
 
   detail.save!
 
   # Callback triggered
-  assert_equal 21.25, detail.worker_deductions
+  assert_not_nil detail.employee_deductions
   assert_not_nil detail.deduction_breakdown
 end
 ```

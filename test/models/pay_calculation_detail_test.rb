@@ -147,7 +147,7 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
   end
 
   # Net Salary Calculation Tests
-  test 'net_salary should equal gross minus worker_deductions' do
+  test 'net_salary should equal gross minus employee_deductions' do
     assert_equal 4478.75, @detail.net_salary
     assert_equal @detail.gross_salary - @detail.employee_deductions, @detail.net_salary
   end

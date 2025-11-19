@@ -112,7 +112,7 @@ class DeductionTypeTest < ActiveSupport::TestCase
     assert_includes deduction.errors[:applies_to_nationality], 'is not included in the list'
   end
 
-  test 'should validate worker_amount is non-negative' do
+  test 'should validate employee_contribution is non-negative' do
     deduction = DeductionType.new(
       code: 'TEST',
       name: 'Test',

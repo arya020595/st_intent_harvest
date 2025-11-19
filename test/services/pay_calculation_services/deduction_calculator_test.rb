@@ -378,11 +378,11 @@ module PayCalculationServices
       )
 
       result.deduction_breakdown.each do |_code, data|
-        worker_amount = data['employee_amount']
+        employee_amount = data['employee_amount']
         employer_amount = data['employer_amount']
 
         # Check each amount has at most 2 decimal places
-        assert_equal worker_amount, worker_amount.round(2)
+        assert_equal employee_amount, employee_amount.round(2)
         assert_equal employer_amount, employer_amount.round(2)
       end
     end
