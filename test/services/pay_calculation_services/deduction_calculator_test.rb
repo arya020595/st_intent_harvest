@@ -288,7 +288,7 @@ module PayCalculationServices
       )
 
       assert_equal 0, result.employee_deduction
-      assert_equal 0, result.employee_deduction
+      assert_equal 0, result.employer_deduction
     end
 
     test 'should handle very large salary' do
@@ -332,7 +332,7 @@ module PayCalculationServices
       )
 
       assert_equal result.employee_deduction, result_default.employee_deduction
-      assert_equal result.employee_deduction, result_default.employee_deduction
+      assert_equal result.employer_deduction, result_default.employer_deduction
     end
 
     test 'should handle inactive deductions' do
@@ -362,7 +362,7 @@ module PayCalculationServices
       )
 
       assert_equal 0, result.employee_deduction
-      assert_equal 0, result.employee_deduction
+      assert_equal 0, result.employer_deduction
       assert_empty result.deduction_breakdown
     end
 
