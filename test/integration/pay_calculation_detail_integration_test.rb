@@ -292,7 +292,7 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
     )
 
     assert_equal 0, detail.employee_deductions
-    assert_equal 0, detail.employee_deductions
+    assert_equal 0, detail.employer_deductions
     assert_equal 0, detail.net_salary
   end
 
