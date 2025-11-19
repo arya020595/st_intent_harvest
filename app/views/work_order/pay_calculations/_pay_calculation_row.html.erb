@@ -1,6 +1,6 @@
 <tr>
   <td class="text-center"><%= pay_calculation.id %></td>
-  <td><%= pay_calculation.month_year %></td>
+  <td><%= (Date.strptime(pay_calculation.month_year, '%Y-%m').strftime('%B %Y')) %></td>
   <td class="text-end"><%= number_to_currency(pay_calculation.total_net_salary || 0, unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %></td>
   <td class="text-center"><%= pay_calculation.updated_at&.strftime('%d-%m-%Y') || '-' %></td>
   <td class="text-center">
