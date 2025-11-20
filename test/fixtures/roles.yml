@@ -9,8 +9,18 @@
 #  updated_at  :datetime         not null
 #
 
-one: {}
-# column: value
-#
-two: {}
-# column: value
+superadmin:
+  name: "Superadmin"
+  description: "Superadmin role with full access"
+
+manager:
+  name: "Manager"
+  description: "Manager role with dashboard access"
+
+field_conductor:
+  name: "Field Conductor"
+  description: "Field Conductor role"
+
+clerk:
+  name: "Clerk"
+  description: "Clerk role with limited permissions"
