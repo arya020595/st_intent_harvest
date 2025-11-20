@@ -21,12 +21,23 @@ puts "\n🧹 Cleanup Phase: Removing existing data..."
 puts '─' * 80
 
 # Clean up existing data (in reverse order of dependencies)
-# Production only cleans authentication/authorization tables
 cleanup_models = [
+  PayCalculationDetail,
+  PayCalculation,
+  WorkOrderItem,
+  WorkOrderWorker,
+  WorkOrder,
+  Inventory,
+  WorkOrderRate,
   User,
   RolesPermission,
   Role,
-  Permission
+  Permission,
+  Worker,
+  Block,
+  Vehicle,
+  Unit,
+  Category
 ]
 
 cleanup_models.each do |model|
@@ -44,11 +55,16 @@ puts "\n🌱 Seeding Phase: Creating production data..."
 puts '─' * 80
 
 # Define seed modules in dependency order
-# Production only seeds essential authentication/authorization data
 seed_modules = [
   'permissions',      # Foundation: Permission definitions
   'roles',            # Roles with permission assignments
-  'users'             # Users with role assignments
+  'users',            # Users with role assignments
+  'master_data',      # Units, Categories, Blocks, Vehicles, Deduction Types
+  'workers',          # Worker records
+  'inventories',      # Inventory items
+  'work_order_rates', # Work order rate definitions
+  'work_orders',      # Work orders with workers and items
+  'pay_calculations'  # Pay calculations and details
 ]
 
 # Load each seed module
@@ -82,7 +98,19 @@ puts '─' * 80
 summary_models = [
   { name: 'Permissions', model: Permission },
   { name: 'Roles', model: Role },
-  { name: 'Users', model: User }
+  { name: 'Users', model: User },
+  { name: 'Units', model: Unit },
+  { name: 'Categories', model: Category },
+  { name: 'Blocks', model: Block },
+  { name: 'Vehicles', model: Vehicle },
+  { name: 'Workers', model: Worker },
+  { name: 'Inventories', model: Inventory },
+  { name: 'Work Order Rates', model: WorkOrderRate },
+  { name: 'Work Orders', model: WorkOrder },
+  { name: 'Work Order Workers', model: WorkOrderWorker },
+  { name: 'Work Order Items', model: WorkOrderItem },
+  { name: 'Pay Calculations', model: PayCalculation },
+  { name: 'Pay Calculation Details', model: PayCalculationDetail }
 ]
 
 summary_models.each do |item|
