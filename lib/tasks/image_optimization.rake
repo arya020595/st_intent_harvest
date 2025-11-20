@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :assets do
   desc 'Check image sizes in app/assets/images'
   task check_images: :environment do
@@ -16,7 +18,7 @@ namespace :assets do
 
     images.each do |image_path|
       file_size = File.size(image_path)
-      file_name = image_path.sub(Rails.root.join('app', 'assets', 'images').to_s + '/', '')
+      file_name = image_path.sub("#{Rails.root.join('app', 'assets', 'images')}/", '')
 
       size_in_kb = file_size / 1024.0
       size_in_mb = size_in_kb / 1024.0
@@ -36,7 +38,7 @@ namespace :assets do
       puts "#{status.ljust(15)} #{formatted_size.rjust(12)} - #{file_name}"
     end
 
-    puts "\n" + '-' * 80
+    puts "\n#{'-' * 80}"
   end
 
   desc 'Optimize images in app/assets/images using image_processing/vips'
@@ -59,7 +61,7 @@ namespace :assets do
     puts '-' * 80
 
     images.each do |image_path|
-      file_name = image_path.sub(Rails.root.join('app', 'assets', 'images').to_s + '/', '')
+      file_name = image_path.sub("#{Rails.root.join('app', 'assets', 'images')}/", '')
       before_size = File.size(image_path)
       total_before += before_size
 
@@ -90,7 +92,7 @@ namespace :assets do
         total_after += after_size
 
         saved = before_size - after_size
-        percent = saved > 0 ? ((saved.to_f / before_size) * 100).round(1) : 0.0
+        percent = saved.positive? ? ((saved.to_f / before_size) * 100).round(1) : 0.0
 
         puts "✓ #{file_name}"
         puts "  Before: #{(before_size / 1024.0).round(2)} KB → After: #{(after_size / 1024.0).round(2)} KB"
@@ -108,7 +110,7 @@ namespace :assets do
 
     puts '-' * 80
     total_saved = total_before - total_after
-    total_percent = total_saved > 0 ? ((total_saved.to_f / total_before) * 100).round(1) : 0.0
+    total_percent = total_saved.positive? ? ((total_saved.to_f / total_before) * 100).round(1) : 0.0
 
     puts "\nTotal Before: #{(total_before / 1024.0 / 1024.0).round(2)} MB"
     puts "Total After:  #{(total_after / 1024.0 / 1024.0).round(2)} MB"

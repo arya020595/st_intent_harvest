@@ -4,7 +4,7 @@
       <h5 class="mb-0">Work Order Approvals</h5>
     </div>
     <div class="card-body">
-      <%= search_form_for @q, url: work_order_approvals_path, html: { id: 'work-order-approval-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
+      <%= search_form_for @q, url: work_orders_approvals_path, html: { id: 'work-order-approval-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
             <thead class="table-success">
@@ -61,7 +61,7 @@
                 <th class="text-center">
                   <div class="d-flex gap-1 justify-content-center">
                     <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
-                    <%= link_to 'Reset', work_order_approvals_path, class: 'btn btn-secondary btn-sm' %>
+                    <%= link_to 'Reset', work_orders_approvals_path, class: 'btn btn-secondary btn-sm' %>
                   </div>
                 </th>
               </tr>

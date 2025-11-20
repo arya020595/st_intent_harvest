@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddEffectiveDatesToDeductionTypes < ActiveRecord::Migration[8.1]
   disable_ddl_transaction!
 

@@ -199,7 +199,7 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
     )
 
     # Verify breakdown captures the original context
-    detail.deduction_breakdown.each do |_code, data|
+    detail.deduction_breakdown.each_value do |data|
       assert_equal 3000, data['gross_salary']
       assert_equal 'local', data['nationality']
     end
@@ -209,7 +209,7 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
     detail.reload
 
     # Breakdown should still show original values
-    detail.deduction_breakdown.each do |_code, data|
+    detail.deduction_breakdown.each_value do |data|
       assert_equal 3000, data['gross_salary'] # Should still be 3000!
       assert_equal 'local', data['nationality']
     end

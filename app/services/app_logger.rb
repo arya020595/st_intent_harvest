@@ -146,7 +146,7 @@ class AppLogger
       sanitized = params.except(*sensitive_keys)
       sanitized.transform_values do |value|
         if value.is_a?(Hash)
-          sanitize_params(value)  # Recursive call
+          sanitize_params(value) # Recursive call
         else
           value
         end

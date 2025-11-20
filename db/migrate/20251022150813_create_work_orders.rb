@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateWorkOrders < ActiveRecord::Migration[7.2]
   def change
     create_table :work_orders do |t|
@@ -15,8 +17,8 @@ class CreateWorkOrders < ActiveRecord::Migration[7.2]
 
       t.timestamps
     end
-    
+
     # Composite index to optimize queries filtering by block and work order rate
-    add_index :work_orders, [:block_id, :work_order_rate_id], name: 'index_work_orders_on_block_and_rate'
+    add_index :work_orders, %i[block_id work_order_rate_id], name: 'index_work_orders_on_block_and_rate'
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddDeductionBreakdownToPayCalculationDetails < ActiveRecord::Migration[8.1]
   def change
     add_column :pay_calculation_details, :deduction_breakdown, :jsonb,

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateRolesPermissions < ActiveRecord::Migration[7.2]
   def change
     create_table :roles_permissions do |t|
@@ -6,7 +8,7 @@ class CreateRolesPermissions < ActiveRecord::Migration[7.2]
 
       t.timestamps
     end
-    
-    add_index :roles_permissions, [:role_id, :permission_id], unique: true
+
+    add_index :roles_permissions, %i[role_id permission_id], unique: true
   end
 end

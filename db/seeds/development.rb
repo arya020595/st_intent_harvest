@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # This file should ensure the existence of records required to run the application in every environment (production,
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
@@ -112,27 +114,27 @@ payslip_permissions = [
 
 # Namespaced WorkOrder permissions
 work_order_detail_permissions = [
-  { subject: 'WorkOrder::Detail', action: 'index', description: 'View work orders list' },
-  { subject: 'WorkOrder::Detail', action: 'show', description: 'View work order details' },
-  { subject: 'WorkOrder::Detail', action: 'create', description: 'Create work orders' },
-  { subject: 'WorkOrder::Detail', action: 'update', description: 'Edit work orders' },
-  { subject: 'WorkOrder::Detail', action: 'destroy', description: 'Delete work orders' },
-  { subject: 'WorkOrder::Detail', action: 'mark_complete', description: 'Mark work order as complete' }
+  { subject: 'WorkOrders::Detail', action: 'index', description: 'View work orders list' },
+  { subject: 'WorkOrders::Detail', action: 'show', description: 'View work order details' },
+  { subject: 'WorkOrders::Detail', action: 'create', description: 'Create work orders' },
+  { subject: 'WorkOrders::Detail', action: 'update', description: 'Edit work orders' },
+  { subject: 'WorkOrders::Detail', action: 'destroy', description: 'Delete work orders' },
+  { subject: 'WorkOrders::Detail', action: 'mark_complete', description: 'Mark work order as complete' }
 ]
 
 work_order_approval_permissions = [
-  { subject: 'WorkOrder::Approval', action: 'index', description: 'View work orders for approval' },
-  { subject: 'WorkOrder::Approval', action: 'show', description: 'View approval details' },
-  { subject: 'WorkOrder::Approval', action: 'approve', description: 'Approve work orders' },
-  { subject: 'WorkOrder::Approval', action: 'reject', description: 'Reject work orders' }
+  { subject: 'WorkOrders::Approval', action: 'index', description: 'View work orders for approval' },
+  { subject: 'WorkOrders::Approval', action: 'show', description: 'View approval details' },
+  { subject: 'WorkOrders::Approval', action: 'approve', description: 'Approve work orders' },
+  { subject: 'WorkOrders::Approval', action: 'reject', description: 'Reject work orders' }
 ]
 
 work_order_pay_calc_permissions = [
-  { subject: 'WorkOrder::PayCalculation', action: 'index', description: 'View pay calculations list' },
-  { subject: 'WorkOrder::PayCalculation', action: 'show', description: 'View pay calculation details' },
-  { subject: 'WorkOrder::PayCalculation', action: 'create', description: 'Create pay calculations' },
-  { subject: 'WorkOrder::PayCalculation', action: 'update', description: 'Update pay calculations' },
-  { subject: 'WorkOrder::PayCalculation', action: 'destroy', description: 'Delete pay calculations' }
+  { subject: 'WorkOrders::PayCalculation', action: 'index', description: 'View pay calculations list' },
+  { subject: 'WorkOrders::PayCalculation', action: 'show', description: 'View pay calculation details' },
+  { subject: 'WorkOrders::PayCalculation', action: 'create', description: 'Create pay calculations' },
+  { subject: 'WorkOrders::PayCalculation', action: 'update', description: 'Update pay calculations' },
+  { subject: 'WorkOrders::PayCalculation', action: 'destroy', description: 'Delete pay calculations' }
 ]
 
 # Dashboard permissions (for accessing the main dashboard)
@@ -177,14 +179,14 @@ end
 manager_role = Role.find_or_create_by!(name: 'Manager') do |role|
   role.description = 'Can view dashboard and approve work orders'
 end
-manager_permissions = Permission.where(subject: ['Dashboard', 'WorkOrder::Approval'])
+manager_permissions = Permission.where(subject: ['Dashboard', 'WorkOrders::Approval'])
 manager_role.permissions = manager_permissions
 
 # Field Conductor - can create and manage work order details (NO dashboard access)
 field_conductor_role = Role.find_or_create_by!(name: 'Field Conductor') do |role|
   role.description = 'Can create and manage work order details'
 end
-field_conductor_permissions = Permission.where(subject: ['WorkOrder::Detail'])
+field_conductor_permissions = Permission.where(subject: ['WorkOrders::Detail'])
 field_conductor_role.permissions = field_conductor_permissions
 
 # Clerk - administrative support with managed access to pay calculations, payslips, inventories, workers, and master data (NO dashboard access)
@@ -192,7 +194,7 @@ clerk_role = Role.find_or_create_by!(name: 'Clerk') do |role|
   role.description = 'Can manage pay calculations, payslips, inventories, workers, and master data'
 end
 clerk_permissions = Permission.where(subject: [
-                                       'WorkOrder::PayCalculation',
+                                       'WorkOrders::PayCalculation',
                                        'Payslip',
                                        'Inventory',
                                        'Worker',
