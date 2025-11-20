@@ -1,8 +1,11 @@
+<div id="flash_messages">
+  <%= render "shared/flash" %>
+</div>
 <div class="container-fluid px-4 py-4 roles-list" data-controller="multi-sort">
   <div class="card shadow-sm">
     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Roles Management</h5>
-      <%= link_to new_user_management_role_path, class: "btn btn-light btn-sm" do %>
+      <%= link_to new_user_management_role_path, data: { turbo_frame: "modal" }, class: "btn btn-light btn-sm" do %>
         <i class="bi bi-plus-circle"></i> Add Role
       <% end %>
     </div>
@@ -75,7 +78,7 @@
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="roles-table-body">
               <% if @roles.any? %>
                 <%= render partial: 'role_row', collection: @roles, as: :role %>
               <% else %>
@@ -104,3 +107,4 @@
     </div>
   </div>
 </div>
+<%= render 'modal' %>

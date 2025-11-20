@@ -4,7 +4,7 @@
   </a>
   <!-- <hr> -->
   <ul id="sidebarAccordion" class="nav nav-pills flex-column mb-auto">
-    <% if can_view_menu?('Dashboard') %>
+    <% if can_view_menu?('dashboard.index') %>
       <li class="nav-item">
         <%= link_to root_path, class: "nav-link #{current_page?(root_path) ? 'active' : 'link-dark'}" do %>
           <i class="bi bi-speedometer2 me-2"></i>
@@ -19,7 +19,7 @@
       </li>
     <% end %>
     <% # Check if user has access to any work order submenu %>
-    <% has_work_order_access = can_view_menu?('WorkOrders::Detail') || can_view_menu?('WorkOrders::Approval') || can_view_menu?('WorkOrders::PayCalculation') %>
+    <% has_work_order_access = can_view_menu?('work_orders.details.index') || can_view_menu?('work_orders.approvals.index') || can_view_menu?('work_orders.pay_calculations.index') %>
     <% if has_work_order_access %>
       <li>
         <% work_order_active = active_controller?('work_order') %>
@@ -30,20 +30,20 @@
         </a>
         <div class="collapse <%= 'show' if work_order_active %>" id="workOrdersCollapse" data-bs-parent="#sidebarAccordion">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
-            <% if can_view_menu?('WorkOrders::Detail') %>
+            <% if can_view_menu?('work_orders.details.index') %>
               <li><%= link_to "Work Order Details", work_orders_details_path, class: "nav-link #{active_controller?('work_orders/details') ? 'active' : 'link-dark'}" %></li>
             <% end %>
-            <% if can_view_menu?('WorkOrders::Approval') %>
+            <% if can_view_menu?('work_orders.approvals.index') %>
               <li><%= link_to "Work Order Approvals", work_orders_approvals_path, class: "nav-link #{active_controller?('work_orders/approvals') ? 'active' : 'link-dark'}" %></li>
             <% end %>
-            <% if can_view_menu?('WorkOrders::PayCalculation') %>
+            <% if can_view_menu?('work_orders.pay_calculations.index') %>
               <li><%= link_to "Pay Calculation", work_orders_pay_calculations_path, class: "nav-link #{active_controller?('work_orders/pay_calculations') ? 'active' : 'link-dark'}" %></li>
             <% end %>
           </ul>
         </div>
       </li>
     <% end %>
-    <% if can_view_menu?('Payslip') %>
+    <% if can_view_menu?('payslip.index') %>
       <li>
         <%= link_to payslips_path, class: "nav-link #{active_controller?('payslips') ? 'active' : 'link-dark'}" do %>
           <i class="bi bi-clipboard-data-fill me-2"></i>
@@ -51,7 +51,7 @@
         <% end %>
       </li>
     <% end %>
-    <% if can_view_menu?('Inventory') %>
+    <% if can_view_menu?('inventory.index') %>
       <li>
         <%= link_to inventories_path, class: "nav-link #{active_controller?('inventories') ? 'active' : 'link-dark'}" do %>
           <i class="bi bi-box-seam-fill me-2"></i>
@@ -59,7 +59,7 @@
         <% end %>
       </li>
     <% end %>
-    <% if can_view_menu?('Worker') %>
+    <% if can_view_menu?('workers.index') %>
       <li>
         <%= link_to workers_path, class: "nav-link #{active_controller?('workers') ? 'active' : 'link-dark'}" do %>
           <i class="bi bi-people-fill me-2"></i>
@@ -68,7 +68,7 @@
       </li>
     <% end %>
     <% # Check if user has access to any master data submenu %>
-    <% has_master_data_access = can_view_menu?('MasterData::Block') || can_view_menu?('MasterData::Unit') || can_view_menu?('MasterData::Category') || can_view_menu?('MasterData::Vehicle') || can_view_menu?('MasterData::WorkOrderRate') %>
+    <% has_master_data_access = can_view_menu?('master_data.blocks.index') || can_view_menu?('master_data.units.index') || can_view_menu?('master_data.categories.index') || can_view_menu?('master_data.vehicles.index') || can_view_menu?('master_data.work_order_rates.index') %>
     <% if has_master_data_access %>
       <li>
         <% master_data_active = active_controller?('master_data') %>
@@ -79,19 +79,19 @@
         </a>
         <div class="collapse <%= 'show' if master_data_active %>" id="masterDataCollapse" data-bs-parent="#sidebarAccordion">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
-            <% if can_view_menu?('MasterData::Block') %>
+            <% if can_view_menu?('master_data.blocks.index') %>
               <li><%= link_to "Blocks", master_data_blocks_path, class: "nav-link #{active_controller?('master_data/blocks') ? 'active' : 'link-dark'}" %></li>
             <% end %>
-            <% if can_view_menu?('MasterData::Unit') %>
+            <% if can_view_menu?('master_data.units.index') %>
               <li><%= link_to "Units", master_data_units_path, class: "nav-link #{active_controller?('master_data/units') ? 'active' : 'link-dark'}" %></li>
             <% end %>
-            <% if can_view_menu?('MasterData::Category') %>
+            <% if can_view_menu?('master_data.categories.index') %>
               <li><%= link_to "Categories", master_data_categories_path, class: "nav-link #{active_controller?('master_data/categories') ? 'active' : 'link-dark'}" %></li>
             <% end %>
-            <% if can_view_menu?('MasterData::Vehicle') %>
+            <% if can_view_menu?('master_data.vehicles.index') %>
               <li><%= link_to "Vehicles", master_data_vehicles_path, class: "nav-link #{active_controller?('master_data/vehicles') ? 'active' : 'link-dark'}" %></li>
             <% end %>
-            <% if can_view_menu?('MasterData::WorkOrderRate') %>
+            <% if can_view_menu?('master_data.work_order_rates.index') %>
               <li><%= link_to "Work Order Rates", master_data_work_order_rates_path, class: "nav-link #{active_controller?('master_data/work_order_rates') ? 'active' : 'link-dark'}" %></li>
             <% end %>
           </ul>
@@ -99,7 +99,7 @@
       </li>
     <% end %>
     <% # Check if user has access to any user management submenu %>
-    <% has_user_mgmt_access = can_view_menu?('UserManagement::Role') || can_view_menu?('UserManagement::User') %>
+    <% has_user_mgmt_access = can_view_menu?('admin.roles.index') || can_view_menu?('admin.users.index') %>
     <% if has_user_mgmt_access %>
       <li>
         <% user_management_active = active_controller?('user_management') %>
@@ -110,10 +110,10 @@
         </a>
         <div class="collapse <%= 'show' if user_management_active %>" id="userManagementCollapse" data-bs-parent="#sidebarAccordion">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
-            <% if can_view_menu?('UserManagement::Role') %>
+            <% if can_view_menu?('admin.roles.index') %>
               <li><%= link_to "Roles", user_management_roles_path, class: "nav-link #{active_controller?('user_management/roles') ? 'active' : 'link-dark'}" %></li>
             <% end %>
-            <% if can_view_menu?('UserManagement::User') %>
+            <% if can_view_menu?('admin.users.index') %>
               <li><%= link_to "Users", user_management_users_path, class: "nav-link #{active_controller?('user_management/users') ? 'active' : 'link-dark'}" %></li>
             <% end %>
           </ul>

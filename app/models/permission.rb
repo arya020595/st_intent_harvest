@@ -4,12 +4,35 @@ class Permission < ApplicationRecord
   has_many :roles_permissions, dependent: :destroy
   has_many :roles, through: :roles_permissions
 
-  validates :subject, presence: true, format: {
-    with: /\A[A-Z][a-zA-Z0-9]*(::[A-Z][a-zA-Z0-9]*)*\z/,
-    message: "must be a valid Ruby class name (e.g., 'User' or 'WorkOrder::Detail')"
+  validates :code, presence: true, uniqueness: true, format: {
+    with: /\A[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+\z/,
+    message: "must follow format: namespace.resource.action (e.g., 'admin.users.read') or resource.action (e.g., 'dashboard.index')"
   }
-  validates :action, presence: true
-  validates :subject, uniqueness: { scope: :action, message: 'and action combination already exists' }
+  validates :name, presence: true
+  validates :resource, presence: true, format: {
+    with: /\A[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*\z/,
+    message: "must follow format: namespace.resource (e.g., 'admin.users') or resource (e.g., 'dashboard')"
+  }
+
+  # Extract action from code (e.g., 'admin.users.read' => 'read', 'dashboard.index' => 'index')
+  def action
+    code.split('.').last
+  end
+
+  # Extract namespace from resource (e.g., 'admin.users' => 'admin', 'dashboard' => nil)
+  def namespace
+    parts = resource.split('.')
+    parts.length > 1 ? parts.first : nil
+  end
+
+  # Ransack configuration
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[id code name resource created_at updated_at]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[roles roles_permissions]
+  end
 end
 
 # == Schema Information
@@ -17,8 +40,14 @@ end
 # Table name: permissions
 #
 #  id         :integer          not null, primary key
-#  subject    :string
-#  action     :string
+#  code       :string           not null
+#  name       :string           not null
+#  resource   :string           not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_permissions_on_code      (code) UNIQUE
+#  index_permissions_on_resource  (resource)
 #

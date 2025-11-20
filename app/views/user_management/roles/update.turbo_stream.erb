@@ -1,0 +1,8 @@
+<%= turbo_stream.replace dom_id(@role), partial: "role_row", locals: { role: @role } %>
+<%= turbo_stream.replace "flash_messages" do %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert" data-controller="flash" data-flash-delay-value="5000">
+    <i class="bi bi-check-circle-fill"></i>
+    <%= flash[:notice] || flash.now[:notice] || 'Role updated successfully.' %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
