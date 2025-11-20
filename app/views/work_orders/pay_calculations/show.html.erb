@@ -1,20 +1,20 @@
 <div class="container-fluid px-4 py-4" data-controller="multi-sort">
   <%= render 'shared/breadcrumb', breadcrumbs: [
     ['Work Order', '#'],
-    ['Pay Calculation', work_order_pay_calculations_path],
+    ['Pay Calculation', work_orders_pay_calculations_path],
     [(Date.strptime(@pay_calculation.month_year, '%Y-%m').strftime('%B %Y') rescue @pay_calculation.month_year), nil],
     ['Workers', nil]
   ] %>
   <!-- Back Button -->
   <div class="mb-3">
-    <%= link_to work_order_pay_calculations_path, class: "btn btn-link text-decoration-none p-0" do %>
+    <%= link_to work_orders_pay_calculations_path, class: "btn btn-link text-decoration-none p-0" do %>
       <i class="bi bi-arrow-left"></i> Back to Pay Calculation
     <% end %>
   </div>
   <!-- Workers Table -->
   <div class="card shadow-sm">
     <div class="card-body">
-      <%= search_form_for @q, url: work_order_pay_calculation_path(@pay_calculation), method: :get, html: { id: 'worker-details-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
+      <%= search_form_for @q, url: work_orders_pay_calculation_path(@pay_calculation), method: :get, html: { id: 'worker-details-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
             <thead class="table-success">
@@ -43,7 +43,7 @@
                 <th class="text-center">
                   <div class="d-flex gap-1 justify-content-center">
                     <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
-                    <%= link_to 'Reset', work_order_pay_calculation_path(@pay_calculation), class: 'btn btn-secondary btn-sm' %>
+                    <%= link_to 'Reset', work_orders_pay_calculation_path(@pay_calculation), class: 'btn btn-secondary btn-sm' %>
                   </div>
                 </th>
               </tr>
@@ -56,7 +56,7 @@
                     <td><%= detail.worker.name %></td>
                     <td class="text-end"><%= number_to_currency(detail.net_salary, unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %></td>
                     <td class="text-center">
-                      <%= link_to worker_detail_work_order_pay_calculation_path(@pay_calculation, worker_id: detail.worker_id), class: "text-decoration-none" do %>
+                      <%= link_to worker_detail_work_orders_pay_calculation_path(@pay_calculation, worker_id: detail.worker_id), class: "text-decoration-none" do %>
                         <i class="bi bi-info-circle text-primary" title="View Details" role="button"></i>
                       <% end %>
                     </td>

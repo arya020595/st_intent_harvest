@@ -1,13 +1,13 @@
 <div class="container-fluid px-4 py-4">
   <!-- Breadcrumb -->
   <%= render 'shared/breadcrumb', breadcrumbs: [
-    ['Work Order', work_order_details_path],
+    ['Work Order', work_orders_details_path],
     ['Work Order Details', nil],
     ['View Work Order', nil]
   ] %>
   <!-- Back Button -->
   <div class="mb-3">
-    <%= link_to work_order_details_path, class: "text-decoration-none text-success d-inline-flex align-items-center" do %>
+    <%= link_to work_orders_details_path, class: "text-decoration-none text-success d-inline-flex align-items-center" do %>
       <i class="bi bi-arrow-left me-2"></i> Back to Work Order Details
     <% end %>
   </div>
@@ -28,15 +28,15 @@
   <!-- Action Buttons Above Details -->
   <div class="d-flex justify-content-end gap-2 mb-3">
     <% if @work_order.work_order_status.in?(%w[ongoing amendment_required]) %>
-      <%= link_to edit_work_order_detail_path(@work_order), class: "btn btn-warning" do %>
+      <%= link_to edit_work_orders_detail_path(@work_order), class: "btn btn-warning" do %>
         <i class="bi bi-pencil"></i> Edit
       <% end %>
     <% end %>
-    <%= link_to work_order_detail_path(@work_order), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-danger" do %>
+    <%= link_to work_orders_detail_path(@work_order), method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-danger" do %>
       <i class="bi bi-trash"></i> Delete
     <% end %>
     <% if @work_order.work_order_status.in?(%w[ongoing amendment_required]) %>
-      <%= link_to mark_complete_work_order_detail_path(@work_order), method: :patch, data: { turbo_method: :patch }, class: "btn btn-primary" do %>
+      <%= link_to mark_complete_work_orders_detail_path(@work_order), method: :patch, data: { turbo_method: :patch }, class: "btn btn-primary" do %>
         <i class="bi bi-check-circle"></i> Work Order Complete
       <% end %>
     <% end %>

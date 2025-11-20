@@ -69,7 +69,7 @@ module WorkOrderServices
     def perform_transition
       if work_order.amendment_required?
         begin
-          work_order.public_send(:reopen!)
+          work_order.reopen!
           AppLogger.info('Work order reopened after amendments', context: self.class.name, work_order_id: work_order.id)
           Success('Work order was successfully resubmitted after amendments.')
         rescue AASM::InvalidTransition => e
@@ -82,7 +82,7 @@ module WorkOrderServices
         end
       elsif work_order.ongoing?
         begin
-          work_order.public_send(:mark_complete!)
+          work_order.mark_complete!
           AppLogger.info('Work order marked complete', context: self.class.name, work_order_id: work_order.id)
           Success('Work order was successfully submitted for approval.')
         rescue AASM::InvalidTransition => e

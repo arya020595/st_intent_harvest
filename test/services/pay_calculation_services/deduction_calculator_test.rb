@@ -377,7 +377,7 @@ module PayCalculationServices
         nationality: 'Local'
       )
 
-      result.deduction_breakdown.each do |_code, data|
+      result.deduction_breakdown.each_value do |data|
         employee_amount = data['employee_amount']
         employer_amount = data['employer_amount']
 

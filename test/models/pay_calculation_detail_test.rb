@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # == Schema Information
 #
 # Table name: pay_calculation_details
@@ -209,7 +211,7 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
     )
     breakdown = detail.deduction_breakdown
 
-    breakdown.each do |_code, data|
+    breakdown.each_value do |data|
       assert_instance_of Hash, data
       assert_includes data.keys, 'name'
       assert_includes data.keys, 'employee_rate'

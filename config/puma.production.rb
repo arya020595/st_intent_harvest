@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # config/puma.production.rb
 
 max_threads_count = ENV.fetch('RAILS_MAX_THREADS', 5)

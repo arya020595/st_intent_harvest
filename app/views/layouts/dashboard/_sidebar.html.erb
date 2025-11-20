@@ -19,7 +19,7 @@
       </li>
     <% end %>
     <% # Check if user has access to any work order submenu %>
-    <% has_work_order_access = can_view_menu?('WorkOrder::Detail') || can_view_menu?('WorkOrder::Approval') || can_view_menu?('WorkOrder::PayCalculation') %>
+    <% has_work_order_access = can_view_menu?('WorkOrders::Detail') || can_view_menu?('WorkOrders::Approval') || can_view_menu?('WorkOrders::PayCalculation') %>
     <% if has_work_order_access %>
       <li>
         <% work_order_active = active_controller?('work_order') %>
@@ -30,14 +30,14 @@
         </a>
         <div class="collapse <%= 'show' if work_order_active %>" id="workOrdersCollapse" data-bs-parent="#sidebarAccordion">
           <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small ps-4">
-            <% if can_view_menu?('WorkOrder::Detail') %>
-              <li><%= link_to "Work Order Details", work_order_details_path, class: "nav-link #{active_controller?('work_order/details') ? 'active' : 'link-dark'}" %></li>
+            <% if can_view_menu?('WorkOrders::Detail') %>
+              <li><%= link_to "Work Order Details", work_orders_details_path, class: "nav-link #{active_controller?('work_orders/details') ? 'active' : 'link-dark'}" %></li>
             <% end %>
-            <% if can_view_menu?('WorkOrder::Approval') %>
-              <li><%= link_to "Work Order Approvals", work_order_approvals_path, class: "nav-link #{active_controller?('work_order/approvals') ? 'active' : 'link-dark'}" %></li>
+            <% if can_view_menu?('WorkOrders::Approval') %>
+              <li><%= link_to "Work Order Approvals", work_orders_approvals_path, class: "nav-link #{active_controller?('work_orders/approvals') ? 'active' : 'link-dark'}" %></li>
             <% end %>
-            <% if can_view_menu?('WorkOrder::PayCalculation') %>
-              <li><%= link_to "Pay Calculation", work_order_pay_calculations_path, class: "nav-link #{active_controller?('work_order/pay_calculations') ? 'active' : 'link-dark'}" %></li>
+            <% if can_view_menu?('WorkOrders::PayCalculation') %>
+              <li><%= link_to "Pay Calculation", work_orders_pay_calculations_path, class: "nav-link #{active_controller?('work_orders/pay_calculations') ? 'active' : 'link-dark'}" %></li>
             <% end %>
           </ul>
         </div>

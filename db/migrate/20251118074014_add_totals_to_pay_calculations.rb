@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddTotalsToPayCalculations < ActiveRecord::Migration[8.1]
   def change
     add_column :pay_calculations, :total_gross_salary, :decimal, precision: 10, scale: 2, default: 0, null: false
