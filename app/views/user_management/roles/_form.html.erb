@@ -1,34 +1,63 @@
-<%= form_with(model: [:user_management, role], local: true) do |form| %>
-  <% if role.errors.any? %>
-    <div class="alert alert-danger">
-      <h4><%= pluralize(role.errors.count, "error") %> prohibited this role from being saved:</h4>
-      <ul>
-        <% role.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
+<%= form_with(model: [:user_management, role]) do |form| %>
+  <div class="modal-header">
+    <h5 class="modal-title" id="roleModalLabel">
+      <%= role.persisted? ? 'Edit Role' : 'Add New Role' %>
+    </h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    <% if role.errors.any? %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h6 class="alert-heading">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <%= pluralize(role.errors.count, "error") %> prohibited this role from being saved:
+        </h6>
+        <ul class="mb-0 mt-2">
+          <% role.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <% end %>
+    <div class="mb-3">
+      <%= form.label :name, "Role Name", class: "form-label fw-semibold" %>
+      <%= form.text_field :name, class: "form-control", placeholder: "Enter role name", required: true %>
+    </div>
+    <div class="mb-3">
+      <%= form.label :description, class: "form-label fw-semibold" %>
+      <%= form.text_area :description, rows: 3, class: "form-control", placeholder: "Enter role description" %>
+    </div>
+    <div class="mb-3">
+      <%= form.label :permission_ids, "Permissions", class: "form-label fw-semibold" %>
+      <div class="border rounded p-3" style="max-height: 400px; overflow-y: auto; background-color: #f8f9fa;">
+        <% Permission.all.group_by(&:resource).sort.each do |resource, permissions| %>
+          <div class="mb-3">
+            <h6 class="text-primary mb-2">
+              <i class="bi bi-folder"></i> <%= resource.titleize %>
+            </h6>
+            <div class="ms-3">
+              <%= form.collection_check_boxes :permission_ids, permissions, :id, ->(p) { "#{p.name} (#{p.code})" } do |b| %>
+                <div class="form-check">
+                  <%= b.check_box class: "form-check-input" %>
+                  <%= b.label class: "form-check-label" %>
+                </div>
+              <% end %>
+            </div>
+          </div>
         <% end %>
-      </ul>
-    </div>
-  <% end %>
-  <div class="mb-3">
-    <%= form.label :name, class: "form-label" %>
-    <%= form.text_field :name, class: "form-control" %>
-  </div>
-  <div class="mb-3">
-    <%= form.label :description, class: "form-label" %>
-    <%= form.text_area :description, rows: 3, class: "form-control" %>
-  </div>
-  <div class="mb-3">
-    <%= form.label :permission_ids, "Permissions", class: "form-label" %>
-    <div class="border p-3" style="max-height: 400px; overflow-y: auto;">
-      <%= form.collection_check_boxes :permission_ids, Permission.all, :id, ->(p) { "#{p.subject} - #{p.action}" } do |b| %>
-        <div class="form-check">
-          <%= b.check_box class: "form-check-input" %>
-          <%= b.label class: "form-check-label" %>
-        </div>
-      <% end %>
+      </div>
+      <small class="form-text text-muted">Select the permissions for this role</small>
     </div>
   </div>
-  <div class="mb-3">
-    <%= form.submit class: "btn btn-primary" %>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+      <i class="bi bi-x-circle"></i> Cancel
+    </button>
+    <% if role.persisted? %>
+      <%= form.submit 'Update Role', class: "btn btn-primary" %>
+    <% else %>
+      <%= form.submit 'Save Role', class: "btn btn-primary" %>
+    <% end %>
   </div>
 <% end %>
