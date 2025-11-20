@@ -2,10 +2,27 @@
 
 module MasterData
   class CategoryPolicy < ApplicationPolicy
-    # Inherits all default behavior from ApplicationPolicy
+    # Permission codes:
+    # - master_data.categories.index
+    # - master_data.categories.show
+    # - master_data.categories.new
+    # - master_data.categories.create
+    # - master_data.categories.edit
+    # - master_data.categories.update
+    # - master_data.categories.destroy
+
+    private
+
+    def permission_resource
+      'master_data.categories'
+    end
 
     class Scope < ApplicationPolicy::Scope
-      # Inherits default scope behavior
+      private
+
+      def permission_resource
+        'master_data.categories'
+      end
     end
   end
 end

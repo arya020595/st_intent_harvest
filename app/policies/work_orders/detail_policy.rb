@@ -2,9 +2,19 @@
 
 module WorkOrders
   class DetailPolicy < ApplicationPolicy
+    # Permission codes:
+    # - work_orders.details.index
+    # - work_orders.details.show
+    # - work_orders.details.new
+    # - work_orders.details.create
+    # - work_orders.details.edit
+    # - work_orders.details.update
+    # - work_orders.details.destroy
+    # - work_orders.details.mark_complete
+
     # Custom action for marking work order as complete (ongoing -> pending)
     def mark_complete?
-      has_permission?(:mark_complete)
+      user.has_permission?(build_permission_code('mark_complete')) && editable?
     end
 
     def edit?
@@ -17,11 +27,20 @@ module WorkOrders
 
     private
 
+    def permission_resource
+      'work_orders.details'
+    end
+
     def editable?
       record.work_order_status.in?(%w[ongoing amendment_required])
     end
 
     class Scope < ApplicationPolicy::Scope
+      private
+
+      def permission_resource
+        'work_orders.details'
+      end
     end
   end
 end

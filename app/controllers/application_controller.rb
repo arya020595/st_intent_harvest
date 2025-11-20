@@ -24,6 +24,11 @@ class ApplicationController < ActionController::Base
     Current.user = current_user
   end
 
+  # Override Devise method to redirect users to their first accessible resource
+  def after_sign_in_path_for(resource)
+    stored_location_for(resource) || send(resource.first_accessible_path)
+  end
+
   def user_not_authorized
     flash[:alert] = 'You are not authorized to perform this action.'
 

@@ -9,15 +9,15 @@ class ApplicationPolicy
   end
 
   def index?
-    has_permission?(:index)
+    user.has_permission?(build_permission_code('index'))
   end
 
   def show?
-    has_permission?(:show)
+    user.has_permission?(build_permission_code('show'))
   end
 
   def create?
-    has_permission?(:create)
+    user.has_permission?(build_permission_code('create'))
   end
 
   def new?
@@ -25,7 +25,7 @@ class ApplicationPolicy
   end
 
   def update?
-    has_permission?(:update)
+    user.has_permission?(build_permission_code('update'))
   end
 
   def edit?
@@ -33,26 +33,22 @@ class ApplicationPolicy
   end
 
   def destroy?
-    has_permission?(:destroy)
+    user.has_permission?(build_permission_code('destroy'))
   end
 
   private
 
-  def has_permission?(action)
-    permission_checker.allowed?(action, resource_name)
+  # Build full permission code from action
+  # @param action [String] The action (e.g., 'index', 'show', 'create', 'update', 'destroy')
+  # @return [String] Full permission code (e.g., 'admin.users.index')
+  def build_permission_code(action)
+    "#{permission_resource}.#{action}"
   end
 
-  def permission_checker
-    @permission_checker ||= PermissionChecker.new(user)
-  end
-
-  # Derive resource name from policy class name by removing "Policy" suffix
-  # Examples:
-  #   WorkOrder::DetailPolicy -> "WorkOrder::Detail"
-  #   WorkOrder::ApprovalPolicy -> "WorkOrder::Approval"
-  #   InventoryPolicy -> "Inventory"
-  def resource_name
-    @resource_name ||= self.class.name.delete_suffix('Policy')
+  # Override this method in subclasses to map to correct permission resource
+  # @return [String] Format: "namespace.resource" (e.g., "admin.users", "workorders.orders")
+  def permission_resource
+    raise NotImplementedError, "#{self.class.name} must implement #permission_resource"
   end
 
   class Scope
@@ -64,7 +60,7 @@ class ApplicationPolicy
     end
 
     def resolve
-      if permission_checker.allowed?(:index, resource_name)
+      if user.has_permission?(build_permission_code('index'))
         scope.all
       else
         scope.none
@@ -73,17 +69,13 @@ class ApplicationPolicy
 
     private
 
-    def permission_checker
-      @permission_checker ||= PermissionChecker.new(user)
+    def build_permission_code(action)
+      "#{permission_resource}.#{action}"
     end
 
-    # Derive resource name from policy scope class name
-    # Examples:
-    #   WorkOrder::DetailPolicy::Scope -> "WorkOrder::Detail"
-    #   WorkOrder::ApprovalPolicy::Scope -> "WorkOrder::Approval"
-    #   InventoryPolicy::Scope -> "Inventory"
-    def resource_name
-      @resource_name ||= self.class.name.sub(/(::Scope)?Policy\z/, '')
+    # Override this in subclass Scopes
+    def permission_resource
+      raise NotImplementedError, "#{self.class.name} must implement #permission_resource"
     end
   end
 end

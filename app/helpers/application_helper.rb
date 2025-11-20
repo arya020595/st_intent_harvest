@@ -15,11 +15,10 @@ module ApplicationHelper
   end
 
   # Check if user has permission to view a menu item
-  def can_view_menu?(subject, action = 'index')
+  # @param permission_code [String] Full permission code (e.g., 'admin.users.index')
+  def can_view_menu?(permission_code)
     return true unless current_user # Show to guests (will be caught by authentication)
-    return true if current_user.role&.name&.downcase == 'superadmin' # Superadmin sees all
 
-    permission_checker = PermissionChecker.new(current_user)
-    permission_checker.allowed?(action, subject)
+    current_user.has_permission?(permission_code)
   end
 end

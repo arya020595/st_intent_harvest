@@ -2,10 +2,27 @@
 
 module MasterData
   class VehiclePolicy < ApplicationPolicy
-    # Inherits all default behavior from ApplicationPolicy
+    # Permission codes:
+    # - master_data.vehicles.index
+    # - master_data.vehicles.show
+    # - master_data.vehicles.new
+    # - master_data.vehicles.create
+    # - master_data.vehicles.edit
+    # - master_data.vehicles.update
+    # - master_data.vehicles.destroy
+
+    private
+
+    def permission_resource
+      'master_data.vehicles'
+    end
 
     class Scope < ApplicationPolicy::Scope
-      # Inherits default scope behavior
+      private
+
+      def permission_resource
+        'master_data.vehicles'
+      end
     end
   end
 end

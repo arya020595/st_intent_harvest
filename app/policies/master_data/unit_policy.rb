@@ -2,10 +2,27 @@
 
 module MasterData
   class UnitPolicy < ApplicationPolicy
-    # Inherits all default behavior from ApplicationPolicy
+    # Permission codes:
+    # - master_data.units.index
+    # - master_data.units.show
+    # - master_data.units.new
+    # - master_data.units.create
+    # - master_data.units.edit
+    # - master_data.units.update
+    # - master_data.units.destroy
+
+    private
+
+    def permission_resource
+      'master_data.units'
+    end
 
     class Scope < ApplicationPolicy::Scope
-      # Inherits default scope behavior
+      private
+
+      def permission_resource
+        'master_data.units'
+      end
     end
   end
 end
