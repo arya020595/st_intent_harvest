@@ -32,15 +32,15 @@ class ApplicationController < ActionController::Base
   def user_not_authorized
     flash[:alert] = 'You are not authorized to perform this action.'
 
-    redirect_path = if request.referrer.present?
+    # Get user's first accessible path, but avoid redirect loop
+    redirect_path = if request.referrer.present? && request.referrer != request.url
+                      # Redirect to previous page if it exists and is different
                       request.referrer
-                    elsif controller_name.present?
-                      # Try to redirect back to the index action of the current controller
-                      { action: :index }
                     else
-                      root_path
+                      # Redirect to user's first accessible resource
+                      send(current_user.first_accessible_path)
                     end
 
-    redirect_to redirect_path
+    redirect_to redirect_path, allow_other_host: true
   end
 end
