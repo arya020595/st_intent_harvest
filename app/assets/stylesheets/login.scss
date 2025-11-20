@@ -1,0 +1,93 @@
+// Isolated styles for login page only
+#login-page {
+  .login-wrapper {
+    display: flex;
+    height: 100vh;
+  }
+
+  .login-container {
+    width: 400px; /* fixed width for login form */
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    padding: 2rem;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+
+    h2 {
+      margin-bottom: 1.5rem;
+      font-weight: 800;
+      font-size: 18px;
+      color: #000000;
+      margin-bottom: 50px;
+      margin-top: 20px;
+    }
+
+    h3 {
+      font-weight: 800;
+      font-size: 14px;
+      color: #828282;
+      margin-bottom: 20px;
+      margin-top: 40px;
+    }
+  }
+
+  .field {
+    width: 350px; // make field full width
+    margin-bottom: 15px;
+  }
+
+  .login-background {
+    flex: 2; /* takes the remaining space */
+    background-image: image-url("oil-palm-background.webp");
+    background-size: cover;
+    background-position: center;
+  }
+
+  .custom-input {
+    width: 100%; // full width of field
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    outline: none;
+
+    &:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+  }
+
+  .logo {
+    width: 160px;
+    height: auto;
+    margin-right: 10px;
+    margin-top: -50px;
+  }
+
+  .actions {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    background-color: #155e1a;
+    margin-top: 30px;
+    font-weight: 800;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+
+    &:hover {
+      background-color: #30a538;
+    }
+  }
+}
