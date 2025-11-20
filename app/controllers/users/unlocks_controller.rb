@@ -3,7 +3,7 @@
 class Users::UnlocksController < Devise::UnlocksController
   # Skip authentication
   skip_before_action :authenticate_user!
-  
+
   # GET /resource/unlock/new
   # def new
   #   super

@@ -24,7 +24,7 @@
 #
 #  fk_rails_...  (role_id => roles.id)
 #
-require "test_helper"
+require 'test_helper'
 
 class UserTest < ActiveSupport::TestCase
   # test "the truth" do

@@ -3,7 +3,7 @@
 class Users::PasswordsController < Devise::PasswordsController
   # Skip authentication for password reset
   skip_before_action :authenticate_user!
-  
+
   # GET /resource/password/new
   # def new
   #   super

@@ -14,7 +14,7 @@
 #  updated_at      :datetime         not null
 #
 
-require "test_helper"
+require 'test_helper'
 
 class WorkerTest < ActiveSupport::TestCase
   # test "the truth" do

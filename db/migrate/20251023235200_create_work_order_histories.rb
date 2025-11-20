@@ -11,7 +11,8 @@ class CreateWorkOrderHistories < ActiveRecord::Migration[7.2]
 
       t.timestamps
     end
-    
-    add_index :work_order_histories, [:work_order_id, :created_at], name: 'index_work_order_histories_on_order_and_created'
+
+    add_index :work_order_histories, %i[work_order_id created_at],
+              name: 'index_work_order_histories_on_order_and_created'
   end
 end
