@@ -1,16 +1,17 @@
 @import "bootstrap";
 @import "dashboard";
+@import "login";
+@import "sidebar";
 
 * {
   font-family: "Nunito", sans-serif;
   color: #000000;
 }
 
-
 //Collapsed sidebar
 .sidebar-collapsed {
   width: 0 !important;
-  padding: 0 !important;    
+  padding: 0 !important;
   overflow: hidden;
   transition: all 0.3s;
 }
@@ -19,7 +20,7 @@
 .sidebar-collapsed ul,
 .sidebar-collapsed li,
 .sidebar-collapsed a {
-  display: none;  //Hide all menu items
+  display: none; //Hide all menu items
 }
 
 /* Optional: make the main content full width */
@@ -30,7 +31,6 @@
 .sidebar-collapsed + .main-content {
   margin-left: 0 !important;
 }
-
 
 // Custom utility classes
 .cursor-pointer {
