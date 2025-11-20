@@ -5,8 +5,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # before_action :configure_account_update_params, only: [:update]
 
   # Skip authentication for new/create actions
-  skip_before_action :authenticate_user!, only: [:new, :create]
-  
+  skip_before_action :authenticate_user!, only: %i[new create]
+
   # Override parent layout logic: signup uses 'application', profile edit uses 'dashboard/application'
   layout :resolve_layout
 
@@ -45,14 +45,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   protected
-  
+
   # Determine layout based on action
   def resolve_layout
     case action_name
     when 'new', 'create'
-      'application'  # Clean layout for sign up
+      'application' # Clean layout for sign up
     else
-      'dashboard/application'  # Dashboard layout for edit profile
+      'dashboard/application' # Dashboard layout for edit profile
     end
   end
 

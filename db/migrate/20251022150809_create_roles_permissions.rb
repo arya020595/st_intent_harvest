@@ -6,7 +6,7 @@ class CreateRolesPermissions < ActiveRecord::Migration[7.2]
 
       t.timestamps
     end
-    
-    add_index :roles_permissions, [:role_id, :permission_id], unique: true
+
+    add_index :roles_permissions, %i[role_id permission_id], unique: true
   end
 end

@@ -18,7 +18,7 @@
 #
 #  fk_rails_...  (unit_id => units.id)
 #
-require "test_helper"
+require 'test_helper'
 
 class WorkOrderRateTest < ActiveSupport::TestCase
   # test "the truth" do
