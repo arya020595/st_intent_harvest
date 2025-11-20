@@ -1,0 +1,48 @@
+// Isolated styles for sidebar only
+#sidebar {
+  &.sidebar-bg {
+    background-image: image-url("sidebar-background.webp");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: white;
+    height: 100%;
+
+    a,
+    .nav-link,
+    .link-dark,
+    i.bi {
+      color: #fff !important;
+      font-weight: 400;
+      font-size: 18px;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px #000000;
+    }
+
+    .nav-link {
+      padding: 10px;
+    }
+
+    .nav-link.active {
+      background-color: #155e1a;
+      color: #fff !important;
+      font-weight: 800;
+    }
+
+    .nav-link:hover i.bi,
+    .nav-link:hover {
+      color: #f8f9fa !important;
+    }
+
+    // optional: make active icons slightly brighter
+    .nav-link.active i.bi {
+      color: #ffffff !important;
+    }
+
+    .powered-by {
+      font-weight: 700;
+      color: #ffffff;
+      text-align: center;
+    }
+  }
+}
