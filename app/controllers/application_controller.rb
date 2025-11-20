@@ -26,7 +26,15 @@ class ApplicationController < ActionController::Base
 
   # Override Devise method to redirect users to their first accessible resource
   def after_sign_in_path_for(resource)
-    stored_location_for(resource) || send(resource.first_accessible_path)
+    # Clear any stored location to prevent redirect issues
+    stored_location = stored_location_for(resource)
+
+    stored_location || send(resource.first_accessible_path)
+  end
+
+  # Override Devise method to redirect after sign out
+  def after_sign_out_path_for(_resource_or_scope)
+    new_user_session_path
   end
 
   def user_not_authorized
