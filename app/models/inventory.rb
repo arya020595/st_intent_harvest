@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Inventory < ApplicationRecord
   belongs_to :category, optional: true
   belongs_to :unit, optional: true

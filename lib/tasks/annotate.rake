@@ -95,14 +95,14 @@ namespace :annotate do
       next if File.basename(file) == 'application_record.rb'
 
       # Get model name from file path
-      relative_path = file.sub(Rails.root.join('app', 'models').to_s + '/', '')
+      relative_path = file.sub("#{Rails.root.join('app', 'models')}/", '')
       model_name = relative_path.sub('.rb', '').camelize
 
       begin
         model_class = model_name.constantize
         next unless model_class < ApplicationRecord
 
-        puts "\n" + '=' * 80
+        puts "\n#{'=' * 80}"
         puts "Model: #{model_name}"
         puts '=' * 80
 

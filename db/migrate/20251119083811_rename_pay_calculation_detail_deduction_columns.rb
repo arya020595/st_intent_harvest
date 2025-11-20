@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RenamePayCalculationDetailDeductionColumns < ActiveRecord::Migration[8.1]
   def change
     # Rename columns to use proper terminology:

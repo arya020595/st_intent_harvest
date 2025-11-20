@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateDeductionTypes < ActiveRecord::Migration[8.1]
   def change
     create_table :deduction_types do |t|

@@ -2,12 +2,12 @@
   <div class="card shadow-sm">
     <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
       <h5 class="mb-0">Work Orders</h5>
-      <%= link_to new_work_order_detail_path, class: "btn btn-light btn-sm" do %>
+      <%= link_to new_work_orders_detail_path, class: "btn btn-light btn-sm" do %>
         <i class="bi bi-plus-circle"></i> Add Work Order
       <% end %>
     </div>
     <div class="card-body">
-      <%= search_form_for @q, url: work_order_details_path, html: { id: 'work-order-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
+      <%= search_form_for @q, url: work_orders_details_path, html: { id: 'work-order-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
             <thead class="table-success">
@@ -64,7 +64,7 @@
                 <th class="text-center">
                   <div class="d-flex gap-1 justify-content-center">
                     <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
-                    <%= link_to 'Reset', work_order_details_path, class: 'btn btn-secondary btn-sm' %>
+                    <%= link_to 'Reset', work_orders_details_path, class: 'btn btn-secondary btn-sm' %>
                   </div>
                 </th>
               </tr>
@@ -75,7 +75,7 @@
               <% else %>
                 <tr>
                   <td colspan="6" class="text-center text-muted py-4">
-                    No work orders found. <%= link_to 'Create a new work order', new_work_order_detail_path, class: 'text-decoration-none' %>
+                    No work orders found. <%= link_to 'Create a new work order', new_work_orders_detail_path, class: 'text-decoration-none' %>
                   </td>
                 </tr>
               <% end %>

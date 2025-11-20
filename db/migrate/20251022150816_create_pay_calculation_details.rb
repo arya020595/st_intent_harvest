@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreatePayCalculationDetails < ActiveRecord::Migration[7.2]
   def change
     create_table :pay_calculation_details do |t|

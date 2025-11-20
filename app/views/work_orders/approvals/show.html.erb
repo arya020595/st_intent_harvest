@@ -1,13 +1,13 @@
 <div class="container-fluid px-4 py-4">
   <!-- Breadcrumb -->
   <%= render 'shared/breadcrumb', breadcrumbs: [
-    ['Work Order', work_order_details_path],
-    ['Work Order Approval', work_order_approvals_path],
+    ['Work Order', work_orders_details_path],
+    ['Work Order Approval', work_orders_approvals_path],
     ['View Work Order', nil]
   ] %>
   <!-- Back Button and Approve Button -->
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <%= link_to work_order_approvals_path, class: "text-decoration-none text-success d-inline-flex align-items-center" do %>
+    <%= link_to work_orders_approvals_path, class: "text-decoration-none text-success d-inline-flex align-items-center" do %>
       <i class="bi bi-arrow-left"></i> Back to Work Approval
     <% end %>
     <div>

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Deduction Types Seed Data
 # Based on Malaysian standard deductions (EPF, SOCSO, SIP)
 # All amounts are stored as percentages (11.0 = 11%)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :pay_calculations do
   desc 'Recalculate all pay calculation details (employee and employer deductions)'
   task recalculate_all: :environment do
@@ -11,13 +13,13 @@ namespace :pay_calculations do
       detail.recalculate_deductions!
       updated_count += 1
 
-      puts "Progress: #{index + 1}/#{total_count} processed..." if (index + 1) % 50 == 0
+      puts "Progress: #{index + 1}/#{total_count} processed..." if ((index + 1) % 50).zero?
     rescue StandardError => e
       error_count += 1
       puts "Error processing PayCalculationDetail ID #{detail.id}: #{e.message}"
     end
 
-    puts "\n" + '=' * 60
+    puts "\n#{'=' * 60}"
     puts 'Recalculation completed!'
     puts "Total records: #{total_count}"
     puts "Successfully updated: #{updated_count}"
@@ -63,7 +65,7 @@ namespace :pay_calculations do
     # Recalculate overall total
     pay_calculation.recalculate_overall_total!
 
-    puts "\n" + '=' * 60
+    puts "\n#{'=' * 60}"
     puts "Recalculation completed for #{month_year}"
     puts "Total records updated: #{updated_count}"
     puts "Total Gross Salary: RM #{pay_calculation.total_gross_salary}"

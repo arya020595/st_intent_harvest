@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DeductionType < ApplicationRecord
   CALCULATION_TYPES = %w[percentage fixed].freeze
   NATIONALITY_TYPES = %w[all local foreigner].freeze

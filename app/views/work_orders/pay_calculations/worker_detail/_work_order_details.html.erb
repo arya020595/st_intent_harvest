@@ -1,7 +1,7 @@
 <h5 class="text-success mb-3">Work Order Details (<%= (Date.strptime(pay_calculation.month_year, '%Y-%m').strftime('%B') rescue pay_calculation.month_year) %>)</h5>
 <div class="card shadow-sm mb-4">
   <div class="card-body">
-    <%= search_form_for q, url: worker_detail_work_order_pay_calculation_path(pay_calculation, worker_id: worker.id), method: :get, html: { id: 'work-order-details-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
+    <%= search_form_for q, url: worker_detail_work_orders_pay_calculation_path(pay_calculation, worker_id: worker.id), method: :get, html: { id: 'work-order-details-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
       <div class="table-responsive">
         <table class="table table-hover table-sm mb-0">
           <thead class="table-success">
@@ -30,7 +30,7 @@
               <th class="text-center">
                 <div class="d-flex gap-1 justify-content-center">
                   <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
-                  <%= link_to 'Reset', worker_detail_work_order_pay_calculation_path(pay_calculation, worker_id: worker.id), class: 'btn btn-secondary btn-sm' %>
+                  <%= link_to 'Reset', worker_detail_work_orders_pay_calculation_path(pay_calculation, worker_id: worker.id), class: 'btn btn-secondary btn-sm' %>
                 </div>
               </th>
             </tr>
