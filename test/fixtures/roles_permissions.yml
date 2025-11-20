@@ -15,10 +15,46 @@
 #  index_roles_permissions_on_role_id_and_permission_id  (role_id,permission_id) UNIQUE
 #
 
-one:
-  role: one
-  permission: one
+# Superadmin - all permissions
+superadmin_dashboard:
+  role: superadmin
+  permission: dashboard_index
 
-two:
-  role: two
-  permission: two
+superadmin_workers_index:
+  role: superadmin
+  permission: workers_index
+
+superadmin_workers_create:
+  role: superadmin
+  permission: workers_create
+
+superadmin_work_orders_details:
+  role: superadmin
+  permission: work_orders_details_index
+
+superadmin_work_orders_pay_calc:
+  role: superadmin
+  permission: work_orders_pay_calculations_index
+
+# Manager - dashboard access
+manager_dashboard:
+  role: manager
+  permission: dashboard_index
+
+manager_workers_index:
+  role: manager
+  permission: workers_index
+
+# Field Conductor - work orders details only
+field_conductor_work_orders_details:
+  role: field_conductor
+  permission: work_orders_details_index
+
+# Clerk - pay calculations and workers
+clerk_pay_calculations:
+  role: clerk
+  permission: work_orders_pay_calculations_index
+
+clerk_workers_index:
+  role: clerk
+  permission: workers_index

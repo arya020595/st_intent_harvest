@@ -1,28 +1,81 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>User Details</h1>
-      <div class="card">
-        <div class="card-body">
-          <dl class="row">
-            <dt class="col-sm-3">Name:</dt>
-            <dd class="col-sm-9"><%= @user.name %></dd>
-            <dt class="col-sm-3">Email:</dt>
-            <dd class="col-sm-9"><%= @user.email %></dd>
-            <dt class="col-sm-3">Role:</dt>
-            <dd class="col-sm-9"><%= @user.role&.name %></dd>
-            <dt class="col-sm-3">Status:</dt>
-            <dd class="col-sm-9"><%= @user.is_active ? "Active" : "Inactive" %></dd>
-            <dt class="col-sm-3">Last Sign In:</dt>
-            <dd class="col-sm-9"><%= @user.current_sign_in_at %></dd>
-          </dl>
-          <div class="mt-3">
-            <%= link_to "Edit", edit_user_management_user_path(@user), class: "btn btn-warning" %>
-            <%= link_to "Back", user_management_users_path, class: "btn btn-secondary" %>
-            <%= link_to "Delete", user_management_user_path(@user), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-danger" %>
+<%= turbo_frame_tag "modal" do %>
+  <div class="modal-header bg-primary text-white">
+    <h5 class="modal-title" id="userModalLabel">
+      <i class="bi bi-person-badge"></i> User Details
+    </h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <dl class="row mb-0">
+              <dt class="col-sm-4 text-muted">
+                <i class="bi bi-person"></i> Name:
+              </dt>
+              <dd class="col-sm-8 fw-semibold">
+                <%= @user.name %>
+              </dd>
+              <dt class="col-sm-4 text-muted">
+                <i class="bi bi-envelope"></i> Email:
+              </dt>
+              <dd class="col-sm-8">
+                <%= @user.email %>
+              </dd>
+              <dt class="col-sm-4 text-muted">
+                <i class="bi bi-shield-check"></i> Role:
+              </dt>
+              <dd class="col-sm-8">
+                <% if @user.role %>
+                  <span class="badge bg-primary"><%= @user.role.name %></span>
+                <% else %>
+                  <span class="text-muted">No role assigned</span>
+                <% end %>
+              </dd>
+              <dt class="col-sm-4 text-muted">
+                <i class="bi bi-toggle-on"></i> Status:
+              </dt>
+              <dd class="col-sm-8">
+                <% if @user.is_active %>
+                  <span class="badge bg-success">Active</span>
+                <% else %>
+                  <span class="badge bg-secondary">Inactive</span>
+                <% end %>
+              </dd>
+              <dt class="col-sm-4 text-muted">
+                <i class="bi bi-clock-history"></i> Last Sign In:
+              </dt>
+              <dd class="col-sm-8">
+                <%= @user.current_sign_in_at&.strftime("%B %d, %Y at %I:%M %p") || '<span class="text-muted">Never signed in</span>'.html_safe %>
+              </dd>
+              <dt class="col-sm-4 text-muted">
+                <i class="bi bi-calendar-check"></i> Created At:
+              </dt>
+              <dd class="col-sm-8">
+                <%= @user.created_at.strftime("%B %d, %Y at %I:%M %p") %>
+              </dd>
+              <dt class="col-sm-4 text-muted">
+                <i class="bi bi-calendar-event"></i> Updated At:
+              </dt>
+              <dd class="col-sm-8">
+                <%= @user.updated_at.strftime("%B %d, %Y at %I:%M %p") %>
+              </dd>
+            </dl>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+      <i class="bi bi-x-circle"></i> Close
+    </button>
+    <%= link_to edit_user_management_user_path(@user), class: "btn btn-warning", data: { turbo_frame: 'modal' } do %>
+      <i class="bi bi-pencil"></i> Edit
+    <% end %>
+    <%= link_to user_management_user_path(@user), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{@user.name}?" }, class: "btn btn-danger" do %>
+      <i class="bi bi-trash"></i> Delete
+    <% end %>
+  </div>
+<% end %>

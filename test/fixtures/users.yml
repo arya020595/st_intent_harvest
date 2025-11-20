@@ -24,6 +24,35 @@
 #
 #  fk_rails_...  (role_id => roles.id)
 #
+
+superadmin:
+  name: "Superadmin User"
+  email: "superadmin@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  is_active: true
+  role: superadmin
+
+manager:
+  name: "Manager User"
+  email: "manager@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  is_active: true
+  role: manager
+
+field_conductor:
+  name: "Field Conductor User"
+  email: "field.conductor@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  is_active: true
+  role: field_conductor
+
+clerk:
+  name: "Clerk User"
+  email: "clerk@example.com"
+  encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
+  is_active: true
+  role: clerk
+
 admin:
   name: "Admin User"
   email: "admin@example.com"

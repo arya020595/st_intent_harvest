@@ -2,15 +2,33 @@
 
 module WorkOrders
   class PayCalculationPolicy < ApplicationPolicy
-    # Inherits all default behavior from ApplicationPolicy
+    # Permission codes:
+    # - work_orders.pay_calculations.index
+    # - work_orders.pay_calculations.show
+    # - work_orders.pay_calculations.new
+    # - work_orders.pay_calculations.create
+    # - work_orders.pay_calculations.edit
+    # - work_orders.pay_calculations.update
+    # - work_orders.pay_calculations.destroy
+    # - work_orders.pay_calculations.worker_detail
 
-    # Allow viewing worker details (same permission as show)
+    # Allow viewing worker details with custom permission
     def worker_detail?
-      show?
+      user.has_permission?(build_permission_code('worker_detail'))
+    end
+
+    private
+
+    def permission_resource
+      'work_orders.pay_calculations'
     end
 
     class Scope < ApplicationPolicy::Scope
-      # Inherits default scope behavior
+      private
+
+      def permission_resource
+        'work_orders.pay_calculations'
+      end
     end
   end
 end

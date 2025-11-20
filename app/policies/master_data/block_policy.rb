@@ -2,10 +2,27 @@
 
 module MasterData
   class BlockPolicy < ApplicationPolicy
-    # Inherits all default behavior from ApplicationPolicy
+    # Permission codes:
+    # - master_data.blocks.index
+    # - master_data.blocks.show
+    # - master_data.blocks.new
+    # - master_data.blocks.create
+    # - master_data.blocks.edit
+    # - master_data.blocks.update
+    # - master_data.blocks.destroy
+
+    private
+
+    def permission_resource
+      'master_data.blocks'
+    end
 
     class Scope < ApplicationPolicy::Scope
-      # Inherits default scope behavior
+      private
+
+      def permission_resource
+        'master_data.blocks'
+      end
     end
   end
 end

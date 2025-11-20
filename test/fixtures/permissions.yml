@@ -3,14 +3,39 @@
 # Table name: permissions
 #
 #  id         :integer          not null, primary key
-#  subject    :string
-#  action     :string
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  code       :string           not null
+#  name       :string           not null
+#  resource   :string           not null
+#
+# Indexes
+#
+#  index_permissions_on_code      (code) UNIQUE
+#  index_permissions_on_resource  (resource)
 #
 
-one: {}
-# column: value
-#
-two: {}
-# column: value
+dashboard_index:
+  code: "dashboard.index"
+  name: "View Dashboard"
+  resource: "dashboard"
+
+workers_index:
+  code: "workers.index"
+  name: "View Workers"
+  resource: "workers"
+
+workers_create:
+  code: "workers.create"
+  name: "Create Workers"
+  resource: "workers"
+
+work_orders_details_index:
+  code: "work_orders.details.index"
+  name: "View Work Order Details"
+  resource: "work_orders"
+
+work_orders_pay_calculations_index:
+  code: "work_orders.pay_calculations.index"
+  name: "View Pay Calculations"
+  resource: "work_orders"
