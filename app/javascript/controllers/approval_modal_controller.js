@@ -8,7 +8,11 @@ export default class extends Controller {
     "buttonGroup",
     "approvalRemarks",
   ];
-  static values = { workOrderId: String };
+  static values = {
+    workOrderId: String,
+    approveUrl: String,
+    amendmentUrl: String,
+  };
 
   // Action types constants
   static ACTION_TYPES = {
@@ -90,13 +94,13 @@ export default class extends Controller {
       return;
     }
 
-    this.sendRequest("/request_amendment", {
+    this.sendRequest(this.amendmentUrlValue, {
       work_order_history: { remarks },
     });
   }
 
   submitApprove() {
-    this.sendRequest("/approve");
+    this.sendRequest(this.approveUrlValue);
   }
 
   getRemarksValue() {
@@ -111,8 +115,7 @@ export default class extends Controller {
     return true;
   }
 
-  sendRequest(endpoint, body = null) {
-    const url = `/work_order/approvals/${this.workOrderIdValue}${endpoint}`;
+  sendRequest(url, body = null) {
     const options = this.buildFetchOptions(body);
 
     fetch(url, options)
@@ -142,9 +145,11 @@ export default class extends Controller {
   }
 
   getCsrfToken() {
-    return document
-      .querySelector('meta[name="csrf-token"]')
-      ?.getAttribute("content") || "";
+    return (
+      document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute("content") || ""
+    );
   }
 
   async handleResponse(response) {
