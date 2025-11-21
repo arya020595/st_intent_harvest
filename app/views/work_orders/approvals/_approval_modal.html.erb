@@ -5,7 +5,9 @@
      aria-labelledby="approvalModalLabel" 
      aria-hidden="true"
      data-controller="approval-modal"
-     data-approval-modal-work-order-id-value="<%= work_order.id %>">
+     data-approval-modal-work-order-id-value="<%= work_order.id %>"
+     data-approval-modal-approve-url-value="<%= approve_work_orders_approval_path(work_order) %>"
+     data-approval-modal-amendment-url-value="<%= request_amendment_work_orders_approval_path(work_order) %>">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header border-0 pb-0">
