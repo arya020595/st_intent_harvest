@@ -72,11 +72,13 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists/*
 
 # Install wkhtmltopdf (static build from GitHub)
-RUN wget https://github.com/Surnet/docker-wkhtmltopdf/releases/download/0.12.6-5/wkhtmltox_0.12.6-5.debian-12_amd64.deb && \
-    apt-get update -qq && \
-    apt-get install -y --no-install-recommends fontconfig && \
-    dpkg -i wkhtmltox_0.12.6-5.debian-12_amd64.deb || apt-get -f install -y && \
-    rm wkhtmltox_0.12.6-5.debian-12_amd64.deb
+RUN wget https://github.com/Surnet/docker-wkhtmltopdf/releases/download/0.12.6-5/wkhtmltox_0.12.6-5.debian-12_amd64.tar.xz && \
+    tar -xJf wkhtmltox_0.12.6-5.debian-12_amd64.tar.xz -C /tmp && \
+    mv /tmp/wkhtmltox/bin/wkhtmltopdf /usr/local/bin/wkhtmltopdf && \
+    mv /tmp/wkhtmltox/bin/wkhtmltoimage /usr/local/bin/wkhtmltoimage && \
+    chmod +x /usr/local/bin/wkhtmltopdf /usr/local/bin/wkhtmltoimage && \
+    rm -rf wkhtmltox_0.12.6-5.debian-12_amd64.tar.xz /tmp/wkhtmltox
+
 
 
 # Copy gems & app from builder
