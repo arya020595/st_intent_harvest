@@ -32,7 +32,7 @@
     <!-- Category -->
     <div class="col-md-6">
       <%= form.label :category_id, class: "form-label" do %>
-        Category
+        Category <span class="text-danger">*
       <% end %>
       <%= form.select :category_id, 
           options_from_collection_for_select(Category.order(:name), :id, :name, inventory.category_id),
@@ -48,7 +48,7 @@
     <!-- Stock Quantity -->
     <div class="col-md-4">
       <%= form.label :stock_quantity, class: "form-label" do %>
-        Stock Quantity
+        Stock Quantity <span class="text-danger">*
       <% end %>
       <%= form.number_field :stock_quantity, class: "form-control #{'is-invalid' if inventory.errors[:stock_quantity].any?}", 
           placeholder: "0", min: 0 %>
@@ -62,7 +62,7 @@
     <!-- Unit -->
     <div class="col-md-4">
       <%= form.label :unit_id, class: "form-label" do %>
-        Unit
+        Unit <span class="text-danger">*
       <% end %>
       <%= form.select :unit_id, 
           options_from_collection_for_select(Unit.order(:name), :id, :name, inventory.unit_id),
@@ -78,7 +78,7 @@
     <!-- Price -->
     <div class="col-md-4">
       <%= form.label :price, class: "form-label" do %>
-        Price per Unit
+        Price per Unit <span class="text-danger">*
       <% end %>
       <div class="input-group">
         <%= form.select :currency, 
@@ -98,7 +98,7 @@
     <!-- Supplier -->
     <div class="col-md-6">
       <%= form.label :supplier, class: "form-label" do %>
-        Supplier
+        Supplier <span class="text-danger">*
       <% end %>
       <%= form.text_field :supplier, class: "form-control #{'is-invalid' if inventory.errors[:supplier].any?}", 
           placeholder: "Enter supplier name" %>
@@ -112,7 +112,7 @@
     <!-- Input Date -->
     <div class="col-md-6">
       <%= form.label :input_date, class: "form-label" do %>
-        Input Date
+        Input Date <span class="text-danger">*
       <% end %>
       <%= form.date_field :input_date, class: "form-control #{'is-invalid' if inventory.errors[:input_date].any?}" %>
       <% if inventory.errors[:input_date].any? %>
@@ -122,9 +122,10 @@
       <% end %>
     </div>
   </div>
+  
+  <hr/>
 
   <div class="mt-4 d-flex gap-2">
     <%= form.submit class: "btn btn-primary" %>
-    <%= link_to "Cancel", inventories_path, class: "btn btn-outline-secondary" %>
   </div>
 <% end %>

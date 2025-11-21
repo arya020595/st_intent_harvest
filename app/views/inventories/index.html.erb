@@ -1,506 +1,294 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
+<div id="inventory">
 <div class="inventory-page">
   <h1>Inventory</h1>
 
-  <button type="button" class="add-button" id="openModalBtn">
-    <i id="add-icon" class="fa fa-plus-circle"></i> Add Inventory
+  <button type="button" class="add-button btn btn-primary" id="openModalBtn">
+    <%= fa_icon "plus-circle", class: "text-muted pull-left" %> Add Inventory
   </button>
 
-  <table id="inventoryTable" border="1" cellpadding="10">
-    <thead>
-      <tr>
-        <th>
-        </th>
-        <th class="sortable" data-column="1">Name <i class="fa fa-sort"></i></th>
-        <th class="sortable" data-column="2">Category<i class="fa fa-sort"></i></th>
-        <th class="sortable" data-column="3">Unit<i class="fa fa-sort"></i></th>
-        <th class="sortable" data-column="4">Quantity<i class="fa fa-sort"></i></th>
-        <th class="sortable" data-column="5">Input Date<i class="fa fa-sort"></i></th>
-        <th class="sortable" data-column="6">Price<i class="fa fa-sort"></i></th>
-      </tr>
-      <tr class="filters">
-        <th>
-          <div style="display: flex; gap: 5px">
-            <button type="button" id="applyFilters" class="btn btn-primary">Search</button>
-            <button type="button" id="resetFilters" class="btn btn-secondary">Reset</button>
-          </div>
-        </th>
-        <th><input type="text" id="nameFilter" placeholder="Search Name" style="width: 90%; padding: 10px"></th>
-        <th>
-          <select id="categoryFilter" style="width: 95%; padding: 10px;">
-            <option value="">Select Category</option>
-            <% @categories.each do |cat| %>
-              <option value="<%= cat.name %>"><%= cat.name %></option>
+  <!-- INVENTORY TABLE WITH FILTER FORM -->
+  <%= search_form_for @q, url: inventories_path, method: :get do |f| %>
+    <div class="inventory-table-container mt-4">
+      <table id="inventoryTable">
+        <thead>
+                <th></th>
+                <th class="text-center">
+                  <%= sort_link(@q, :name, 'Name') %>
+                </th>
+                <th>
+                  <%= sort_link(@q, :category_id, 'Category') %>
+                </th>
+                <th>
+                  <%= sort_link(@q, :unit_id, 'Unit') %>
+                </th>
+                <th class="text-center">
+                  <%= sort_link(@q, :quantity, 'Quantity') %>
+                </th>
+                <th class="text-center">
+                  <%= sort_link(@q, :input_date, 'Input Date') %>
+                </th>
+                <th class="text-center">
+                  <%= sort_link(@q, :price, 'Price') %>
+                </th>
+
+          <!-- FILTER ROW -->
+          <tr>
+          <th>
+              <div class="filter-buttons">
+                <%= button_tag "Search", type: "submit", class: "btn filter-btn" %>
+                <%= link_to "Reset", inventories_path, class: "btn reset-btn" %>
+              </div>
+            </th>
+            <th><%= f.text_field :name_cont, class: "form-control form-control-sm", placeholder: "Search Name" %></th>
+          <th>
+                <%= f.select :category_id_eq,
+                            options_from_collection_for_select(@categories, :id, :name),
+                            { include_blank: "Select Category" },
+                            class: "form-control form-control-sm" %>
+              </th>
+
+              <th>
+                <%= f.select :unit_id_eq,
+                            options_from_collection_for_select(@units, :id, :name),
+                            { include_blank: "Select Unit" },
+                            class: "form-control form-control-sm" %>
+              </th>
+            <th></th>
+              <th class="text-center">
+                  <div class="input-group input-group-sm">
+                    <input type="text"
+                           class="form-control form-control-sm cursor-pointer"
+                           placeholder="Select Date Range"
+                           data-controller="flatpickr"
+                           data-flatpickr-mode-value="range"
+                           data-flatpickr-date-format-value="d-m-Y"
+                           data-flatpickr-field-name-value="q[input_date]">
+                    <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
+                      <i class="bi bi-calendar-range"></i>
+                    </span>
+                  </div>
+                  <%= f.hidden_field :input_date_gteq, value: params.dig(:q, :input_date_gteq) %>
+                  <%= f.hidden_field :input_date_lteq, value: params.dig(:q, :input_date_lteq) %>
+              </th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% if @inventories.any? %>
+            <% @inventories.each do |inventory| %>
+              <tr data-supplier="<%= inventory.supplier %>">
+                <td class="text-center">
+                  <a href="#" title="Info" class="mx-1" data-turbo="false"><i class="bi bi-info-circle-fill info-icon text-primary" data-id="<%= inventory.id %>"></i></a>
+                  <a href="#" title="Edit" class="mx-1" data-turbo="false"><i class="bi bi-pencil-fill edit-icon text-warning" data-id="<%= inventory.id %>"></i></a>
+                  <a href="#" title="Delete" class="mx-1" data-turbo="false"><i class="bi bi-trash-fill delete-icon text-danger" data-id="<%= inventory.id %>"></i></a>
+                </td>
+                <td><%= inventory.name %></td>
+                <td data-id="<%= inventory.category_id %>"><%= inventory.category&.name %></td>
+                <td data-id="<%= inventory.unit_id %>"><%= inventory.unit&.name %></td>
+                <td><%= inventory.stock_quantity %></td>
+                <td><%= inventory.input_date.strftime("%d-%m-%Y") if inventory.input_date %></td>
+                <td>RM <%= number_with_precision(inventory.price, precision: 2, delimiter: ',') %></td>
+              </tr>
             <% end %>
-          </select>
-        </th>
-        <th>
-          <select id="unitFilter" style="width: 95%; padding: 10px;">
-            <option value="">Select Unit</option>
-            <% @units.each do |unit| %>
-              <option value="<%= unit.name %>"><%= unit.name %></option>
-            <% end %>
-          </select>
-        </th>
-        <th></th>
-        <th><input type="date" id="dateFilter" style="width: 95%; padding: 10px;"></th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <% @inventories.each do |inv| %>
-        <tr>
-          <td class="action-buttons">
-            <a href="#" title="Info" data-turbo="false">
-              <i class="bi bi-info-circle-fill info-icon" style="color: #0d6efd; font-size: 1.2rem;" data-id="<%= inv.id %>"></i>
-            </a>
-            <a href="#" title="Edit" data-turbo="false">
-              <i class="bi bi-pencil-fill edit-icon" style="color: #ffc107; font-size: 1.2rem;" data-id="<%= inv.id %>"></i>
-            </a>
-            <a href="#" title="Delete" data-turbo="false">
-              <i class="bi bi-trash-fill delete-icon" style="color: #dc3545; font-size: 1.2rem;" data-id="<%= inv.id %>"></i>
-            </a>
-          </td>
-          <td><%= inv.name %></td>
-          <td><%= inv.category&.name %></td>
-          <td><%= inv.unit&.name %></td>
-          <td><%= inv.stock_quantity %></td>
-          <td><%= inv.input_date %></td>
-          <td>RM <%= number_with_precision(inv.price, precision: 2) %></td>
-          <td style="display:none;"><%= inv.supplier %></td>
-        </tr>
-      <% end %>
-
-      <tr id="noDataRow" style="display: none; text-align: center; color: #6c757d;">
-        <td colspan="7">
-          <i class="fa fa-exclamation-circle" style="margin-right: 8px;"></i>
-          There is no data!
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <!-- ADD MODAL -->
-  <div id="addInventoryModal" class="modal">
-    <div class="modal-content">
-      <span class="close-modal">&times;</span>
-      <h2>Add New Inventory</h2>
-      <hr/>
-      <%= form_with(model: @inventory, url: inventories_path, local: true) do |f| %>
-        <div class="form-row">
-          <div class="form-group">
-            <%= f.label :name %>
-            <%= f.text_field :name, class: "form-control", placeholder: "Enter Inventory Name", required: true %>
-          </div>
-          <div class="form-group">
-            <%= f.label :category_id, "Category" %>
-            <%= f.collection_select :category_id, @categories, :id, :name, { prompt: "Select Category" }, class: "form-control", required: true %>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <%= f.label :unit_id, "Unit" %>
-            <%= f.collection_select :unit_id, @units, :id, :name, { prompt: "Select Unit" }, class: "form-control", required: true %>
-          </div>
-          <div class="form-group">
-            <%= f.label :stock_quantity %>
-            <%= f.number_field :stock_quantity, class: "form-control", required: true %>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <%= f.label :price, "Price (RM)" %>
-            <%= f.number_field :price, step: 0.01, min: 0, class: "form-control", required: true %>
-          </div>
-          <div class="form-group">
-            <%= f.label :supplier, "Supplier Name" %>
-            <%= f.text_field :supplier, class: "form-control", required: true %>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <%= f.label :input_date, "Input Date" %>
-            <%= f.date_field :input_date, class: "form-control", required: true %>
-          </div>
-        </div>
-        <div style="text-align: right;">
-          <%= f.button type: "submit", class: "submit-button" do %>
-            <i class="bi bi-save-fill text-white"></i> Save
+          <% else %>
+            <tr id="noDataRow" style="text-align: center; color: #6c757d;">
+              <td colspan="8">
+                <i class="fa fa-exclamation-circle"></i> There is no data!
+              </td>
+            </tr>
           <% end %>
-        </div>
-      <% end %>
+        </tbody>
+      </table>
     </div>
-  </div>
+  <% end %>
 
-  <!-- VIEW MODAL -->
-  <div id="viewInventoryModal" class="modal">
-    <div class="modal-content">
-      <span class="close-view-modal">&times;</span>
-      <h2>View Inventory Details</h2>
-      <hr/>
-      <div id="viewInventoryDetails"></div>
+  <!-- PAGINATION -->
+  <div class="pagination-container d-flex justify-content-between align-items-center mt-3">
+    <div class="d-flex align-items-center gap-2">
+      <span class="text-muted small">Show</span>
+      <%= per_page_selector(current: params[:per_page] || 10) %>
+      <span class="text-muted small">
+      <%== @pagy.info_tag(item_name: 'Inventories') %>
+      </span>
     </div>
+    <%== @pagy.series_nav(:bootstrap) %>
   </div>
+</div>
+
+<!-- ADD INVENTORY MODAL -->
+<div id="addInventoryModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <h2>Add New Inventory</h2>
+    <hr/>
+    <%= render "form", inventory: Inventory.new, form_id: "newInventoryForm" %>
+  </div>
+</div>
+
+<!-- VIEW MODAL -->
+<div id="viewInventoryModal" class="modal">
+  <div class="modal-content">
+    <span class="close-view-modal">&times;</span>
+    <h2>View Inventory Details</h2>
+    <hr/>
+    <div id="viewInventoryDetails"></div>
+  </div>
+</div>
 
 <!-- EDIT MODAL -->
 <div id="editInventoryModal" class="modal">
   <div class="modal-content">
     <span class="close-update-modal">&times;</span>
-    <h2>Update Inventory Details</h2>
-    <hr />
-    <%= form_with model: @inventory, url: "", method: :patch, local: true, id: "editInventoryForm" do |f| %>
-      <div class="form-row">
-        <div class="form-group">
-          <%= f.label :name %>
-          <%= f.text_field :name, class: "form-control", id: "edit_name", required: true %>
-        </div>
-        <div class="form-group">
-          <%= f.label :category_id, "Category" %>
-          <%= f.collection_select :category_id, @categories, :id, :name, {}, class: "form-control", id: "edit_category" %>
-        </div>
-      </div>
+    <h2>Update Inventory</h2>
+    <hr/>
+    <%= render "form", inventory: @inventory_for_edit || Inventory.new, form_id: "editInventoryForm" %>
+  </div>
+</div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <%= f.label :unit_id, "Unit" %>
-          <%= f.collection_select :unit_id, @units, :id, :name, {}, class: "form-control", id: "edit_unit" %>
-        </div>
-        <div class="form-group">
-          <%= f.label :stock_quantity %>
-          <%= f.number_field :stock_quantity, class: "form-control", id: "edit_quantity", required: true %>
-        </div>
-      </div>
+<!-- DELETE MODAL -->
+<div id="deleteInventoryModal" class="modal">
+  <div class="modal-content">
+    <span class="close-delete-modal">&times;</span>
+    <h2>Delete Inventory</h2>
+    <hr/>
+    <p id="deleteConfirmMessage"></p>
 
-      <div class="form-row">
-        <div class="form-group">
-          <%= f.label :price, "Price (RM)" %>
-          <%= f.number_field :price, step: 0.01, min: 0, class: "form-control", id: "edit_price", required: true %>
-        </div>
-        <div class="form-group">
-          <%= f.label :input_date, "Input Date" %>
-          <%= f.date_field :input_date, class: "form-control", id: "edit_date", required: true %>
-        </div>
-      </div>
-
-      <div style="text-align: right;">
-        <%= f.button type: "submit", class: "submit-button" do %>
-          <i class="bi bi-arrow-repeat text-white"></i>
-          Update
-        <% end %>
+    <%= form_with url: "", method: :delete, local: true, id: "deleteInventoryForm" do %>
+      <div class="text-right">
+        <%= button_tag "Delete", class: "btn btn-danger" %>
+        <button type="button" id="cancelDeleteBtn" class="btn btn-secondary">Cancel</button>
       </div>
     <% end %>
   </div>
 </div>
-
-
-  <!-- DELETE MODAL -->
-  <div id="deleteInventoryModal" class="modal">
-    <div class="modal-content">
-      <span class="close-delete-modal">&times;</span>
-      <h2>Delete Inventory</h2>
-      <hr />
-      <p id="deleteConfirmMessage"></p>
-
-      <%= form_with url: "", method: :delete, local: true, id: "deleteInventoryForm" do %>
-        <div style="text-align: right;">
-          <%= button_tag "Delete", class: "btn btn-danger" %>
-          <button type="button" id="cancelDeleteBtn" class="btn btn-secondary">Cancel</button>
-        </div>
-      <% end %>
-    </div>
-  </div>
-
-
-  <!-- PAGINATION -->
-  <div class="pagination-container">
-    <div class="pagination-left">
-      Show 
-      <select id="rowsPerPage">
-        <option value="5" selected>5</option>
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="50">50</option>
-      </select>
-      entries 
-      <span class="pagination-info" id="paginationInfo"></span>
-    </div>
-    <div class="pagination-buttons">
-      <button id="prevPage">&lt;&lt; Previous</button>
-      <button id="nextPage">Next &gt;&gt;</button>
-    </div>
-  </div>
 </div>
 
-<!--- JAVASCRIPT -->
 <script>
-document.addEventListener('turbo:load', function () {
-  // -------------------------------
-  // TABLE + FILTER + PAGINATION
-  // -------------------------------
-  const table = document.getElementById('inventoryTable');
-  const tbody = table.tBodies[0];
-  const rows = Array.from(tbody.rows).filter(r => r.id !== 'noDataRow');
+document.addEventListener('turbo:load', () => {
 
-  const nameFilter = document.getElementById('nameFilter');
-  const categoryFilter = document.getElementById('categoryFilter');
-  const unitFilter = document.getElementById('unitFilter');
-  const dateFilter = document.getElementById('dateFilter');
-  const rowsPerPageSelect = document.getElementById('rowsPerPage');
-  const prevPageBtn = document.getElementById('prevPage');
-  const nextPageBtn = document.getElementById('nextPage');
-  const paginationInfo = document.getElementById('paginationInfo');
-  const paginationButtonsContainer = document.querySelector('.pagination-buttons');
-
-//Apply filter buttons
-const applyFiltersBtn = document.getElementById('applyFilters');
-const resetFiltersBtn = document.getElementById('resetFilters');
-
-  let currentPage = 1;
-  let rowsPerPage = parseInt(rowsPerPageSelect.value);
-
-  applyFiltersBtn.addEventListener('click', () => {
-  currentPage = 1;
-  displayTable();
-});
-
-resetFiltersBtn.addEventListener('click', () => {
-  nameFilter.value = '';
-  categoryFilter.value = '';
-  unitFilter.value = '';
-  dateFilter.value = '';
-  currentPage = 1;
-  displayTable();
-});
-
-  function filterRows() {
-    const nameVal = nameFilter.value.toLowerCase();
-    const categoryVal = categoryFilter.value;
-    const unitVal = unitFilter.value;
-    const dateVal = dateFilter.value;
-
-    return rows.filter(row => {
-      const nameText = row.cells[1].textContent.toLowerCase();
-      const categoryText = row.cells[2].textContent;
-      const unitText = row.cells[3].textContent;
-      const dateText = row.cells[5].textContent;
-      return (
-        nameText.includes(nameVal) &&
-        (categoryVal === "" || categoryText === categoryVal) &&
-        (unitVal === "" || unitText === unitVal) &&
-        (dateVal === "" || dateText === dateVal)
-      );
-    });
+  function closeAllModals() {
+    document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
   }
 
-  function displayTable() {
-    const filteredRows = filterRows();
-    const totalPages = Math.ceil(filteredRows.length / rowsPerPage) || 1;
-    if (currentPage > totalPages) currentPage = totalPages;
+  // Populate category and unit selects
+  const categoryOptions = <%= raw Category.order(:name).to_json(only: [:id, :name]) %>;
+  const unitOptions = <%= raw Unit.order(:name).to_json(only: [:id, :name]) %>;
 
-    rows.forEach(r => r.style.display = 'none');
-    const start = (currentPage - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    filteredRows.slice(start, end).forEach(r => r.style.display = '');
+  const categorySelect = document.getElementById('inventory_category_id');
+  const unitSelect = document.getElementById('inventory_unit_id');
 
-    const noDataRow = document.getElementById('noDataRow');
-    noDataRow.style.display = filteredRows.length === 0 ? '' : 'none';
+  categoryOptions.forEach(cat => {
+    const option = document.createElement('option');
+    option.value = cat.id;
+    option.textContent = cat.name;
+    categorySelect.appendChild(option);
+  });
 
-    const startIndex = filteredRows.length === 0 ? 0 : start + 1;
-    const endIndex = Math.min(end, filteredRows.length);
-    paginationInfo.textContent = `Showing ${startIndex} to ${endIndex} of ${filteredRows.length} entries`;
+  unitOptions.forEach(unit => {
+    const option = document.createElement('option');
+    option.value = unit.id;
+    option.textContent = unit.name;
+    unitSelect.appendChild(option);
+  });
 
-    paginationButtonsContainer.querySelectorAll('.page-btn').forEach(btn => btn.remove());
-    const nextBtn = document.getElementById('nextPage');
-    for (let i = 1; i <= totalPages; i++) {
-      const btn = document.createElement('button');
-      btn.textContent = i;
-      btn.classList.add('page-btn');
-      if (i === currentPage) btn.classList.add('active');
-      btn.addEventListener('click', () => {
-        currentPage = i;
-        displayTable();
-      });
-      paginationButtonsContainer.insertBefore(btn, nextBtn);
+  const addModal = document.getElementById('addInventoryModal');
+  document.getElementById('openModalBtn').addEventListener('click', () => {
+    closeAllModals();
+    addModal.style.display = 'flex';
+  });
+
+  document.addEventListener('click', e => {
+
+    // VIEW
+    if (e.target.classList.contains('info-icon')) {
+      const icon = e.target;
+      closeAllModals();
+      const row = icon.closest('tr');
+      const viewModal = document.getElementById('viewInventoryModal');
+      const detailsDiv = document.getElementById('viewInventoryDetails');
+      detailsDiv.innerHTML = `
+        <p><strong>ID:</strong> ${row.cells[0].textContent}</p>
+        <p><strong>Name:</strong> ${row.cells[1].textContent}</p>
+        <p><strong>Category:</strong> ${row.cells[2].textContent}</p>
+        <p><strong>Unit:</strong> ${row.cells[3].textContent}</p>
+        <p><strong>Quantity:</strong> ${row.cells[4].textContent}</p>
+        <p><strong>Date:</strong> ${row.cells[5].textContent}</p>
+        <p><strong>Price:</strong> ${row.cells[6].textContent}</p>
+      `;
+      viewModal.style.display = 'flex';
     }
 
-    prevPageBtn.disabled = currentPage === 1;
-    nextPageBtn.disabled = currentPage === totalPages;
-  }
-
-  //[nameFilter, categoryFilter, unitFilter, dateFilter].forEach(el => {
-  //  el.addEventListener('input', () => { currentPage = 1; displayTable(); });
-  //  el.addEventListener('change', () => { currentPage = 1; displayTable(); });
-  //});
-
-  rowsPerPageSelect.addEventListener('change', () => {
-    rowsPerPage = parseInt(rowsPerPageSelect.value);
-    currentPage = 1;
-    displayTable();
-  });
-  prevPageBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; displayTable(); } });
-  nextPageBtn.addEventListener('click', () => {
-    const totalPages = Math.ceil(filterRows().length / rowsPerPage) || 1;
-    if (currentPage < totalPages) { currentPage++; displayTable(); }
-  });
-
-  // -------------------------------
-  // SORTING DATA USING HEADER CLICKS
-  // -------------------------------
-let sortingData = { column: null, direction: true };
-
-  // -------------------------------
-  // SORTING LOGIC
-  // -------------------------------
-  let sortConfig = { column: null, direction: 'asc' };
-
-  function sortRows(columnIndex, direction) {
-    const filtered = filterRows();
-    filtered.sort((a, b) => {
-      const valA = a.cells[columnIndex].textContent.trim().toLowerCase();
-      const valB = b.cells[columnIndex].textContent.trim().toLowerCase();
-
-      // detect if numeric
-      const numA = parseFloat(valA.replace(/[^\d.-]/g, ''));
-      const numB = parseFloat(valB.replace(/[^\d.-]/g, ''));
-      const bothNumbers = !isNaN(numA) && !isNaN(numB);
-
-      if (bothNumbers) {
-        return direction === 'asc' ? numA - numB : numB - numA;
-      } else {
-        return direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
-      }
-    });
-
-    // Reorder DOM
-    rows.forEach(r => r.style.display = 'none');
-    filtered.forEach(r => tbody.appendChild(r));
-  }
-
-  // Event listener for sortable headers
-  document.querySelectorAll('.sortable').forEach(header => {
-    header.addEventListener('click', () => {
-      const columnIndex = parseInt(header.dataset.column);
-      if (sortConfig.column === columnIndex) {
-        sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
-      } else {
-        sortConfig.column = columnIndex;
-        sortConfig.direction = 'asc';
-      }
-
-      // Update icon
-      document.querySelectorAll('.sortable i').forEach(i => i.className = 'fa fa-sort');
-      header.querySelector('i').className = sortConfig.direction === 'asc' ? 'fa fa-sort-up' : 'fa fa-sort-down';
-
-      sortRows(columnIndex, sortConfig.direction);
-      displayTable();
-    });
-  });
-
-  // -------------------------------
-  // ADD INVENTORY MODAL
-  // -------------------------------
-  const addModal = document.getElementById('addInventoryModal');
-  const openAddBtn = document.getElementById('openModalBtn');
-  const closeAddBtn = addModal.querySelector('.close-modal');
-  openAddBtn.addEventListener('click', () => addModal.style.display = 'flex');
-  closeAddBtn.addEventListener('click', () => addModal.style.display = 'none');
-  window.addEventListener('click', e => { if (e.target === addModal) addModal.style.display = 'none'; });
-
-  // -------------------------------
-  // VIEW INVENTORY MODAL
-  // -------------------------------
-  const viewModal = document.getElementById('viewInventoryModal');
-  const closeViewBtn = viewModal.querySelector('.close-view-modal');
-  const viewDetails = document.getElementById('viewInventoryDetails');
-
-  function showInfoModal(row) {
-    const [name, category, unit, quantity, inputDate, price, supplier] = [1,2,3,4,5,6,7].map(i => row.cells[i].textContent);
-    console.log([...row.cells].map((c, i) => `${i}: ${c.textContent}`));
-
-    viewDetails.innerHTML = `
-      <p><strong>Name:</strong> ${name}</p>
-      <p><strong>Category:</strong> ${category}</p>
-      <p><strong>Unit:</strong> ${unit}</p>
-      <p><strong>Quantity:</strong> ${quantity}</p>
-      <p><strong>Input Date:</strong> ${inputDate}</p>
-      <p><strong>Price:</strong> ${price}</p>
-      <p><strong>Supplier Name:</strong> ${supplier}</p>
-      
-    `;
-    viewModal.style.display = 'flex';
-  }
-
-  closeViewBtn.addEventListener('click', () => viewModal.style.display = 'none');
-  window.addEventListener('click', e => { if (e.target === viewModal) viewModal.style.display = 'none'; });
-
-  // -------------------------------
-  // EDIT MODAL (REAL PATCH REQUEST)
-  // -------------------------------
+// EDIT
+if (e.target.classList.contains('edit-icon')) {
+  const icon = e.target;
+  closeAllModals();
+  const inventoryId = icon.dataset.id;
   const editModal = document.getElementById('editInventoryModal');
-  const closeEditBtn = editModal.querySelector('.close-update-modal');
-  const editForm = document.getElementById('editInventoryForm');
+  const form = editModal.querySelector('form');
+  const row = icon.closest('tr');
 
-  function showEditModal(row) {
-    const id = row.querySelector('.edit-icon').dataset.id;
-    const name = row.cells[1].textContent.trim();
-    const category = row.cells[2].textContent.trim();
-    const unit = row.cells[3].textContent.trim();
-    const quantity = row.cells[4].textContent.trim();
-    const date = row.cells[5].textContent.trim();
-    const price = row.cells[6].textContent.replace('RM', '').trim();
+  form.querySelector('#inventory_name').value = row.cells[1].textContent.trim();
+  form.querySelector('#inventory_category_id').value = row.cells[2].dataset.id || '';
+  form.querySelector('#inventory_unit_id').value = row.cells[3].dataset.id || '';
+  form.querySelector('#inventory_stock_quantity').value = row.cells[4].textContent.trim();
 
-    editForm.action = `/inventories/${id}`;
-
-    // Fill fields
-    document.getElementById('edit_name').value = name;
-    document.getElementById('edit_quantity').value = quantity;
-    document.getElementById('edit_price').value = price;
-    document.getElementById('edit_date').value = date;
-
-    editModal.style.display = 'flex';
+  const inputDate = row.cells[5].textContent.trim();  // dd-mm-yyyy
+  if (inputDate.includes('-')) {
+    const [day, month, year] = inputDate.split('-');
+    form.querySelector('#inventory_input_date').value = `${year}-${month}-${day}`;
   }
+  let price = row.cells[6].textContent
+  .replace('RM', '')    
+  .replace(/,/g, '')    
+  .trim();
 
-  closeEditBtn.addEventListener('click', () => editModal.style.display = 'none');
-  window.addEventListener('click', e => { if (e.target === editModal) editModal.style.display = 'none'; });
+  form.querySelector('#inventory_price').value = price;
+  form.querySelector('#inventory_supplier').value = row.dataset.supplier || '';
+  form.querySelector('#inventory_currency').value = 'RM'; // Default currency
 
-  // -------------------------------
-  // DELETE MODAL (REAL DELETE REQUEST)
-  // -------------------------------
-  const deleteModal = document.getElementById('deleteInventoryModal');
-  const closeDeleteBtn = deleteModal.querySelector('.close-delete-modal');
-  const deleteMsg = document.getElementById('deleteConfirmMessage');
-  const deleteForm = document.getElementById('deleteInventoryForm');
-  const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-
-  function showDeleteModal(row) {
-    const id = row.querySelector('.delete-icon').dataset.id;
-    const name = row.cells[1].textContent.trim();
-    deleteMsg.textContent = `Are you sure you want to delete "${name}"?`;
-    deleteForm.action = `/inventories/${id}`;
-    deleteModal.style.display = 'flex';
+  // Set form action for PATCH request (update)
+  form.action = `/inventories/${inventoryId}`;
+  form.method = 'POST';
+  
+  // Add hidden _method field for Rails to recognize as PATCH
+  let methodInput = form.querySelector('input[name="_method"]');
+  if (!methodInput) {
+    methodInput = document.createElement('input');
+    methodInput.type = 'hidden';
+    methodInput.name = '_method';
+    methodInput.value = 'PATCH';
+    form.appendChild(methodInput);
   }
+  
+  editModal.style.display = 'flex';
+}
 
-  closeDeleteBtn.addEventListener('click', () => deleteModal.style.display = 'none');
-  cancelDeleteBtn.addEventListener('click', () => deleteModal.style.display = 'none');
-  window.addEventListener('click', e => { if (e.target === deleteModal) deleteModal.style.display = 'none'; });
 
-  // -------------------------------
-  // ICON CLICK HANDLERS
-  // -------------------------------
-  table.addEventListener('click', e => {
-    const infoIcon = e.target.closest('.info-icon');
-    const editIcon = e.target.closest('.edit-icon');
-    const deleteIcon = e.target.closest('.delete-icon');
+    // DELETE
+    if (e.target.classList.contains('delete-icon')) {
+      const icon = e.target;
+      closeAllModals();
+      const inventoryId = icon.dataset.id;
+      const deleteModal = document.getElementById('deleteInventoryModal');
+      const deleteForm = document.getElementById('deleteInventoryForm');
 
-    if (infoIcon) { e.preventDefault(); showInfoModal(infoIcon.closest('tr')); }
-    if (editIcon) { e.preventDefault(); showEditModal(editIcon.closest('tr')); }
-    if (deleteIcon) { e.preventDefault(); showDeleteModal(deleteIcon.closest('tr')); }
+      deleteForm.action = `/inventories/${inventoryId}`;
+      document.getElementById('deleteConfirmMessage').textContent = `Are you sure you want to delete inventory #${inventoryId}?`;
+      deleteModal.style.display = 'flex';
+    }
+
+    // CLOSE MODALS
+    if (e.target.matches('.close-modal, .close-view-modal, .close-update-modal, .close-delete-modal, #cancelDeleteBtn, #cancelEditBtn')) {
+      const modal = e.target.closest('.modal');
+      if (modal) modal.style.display = 'none';
+    }
   });
 
-  // Initialize
-  displayTable();
+  // Close modals on clicking outside modal content
+  window.addEventListener('click', e => {
+    if (e.target.classList.contains('modal')) e.target.style.display = 'none';
+  });
+
 });
 </script>
-

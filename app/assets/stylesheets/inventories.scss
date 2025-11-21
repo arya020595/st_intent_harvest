@@ -1,3 +1,4 @@
+#inventory{
 .inventory-page {
   background-color: #ffffff;
 
@@ -14,6 +15,15 @@
   font-weight: 900;
 }
 
+#inventoryTable th{
+  background-color: #005b2d;
+}
+
+#inventoryTable tr{
+  padding: 10px;
+}
+
+
 .add-button {
   background-color: #155e1a;
   margin-top: 20px;
@@ -27,10 +37,34 @@
   border: 0px;
 }
 
+th .filter-buttons {
+  display: flex;
+  align-items: center;   /* vertical align */
+  gap: 8px;
+}
+
+
+.btn.filter-btn{
+  background-color: #007b44;
+  color: #ffffff;
+}
+
+.btn.reset-btn {
+  background-color: #0d6efd;
+  color: #ffffff;
+  width: 90%;
+}
+
+
 #add-icon {
   color: #ffffff;
   margin-right: 10px;
 }
+
+.add-button .fa-plus-circle {
+    color: #fff !important;
+}
+
 
 table {
   margin-top: 40px;
@@ -67,6 +101,8 @@ table tr {
   border-left: none;
   border-right: none;
 }
+
+
 
 .modal {
   display: none; /* hidden by default */
@@ -359,6 +395,7 @@ button.disabled {
   border-radius: 5px;
   text-decoration: none;
   font-size: 14px;
+  gap: 5px;
 }
 
 .action-buttons .btn-info {
@@ -387,4 +424,5 @@ th.sortable i {
 }
 th.sortable:hover i {
   color: #0d6efd;
+}
 }
