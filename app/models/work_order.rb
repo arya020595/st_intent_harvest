@@ -4,6 +4,7 @@ class WorkOrder < ApplicationRecord
   include AASM
   include Denormalizable
   include WorkOrderTypeBehavior
+  include WorkOrderGuardMessages
 
   # Status constants
   STATUSES = {
