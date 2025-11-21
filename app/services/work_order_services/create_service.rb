@@ -3,6 +3,7 @@
 module WorkOrderServices
   class CreateService
     include Dry::Monads[:result, :do]
+    include AasmErrorHandler
 
     attr_reader :work_order
 
@@ -70,15 +71,12 @@ module WorkOrderServices
     # Executes AASM transition to submit work order for approval
     # @return [Success, Failure] Result monad with work_order and message or error
     def execute_submit_transition
-      # Call AASM event to transition from ongoing -> pending
-      # This triggers WorkOrderHistory.record_transition callback
       work_order.mark_complete!
       AppLogger.info('Work order transitioned to pending', context: self.class.name, work_order_id: work_order.id)
       Success(work_order: work_order, message: 'Work order was successfully submitted.')
     rescue AASM::InvalidTransition => e
-      AppLogger.error('AASM transition failed', context: self.class.name, error: e.message,
-                                                from_state: work_order.aasm.current_state)
-      Failure("Transition error: #{e.message}")
+      error_message = handle_aasm_error(e, work_order)
+      Failure(error_message)
     rescue StandardError => e
       AppLogger.error('Work order submission failed', context: self.class.name, error: e.message,
                                                       work_order_id: work_order.id)
