@@ -10,22 +10,23 @@ blocks = Block.order(:id).to_a
 work_order_rates = WorkOrderRate.order(:id).to_a
 conductor_user = User.find_by(email: 'conductor@example.com')
 manager_user = User.find_by(email: 'manager@example.com')
-workers = Worker.where(is_active: true).limit(20).order(:id).to_a
+workers = Worker.where(is_active: true).order(:id).to_a
 inventories = Inventory.includes(:unit, :category).order(:id).to_a
 
 # Define work order configurations
+# Using January 2025 to match PayCalculation month for worker_detail queries
 work_orders_data = [
-  { block: blocks[0], work_order_rate: work_order_rates[0], start_date: Date.new(2024, 10, 1), status: 'completed' },
-  { block: blocks[1], work_order_rate: work_order_rates[1], start_date: Date.new(2024, 10, 6), status: 'completed' },
-  { block: blocks[2], work_order_rate: work_order_rates[2], start_date: Date.new(2024, 10, 11), status: 'ongoing' },
-  { block: blocks[3], work_order_rate: work_order_rates[3], start_date: Date.new(2024, 10, 16), status: 'pending' },
-  { block: blocks[4], work_order_rate: work_order_rates[4], start_date: Date.new(2024, 10, 21), status: 'completed' },
-  { block: blocks[5], work_order_rate: work_order_rates[5], start_date: Date.new(2024, 10, 26), status: 'ongoing' },
-  { block: blocks[6], work_order_rate: work_order_rates[0], start_date: Date.new(2024, 11, 1),
+  { block: blocks[0], work_order_rate: work_order_rates[0], start_date: Date.new(2025, 1, 5), status: 'completed' },
+  { block: blocks[1], work_order_rate: work_order_rates[1], start_date: Date.new(2025, 1, 8), status: 'completed' },
+  { block: blocks[2], work_order_rate: work_order_rates[2], start_date: Date.new(2025, 1, 11), status: 'ongoing' },
+  { block: blocks[3], work_order_rate: work_order_rates[3], start_date: Date.new(2025, 1, 14), status: 'pending' },
+  { block: blocks[4], work_order_rate: work_order_rates[4], start_date: Date.new(2025, 1, 17), status: 'completed' },
+  { block: blocks[5], work_order_rate: work_order_rates[5], start_date: Date.new(2025, 1, 20), status: 'ongoing' },
+  { block: blocks[6], work_order_rate: work_order_rates[0], start_date: Date.new(2025, 1, 23),
     status: 'amendment_required' },
-  { block: blocks[7], work_order_rate: work_order_rates[1], start_date: Date.new(2024, 11, 6), status: 'pending' },
-  { block: blocks[8], work_order_rate: work_order_rates[2], start_date: Date.new(2024, 11, 11), status: 'ongoing' },
-  { block: blocks[9], work_order_rate: work_order_rates[3], start_date: Date.new(2024, 11, 14), status: 'pending' }
+  { block: blocks[7], work_order_rate: work_order_rates[1], start_date: Date.new(2025, 1, 26), status: 'pending' },
+  { block: blocks[8], work_order_rate: work_order_rates[2], start_date: Date.new(2025, 1, 28), status: 'ongoing' },
+  { block: blocks[9], work_order_rate: work_order_rates[3], start_date: Date.new(2025, 1, 30), status: 'pending' }
 ]
 
 # Create work orders
@@ -36,6 +37,8 @@ work_orders_data.each do |data|
     work_order.work_order_status = data[:status]
     work_order.field_conductor_id = conductor_user.id
     work_order.field_conductor_name = conductor_user.name
+    work_order.created_at = data[:start_date]
+    work_order.updated_at = data[:start_date]
 
     # Add approval info for completed work orders
     if data[:status] == 'completed'
@@ -81,7 +84,26 @@ work_order_workers_data = [
   # Work Order 6 - 3 workers
   { work_order: created_work_orders[5], worker: workers[16], rate: 85.00, days: 4 },
   { work_order: created_work_orders[5], worker: workers[17], rate: 85.00, days: 4 },
-  { work_order: created_work_orders[5], worker: workers[18], rate: 85.00, days: 3 }
+  { work_order: created_work_orders[5], worker: workers[18], rate: 85.00, days: 3 },
+
+  # Work Order 7 - 2 workers
+  { work_order: created_work_orders[6], worker: workers[19], rate: 70.00, days: 5 },
+  { work_order: created_work_orders[6], worker: workers[20], rate: 70.00, days: 5 },
+
+  # Work Order 8 - 3 workers
+  { work_order: created_work_orders[7], worker: workers[21], rate: 75.00, days: 4 },
+  { work_order: created_work_orders[7], worker: workers[22], rate: 75.00, days: 4 },
+  { work_order: created_work_orders[7], worker: workers[23], rate: 75.00, days: 3 },
+
+  # Work Order 9 - 3 workers
+  { work_order: created_work_orders[8], worker: workers[24], rate: 80.00, days: 6 },
+  { work_order: created_work_orders[8], worker: workers[25], rate: 80.00, days: 6 },
+  { work_order: created_work_orders[8], worker: workers[26], rate: 80.00, days: 5 },
+
+  # Work Order 10 - 3 workers (reuse some workers)
+  { work_order: created_work_orders[9], worker: workers[0], rate: 65.00, days: 5 },
+  { work_order: created_work_orders[9], worker: workers[1], rate: 65.00, days: 5 },
+  { work_order: created_work_orders[9], worker: workers[2], rate: 65.00, days: 4 }
 ]
 
 # Batch insert work order workers
@@ -130,7 +152,25 @@ work_order_items_data = [
 
   # Work Order 5 items
   { work_order: created_work_orders[4], inventory: inventories[2], amount_used: 45 },
-  { work_order: created_work_orders[4], inventory: inventories[12], amount_used: 7 }
+  { work_order: created_work_orders[4], inventory: inventories[12], amount_used: 7 },
+
+  # Work Order 6 items
+  { work_order: created_work_orders[5], inventory: inventories[3], amount_used: 35 },
+  { work_order: created_work_orders[5], inventory: inventories[15], amount_used: 4 },
+
+  # Work Order 7 items
+  { work_order: created_work_orders[6], inventory: inventories[4], amount_used: 40 },
+
+  # Work Order 8 items
+  { work_order: created_work_orders[7], inventory: inventories[6], amount_used: 25 },
+  { work_order: created_work_orders[7], inventory: inventories[16], amount_used: 5 },
+
+  # Work Order 9 items
+  { work_order: created_work_orders[8], inventory: inventories[7], amount_used: 30 },
+
+  # Work Order 10 items
+  { work_order: created_work_orders[9], inventory: inventories[8], amount_used: 20 },
+  { work_order: created_work_orders[9], inventory: inventories[17], amount_used: 3 }
 ]
 
 # Batch insert work order items
