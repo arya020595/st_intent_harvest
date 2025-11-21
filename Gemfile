@@ -80,14 +80,13 @@ gem 'bootstrap', '~> 5.3', '>= 5.3.5'
 gem 'sassc-rails'
 
 # Font Awesome
-gem "font-awesome-rails"
+gem 'font-awesome-rails'
 
-#For handling PDF on Payslip Module
+# For handling PDF on Payslip Module
 gem 'wicked_pdf'
 
-gem 'wkhtmltopdf-binary' # this provides wkhtmltopdf binary
-
-
+# this provides wkhtmltopdf binary
+gem 'wkhtmltopdf-binary'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
