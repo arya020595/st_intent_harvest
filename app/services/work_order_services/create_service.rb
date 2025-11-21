@@ -75,8 +75,6 @@ module WorkOrderServices
       AppLogger.info('Work order transitioned to pending', context: self.class.name, work_order_id: work_order.id)
       Success(work_order: work_order, message: 'Work order was successfully submitted.')
     rescue AASM::InvalidTransition => e
-      AppLogger.error('AASM transition failed', context: self.class.name, error: e.message,
-                                                from_state: work_order.aasm.current_state)
       error_message = handle_aasm_error(e, work_order)
       Failure(error_message)
     rescue StandardError => e
