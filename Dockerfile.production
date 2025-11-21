@@ -3,9 +3,9 @@
 ARG RUBY_VERSION=3.4.7
 
 #
-# ───────────────────────────────────────────
+# ────────────────────────────────
 # Builder Stage
-# ───────────────────────────────────────────
+# ────────────────────────────────
 #
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS builder
 
@@ -35,22 +35,23 @@ RUN bundle config set --local without 'development test' && \
     bundle install -j4 --retry 3 && \
     rm -rf /usr/local/bundle/cache/*.gem
 
-# Copy app source
+# Copy full app
 COPY . .
 
 # Precompile bootsnap caches
 RUN bundle exec bootsnap precompile --gemfile && \
     bundle exec bootsnap precompile app/ lib/
 
-# Precompile Rails assets
+# Precompile assets
 ENV SECRET_KEY_BASE=dummy \
-    DATABASE_URL=postgres://dummy:dummy@localhost/dummy
+    DATABASE_URL=postgresql://dummy:dummy@localhost/dummy
 RUN bundle exec rails assets:precompile
 
+
 #
-# ───────────────────────────────────────────
+# ────────────────────────────────
 # Runtime Stage
-# ───────────────────────────────────────────
+# ────────────────────────────────
 #
 FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim AS runtime
 
@@ -60,29 +61,36 @@ ENV RAILS_ENV=production \
     BUNDLE_PATH=/usr/local/bundle \
     PATH="/rails/bin:/usr/local/bundle/bin:$PATH"
 
-# Install runtime packages only
+# Install minimal runtime dependencies
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     libpq5 \
-    libvips && \
+    libvips \
+    xz-utils \
+    wget \
+    ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# ───────────────────────────────────────────
-# WKHTMLTOPDF — STATIC BINARY (Zero Dependencies)
-# ───────────────────────────────────────────
-COPY --from=surnet/alpine-wkhtmltopdf:3.19-0.12.6-full /bin/wkhtmltopdf /usr/local/bin/wkhtmltopdf
-COPY --from=surnet/alpine-wkhtmltopdf:3.19-0.12.6-full /bin/wkhtmltoimage /usr/local/bin/wkhtmltoimage
+# ────────────────────────────────
+# Install wkhtmltopdf (Static - Zero Dependencies)
+# ────────────────────────────────
+RUN wget -O wkhtmltox.tar.xz \
+    https://github.com/Surnet/docker-wkhtmltopdf/releases/download/0.12.6-5/wkhtmltox_0.12.6-5.debian-12_amd64.tar.xz && \
+    mkdir -p /opt/wkhtmltopdf && \
+    tar -xJf wkhtmltox.tar.xz -C /opt/wkhtmltopdf --strip-components=1 && \
+    mv /opt/wkhtmltopdf/bin/wkhtmltopdf /usr/local/bin/wkhtmltopdf && \
+    mv /opt/wkhtmltopdf/bin/wkhtmltoimage /usr/local/bin/wkhtmltoimage && \
+    chmod +x /usr/local/bin/wkhtmltopdf /usr/local/bin/wkhtmltoimage && \
+    rm -rf wkhtmltox.tar.xz /opt/wkhtmltopdf
 
-RUN chmod +x /usr/local/bin/wkhtmltopdf /usr/local/bin/wkhtmltoimage
-
-# Copy gems & app
+# Copy gems & application from builder
 COPY --from=builder /usr/local/bundle /usr/local/bundle
 COPY --from=builder /rails /rails
 
-# Ensure required dirs exist
+# Ensure required dirs
 RUN mkdir -p tmp/pids tmp/sockets log storage
 
-# Add non-root user
+# Non-root user
 RUN groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
     chown -R rails:rails /rails
