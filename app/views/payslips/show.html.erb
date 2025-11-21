@@ -6,20 +6,14 @@
       <p><strong>Juara Satu, Sadong Jaya,</strong></p>
       <p><strong>Karamunsing, 88000, Kota Kinabalu, Sabah</strong></p>
     </td>
-
     <!-- Right: Logo -->
     <td style="text-align: right; vertical-align: top; width: 200px; border: none;">
-    <%= image_tag "data:image/webp;base64,#{Base64.encode64(File.read(Rails.root.join('app','assets','images','intent-harvest-logo.webp')))}",
-          style: "width: 100%; height: auto;" %>
-
+      <img src="<%= Rails.root.join('app', 'assets', 'images', 'intent-harvest-logo.png') %>" style="width: 100%; height: auto;" />
     </td>
   </tr>
 </table>
-
 <hr/>
-
 <h1>EMPLOYEE PAYSLIP</h1>
-
 <h3>
   <% if @month_year_date %>
     (<%= @month_year_date.strftime('%B %Y') %>)
@@ -27,29 +21,21 @@
     Unknown Month
   <% end %>
 </h3>
-
-
-  <!-- Worker Info -->
-  <table style="width: 100%; margin-bottom: 20px;">
-    <tr>
-      <td><strong>Worker Name:</strong> <%= @worker&.name || "N/A" %></td>
-      <td><strong>Gender:</strong> <%= @worker&.gender || "N/A" %></td>
-    </tr>
-    <tr>
-      <td><strong>Worker ID:</strong> <%= @worker&.id || "N/A" %></td>
-      <td><strong>Nationality:</strong> <%= @worker&.nationality || "N/A" %></td>
-    </tr>
-    <tr>
-      <td><strong>Hired Date:</strong> <%= @worker&.hired_date&.strftime('%d-%m-%Y') || "N/A" %></td>
-      <td><strong>Worker Type:</strong> <%= @worker&.worker_type || "N/A" %></td>
-    </tr>
-  </table>
-
-<%
-  total_quantity = 0
-  total_amount   = 0  # Gross salary
-%>
-
+<!-- Worker Info -->
+<table style="width: 100%; margin-bottom: 20px;">
+  <tr>
+    <td><strong>Worker Name:</strong> <%= @worker&.name || "N/A" %></td>
+    <td><strong>Gender:</strong> <%= @worker&.gender || "N/A" %></td>
+  </tr>
+  <tr>
+    <td><strong>Worker ID:</strong> <%= @worker&.id || "N/A" %></td>
+    <td><strong>Nationality:</strong> <%= @worker&.nationality || "N/A" %></td>
+  </tr>
+  <tr>
+    <td><strong>Hired Date:</strong> <%= @worker&.hired_date&.strftime('%d-%m-%Y') || "N/A" %></td>
+    <td><strong>Worker Type:</strong> <%= @worker&.worker_type || "N/A" %></td>
+  </tr>
+</table>
 <!-- Earnings Table -->
 <table border="1" cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
   <thead style="background-color: #f0f0f0;">
@@ -60,27 +46,20 @@
       <th>Total (RM)</th>
     </tr>
   </thead>
-
   <tbody>
-    <% if @work_orders.any? %>
-      <% @work_orders.each do |order| %>
-
-        <% order_worker = order.work_order_workers.find_by(worker_id: @worker.id) %>
-        <% next unless order_worker %>
-
+    <% if @work_order_workers.any? %>
+      <% @work_order_workers.each do |order_worker| %>
+        <% order = order_worker.work_order %>
         <% unit_name = order.work_order_rate&.unit&.name || "N/A" %>
         <% quantity  = order_worker.work_area_size || 0 %>
-
-        <% total_quantity += quantity.to_f %>
-        <% total_amount += order_worker.amount.to_f %>
-
         <tr>
           <td><%= order.work_order_rate_name || "N/A" %></td>
           <td><%= "#{quantity} #{unit_name}" %></td>
-          <td><%= sprintf('%.2f', order.work_order_rate_price) %></td>
-          <td><%= number_to_currency(order_worker.amount, unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %></td>
+          <td class="text-center" style="text-align: center;">
+            <%= number_to_currency(order.work_order_rate_price, unit: '', separator: '.', delimiter: ',', precision: 2) %>
+          </td>
+          <td class="text-center" style="text-align: center;"><%= number_to_currency(order_worker.amount, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
         </tr>
-
       <% end %>
     <% else %>
       <tr>
@@ -88,68 +67,54 @@
       </tr>
     <% end %>
   </tbody>
+  <tfoot>
+    <tr class="totals">
+      <td class="text-center" colspan="3">Overall Total (RM):</td>
+      <td class="text-center" style="text-align: center;"><%= number_to_currency(@payslip_detail.gross_salary, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+    </tr>
+  </tfoot>
 </table>
-
-<div class="totals" style="margin-top: 15px;">
-  <strong>Total Amount (RM):</strong> <%= sprintf('%.2f', total_amount) %>
-</div>
-
 <hr/>
-
 <%
-  # Hardcoded deduction rules
-  deductions = [
-    { name: "EPF",  nationality: "all",       employer: 12.0, employee: 11.0 },
-    { name: "SOCSO", nationality: "local",    employer: 1.75, employee: 0.5 },
-    { name: "SOCSO", nationality: "foreigner", employer: 1.25, employee: 0.0 },
-    { name: "SIP",   nationality: "local",     employer: 0.2,  employee: 0.2 }
-  ]
-
-  worker_nat = @worker&.nationality&.downcase || "local"
-
-  # Select deduction entries matching nationality or "all"
-  applicable_deductions = deductions.select do |d|
-    d[:nationality] == "all" || d[:nationality] == worker_nat
-  end
-
-  # Calculate percentage-based deduction amounts
-  applicable_deductions.each do |d|
-    d[:employer_rm] = total_amount * (d[:employer] / 100.0)
-    d[:employee_rm] = total_amount * (d[:employee] / 100.0)
-  end
-
-  # Total employee deduction affects net salary
-  total_employee_deduction = applicable_deductions.sum { |d| d[:employee_rm] }
-
-  # Net salary after employee deduction
-  overall_net_pay = total_amount - total_employee_deduction
+  # Use deduction breakdown from PayCalculationDetail
+  # This ensures deductions match what's stored in the pay calculation system
+  deduction_breakdown = @payslip_detail.deduction_breakdown || {}
+  total_employee_deduction = @payslip_detail.employee_deductions || 0
+  total_employer_deduction = @payslip_detail.employer_deductions || 0
+  
+  # Net salary after employee deduction (use gross_salary from pay_calculation_detail)
+  overall_net_pay = @payslip_detail.gross_salary - total_employee_deduction
 %>
-
 <!-- Deduction Table (RM Display) -->
 <table border="1" cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
   <thead style="background-color: #f0f0f0;">
     <tr>
       <th>Deduction</th>
-      <th>Employer (RM)</th>
       <th>Employee (RM)</th>
+      <th>Employer (RM)</th>
     </tr>
   </thead>
   <tbody>
-    <% applicable_deductions.each do |d| %>
+    <% if deduction_breakdown.any? %>
+      <% deduction_breakdown.each do |deduction_code, data| %>
+        <tr>
+          <td><%= data['name'] %></td>
+          <td class="text-center" style="text-align: center;"><%= data['employee_amount'] == 0 ? '-' : number_to_currency(data['employee_amount'], unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+          <td class="text-center" style="text-align: center;"><%= data['employer_amount'] == 0 ? '-' : number_to_currency(data['employer_amount'], unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+        </tr>
+      <% end %>
+    <% else %>
       <tr>
-        <td><%= d[:name] %></td>
-        <td><%= number_to_currency(d[:employer_rm], unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %></td>
-        <td><%= number_to_currency(d[:employee_rm], unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %></td>
+        <td colspan="3" style="text-align:center;">No deductions applicable.</td>
       </tr>
     <% end %>
   </tbody>
 </table>
-
-
 <div class="totals" style="margin-top: 15px;">
-  <strong>Total Deduction (RM):</strong> <%= sprintf('%.2f', total_employee_deduction) %>
+  <strong>Total Deduction (RM):</strong>
+  <%= number_to_currency(total_employee_deduction, unit: '', separator: '.', delimiter: ',', precision: 2) %>
 </div>
-
 <div class="totals" style="margin-top: 15px;">
-  <strong>Overall Net Pay (RM):</strong> <%= sprintf('%.2f', overall_net_pay) %>
+  <strong>Overall Net Pay (RM):</strong>
+  <%= number_to_currency(overall_net_pay, unit: '', separator: '.', delimiter: ',', precision: 2) %>
 </div>
