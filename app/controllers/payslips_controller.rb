@@ -72,17 +72,23 @@ class PayslipsController < ApplicationController
 
   # Render error message when no payslip data exists
   def render_no_payslip_error
-    month_name = Date.parse("#{@month_year}-01").strftime('%B %Y')
+    error_message = build_error_message
 
     respond_to do |format|
-      format.html do
-        render html: "<h1>No Payslip Available</h1><p>No payslip data found for #{@worker.name} in #{month_name}. Please ensure work orders have been completed and processed for this month.</p>".html_safe,
-               status: :not_found
-      end
-      format.pdf do
-        render html: "<h1>No Payslip Available</h1><p>No payslip data found for #{@worker.name} in #{month_name}.</p>".html_safe,
-               status: :not_found
-      end
+      format.html { render html: error_message.html_safe, status: :not_found }
+      format.pdf { render html: error_message.html_safe, status: :not_found }
     end
+  end
+
+  # Build error message HTML
+  def build_error_message
+    month_name = Date.parse("#{@month_year}-01").strftime('%B %Y')
+    worker_name = ERB::Util.html_escape(@worker.name)
+
+    <<~HTML
+      <h1>No Payslip Available</h1>
+      <p>No payslip data found for #{worker_name} in #{month_name}.#{' '}
+      Please ensure work orders have been completed and processed for this month.</p>
+    HTML
   end
 end
