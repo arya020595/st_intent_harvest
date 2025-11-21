@@ -1,0 +1,161 @@
+# frozen_string_literal: true
+
+# Production Seeds - Work Orders
+# Create work orders with workers and items
+
+puts '📋 Creating work orders...'
+
+# Fetch references once with optimized queries
+blocks = Block.order(:id).to_a
+work_order_rates = WorkOrderRate.order(:id).to_a
+conductor_user = User.find_by(email: 'conductor@example.com')
+manager_user = User.find_by(email: 'manager@example.com')
+workers = Worker.where(is_active: true).limit(20).order(:id).to_a
+inventories = Inventory.includes(:unit, :category).order(:id).to_a
+
+# Define work order configurations
+work_orders_data = [
+  { block: blocks[0], work_order_rate: work_order_rates[0], start_date: Date.new(2024, 10, 1), status: 'completed' },
+  { block: blocks[1], work_order_rate: work_order_rates[1], start_date: Date.new(2024, 10, 6), status: 'completed' },
+  { block: blocks[2], work_order_rate: work_order_rates[2], start_date: Date.new(2024, 10, 11), status: 'ongoing' },
+  { block: blocks[3], work_order_rate: work_order_rates[3], start_date: Date.new(2024, 10, 16), status: 'pending' },
+  { block: blocks[4], work_order_rate: work_order_rates[4], start_date: Date.new(2024, 10, 21), status: 'completed' },
+  { block: blocks[5], work_order_rate: work_order_rates[5], start_date: Date.new(2024, 10, 26), status: 'ongoing' },
+  { block: blocks[6], work_order_rate: work_order_rates[0], start_date: Date.new(2024, 11, 1),
+    status: 'amendment_required' },
+  { block: blocks[7], work_order_rate: work_order_rates[1], start_date: Date.new(2024, 11, 6), status: 'pending' },
+  { block: blocks[8], work_order_rate: work_order_rates[2], start_date: Date.new(2024, 11, 11), status: 'ongoing' },
+  { block: blocks[9], work_order_rate: work_order_rates[3], start_date: Date.new(2024, 11, 14), status: 'pending' }
+]
+
+# Create work orders
+created_work_orders = []
+work_orders_data.each do |data|
+  wo = WorkOrder.find_or_create_by!(block_id: data[:block].id, start_date: data[:start_date]) do |work_order|
+    work_order.work_order_rate_id = data[:work_order_rate].id
+    work_order.work_order_status = data[:status]
+    work_order.field_conductor_id = conductor_user.id
+    work_order.field_conductor_name = conductor_user.name
+
+    # Add approval info for completed work orders
+    if data[:status] == 'completed'
+      work_order.approved_by = manager_user.name
+      work_order.approved_at = data[:start_date] + 7.days
+    end
+  end
+  created_work_orders << wo
+end
+
+puts "  ✓ #{WorkOrder.count} work orders"
+
+# ========== Work Order Workers ==========
+puts '  • Work order workers...'
+
+work_order_workers_data = [
+  # Work Order 1 - 3 workers
+  { work_order: created_work_orders[0], worker: workers[0], rate: 75.00, days: 5 },
+  { work_order: created_work_orders[0], worker: workers[1], rate: 75.00, days: 5 },
+  { work_order: created_work_orders[0], worker: workers[2], rate: 75.00, days: 4 },
+
+  # Work Order 2 - 4 workers
+  { work_order: created_work_orders[1], worker: workers[3], rate: 65.00, days: 6 },
+  { work_order: created_work_orders[1], worker: workers[4], rate: 65.00, days: 6 },
+  { work_order: created_work_orders[1], worker: workers[5], rate: 65.00, days: 5 },
+  { work_order: created_work_orders[1], worker: workers[6], rate: 65.00, days: 5 },
+
+  # Work Order 3 - 3 workers
+  { work_order: created_work_orders[2], worker: workers[7], rate: 70.00, days: 4 },
+  { work_order: created_work_orders[2], worker: workers[8], rate: 70.00, days: 4 },
+  { work_order: created_work_orders[2], worker: workers[9], rate: 70.00, days: 3 },
+
+  # Work Order 4 - 2 workers
+  { work_order: created_work_orders[3], worker: workers[10], rate: 60.00, days: 5 },
+  { work_order: created_work_orders[3], worker: workers[11], rate: 60.00, days: 5 },
+
+  # Work Order 5 - 4 workers
+  { work_order: created_work_orders[4], worker: workers[12], rate: 80.00, days: 6 },
+  { work_order: created_work_orders[4], worker: workers[13], rate: 80.00, days: 6 },
+  { work_order: created_work_orders[4], worker: workers[14], rate: 80.00, days: 5 },
+  { work_order: created_work_orders[4], worker: workers[15], rate: 80.00, days: 5 },
+
+  # Work Order 6 - 3 workers
+  { work_order: created_work_orders[5], worker: workers[16], rate: 85.00, days: 4 },
+  { work_order: created_work_orders[5], worker: workers[17], rate: 85.00, days: 4 },
+  { work_order: created_work_orders[5], worker: workers[18], rate: 85.00, days: 3 }
+]
+
+# Batch insert work order workers
+existing_wow = WorkOrderWorker.pluck(:work_order_id, :worker_id).to_set
+new_wow = work_order_workers_data.reject do |data|
+  existing_wow.include?([data[:work_order].id, data[:worker].id])
+end
+
+if new_wow.any?
+  wow_insert_data = new_wow.map do |data|
+    {
+      work_order_id: data[:work_order].id,
+      worker_id: data[:worker].id,
+      worker_name: data[:worker].name,
+      rate: data[:rate],
+      amount: data[:rate] * data[:days],
+      remarks: "#{data[:days]} days worked",
+      created_at: Time.current,
+      updated_at: Time.current
+    }
+  end
+  WorkOrderWorker.insert_all(wow_insert_data)
+end
+
+puts "    ✓ #{WorkOrderWorker.count} work order workers"
+
+# ========== Work Order Items ==========
+puts '  • Work order items...'
+
+work_order_items_data = [
+  # Work Order 1 items
+  { work_order: created_work_orders[0], inventory: inventories[0], amount_used: 50 },
+  { work_order: created_work_orders[0], inventory: inventories[9], amount_used: 10 },
+
+  # Work Order 2 items
+  { work_order: created_work_orders[1], inventory: inventories[5], amount_used: 30 },
+  { work_order: created_work_orders[1], inventory: inventories[13], amount_used: 5 },
+
+  # Work Order 3 items
+  { work_order: created_work_orders[2], inventory: inventories[1], amount_used: 40 },
+  { work_order: created_work_orders[2], inventory: inventories[10], amount_used: 8 },
+  { work_order: created_work_orders[2], inventory: inventories[14], amount_used: 3 },
+
+  # Work Order 4 items
+  { work_order: created_work_orders[3], inventory: inventories[11], amount_used: 6 },
+
+  # Work Order 5 items
+  { work_order: created_work_orders[4], inventory: inventories[2], amount_used: 45 },
+  { work_order: created_work_orders[4], inventory: inventories[12], amount_used: 7 }
+]
+
+# Batch insert work order items
+existing_woi = WorkOrderItem.pluck(:work_order_id, :inventory_id).to_set
+new_woi = work_order_items_data.reject do |data|
+  existing_woi.include?([data[:work_order].id, data[:inventory].id])
+end
+
+if new_woi.any?
+  woi_insert_data = new_woi.map do |data|
+    {
+      work_order_id: data[:work_order].id,
+      inventory_id: data[:inventory].id,
+      item_name: data[:inventory].name,
+      amount_used: data[:amount_used],
+      price: data[:inventory].price,
+      unit_name: data[:inventory].unit.name,
+      category_name: data[:inventory].category.name,
+      created_at: Time.current,
+      updated_at: Time.current
+    }
+  end
+  WorkOrderItem.insert_all(woi_insert_data)
+end
+
+puts "    ✓ #{WorkOrderItem.count} work order items"
+
+puts '✓ Work orders with relationships created'

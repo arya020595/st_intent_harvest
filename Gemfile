@@ -79,6 +79,16 @@ gem 'bootstrap', '~> 5.3', '>= 5.3.5'
 # Sass compiler for CSS preprocessing (required for Bootstrap SCSS)
 gem 'sassc-rails'
 
+# Font Awesome
+gem "font-awesome-rails"
+
+#For handling PDF on Payslip Module
+gem 'wicked_pdf'
+
+gem 'wkhtmltopdf-binary' # this provides wkhtmltopdf binary
+
+
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'byebug', '~> 11.1', '>= 11.1.3'
