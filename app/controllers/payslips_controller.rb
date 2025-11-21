@@ -26,11 +26,22 @@ class PayslipsController < ApplicationController
     month_year = format('%04d-%02d', year, month)
 
     # Find existing pay calculation for the month (created by ProcessWorkOrderService)
-    @payslip = PayCalculation.find_by!(month_year: month_year)
+    @payslip = PayCalculation.find_by(month_year: month_year)
+
+    # Handle case where no pay calculation exists for this month
+    unless @payslip
+      render_no_payslip_error(month_year)
+      return
+    end
 
     # Find existing pay calculation detail for this worker
-    # This was already created by ProcessWorkOrderService when work orders were completed
-    @payslip_detail = @payslip.pay_calculation_details.find_by!(worker: @worker)
+    @payslip_detail = @payslip.pay_calculation_details.find_by(worker: @worker)
+
+    # Handle case where worker has no pay calculation for this month
+    unless @payslip_detail
+      render_no_payslip_error(month_year)
+      return
+    end
 
     # Parse month_year to get the month range for work order details display
     month_date = Date.parse("#{month_year}-01")
@@ -69,5 +80,22 @@ class PayslipsController < ApplicationController
   # Load all workers for dropdown selection
   def set_workers
     @workers = Worker.all
+  end
+
+  # Render error message when no payslip data exists
+  def render_no_payslip_error(month_year)
+    month_date = Date.parse("#{month_year}-01")
+    month_name = month_date.strftime('%B %Y')
+
+    respond_to do |format|
+      format.html do
+        render html: "<h1>No Payslip Available</h1><p>No payslip data found for #{@worker.name} in #{month_name}. Please ensure work orders have been completed and processed for this month.</p>".html_safe,
+               status: :not_found
+      end
+      format.pdf do
+        render html: "<h1>No Payslip Available</h1><p>No payslip data found for #{@worker.name} in #{month_name}.</p>".html_safe,
+               status: :not_found
+      end
+    end
   end
 end
