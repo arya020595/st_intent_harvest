@@ -34,7 +34,8 @@ RUN apt-get update -qq && \
 # Install application gems (do this before copying app code for better caching)
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
-    bundle exec bootsnap precompile --gemfile
+    bundle exec bootsnap precompile --gemfile && \
+    chmod +x /usr/local/bundle/ruby/*/gems/wkhtmltopdf-binary-*/bin/wkhtmltopdf* || true
 
 # Copy application code
 COPY . .

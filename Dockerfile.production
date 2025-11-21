@@ -27,6 +27,7 @@ RUN apt-get update -qq && \
 COPY Gemfile Gemfile.lock ./
 RUN bundle config set --local without 'development test' && \
     bundle install -j4 --retry 3 && \
+    chmod +x /usr/local/bundle/ruby/*/gems/wkhtmltopdf-binary-*/bin/wkhtmltopdf* || true && \
     rm -rf /usr/local/bundle/cache/*.gem && \
     find /usr/local/bundle -name "*.c" -delete 2>/dev/null || true && \
     find /usr/local/bundle -name "*.o" -delete 2>/dev/null || true

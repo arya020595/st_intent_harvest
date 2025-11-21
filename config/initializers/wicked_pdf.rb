@@ -1,4 +1,5 @@
 WickedPdf.configure do |config|
-  config.executable = '/usr/bin/wkhtmltopdf'   # update path if needed
+  # Use the binary provided by wkhtmltopdf-binary gem
+  # This will automatically find the correct binary for your platform
   config.enable_local_file_access = true
 end
