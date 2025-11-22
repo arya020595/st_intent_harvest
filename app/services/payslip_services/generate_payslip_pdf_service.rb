@@ -25,7 +25,7 @@ module PayslipServices
       )
 
       Result.new(pdf_bytes: pdf_bytes, debug_path: debug_path)
-    rescue => e
+    rescue Grover::Error, Grover::JavaScript::Error => e
       Rails.logger.error(
         "Payslip PDF generation failed: #{e.class}: #{e.message}\n" \
         "  #{Array(e.backtrace).first(5).join("\n  ")}"
@@ -39,7 +39,7 @@ module PayslipServices
       path = Rails.root.join('tmp', "payslip_#{@worker.id}_#{@year}_#{@month}.pdf")
       File.binwrite(path, bytes)
       path
-    rescue => e
+    rescue IOError, Errno::ENOENT, Errno::EACCES, Errno::ENOSPC => e
       Rails.logger.warn("Failed to write debug payslip PDF: #{e.class}: #{e.message}")
       nil
     end
