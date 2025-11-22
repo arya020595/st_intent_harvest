@@ -1,0 +1,8 @@
+{
+  "name": "st_intent_harvest",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "puppeteer": "24.31.0"
+  }
+}

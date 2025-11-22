@@ -1,3 +1,9 @@
+<%
+  # Use absolute path for images in PDF to ensure Grover can load them
+  logo_path = Rails.root.join('app', 'assets', 'images', 'intent-harvest-logo.png')
+  logo_base64 = Base64.strict_encode64(File.read(logo_path))
+  logo_data_url = "data:image/png;base64,#{logo_base64}"
+%>
 <table style="width: 100%; margin-bottom: 20px; border: none; border-collapse: collapse;">
   <tr>
     <!-- Left: Address -->
@@ -8,7 +14,7 @@
     </td>
     <!-- Right: Logo -->
     <td style="text-align: right; vertical-align: top; width: 200px; border: none;">
-      <%= inline_image_base64('intent-harvest-logo.png', alt: 'Intent Harvest', style: 'width: 125px; height: auto;') %>
+      <img src="<%= logo_data_url %>" style="width: 100%; height: auto;" />
     </td>
   </tr>
 </table>
