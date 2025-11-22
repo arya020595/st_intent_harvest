@@ -1,7 +1,6 @@
 class PayslipsController < ApplicationController
   before_action :set_workers, only: %i[index]
   before_action :set_worker_and_date_params, only: %i[show]
-  before_action :load_payslip_data, only: %i[show]
 
   # GET /payslips
   def index
@@ -20,15 +19,20 @@ class PayslipsController < ApplicationController
 
   # GET /payslips/:id
   def show
+    data_result = PayslipServices::FetchPayslipDataService.new(worker: @worker, month_year: @month_year).call
+    if data_result.failure?
+      render_no_payslip_error and return
+    end
+
+    data = data_result.value!
+    @payslip         = data[:payslip]
+    @payslip_detail  = data[:payslip_detail]
+    @work_order_workers = data[:work_order_workers]
+    @month_year_date = data[:month_year_date]
+
     respond_to do |format|
       format.html
-      format.pdf do
-        render pdf: "payslip_#{@worker.id}_#{@year}_#{@month}",
-               template: 'payslips/show',
-               formats: :html,
-               layout: 'pdf',
-               disposition: 'inline'
-      end
+      format.pdf { render_payslip_pdf }
     end
   end
 
@@ -42,23 +46,7 @@ class PayslipsController < ApplicationController
     @month_year = format('%04d-%02d', @year, @month)
   end
 
-  # Load payslip data using service
-  def load_payslip_data
-    result = PayslipServices::FetchPayslipDataService.new(
-      worker: @worker,
-      month_year: @month_year
-    ).call
-
-    if result.success?
-      data = result.value!
-      @payslip = data[:payslip]
-      @payslip_detail = data[:payslip_detail]
-      @work_order_workers = data[:work_order_workers]
-      @month_year_date = data[:month_year_date]
-    else
-      render_no_payslip_error
-    end
-  end
+  # (Removed load_payslip_data before_action – now inlined inside show for clarity.)
 
   # Prepare a dynamic payslip path for a worker/month/year
   def payslip_path_for_worker(worker, year, month, format: :pdf)
@@ -90,5 +78,34 @@ class PayslipsController < ApplicationController
       <p>No payslip data found for #{worker_name} in #{month_name}.#{' '}
       Please ensure work orders have been completed and processed for this month.</p>
     HTML
+  end
+
+  # Extracted PDF rendering logic to keep action thin
+  def render_payslip_pdf
+    html = render_to_string(template: 'payslips/show', layout: 'pdf', formats: :html)
+    service_result = PayslipServices::GeneratePayslipPdfService.new(
+      html: html,
+      worker: @worker,
+      year: @year,
+      month: @month
+    ).call
+
+    send_data service_result.pdf_bytes,
+              filename: "payslip_#{@worker.id}_#{@year}_#{@month}.pdf",
+              type: 'application/pdf',
+              disposition: 'inline'
+  rescue Grover::Error, Grover::JavaScript::Error, ActionView::Template::Error => e
+    Rails.logger.error "Payslip PDF service failure: #{e.class}: #{e.message}"
+    render_pdf_error
+  rescue StandardError => e
+    # Catch any other unexpected errors to ensure user-facing stability.
+    Rails.logger.error "Unexpected error during payslip PDF generation: #{e.class}: #{e.message}"
+    render_pdf_error
+  end
+
+  private
+
+  def render_pdf_error
+    render html: '<h1>PDF Generation Error</h1><p>Please try again later.</p>'.html_safe, status: :internal_server_error
   end
 end

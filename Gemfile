@@ -83,10 +83,7 @@ gem 'sassc-rails'
 gem 'font-awesome-rails'
 
 # For handling PDF on Payslip Module
-gem 'wicked_pdf'
-
-# this provides wkhtmltopdf binary
-gem 'wkhtmltopdf-binary'
+gem 'grover'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

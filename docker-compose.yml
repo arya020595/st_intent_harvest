@@ -47,6 +47,8 @@ services:
       RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
       # Disable Spring in Docker for better compatibility
       DISABLE_SPRING: 1
+      # Ensure Puppeteer/Grover uses system Chromium executable
+      PUPPETEER_EXECUTABLE_PATH: /usr/bin/chromium
     ports:
       - "3000:3000"
     volumes:

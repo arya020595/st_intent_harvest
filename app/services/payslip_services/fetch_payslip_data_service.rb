@@ -12,6 +12,8 @@ module PayslipServices
     end
 
     def call
+      month_year_date = parse_month_year_date
+
       pay_calculation = PayCalculation.find_by(month_year: month_year)
       return Failure(:no_pay_calculation) unless pay_calculation
 
@@ -21,28 +23,27 @@ module PayslipServices
       Success(
         payslip: pay_calculation,
         payslip_detail: pay_calculation_detail,
-        work_order_workers: fetch_work_order_workers,
-        month_year_date: parse_month_year_date
+        work_order_workers: fetch_work_order_workers(month_year_date),
+        month_year_date: month_year_date
       )
     end
 
     private
 
-    def fetch_work_order_workers
-      month_date = parse_month_year_date
+    def fetch_work_order_workers(month_date)
       month_start = month_date.beginning_of_month
       month_end = month_date.end_of_month
 
       worker.work_order_workers
-            .joins(work_order: :work_order_rate)
-            .where(work_orders: {
-                     created_at: month_start..month_end,
-                     work_order_status: 'completed'
-                   })
-            .where(work_order_rates: {
-                     work_order_rate_type: %w[normal work_days]
-                   })
-            .includes(work_order: %i[work_order_rate block])
+        .joins(work_order: :work_order_rate)
+        .where(work_orders: {
+                 created_at: month_start..month_end,
+                 work_order_status: 'completed'
+               })
+        .where(work_order_rates: {
+                 work_order_rate_type: %w[normal work_days]
+               })
+        .includes(work_order: %i[work_order_rate block])
     end
 
     def parse_month_year_date
