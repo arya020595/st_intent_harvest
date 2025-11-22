@@ -65,9 +65,12 @@ module WorkOrders
 
       # Get all work order workers for this worker created in the pay calculation month
       work_order_workers_query = @worker.work_order_workers
-                                        .where(work_orders: { created_at: month_start..month_end,
-                                                              work_order_status: 'completed' })
-                                        .where(work_orders: { work_order_rate_type: %w[normal work_days] })
+                                        .joins(:work_order)
+                                        .where(work_orders: {
+                                                 created_at: month_start..month_end,
+                                                 work_order_status: 'completed',
+                                                 work_order_rate_type: %w[normal work_days]
+                                               })
 
       apply_ransack_search(work_order_workers_query)
 
