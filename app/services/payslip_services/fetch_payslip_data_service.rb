@@ -29,22 +29,21 @@ module PayslipServices
     end
 
     private
+
     def fetch_work_order_workers(month_date)
       month_start = month_date.beginning_of_month
       month_end = month_date.end_of_month
 
-      scope = worker.work_order_workers
-                    .joins(work_order: :work_order_rate)
-                    .where(work_orders: {
-                             created_at: month_start..month_end,
-                             work_order_status: 'completed'
-                           })
-                    .where(work_order_rates: {
-                             work_order_rate_type: %w[normal work_days]
-                           })
-                    .includes(work_order: %i[work_order_rate block])
-
-      scope
+      worker.work_order_workers
+        .joins(work_order: :work_order_rate)
+        .where(work_orders: {
+                 created_at: month_start..month_end,
+                 work_order_status: 'completed'
+               })
+        .where(work_order_rates: {
+                 work_order_rate_type: %w[normal work_days]
+               })
+        .includes(work_order: %i[work_order_rate block])
     end
 
     def parse_month_year_date

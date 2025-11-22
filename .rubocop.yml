@@ -1,0 +1,54 @@
+# RuboCop configuration
+# Enables all new cops by default and explicitly opts in to recently added ones.
+# Adjust individual cops as needed for project style.
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.4
+  Exclude:
+    - "db/schema.rb"
+    - "bin/*"
+    - "node_modules/**/*"
+    - "vendor/**/*"
+
+# Gemspec related new cops
+Gemspec/AddRuntimeDependency:
+  Enabled: true
+Gemspec/AttributeAssignment:
+  Enabled: true
+Gemspec/DeprecatedAttributeAssignment:
+  Enabled: true
+Gemspec/DevelopmentDependencies:
+  Enabled: true
+Gemspec/RequireMFA:
+  Enabled: true
+
+# Layout new cops
+Layout/EmptyLinesAfterModuleInclusion:
+  Enabled: true
+Layout/LineContinuationLeadingSpace:
+  Enabled: true
+Layout/LineContinuationSpacing:
+  Enabled: true
+Layout/LineEndStringConcatenationIndentation:
+  Enabled: true
+Layout/SpaceBeforeBrackets:
+  Enabled: true
+
+# Lint new cops
+Lint/AmbiguousAssignment:
+  Enabled: true
+Lint/AmbiguousOperatorPrecedence:
+  Enabled: true
+# Add more lint cops here as they appear in warnings
+
+# Style new cops (examples; uncomment/add as needed)
+# Style/RedundantConstantBase:
+#   Enabled: true
+# Style/FetchEnvVar:
+#   Enabled: true
+
+# You can disable a cop instead of enabling by setting Enabled: false.
+# For large legacy migrations consider enabling gradually.
+
+# TODO: Review remaining newly introduced cops not listed here and decide enable/disable explicitly.
