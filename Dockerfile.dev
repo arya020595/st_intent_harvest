@@ -45,6 +45,9 @@ COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
     bundle exec bootsnap precompile --gemfile
 
+# Copy package.json and package-lock.json for npm dependencies
+COPY package.json package-lock.json ./
+
 # Copy application code
 COPY . .
 
@@ -54,7 +57,7 @@ RUN find ./bin -type f -exec dos2unix {} \; 2>/dev/null || true && chmod +x ./bi
 
 # Precompile bootsnap for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/ && \
-    npm install puppeteer@24.31.0 --no-save --omit=dev && \
+    npm install --omit=dev && \
     npm cache clean --force || true
 
 # Create necessary directories with proper permissions
