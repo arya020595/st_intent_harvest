@@ -5,11 +5,14 @@
 AllCops:
   NewCops: enable
   TargetRubyVersion: 3.4
+  DisplayCopNames: true
+  SuggestExtensions: false
   Exclude:
     - "db/schema.rb"
     - "bin/*"
     - "node_modules/**/*"
     - "vendor/**/*"
+    - "tmp/**/*"
 
 # Gemspec related new cops
 Gemspec/AddRuntimeDependency:
@@ -40,14 +43,68 @@ Lint/AmbiguousAssignment:
   Enabled: true
 Lint/AmbiguousOperatorPrecedence:
   Enabled: true
-# Add more lint cops here as they appear in warnings
+Lint/UnusedMethodArgument:
+  Enabled: true
+  AutoCorrect: true
+  AllowUnusedKeywordArguments: false
+Lint/UnusedBlockArgument:
+  Enabled: true
+  AutoCorrect: true
+Lint/UselessAssignment:
+  Enabled: true
 
-# Style new cops (examples; uncomment/add as needed)
-# Style/RedundantConstantBase:
-#   Enabled: true
-# Style/FetchEnvVar:
-#   Enabled: true
+# Style new cops - Remove unused and redundant code
+Style/RedundantConstantBase:
+  Enabled: true
+Style/RedundantReturn:
+  Enabled: true
+  AutoCorrect: true
+Style/RedundantSelf:
+  Enabled: true
+  AutoCorrect: true
+Style/RedundantBegin:
+  Enabled: true
+  AutoCorrect: true
+Style/RedundantParentheses:
+  Enabled: true
+  AutoCorrect: true
+Style/RedundantCondition:
+  Enabled: true
+  AutoCorrect: true
 
+# Documentation expectations: allow missing docs for migrations, tests, seeds, rake tasks
+Style/Documentation:
+  Enabled: true
+  Exclude:
+    - "db/migrate/**/*"
+    - "test/**/*"
+    - "db/seeds/**/*"
+    - "lib/tasks/**/*"
+    - "tmp/**/*"
+
+# Metrics tuning (relaxed for current codebase; tighten later)
+Metrics/MethodLength:
+  Max: 40
+  Exclude:
+    - "db/migrate/**/*"
+    - "lib/tasks/**/*"
+    - "db/seeds/**/*"
+    - "test/**/*"
+
+Metrics/BlockLength:
+  Exclude:
+    - "db/migrate/**/*"
+    - "lib/tasks/**/*"
+    - "db/seeds/**/*"
+    - "test/**/*"
+
+Metrics/AbcSize:
+  Max: 35
+  Exclude:
+    - "db/migrate/**/*"
+    - "lib/tasks/**/*"
+    - "db/seeds/**/*"
+    - "test/**/*"
 # You can disable a cop instead of enabling by setting Enabled: false.
 # For large legacy migrations consider enabling gradually.
 

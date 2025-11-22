@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_20_083128) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_22_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -246,11 +246,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_20_083128) do
     t.bigint "work_order_rate_id"
     t.string "work_order_rate_name"
     t.decimal "work_order_rate_price", precision: 10, scale: 2
+    t.string "work_order_rate_type"
+    t.string "work_order_rate_unit_name"
     t.string "work_order_status", default: "ongoing"
     t.index ["block_id", "work_order_rate_id"], name: "index_work_orders_on_block_and_rate"
     t.index ["block_id"], name: "index_work_orders_on_block_id"
     t.index ["field_conductor_id"], name: "index_work_orders_on_field_conductor_id"
     t.index ["work_order_rate_id"], name: "index_work_orders_on_work_order_rate_id"
+    t.index ["work_order_rate_type"], name: "index_work_orders_on_work_order_rate_type"
+    t.index ["work_order_rate_unit_name"], name: "index_work_orders_on_work_order_rate_unit_name"
   end
 
   create_table "workers", force: :cascade do |t|
