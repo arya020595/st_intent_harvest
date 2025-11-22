@@ -54,7 +54,7 @@ RUN find ./bin -type f -exec dos2unix {} \; 2>/dev/null || true && chmod +x ./bi
 
 # Precompile bootsnap for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/ && \
-    npm install puppeteer@24.15.0 --no-save --omit=dev && \
+    npm install puppeteer@24.31.0 --no-save --omit=dev && \
     npm cache clean --force || true
 
 # Create necessary directories with proper permissions
