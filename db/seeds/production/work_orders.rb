@@ -147,16 +147,25 @@ end
 
 if new_wow.any?
   wow_insert_data = new_wow.map do |data|
-    {
+    attrs = {
       work_order_id: data[:work_order].id,
       worker_id: data[:worker].id,
       worker_name: data[:worker].name,
       rate: data[:rate],
       amount: data[:rate] * data[:days],
-      remarks: "#{data[:days]} days worked",
       created_at: Time.current,
       updated_at: Time.current
     }
+    # Set days or quantity based on work order type
+    case data[:work_order].work_order_rate_type
+    when 'work_days'
+      attrs[:work_days] = data[:days]
+      attrs[:remarks] = "#{data[:days]} days worked"
+    else
+      attrs[:work_area_size] = data[:days] # treat as quantity for normal type
+      attrs[:remarks] = "#{data[:days]} Ha worked"
+    end
+    attrs
   end
   WorkOrderWorker.insert_all(wow_insert_data)
 end
