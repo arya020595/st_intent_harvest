@@ -24,7 +24,7 @@ module PdfHelper
     style = ERB::Util.html_escape(options[:style]) if options[:style]
 
     tag.img(src: "data:#{mime};base64,#{data}", alt: alt, style: style)
-  rescue Errno::ENOENT, Errno::EACCES, ArgumentError => e
+  rescue IOError, Errno::ENOENT, Errno::EACCES, ArgumentError => e
     Rails.logger.error "inline_image_base64 error for #{filename}: #{e.message}"
     content_tag(:span, "(image error #{filename})")
   end

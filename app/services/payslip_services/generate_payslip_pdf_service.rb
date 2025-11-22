@@ -39,7 +39,7 @@ module PayslipServices
       path = Rails.root.join('tmp', "payslip_#{@worker.id}_#{@year}_#{@month}.pdf")
       File.binwrite(path, bytes)
       path
-    rescue IOError, Errno::EACCES, Errno::ENOSPC => e
+    rescue IOError, Errno::ENOENT, Errno::EACCES, Errno::ENOSPC => e
       Rails.logger.warn("Failed to write debug payslip PDF: #{e.class}: #{e.message}")
       nil
     end
