@@ -21,7 +21,7 @@ module PdfHelper
 
     data = Base64.strict_encode64(File.binread(path))
     alt  = ERB::Util.html_escape(options[:alt] || File.basename(filename, '.*').tr('_-', ' ').capitalize)
-    style = options[:style]
+    style = ERB::Util.html_escape(options[:style]) if options[:style]
 
     tag.img(src: "data:#{mime};base64,#{data}", alt: alt, style: style)
   rescue => e
