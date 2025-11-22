@@ -87,7 +87,6 @@
   deduction_breakdown = @payslip_detail.deduction_breakdown || {}
   total_employee_deduction = @payslip_detail.employee_deductions || 0
 
-  
   # Net salary after employee deduction (use gross_salary from pay_calculation_detail)
   overall_net_pay = @payslip_detail.gross_salary - total_employee_deduction
 %>
