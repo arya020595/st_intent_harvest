@@ -76,7 +76,7 @@ ENV GROVER_NO_SANDBOX=true \
     RAILS_SERVE_STATIC_FILES=true
 
 # Install puppeteer for Grover PDF generation
-RUN npm install puppeteer@24.15.0 --no-save --omit=dev && npm cache clean --force || true
+RUN npm install puppeteer@24.31.0 --no-save --omit=dev && npm cache clean --force || true
 
 # Copy installed gems from builder
 COPY --from=builder /usr/local/bundle /usr/local/bundle
