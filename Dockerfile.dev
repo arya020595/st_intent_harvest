@@ -14,6 +14,7 @@ ENV RAILS_ENV="development" \
 
 # Install packages needed for development and runtime
 # Includes dos2unix for Windows line ending support and bash
+# Chromium and Node.js for Grover PDF generation
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     bash \
@@ -28,14 +29,24 @@ RUN apt-get update -qq && \
     postgresql-client \
     vim \
     nano \
-    less && \
+    less \
+    chromium \
+    chromium-driver \
+    nodejs \
+    npm && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Set environment variable for Grover to find Chromium
+ENV GROVER_NO_SANDBOX=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 # Install application gems (do this before copying app code for better caching)
 COPY Gemfile Gemfile.lock ./
 RUN bundle install && \
-    bundle exec bootsnap precompile --gemfile && \
-    chmod +x /usr/local/bundle/ruby/*/gems/wkhtmltopdf-binary-*/bin/wkhtmltopdf* || true
+    bundle exec bootsnap precompile --gemfile
+
+# Copy package.json and package-lock.json for npm dependencies
+COPY package.json package-lock.json ./
 
 # Copy application code
 COPY . .
@@ -45,7 +56,9 @@ COPY . .
 RUN find ./bin -type f -exec dos2unix {} \; 2>/dev/null || true && chmod +x ./bin/*
 
 # Precompile bootsnap for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
+RUN bundle exec bootsnap precompile app/ lib/ && \
+    npm install --omit=dev && \
+    npm cache clean --force || true
 
 # Create necessary directories with proper permissions
 # Run as root to avoid Windows volume mount permission issues
