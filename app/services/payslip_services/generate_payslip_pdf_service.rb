@@ -28,7 +28,7 @@ module PayslipServices
     rescue => e
       Rails.logger.error(
         "Payslip PDF generation failed: #{e.class}: #{e.message}\n" \
-        "  #{Array(e.backtrace).first(5).join('\n  ')}"
+        "  #{Array(e.backtrace).first(5).join("\n  ")}"
       )
       raise e # Let caller decide fallback behaviour
     end
