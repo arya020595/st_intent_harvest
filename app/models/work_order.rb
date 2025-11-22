@@ -40,6 +40,8 @@ class WorkOrder < ApplicationRecord
   denormalize :block_hectarage, from: :block, attribute: :hectarage, transform: ->(val) { val.to_s if val }
   denormalize :work_order_rate_name, from: :work_order_rate, attribute: :work_order_name
   denormalize :work_order_rate_price, from: :work_order_rate, attribute: :rate
+  denormalize :work_order_rate_unit_name, from: :work_order_rate, attribute: :unit, transform: ->(unit) { unit&.name }
+  denormalize :work_order_rate_type, from: :work_order_rate, attribute: :work_order_rate_type
   denormalize :field_conductor_name, from: :field_conductor, attribute: :name
 
   # Ransack configuration
@@ -52,6 +54,8 @@ class WorkOrder < ApplicationRecord
       block_hectarage
       work_order_rate_name
       work_order_rate_price
+      work_order_rate_type
+      work_order_rate_unit_name
       field_conductor_name
       approved_by
       approved_at

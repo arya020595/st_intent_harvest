@@ -33,10 +33,43 @@ work_orders_data = [
 created_work_orders = []
 work_orders_data.each do |data|
   wo = WorkOrder.find_or_create_by!(block_id: data[:block].id, start_date: data[:start_date]) do |work_order|
-    work_order.work_order_rate_id = data[:work_order_rate].id
+    # Assign association for validation, then denormalized fields
+    if data[:work_order_rate]
+      work_order.work_order_rate = data[:work_order_rate]
+      if data[:work_order_rate].respond_to?(:unit)
+        work_order.work_order_rate_unit_name = data[:work_order_rate].unit.name if data[:work_order_rate].unit
+      elsif data[:work_order_rate].respond_to?(:unit_name)
+        work_order.work_order_rate_unit_name = data[:work_order_rate].unit_name
+      end
+
+      if data[:work_order_rate].respond_to?(:work_order_rate_type)
+        work_order.work_order_rate_type = data[:work_order_rate].work_order_rate_type
+      end
+
+      if data[:work_order_rate].respond_to?(:work_order_name)
+        work_order.work_order_rate_name = data[:work_order_rate].work_order_name
+      elsif data[:work_order_rate].respond_to?(:name)
+        work_order.work_order_rate_name = data[:work_order_rate].name
+      end
+
+      if data[:work_order_rate].respond_to?(:rate)
+        work_order.work_order_rate_price = data[:work_order_rate].rate
+      elsif data[:work_order_rate].respond_to?(:price)
+        work_order.work_order_rate_price = data[:work_order_rate].price
+      end
+    end
+
+    if data[:block]
+      work_order.block_number = data[:block].number if data[:block].respond_to?(:number)
+      work_order.block_hectarage = data[:block].hectarage if data[:block].respond_to?(:hectarage)
+    end
     work_order.work_order_status = data[:status]
     work_order.field_conductor_id = conductor_user.id
     work_order.field_conductor_name = conductor_user.name
+
+    # Set work_month to the first day of the month for Mandays calculation
+    work_order.work_month = data[:start_date].beginning_of_month if data[:start_date]
+
     work_order.created_at = data[:start_date]
     work_order.updated_at = data[:start_date]
 

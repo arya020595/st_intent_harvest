@@ -23,6 +23,9 @@
   "rubocop.mode": "enableUnconditionally",
   "rubocop.safeAutocorrect": false,
 
+  // Enable formatting on save in the workspace (fallback/global)
+  "editor.formatOnSave": true,
+
   // Additional Ruby settings
   "ruby.lint": {
     "rubocop": true
