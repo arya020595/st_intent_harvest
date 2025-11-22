@@ -96,10 +96,16 @@ class PayslipsController < ApplicationController
               disposition: 'inline'
   rescue Grover::Error, Grover::JavaScript::Error, ActionView::Template::Error => e
     Rails.logger.error "Payslip PDF service failure: #{e.class}: #{e.message}"
-    render html: '<h1>PDF Generation Error</h1><p>Please try again later.</p>'.html_safe, status: :internal_server_error
+    render_pdf_error
   rescue StandardError => e
     # Catch any other unexpected errors to ensure user-facing stability.
     Rails.logger.error "Unexpected error during payslip PDF generation: #{e.class}: #{e.message}"
+    render_pdf_error
+  end
+
+  private
+
+  def render_pdf_error
     render html: '<h1>PDF Generation Error</h1><p>Please try again later.</p>'.html_safe, status: :internal_server_error
   end
 end
