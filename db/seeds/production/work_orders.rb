@@ -153,8 +153,8 @@ if new_wow.any?
       worker_name: data[:worker].name,
       rate: data[:rate],
       amount: data[:rate] * data[:days],
-      created_at: Time.current,
-      updated_at: Time.current
+      created_at: data[:work_order].created_at,
+      updated_at: data[:work_order].created_at
     }
     # Set days or quantity based on work order type
     case data[:work_order].work_order_rate_type
@@ -171,6 +171,73 @@ if new_wow.any?
 end
 
 puts "    ✓ #{WorkOrderWorker.count} work order workers"
+
+# Dynamically ensure every active worker is assigned to at least one completed work order in January 2025
+jan_completed_wos = created_work_orders.select do |wo|
+  wo.work_order_status == 'completed' && wo.created_at.month == 1 && wo.created_at.year == 2025
+end
+workers.each do |worker|
+  has_jan_completed = WorkOrderWorker.joins(:work_order)
+                                     .where(worker_id: worker.id)
+                                     .where(work_orders: { work_order_status: 'completed',
+                                                           created_at: Date.new(2025, 1, 1)..Date.new(2025, 1, 31) })
+                                     .exists?
+  next if has_jan_completed || jan_completed_wos.empty?
+
+  wo = jan_completed_wos.sample
+  rate = wo.work_order_rate_price || 70.0
+  days = 5
+  amount = rate * days
+  attrs = {
+    work_order_id: wo.id,
+    worker_id: worker.id,
+    worker_name: worker.name,
+    rate: rate,
+    amount: amount,
+    created_at: wo.created_at,
+    updated_at: wo.created_at
+  }
+  if wo.work_order_rate_type == 'work_days'
+    attrs[:work_days] = days
+    attrs[:remarks] = "#{days} days worked"
+  else
+    attrs[:work_area_size] = days
+    attrs[:remarks] = "#{days} Ha worked"
+  end
+  WorkOrderWorker.insert_all([attrs])
+end
+
+# Ensure every completed work order has at least one worker
+completed_wos = created_work_orders.select { |wo| wo.work_order_status == 'completed' }
+completed_wos.each do |wo|
+  next if WorkOrderWorker.exists?(work_order_id: wo.id)
+
+  # pick up to 3 active workers not already assigned to this work order
+  selected = workers.reject { |w| WorkOrderWorker.exists?(work_order_id: wo.id, worker_id: w.id) }.first(3)
+  insert = selected.map do |w|
+    rate = wo.work_order_rate_price || 70.0
+    days = 5
+    amount = rate * days
+    attrs = {
+      work_order_id: wo.id,
+      worker_id: w.id,
+      worker_name: w.name,
+      rate: rate,
+      amount: amount,
+      created_at: wo.created_at,
+      updated_at: wo.created_at
+    }
+    if wo.work_order_rate_type == 'work_days'
+      attrs[:work_days] = days
+      attrs[:remarks] = "#{days} days worked"
+    else
+      attrs[:work_area_size] = days
+      attrs[:remarks] = "#{days} Ha worked"
+    end
+    attrs
+  end
+  WorkOrderWorker.insert_all(insert) if insert.any?
+end
 
 # ========== Work Order Items ==========
 puts '  • Work order items...'
@@ -231,8 +298,8 @@ if new_woi.any?
       price: data[:inventory].price,
       unit_name: data[:inventory].unit.name,
       category_name: data[:inventory].category.name,
-      created_at: Time.current,
-      updated_at: Time.current
+      created_at: data[:work_order].created_at,
+      updated_at: data[:work_order].created_at
     }
   end
   WorkOrderItem.insert_all(woi_insert_data)
