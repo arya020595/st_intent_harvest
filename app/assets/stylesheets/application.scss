@@ -2,14 +2,14 @@
 @import "dashboard";
 @import "login";
 @import "sidebar";
-@import "payslip";
 @import "font-awesome";
+@import "inventories";
+@import "payslip";
 
 * {
   font-family: "Nunito", sans-serif;
   color: #000000;
 }
-
 
 //Collapsed sidebar
 .sidebar-collapsed {
