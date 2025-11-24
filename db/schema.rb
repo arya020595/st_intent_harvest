@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_14_084869) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_22_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -51,6 +51,28 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_14_084869) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "deduction_types", force: :cascade do |t|
+    t.string "applies_to_nationality", comment: "Nationality filter: all, malaysian, foreign"
+    t.string "calculation_type", default: "percentage", null: false, comment: "Type of calculation: percentage (multiply by gross_salary) or fixed (use amount as-is)"
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.date "effective_from"
+    t.date "effective_until"
+    t.decimal "employee_contribution", precision: 10, scale: 2, default: "0.0", null: false, comment: "Employee's contribution rate (percentage) or fixed amount (RM)"
+    t.decimal "employer_contribution", precision: 10, scale: 2, default: "0.0", null: false, comment: "Employer's contribution rate (percentage) or fixed amount (RM)"
+    t.boolean "is_active", default: true, null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["applies_to_nationality"], name: "index_deduction_types_on_applies_to_nationality"
+    t.index ["calculation_type"], name: "index_deduction_types_on_calculation_type"
+    t.index ["code", "effective_until"], name: "index_deduction_types_on_code_and_effective_until"
+    t.index ["code"], name: "index_deduction_types_on_code"
+    t.index ["effective_from"], name: "index_deduction_types_on_effective_from"
+    t.index ["effective_until"], name: "index_deduction_types_on_effective_until"
+    t.index ["is_active"], name: "index_deduction_types_on_is_active"
+  end
+
   create_table "inventories", force: :cascade do |t|
     t.bigint "category_id"
     t.datetime "created_at", null: false
@@ -69,7 +91,10 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_14_084869) do
   create_table "pay_calculation_details", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "currency", default: "RM"
+    t.jsonb "deduction_breakdown", comment: "JSON breakdown of deductions: {EPF: {worker: 0, employee: 0}, SOCSO: {...}}"
     t.decimal "deductions", precision: 10, scale: 2
+    t.decimal "employee_deductions", precision: 10, scale: 2, default: "0.0", null: false, comment: "Employee's total deductions (deducted from salary)"
+    t.decimal "employer_deductions", precision: 10, scale: 2, default: "0.0", null: false, comment: "Employer's total contributions (company cost)"
     t.decimal "gross_salary", precision: 10, scale: 2
     t.decimal "net_salary", precision: 10, scale: 2
     t.bigint "pay_calculation_id", null: false
@@ -82,15 +107,20 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_14_084869) do
   create_table "pay_calculations", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "month_year", null: false
-    t.decimal "overall_total", precision: 10, scale: 2
+    t.decimal "total_deductions", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "total_gross_salary", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "total_net_salary", precision: 10, scale: 2, default: "0.0", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "permissions", force: :cascade do |t|
-    t.string "action"
+    t.string "code", null: false
     t.datetime "created_at", null: false
-    t.string "subject"
+    t.string "name", null: false
+    t.string "resource", null: false
     t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_permissions_on_code", unique: true
+    t.index ["resource"], name: "index_permissions_on_resource"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -193,7 +223,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_14_084869) do
     t.text "remarks"
     t.datetime "updated_at", null: false
     t.integer "work_area_size"
-    t.integer "work_days", default: 0, null: false, comment: "How many days worker works in given month"
+    t.integer "work_days", comment: "How many days worker works in given month"
     t.bigint "work_order_id", null: false
     t.bigint "worker_id", null: false
     t.string "worker_name"
@@ -216,11 +246,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_14_084869) do
     t.bigint "work_order_rate_id"
     t.string "work_order_rate_name"
     t.decimal "work_order_rate_price", precision: 10, scale: 2
+    t.string "work_order_rate_type"
+    t.string "work_order_rate_unit_name"
     t.string "work_order_status", default: "ongoing"
     t.index ["block_id", "work_order_rate_id"], name: "index_work_orders_on_block_and_rate"
     t.index ["block_id"], name: "index_work_orders_on_block_id"
     t.index ["field_conductor_id"], name: "index_work_orders_on_field_conductor_id"
     t.index ["work_order_rate_id"], name: "index_work_orders_on_work_order_rate_id"
+    t.index ["work_order_rate_type"], name: "index_work_orders_on_work_order_rate_type"
+    t.index ["work_order_rate_unit_name"], name: "index_work_orders_on_work_order_rate_unit_name"
   end
 
   create_table "workers", force: :cascade do |t|

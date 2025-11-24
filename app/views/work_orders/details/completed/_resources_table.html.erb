@@ -1,0 +1,40 @@
+<%# Resources & Machineries Table - Only for resources_type work orders %>
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-success text-white">
+    <h5 class="mb-0">Resources & Machineries</h5>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead class="table-success">
+          <tr>
+            <th>Resources Name</th>
+            <th>Resource Category</th>
+            <th>Price (RM)</th>
+            <th>Unit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if work_order.work_order_items.any? %>
+            <% work_order.work_order_items.each do |item| %>
+              <tr>
+                <td><%= item.item_name %></td>
+                <td><%= item.category_name || '-' %></td>
+                <td><%= number_to_currency(item.price, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+                <td><%= item.unit_name || '-' %></td>
+              </tr>
+            <% end %>
+            <tr class="table-secondary fw-bold">
+              <td colspan="2" class="text-center">Total</td>
+              <td colspan="2"><%= number_to_currency(work_order.work_order_items.sum(:price), unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+            </tr>
+          <% else %>
+            <tr>
+              <td colspan="4" class="text-center text-muted">No resources used</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

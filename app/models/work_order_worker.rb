@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class WorkOrderWorker < ApplicationRecord
   include Denormalizable
 
@@ -11,6 +13,14 @@ class WorkOrderWorker < ApplicationRecord
   denormalize :worker_name, from: :worker, attribute: :name
 
   before_save :calculate_amount
+
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[id amount rate remarks work_area_size work_days worker_name created_at updated_at work_order_id worker_id]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    %w[work_order worker]
+  end
 
   private
 
@@ -32,25 +42,20 @@ end
 #
 # Table name: work_order_workers
 #
-#  id             :bigint           not null, primary key
+#  id             :integer          not null, primary key
 #  amount         :decimal(10, 2)
+#  created_at     :datetime         not null
 #  rate           :decimal(10, 2)
 #  remarks        :text
-#  work_area_size :integer
-#  work_days      :integer          default(0), not null
-#  worker_name    :string
-#  created_at     :datetime         not null
 #  updated_at     :datetime         not null
-#  work_order_id  :bigint           not null
-#  worker_id      :bigint           not null
+#  work_area_size :integer
+#  work_days      :integer
+#  work_order_id  :integer          not null
+#  worker_id      :integer          not null
+#  worker_name    :string
 #
 # Indexes
 #
 #  index_work_order_workers_on_work_order_id  (work_order_id)
 #  index_work_order_workers_on_worker_id      (worker_id)
-#
-# Foreign Keys
-#
-#  fk_rails_...  (work_order_id => work_orders.id)
-#  fk_rails_...  (worker_id => workers.id)
 #

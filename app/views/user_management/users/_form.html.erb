@@ -34,19 +34,23 @@
       <%= form.label :role_id, "Role", class: "form-label fw-semibold" %>
       <%= form.collection_select :role_id, Role.all, :id, :name, { include_blank: "Select Role" }, { class: "form-select", required: true } %>
     </div>
-    <% if user.new_record? %>
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <%= form.label :password, class: "form-label fw-semibold" %>
-          <%= form.password_field :password, class: "form-control", placeholder: "Enter password", required: true %>
-          <small class="form-text text-muted">Minimum 6 characters</small>
-        </div>
-        <div class="col-md-6 mb-3">
-          <%= form.label :password_confirmation, "Confirm Password", class: "form-label fw-semibold" %>
-          <%= form.password_field :password_confirmation, class: "form-control", placeholder: "Re-enter password", required: true %>
-        </div>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <%= form.label :password, class: "form-label fw-semibold" %>
+        <%= form.password_field :password, class: "form-control", placeholder: user.persisted? ? "Leave blank to keep current password" : "Enter password", required: user.new_record? %>
+        <small class="form-text text-muted">
+          <% if user.persisted? %>
+            Leave blank if you don't want to change the password
+          <% else %>
+            Minimum 6 characters
+          <% end %>
+        </small>
       </div>
-    <% end %>
+      <div class="col-md-6 mb-3">
+        <%= form.label :password_confirmation, "Confirm Password", class: "form-label fw-semibold" %>
+        <%= form.password_field :password_confirmation, class: "form-control", placeholder: user.persisted? ? "Leave blank to keep current password" : "Re-enter password", required: user.new_record? %>
+      </div>
+    </div>
     <div class="mb-3">
       <div class="form-check form-switch">
         <%= form.check_box :is_active, class: "form-check-input", role: "switch" %>

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateWorkOrderWorkers < ActiveRecord::Migration[7.2]
   def change
     create_table :work_order_workers do |t|

@@ -2,10 +2,18 @@
 
 module UserManagement
   class RolePolicy < ApplicationPolicy
-    # Inherits all default behavior from ApplicationPolicy
+    private
+
+    def permission_resource
+      'admin.roles'
+    end
 
     class Scope < ApplicationPolicy::Scope
-      # Inherits default scope behavior
+      private
+
+      def permission_resource
+        'admin.roles'
+      end
     end
   end
 end

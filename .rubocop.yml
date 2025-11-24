@@ -1,0 +1,111 @@
+# RuboCop configuration
+# Enables all new cops by default and explicitly opts in to recently added ones.
+# Adjust individual cops as needed for project style.
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.4
+  DisplayCopNames: true
+  SuggestExtensions: false
+  Exclude:
+    - "db/schema.rb"
+    - "bin/*"
+    - "node_modules/**/*"
+    - "vendor/**/*"
+    - "tmp/**/*"
+
+# Gemspec related new cops
+Gemspec/AddRuntimeDependency:
+  Enabled: true
+Gemspec/AttributeAssignment:
+  Enabled: true
+Gemspec/DeprecatedAttributeAssignment:
+  Enabled: true
+Gemspec/DevelopmentDependencies:
+  Enabled: true
+Gemspec/RequireMFA:
+  Enabled: true
+
+# Layout new cops
+Layout/EmptyLinesAfterModuleInclusion:
+  Enabled: true
+Layout/LineContinuationLeadingSpace:
+  Enabled: true
+Layout/LineContinuationSpacing:
+  Enabled: true
+Layout/LineEndStringConcatenationIndentation:
+  Enabled: true
+Layout/SpaceBeforeBrackets:
+  Enabled: true
+
+# Lint new cops
+Lint/AmbiguousAssignment:
+  Enabled: true
+Lint/AmbiguousOperatorPrecedence:
+  Enabled: true
+Lint/UnusedMethodArgument:
+  Enabled: true
+  AutoCorrect: true
+  AllowUnusedKeywordArguments: false
+Lint/UnusedBlockArgument:
+  Enabled: true
+  AutoCorrect: true
+Lint/UselessAssignment:
+  Enabled: true
+
+# Style new cops - Remove unused and redundant code
+Style/RedundantConstantBase:
+  Enabled: true
+Style/RedundantReturn:
+  Enabled: true
+  AutoCorrect: true
+Style/RedundantSelf:
+  Enabled: true
+  AutoCorrect: true
+Style/RedundantBegin:
+  Enabled: true
+  AutoCorrect: true
+Style/RedundantParentheses:
+  Enabled: true
+  AutoCorrect: true
+Style/RedundantCondition:
+  Enabled: true
+  AutoCorrect: true
+
+# Documentation expectations: allow missing docs for migrations, tests, seeds, rake tasks
+Style/Documentation:
+  Enabled: true
+  Exclude:
+    - "db/migrate/**/*"
+    - "test/**/*"
+    - "db/seeds/**/*"
+    - "lib/tasks/**/*"
+    - "tmp/**/*"
+
+# Metrics tuning (relaxed for current codebase; tighten later)
+Metrics/MethodLength:
+  Max: 40
+  Exclude:
+    - "db/migrate/**/*"
+    - "lib/tasks/**/*"
+    - "db/seeds/**/*"
+    - "test/**/*"
+
+Metrics/BlockLength:
+  Exclude:
+    - "db/migrate/**/*"
+    - "lib/tasks/**/*"
+    - "db/seeds/**/*"
+    - "test/**/*"
+
+Metrics/AbcSize:
+  Max: 35
+  Exclude:
+    - "db/migrate/**/*"
+    - "lib/tasks/**/*"
+    - "db/seeds/**/*"
+    - "test/**/*"
+# You can disable a cop instead of enabling by setting Enabled: false.
+# For large legacy migrations consider enabling gradually.
+
+# TODO: Review remaining newly introduced cops not listed here and decide enable/disable explicitly.

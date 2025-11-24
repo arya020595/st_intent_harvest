@@ -1,0 +1,78 @@
+<div class="container-fluid px-4 py-4 pay-calculations" data-controller="multi-sort">
+  <div class="card shadow-sm">
+    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Pay Calculations</h5>
+      <%= link_to new_work_orders_pay_calculation_path, class: "btn btn-light btn-sm" do %>
+        <i class="bi bi-plus-circle"></i> New Pay Calculation
+      <% end %>
+    </div>
+    <div class="card-body">
+      <%= search_form_for @q, url: work_orders_pay_calculations_path, html: { id: 'pay-calculation-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
+        <div class="table-responsive">
+          <table class="table table-hover table-sm mb-0">
+            <thead class="table-info">
+              <tr>
+                <th class="text-center">
+                  <%= sort_link(@q, :id, 'ID') %>
+                </th>
+                <th>
+                  <%= sort_link(@q, :month_year, 'Month/Year') %>
+                </th>
+                <th class="text-end">
+                  <%= sort_link(@q, :total_net_salary, 'Overall Total') %>
+                </th>
+                <th class="text-center">
+                  <%= sort_link(@q, :updated_at, 'Updated At') %>
+                </th>
+                <th class="text-center">Actions</th>
+              </tr>
+              <tr>
+                <th class="text-center">
+                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1 %>
+                </th>
+                <th>
+                  <%= f.search_field :month_year_cont, class: 'form-control form-control-sm', placeholder: 'Search Month/Year..' %>
+                </th>
+                <th class="text-end">
+                  <%= f.number_field :total_net_salary_eq, class: 'form-control form-control-sm', placeholder: 'Total', step: '0.01' %>
+                </th>
+                <th class="text-center">
+                  <%= f.date_field :updated_at_eq, class: 'form-control form-control-sm', placeholder: 'Date' %>
+                </th>
+                <th class="text-center">
+                  <div class="d-flex gap-1 justify-content-center">
+                    <%= f.submit 'Search', class: 'btn btn-info btn-sm' %>
+                    <%= link_to 'Reset', work_orders_pay_calculations_path, class: 'btn btn-secondary btn-sm' %>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if @pay_calculations.any? %>
+                <%= render partial: 'pay_calculation_row', collection: @pay_calculations, as: :pay_calculation %>
+              <% else %>
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-4">
+                    No pay calculations found. <%= link_to 'Create a new pay calculation', new_work_orders_pay_calculation_path, class: 'text-decoration-none' %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-muted small">Show</span>
+          <%= per_page_selector %>
+          <span class="text-muted small">
+            <%== @pagy.info_tag(item_name: 'Pay Calculations') %>
+          </span>
+        </div>
+        <div>
+          <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

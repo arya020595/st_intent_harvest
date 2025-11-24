@@ -1,6 +1,5 @@
 <div class="container py-4">
   <h1 class="mb-4">Dashboard</h1>
-
   <!-- Statistics Cards -->
   <div class="row g-4 mb-4">
     <div class="col-md-3">
@@ -11,7 +10,6 @@
         </div>
       </div>
     </div>
-
     <div class="col-md-3">
       <div class="card text-bg-warning">
         <div class="card-body">
@@ -20,7 +18,6 @@
         </div>
       </div>
     </div>
-
     <div class="col-md-3">
       <div class="card text-bg-danger">
         <div class="card-body">
@@ -29,7 +26,6 @@
         </div>
       </div>
     </div>
-
     <div class="col-md-3">
       <div class="card text-bg-success">
         <div class="card-body">
@@ -39,7 +35,6 @@
       </div>
     </div>
   </div>
-
   <!-- Recent Work Orders -->
   <div class="card">
     <div class="card-header">
@@ -62,8 +57,8 @@
               <% @recent_work_orders.each do |work_order| %>
                 <tr>
                   <td>#<%= work_order.id %></td>
-                  <td><%= work_order.start_date&.strftime("%d %b %Y") %></td>
-                  <td><%= work_order.block&.block_number %></td>
+                  <td><%= work_order.start_date&.strftime("%d %b %Y").presence || 'N/A' %></td>
+                  <td><%= work_order.block&.block_number.presence || 'N/A' %></td>
                   <td>
                     <span class="badge 
                       <%= case work_order.work_order_status
@@ -89,7 +84,6 @@
       <% end %>
     </div>
   </div>
-
   <!-- Quick Actions -->
   <div class="row mt-4">
     <div class="col-md-12">
@@ -99,9 +93,9 @@
         </div>
         <div class="card-body">
           <div class="d-flex gap-2">
-            <%= link_to "New Work Order", new_work_order_detail_path, class: "btn btn-primary" %>
-            <%= link_to "View All Work Orders", work_order_details_path, class: "btn btn-outline-primary" %>
-            <%= link_to "Pending Approvals", work_order_approvals_path, class: "btn btn-outline-warning" %>
+            <%= link_to "New Work Order", new_work_orders_detail_path, class: "btn btn-primary" %>
+            <%= link_to "View All Work Orders", work_orders_details_path, class: "btn btn-outline-primary" %>
+            <%= link_to "Pending Approvals", work_orders_approvals_path, class: "btn btn-outline-warning" %>
           </div>
         </div>
       </div>

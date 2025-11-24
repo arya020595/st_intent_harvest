@@ -1,13 +1,26 @@
 # frozen_string_literal: true
 
 class PayslipPolicy < ApplicationPolicy
-  # Inherits all default behavior from ApplicationPolicy
+  # Permission codes:
+  # - payslip.index
+  # - payslip.show
+  # - payslip.export
 
   def export?
-    has_permission?(:export)
+    user.has_permission?(build_permission_code('export'))
+  end
+
+  private
+
+  def permission_resource
+    'payslip'
   end
 
   class Scope < ApplicationPolicy::Scope
-    # Inherits default scope behavior
+    private
+
+    def permission_resource
+      'payslip'
+    end
   end
 end

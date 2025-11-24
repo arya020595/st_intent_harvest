@@ -24,8 +24,22 @@
 #  fk_rails_...  (category_id => categories.id)
 #  fk_rails_...  (unit_id => units.id)
 #
-one: {}
-# column: value
-#
-two: {}
-# column: value
+one:
+  name: "Fertilizer A"
+  currency: "RM"
+  price: 100.00
+  stock_quantity: 50
+  supplier: "Supplier One"
+  input_date: 2025-01-01
+  category: one
+  unit: one
+
+two:
+  name: "Fertilizer B"
+  currency: "RM"
+  price: 150.00
+  stock_quantity: 30
+  supplier: "Supplier Two"
+  input_date: 2025-01-02
+  category: one
+  unit: one

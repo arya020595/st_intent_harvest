@@ -1,33 +1,29 @@
-<div class="login-wrapper">
-
-  <div class="login-container">
-        <%= image_tag "intent-harvest-logo.png", alt: "Intent Harvest Logo", class: "logo" %>
-    <h2>Intent Harvest Sdn. Bhd</h2>
-    <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-      <div class="field">
-        <%= f.label :email %><br />
-        <%= f.email_field :email, autofocus: true, placeholder: "Enter your email address", autocomplete: "email", class: "custom-input" %>
-      </div>
-
-      <div class="field">
-        <%= f.label :password %><br />
-        <%= f.password_field :password, placeholder: "Enter your password", autocomplete: "current-password", class: "custom-input" %>
-      </div>
-
-      <% if devise_mapping.rememberable? %>
+<div id="login-page">
+  <div class="login-wrapper">
+    <div class="login-container">
+      <%= image_tag "intent-harvest-logo.webp", alt: "Intent Harvest Logo", class: "logo" %>
+      <h2>Intent Harvest Sdn. Bhd</h2>
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
         <div class="field">
-          <%= f.check_box :remember_me %>
-          <%= f.label :remember_me %>
+          <%= f.label :email %><br />
+          <%= f.email_field :email, autofocus: true, placeholder: "Enter your email address", autocomplete: "email", class: "custom-input" %>
+        </div>
+        <div class="field">
+          <%= f.label :password %><br />
+          <%= f.password_field :password, placeholder: "Enter your password", autocomplete: "current-password", class: "custom-input" %>
+        </div>
+        <% if devise_mapping.rememberable? %>
+          <div class="field">
+            <%= f.check_box :remember_me %>
+            <%= f.label :remember_me %>
+          </div>
+        <% end %>
+        <div class="actions">
+          <%= f.submit "LOGIN" %>
         </div>
       <% end %>
-
-      <div class="actions">
-        <%= f.submit "LOGIN" %>
-      </div>
-    <% end %>
-    
-    <h3>Powered By ST Datablu</h3>
+      <h3>Powered By ST Datablu</h3>
+    </div>
+    <div class="login-background"></div>
   </div>
-  <div class="login-background"></div> 
-
 </div>

@@ -49,7 +49,10 @@
     <div class="row">
       <div class="col-md-6 mb-3">
         <%= form.label :nationality, class: "form-label fw-semibold" %>
-        <%= form.text_field :nationality, class: "form-control", placeholder: "e.g., Indonesian" %>
+        <%= form.select :nationality,
+            Worker::NATIONALITIES.map { |n| [n, n] },
+            { include_blank: "Select Nationality" },
+            { class: "form-select" } %>
       </div>
       <div class="col-md-6 mb-3">
         <%= form.label :identity_number, "IC/Passport No.", class: "form-label fw-semibold" %>

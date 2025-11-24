@@ -3,6 +3,8 @@
 class WorkOrder < ApplicationRecord
   include AASM
   include Denormalizable
+  include WorkOrderTypeBehavior
+  include WorkOrderGuardMessages
 
   # Status constants
   STATUSES = {
@@ -16,7 +18,7 @@ class WorkOrder < ApplicationRecord
   # audited # Temporarily disabled due to Psych::DisallowedClass issue with Date serialization
   # TODO: Re-enable audited after fixing Psych::DisallowedClass issue. See tracking ticket: TICKET-1234
 
-  belongs_to :block
+  belongs_to :block, optional: true
   belongs_to :work_order_rate
   # The user responsible for the field (used for scoping/assignment)
   belongs_to :field_conductor, class_name: 'User', optional: true
@@ -28,8 +30,8 @@ class WorkOrder < ApplicationRecord
   accepts_nested_attributes_for :work_order_workers, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :work_order_items, allow_destroy: true, reject_if: :all_blank
 
-  validates :start_date, presence: true
-  validates :block_id, presence: true
+  # Type-based validations using custom validator (Single Responsibility Principle)
+  validates_with WorkOrderTypeValidator
   validates :work_order_rate_id, presence: true
   validates :work_order_status, inclusion: { in: STATUSES.values, allow_nil: true }
 
@@ -38,6 +40,8 @@ class WorkOrder < ApplicationRecord
   denormalize :block_hectarage, from: :block, attribute: :hectarage, transform: ->(val) { val.to_s if val }
   denormalize :work_order_rate_name, from: :work_order_rate, attribute: :work_order_name
   denormalize :work_order_rate_price, from: :work_order_rate, attribute: :rate
+  denormalize :work_order_rate_unit_name, from: :work_order_rate, attribute: :unit, transform: ->(unit) { unit&.name }
+  denormalize :work_order_rate_type, from: :work_order_rate, attribute: :work_order_rate_type
   denormalize :field_conductor_name, from: :field_conductor, attribute: :name
 
   # Ransack configuration
@@ -50,9 +54,12 @@ class WorkOrder < ApplicationRecord
       block_hectarage
       work_order_rate_name
       work_order_rate_price
+      work_order_rate_type
+      work_order_rate_unit_name
       field_conductor_name
       approved_by
       approved_at
+      work_month
       created_at
       updated_at
       block_id
@@ -65,16 +72,10 @@ class WorkOrder < ApplicationRecord
     %w[block work_order_rate field_conductor work_order_workers work_order_items work_order_histories]
   end
 
-  # Custom validation method - checks if work order has workers or items
-  # Used as a guard for AASM transitions to pending state
-  # Filters out records marked for destruction (when user removes them via nested form)
+  # Guard method for AASM transitions - delegates to concern
+  # Follows Single Responsibility and Open/Closed Principles
   def workers_or_items?
-    # Count existing workers not marked for deletion
-    workers_count = work_order_workers.reject(&:marked_for_destruction?).count
-    # Count existing items not marked for deletion
-    items_count = work_order_items.reject(&:marked_for_destruction?).count
-
-    workers_count.positive? || items_count.positive?
+    has_required_associations?
   end
 
   # AASM State Machine Configuration with string column
@@ -99,6 +100,7 @@ class WorkOrder < ApplicationRecord
         after do |*args|
           remarks = args.last.is_a?(Hash) ? args.last[:remarks] : nil
           record_work_order_history(:approve, remarks, 'Work order approved and completed')
+          process_pay_calculation
         end
       end
     end
@@ -127,6 +129,17 @@ class WorkOrder < ApplicationRecord
   end
 
   private
+
+  # Process pay calculation when work order is completed
+  def process_pay_calculation
+    result = PayCalculationServices::ProcessWorkOrderService.new(self).call
+
+    if result.failure?
+      AppLogger.error("Pay calculation failed for WorkOrder ##{id}: #{result.failure}")
+    else
+      AppLogger.info("Pay calculation processed for WorkOrder ##{id}: #{result.value!}")
+    end
+  end
 
   # Helper method to record work order history with optional custom remarks
   # Follows AASM callback parameter passing convention

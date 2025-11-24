@@ -1,0 +1,22 @@
+<tr>
+  <td class="text-center"><%= work_order.id %></td>
+  <td><%= work_order.work_order_rate_name %></td>
+  <td><%= work_order.block_number.presence || 'N/A' %></td>
+  <td class="text-center"><%= work_order.start_date&.strftime('%d-%m-%Y') || '-' %></td>
+  <td class="text-center">
+    <% badge_class = case work_order.work_order_status
+      when 'pending' then 'bg-warning'
+      when 'amendment_required' then 'bg-danger'
+      when 'completed' then 'bg-success'
+      else 'bg-secondary'
+    end %>
+    <span class="badge <%= badge_class %>"><%= work_order.work_order_status&.humanize %></span>
+  </td>
+  <td class="text-center">
+    <div class="btn-group btn-group-sm" role="group">
+      <%= link_to work_orders_approval_path(work_order), class: "btn btn-info btn-sm", title: "View Details" do %>
+        <i class="bi bi-info-circle"></i>
+      <% end %>
+    </div>
+  </td>
+</tr>

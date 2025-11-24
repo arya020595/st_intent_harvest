@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 
 ruby '3.4.7'
@@ -68,11 +70,20 @@ gem 'aasm', '~> 5.5', '>= 5.5.2'
 # Audit trail for models - tracks who created/updated records and what changed
 gem 'audited', '~> 5.8'
 
+# Strong Migrations to help write safe database migrations
+gem 'strong_migrations'
+
 # Bootstrap 5 framework integration
 gem 'bootstrap', '~> 5.3', '>= 5.3.5'
 
 # Sass compiler for CSS preprocessing (required for Bootstrap SCSS)
 gem 'sassc-rails'
+
+# Font Awesome
+gem 'font-awesome-rails'
+
+# For handling PDF on Payslip Module
+gem 'grover'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -91,9 +102,6 @@ group :development, :test do
 
   # Security vulnerability scanner for Ruby on Rails applications
   gem 'brakeman', require: false
-
-  # Strong Migrations to help write safe database migrations
-  gem 'strong_migrations'
 end
 
 group :development do

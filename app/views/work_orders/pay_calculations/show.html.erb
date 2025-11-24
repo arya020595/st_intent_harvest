@@ -1,0 +1,90 @@
+<div class="container-fluid px-4 py-4" data-controller="multi-sort">
+  <%= render 'shared/breadcrumb', breadcrumbs: [
+    ['Work Order', '#'],
+    ['Pay Calculation', work_orders_pay_calculations_path],
+    [(Date.strptime(@pay_calculation.month_year, '%Y-%m').strftime('%B %Y') rescue @pay_calculation.month_year), nil],
+    ['Workers', nil]
+  ] %>
+  <!-- Back Button -->
+  <div class="mb-3">
+    <%= link_to work_orders_pay_calculations_path, class: "btn btn-link text-decoration-none p-0" do %>
+      <i class="bi bi-arrow-left"></i> Back to Pay Calculation
+    <% end %>
+  </div>
+  <!-- Workers Table -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <%= search_form_for @q, url: work_orders_pay_calculation_path(@pay_calculation), method: :get, html: { id: 'worker-details-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
+        <div class="table-responsive">
+          <table class="table table-hover table-sm mb-0">
+            <thead class="table-success">
+              <tr>
+                <th class="text-center">
+                  <%= sort_link(@q, :worker_id, 'Worker ID') %>
+                </th>
+                <th>
+                  <%= sort_link(@q, :worker_name, 'Worker Name') %>
+                </th>
+                <th class="text-end">
+                  <%= sort_link(@q, :net_salary, 'Nett Salary (RM)') %>
+                </th>
+                <th class="text-center">Actions</th>
+              </tr>
+              <tr>
+                <th class="text-center">
+                  <%= f.number_field :worker_id_eq, class: 'form-control form-control-sm', placeholder: 'Worker ID', min: 1 %>
+                </th>
+                <th>
+                  <%= f.search_field :worker_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Worker Name..' %>
+                </th>
+                <th class="text-end">
+                  <%= f.number_field :net_salary_eq, class: 'form-control form-control-sm', placeholder: 'Nett Salary (RM)', step: '0.01' %>
+                </th>
+                <th class="text-center">
+                  <div class="d-flex gap-1 justify-content-center">
+                    <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
+                    <%= link_to 'Reset', work_orders_pay_calculation_path(@pay_calculation), class: 'btn btn-secondary btn-sm' %>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if @pay_calculation_details.any? %>
+                <% @pay_calculation_details.each do |detail| %>
+                  <tr>
+                    <td class="text-center"><%= detail.worker.id %></td>
+                    <td><%= detail.worker.name %></td>
+                    <td class="text-end"><%= number_to_currency(detail.net_salary, unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %></td>
+                    <td class="text-center">
+                      <%= link_to worker_detail_work_orders_pay_calculation_path(@pay_calculation, worker_id: detail.worker_id), class: "text-decoration-none" do %>
+                        <i class="bi bi-info-circle text-primary" title="View Details" role="button"></i>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              <% else %>
+                <tr>
+                  <td colspan="4" class="text-center text-muted py-4">
+                    No worker details found for this pay calculation period.
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+      <!-- Pagination -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <div class="d-flex align-items-center gap-2">
+          <span class="text-muted small">Show</span>
+          <%= per_page_selector %>
+          <span class="text-muted small">
+            <%== @pagy.info_tag(item_name: 'Workers') %>
+          </span>
+        </div>
+        <div>
+          <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
+        </div>
+      </div>
+    </div>
+  </div>

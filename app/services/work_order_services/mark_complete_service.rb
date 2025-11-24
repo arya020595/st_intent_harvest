@@ -3,6 +3,7 @@
 module WorkOrderServices
   class MarkCompleteService
     include Dry::Monads[:result]
+    include AasmErrorHandler
 
     attr_reader :work_order, :remarks
 
@@ -29,14 +30,14 @@ module WorkOrderServices
     # @param success_context [String] Description for success message
     # @return [Success, Failure] Result monad with success or error message
     def execute_transition(event, success_context)
-      # Pass custom remarks using keyword arguments
       work_order.public_send(event, remarks: remarks)
       Success("Work order has been #{success_context}.")
     rescue AASM::InvalidTransition => e
-      Rails.logger.error("WorkOrder transition failed: #{e.class}: #{e.message}")
-      Failure("Transition error: #{e.message}")
+      error_message = handle_aasm_error(e, work_order)
+      Failure(error_message)
     rescue StandardError => e
-      Rails.logger.error("WorkOrder submission failed: #{e.class}: #{e.message}")
+      AppLogger.error('WorkOrder submission failed', context: self.class.name, error_class: e.class.name,
+                                                     error_message: e.message, work_order_id: work_order.id)
       Failure("Failed to mark work order as complete: #{e.message}")
     end
   end

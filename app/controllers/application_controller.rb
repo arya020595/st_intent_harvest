@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include Pagy::Method
@@ -22,18 +24,31 @@ class ApplicationController < ActionController::Base
     Current.user = current_user
   end
 
+  # Override Devise method to redirect users to their first accessible resource
+  def after_sign_in_path_for(resource)
+    # Clear any stored location to prevent redirect issues
+    stored_location = stored_location_for(resource)
+
+    stored_location || send(resource.first_accessible_path)
+  end
+
+  # Override Devise method to redirect after sign out
+  def after_sign_out_path_for(_resource_or_scope)
+    new_user_session_path
+  end
+
   def user_not_authorized
     flash[:alert] = 'You are not authorized to perform this action.'
 
-    redirect_path = if request.referrer.present?
+    # Get user's first accessible path, but avoid redirect loop
+    redirect_path = if request.referrer.present? && request.referrer != request.url
+                      # Redirect to previous page if it exists and is different
                       request.referrer
-                    elsif controller_name.present?
-                      # Try to redirect back to the index action of the current controller
-                      { action: :index }
                     else
-                      root_path
+                      # Redirect to user's first accessible resource
+                      send(current_user.first_accessible_path)
                     end
 
-    redirect_to redirect_path
+    redirect_to redirect_path, allow_other_host: true
   end
 end
