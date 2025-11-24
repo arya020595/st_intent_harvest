@@ -1,24 +1,19 @@
 <tr id="<%= dom_id(vehicle) %>">
-  <td class="text-center"><%= vehicle.id %></td>
-  <td><strong><%= vehicle.vehicle_number %></strong></td>
-  <td><%= vehicle.vehicle_model %></td>
-  <td>
-    <small class="text-muted"><%= vehicle.created_at.strftime("%b %d, %Y %H:%M") if vehicle.created_at %></small>
-  </td>
-  <td>
-    <small class="text-muted"><%= vehicle.updated_at.strftime("%b %d, %Y %H:%M") if vehicle.updated_at %></small>
-  </td>
   <td class="text-center">
-    <div class="btn-group btn-group-sm" role="group">
-      <%= link_to master_data_vehicle_path(vehicle), class: "btn btn-info btn-sm", title: "View Details" do %>
-        <i class="bi bi-info-circle"></i>
+    <div class="action-buttons">
+      <%= link_to master_data_vehicle_path(vehicle), class: "action-btn info", title: "View Details" do %>
+        <i class="bi bi-info-circle-fill"></i>
       <% end %>
-      <%= link_to edit_master_data_vehicle_path(vehicle), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: 'modal' } do %>
-        <i class="bi bi-pencil"></i>
+      <%= link_to edit_master_data_vehicle_path(vehicle), class: "action-btn warning", title: "Edit", data: { turbo_frame: 'modal' } do %>
+        <i class="bi bi-pencil-fill"></i>
       <% end %>
-      <%= link_to master_data_vehicle_path(vehicle), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{vehicle.vehicle_number}?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
-        <i class="bi bi-trash"></i>
+      <%= link_to master_data_vehicle_path(vehicle), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{vehicle.vehicle_number}?" }, class: "action-btn danger", title: "Delete" do %>
+        <i class="bi bi-trash-fill"></i>
       <% end %>
     </div>
   </td>
+  <td><strong><%= vehicle.vehicle_number %></strong></td>
+  <td><%= vehicle.vehicle_model %></td>
+  <td class="text-center text-muted"><%= vehicle.created_at.strftime("%b %d, %Y %H:%M") if vehicle.created_at %></td>
+  <td class="text-center text-muted"><%= vehicle.updated_at.strftime("%b %d, %Y %H:%M") if vehicle.updated_at %></td>
 </tr>

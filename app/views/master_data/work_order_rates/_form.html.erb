@@ -1,7 +1,7 @@
 <div class="modal-content" data-controller="work-order-rate-form">
   <%= form_with(model: [:master_data, work_order_rate], class: "needs-validation", novalidate: true, data: { action: "turbo:submit-end->modal#formSubmitted" }) do |form| %>
     <div class="modal-header">
-      <h5 class="modal-title"><%= work_order_rate.persisted? ? 'Edit Work Order Rate' : 'New Work Order Rate' %></h5>
+      <h5 class="modal-title"><strong><%= work_order_rate.persisted? ? 'Edit Work Order Rate' : 'Add New Work Order Rate' %></strong></h5>
       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
     <div class="modal-body">
@@ -17,18 +17,18 @@
       <% end %>
       <div class="mb-3">
         <%= form.label :work_order_name, "Work Order Name", class: "form-label" %>
-        <%= form.text_field :work_order_name, class: "form-control", required: true %>
+        <%= form.text_field :work_order_name, placeholder:"Enter Work Order Name", class: "form-control", required: true %>
       </div>
       <div class="mb-3">
         <%= form.label :work_order_rate_type, "Work Order Rate Type", class: "form-label" %>
-        <%= form.select :work_order_rate_type, 
+        <%= form.select :work_order_rate_type,
                         WorkOrderRate.work_order_rate_types.keys.map { |key| [key.titleize, key] },
-                        {include_blank: "Select Rate Type"}, 
-                        class: "form-select", 
+                        {include_blank: "Select Rate Type"},
+                        class: "form-select",
                         required: true,
-                        data: { 
+                        data: {
                           work_order_rate_form_target: "rateType",
-                          action: "change->work-order-rate-form#toggleUnit" 
+                          action: "change->work-order-rate-form#toggleUnit"
                         } %>
       </div>
       <div class="mb-3" data-work-order-rate-form-target="unitField">
@@ -37,12 +37,13 @@
       </div>
       <div class="mb-3">
         <%= form.label :rate, "Rate (RM)", class: "form-label" %>
-        <%= form.number_field :rate, step: 0.01, class: "form-control", required: true %>
+        <%= form.number_field :rate, placeholder:"Enter Rate(RM)", step: 0.01, class: "form-control", required: true %>
       </div>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      <%= form.submit "Save Work Order Rate", class: "btn btn-primary" %>
+      <%= button_tag type: :submit, class: "btn btn-success" do %>
+        <i class="bi bi-save-fill text-white me-1"></i> Save
+      <% end %>
     </div>
   <% end %>
 </div>

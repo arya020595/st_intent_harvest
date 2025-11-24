@@ -1,8 +1,8 @@
 <div class="modal-content">
   <%= form_with(model: [:master_data, block], class: "needs-validation", novalidate: true, data: { action: "turbo:submit-end->modal#formSubmitted" }) do |form| %>
     <div class="modal-header">
-      <h5 class="modal-title"><%= block.persisted? ? 'Edit Block' : 'New Block' %></h5>
-      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <h5 class="modal-title"><strong><%= block.persisted? ? 'Edit Block No.' : ' Add New Block No.' %></strong></h5>
+      <button type="button" class="btn-close custom-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
     <div class="modal-body">
       <% if block.errors.any? %>
@@ -16,17 +16,18 @@
         </div>
       <% end %>
       <div class="mb-3">
-        <%= form.label :block_number, class: "form-label" %>
-        <%= form.text_field :block_number, class: "form-control", required: true %>
+        <%= form.label :block_number, "Block No.", class: "form-label" %>
+        <%= form.text_field :block_number, placeholder:"Enter Block No.", class: "form-control", required: true %>
       </div>
       <div class="mb-3">
-        <%= form.label :hectarage, class: "form-label" %>
-        <%= form.number_field :hectarage, class: "form-control", step: 0.01, required: true %>
+        <%= form.label :hectarage,  "Hectarage(Ha)", class: "form-label" %>
+        <%= form.number_field :hectarage, placeholder:"Enter Hectarage(Ha)", class: "form-control", step: 0.01, required: true %>
       </div>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      <%= form.submit "Save Block", class: "btn btn-primary" %>
+      <%= button_tag type: :submit, class: "btn btn-success" do %>
+        <i class="bi bi-save-fill text-white me-1"></i> Save
+      <% end %>
     </div>
   <% end %>
 </div>

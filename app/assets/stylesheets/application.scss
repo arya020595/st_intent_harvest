@@ -2,19 +2,25 @@
 @import "dashboard";
 @import "login";
 @import "sidebar";
+@import "payslip";
 @import "font-awesome";
 @import "inventories";
-@import "payslip";
+@import "block_no";
+@import "unit";
+@import "categories";
+@import "vehicles";
+@import "work_order_rates";
 
 * {
   font-family: "Nunito", sans-serif;
   color: #000000;
 }
 
+
 //Collapsed sidebar
 .sidebar-collapsed {
   width: 0 !important;
-  padding: 0 !important;    
+  padding: 0 !important;
   overflow: hidden;
   transition: all 0.3s;
 }
