@@ -3,7 +3,7 @@
 
 #before running CRUD, rails will execute the set_inventory method to load the correct record from the database
 class InventoriesController < ApplicationController
-  before_action :set_inventory, only: %i[edit update destroy]
+  before_action :set_inventory, only: %i[show edit update destroy]
 
 #'authorize/pundit is used to check if the user is allowed to view inventory items'
 def index
@@ -48,7 +48,7 @@ end
 
     #Otherwise, if failed it will return an error message.
     else
-      redirect_to inventories_path, alert: 'Failed to update inventory.'
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -79,13 +79,13 @@ end
   def inventory_params
     params.require(:inventory).permit(
       :name,
-      :category_id,
+      :stock_quantity,
       :price,
       :currency,
-      :stock_quantity,
       :supplier,
+      :input_date,
       :unit_id,
-      :input_date
+      :category_id
     )
   end
 end
