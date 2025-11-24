@@ -153,8 +153,8 @@ if new_wow.any?
       worker_name: data[:worker].name,
       rate: data[:rate],
       amount: data[:rate] * data[:days],
-      created_at: Time.current,
-      updated_at: Time.current
+      created_at: data[:work_order].created_at,
+      updated_at: data[:work_order].created_at
     }
     # Set days or quantity based on work order type
     case data[:work_order].work_order_rate_type
@@ -194,8 +194,8 @@ workers.each do |worker|
     worker_name: worker.name,
     rate: rate,
     amount: amount,
-    created_at: Time.current,
-    updated_at: Time.current
+    created_at: wo.created_at,
+    updated_at: wo.created_at
   }
   if wo.work_order_rate_type == 'work_days'
     attrs[:work_days] = days
@@ -224,8 +224,8 @@ completed_wos.each do |wo|
       worker_name: w.name,
       rate: rate,
       amount: amount,
-      created_at: Time.current,
-      updated_at: Time.current
+      created_at: wo.created_at,
+      updated_at: wo.created_at
     }
     if wo.work_order_rate_type == 'work_days'
       attrs[:work_days] = days
@@ -298,8 +298,8 @@ if new_woi.any?
       price: data[:inventory].price,
       unit_name: data[:inventory].unit.name,
       category_name: data[:inventory].category.name,
-      created_at: Time.current,
-      updated_at: Time.current
+      created_at: data[:work_order].created_at,
+      updated_at: data[:work_order].created_at
     }
   end
   WorkOrderItem.insert_all(woi_insert_data)
