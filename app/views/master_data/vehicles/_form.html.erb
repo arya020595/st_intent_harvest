@@ -1,7 +1,7 @@
 <div class="modal-content">
   <%= form_with(model: [:master_data, vehicle], class: "needs-validation", novalidate: true, data: { action: "turbo:submit-end->modal#formSubmitted" }) do |form| %>
     <div class="modal-header">
-      <h5 class="modal-title"><%= vehicle.persisted? ? 'Edit Vehicle' : 'New Vehicle' %></h5>
+      <h5 class="modal-title"><strong><%= vehicle.persisted? ? 'Edit Vehicle No.' : 'Add New Vehicle No.' %></strong></h5>
       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
     <div class="modal-body">
@@ -16,17 +16,18 @@
         </div>
       <% end %>
       <div class="mb-3">
-        <%= form.label :vehicle_number, class: "form-label" %>
-        <%= form.text_field :vehicle_number, class: "form-control", required: true %>
+        <%= form.label :vehicle_number, "Vehicle No.", class: "form-label" %>
+        <%= form.text_field :vehicle_number, placeholder:"Enter Vehicle No.", class: "form-control", required: true %>
       </div>
       <div class="mb-3">
-        <%= form.label :vehicle_model, class: "form-label" %>
-        <%= form.text_field :vehicle_model, class: "form-control", required: true %>
+        <%= form.label :vehicle_model, "Vehicle Model", class: "form-label" %>
+        <%= form.text_field :vehicle_model, placeholder:"Enter Vehicle Model", class: "form-control", required: true %>
       </div>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      <%= form.submit "Save Vehicle", class: "btn btn-primary" %>
+      <%= button_tag type: :submit, class: "btn btn-success" do %>
+        <i class="bi bi-save-fill text-white me-1"></i> Save
+      <% end %>
     </div>
   <% end %>
 </div>
