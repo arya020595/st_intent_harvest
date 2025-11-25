@@ -1,17 +1,18 @@
-<div class="container-fluid px-4 py-4 work-order-details" data-controller="multi-sort">
+<div id="work_orders_details" class="container-fluid px-4 py-4 work-order-details" data-controller="multi-sort">
   <div class="card shadow-sm">
-    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Work Orders</h5>
-      <%= link_to new_work_orders_detail_path, class: "btn btn-light btn-sm" do %>
-        <i class="bi bi-plus-circle"></i> Add Work Order
+    <div class="work_orders_page">
+      <h1 class="mb-0">Work Orders</h1>
+      <%= link_to new_work_orders_detail_path, class: "add-button btn btn-primary btn-sm" do %>
+        <i class="bi bi-plus-circle-fill text-white me-1"></i> Add Work Order
       <% end %>
     </div>
     <div class="card-body">
       <%= search_form_for @q, url: work_orders_details_path, html: { id: 'work-order-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
-            <thead class="table-success">
-              <tr>
+            <thead class="header-row">
+              <tr class="header-row">
+                <th></th>
                 <th class="text-center">
                   <%= sort_link(@q, :id, 'ID') %>
                 </th>
@@ -27,9 +28,14 @@
                 <th class="text-center">
                   <%= sort_link(@q, :work_order_status, 'Status') %>
                 </th>
-                <th class="text-center">Actions</th>
               </tr>
               <tr>
+                <th class="text-center">
+                  <div class="filter-buttons">
+                    <%= f.submit 'Search', class: 'btn btn filter-btn' %>
+                    <%= link_to 'Reset', work_orders_details_path, class: 'btn btn reset-btn' %>
+                  </div>
+                </th>
                 <th class="text-center">
                   <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'Search Work Order...', min: 1 %>
                 </th>
@@ -41,8 +47,8 @@
                 </th>
                 <th class="text-center">
                   <div class="input-group input-group-sm">
-                    <input type="text" 
-                           class="form-control form-control-sm cursor-pointer" 
+                    <input type="text"
+                           class="form-control form-control-sm cursor-pointer"
                            placeholder="Select Date Range"
                            data-controller="flatpickr"
                            data-flatpickr-mode-value="range"
@@ -61,15 +67,9 @@
                       { include_blank: 'Select Status..' },
                       { class: 'form-select form-select-sm' } %>
                 </th>
-                <th class="text-center">
-                  <div class="d-flex gap-1 justify-content-center">
-                    <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
-                    <%= link_to 'Reset', work_orders_details_path, class: 'btn btn-secondary btn-sm' %>
-                  </div>
-                </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="work_orders_details_rows">
               <% if @work_orders.any? %>
                 <%= render partial: 'work_order_detail_row', collection: @work_orders, as: :work_order %>
               <% else %>

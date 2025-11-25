@@ -21,6 +21,9 @@ module WorkOrders
 
     def show
       authorize @work_order, policy_class: WorkOrders::ApprovalPolicy
+
+      # Load the latest amendment history for display
+      @amendment_history = @work_order.latest_amendment_history
     end
 
     def update
