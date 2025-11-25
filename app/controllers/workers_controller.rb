@@ -20,15 +20,15 @@ class WorkersController < ApplicationController
                                    .joins(work_order: :work_order_rate)
                                    .where(work_orders: { work_order_status: 'completed' })
 
-    # Ransack search for previous work orders
-    @q = completed_work_orders.order(work_orders: { created_at: :desc }).ransack(params[:q])
-    @pagy, @work_order_workers = paginate_results(@q.result)
+    # Apply Ransack search with multi-sort support
+    apply_ransack_search(completed_work_orders)
 
-    # Calculate totals from ALL completed work orders (not just filtered results)
+    # Paginate the filtered results
+    @pagy, @work_order_workers = paginate_results(@q.result.distinct)
+
+    # Totals (not filtered - from base completed_work_orders)
     @total_completed_work_orders = completed_work_orders.distinct.count(:work_order_id)
-    @total_working_days = completed_work_orders.select('DATE(work_orders.created_at) as work_date')
-                                               .distinct
-                                               .count(:work_date)
+    @total_working_days = completed_work_orders.distinct.count('DATE(work_orders.created_at)')
   end
 
   def new

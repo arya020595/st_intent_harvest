@@ -25,21 +25,31 @@
 #  fk_rails_...  (unit_id => units.id)
 #
 one:
-  name: "Fertilizer A"
+  name: "NPK Fertilizer 15-15-15"
   currency: "RM"
-  price: 100.00
-  stock_quantity: 50
+  price: 250.00
+  stock_quantity: 100
   supplier: "Supplier One"
-  input_date: 2025-01-01
-  category: one
-  unit: one
+  input_date: <%= 10.days.ago.to_date %>
+  category: fertilizer
+  unit: kg
 
 two:
-  name: "Fertilizer B"
+  name: "Herbicide Glyphosate"
   currency: "RM"
-  price: 150.00
-  stock_quantity: 30
+  price: 180.00
+  stock_quantity: 50
   supplier: "Supplier Two"
-  input_date: 2025-01-02
-  category: one
-  unit: one
+  input_date: <%= 5.days.ago.to_date %>
+  category: pesticide
+  unit: liter
+
+three:
+  name: "Pruning Shears"
+  currency: "RM"
+  price: 75.00
+  stock_quantity: 25
+  supplier: "Tool Supply Co"
+  input_date: <%= 15.days.ago.to_date %>
+  category: tools
+  unit: piece
