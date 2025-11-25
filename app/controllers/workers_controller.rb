@@ -14,6 +14,21 @@ class WorkersController < ApplicationController
 
   def show
     authorize @worker
+
+    # Base query for completed work orders
+    completed_work_orders = @worker.work_order_workers
+                                   .joins(work_order: :work_order_rate)
+                                   .where(work_orders: { work_order_status: 'completed' })
+
+    # Apply Ransack search with multi-sort support
+    apply_ransack_search(completed_work_orders)
+
+    # Paginate the filtered results
+    @pagy, @work_order_workers = paginate_results(@q.result.distinct)
+
+    # Totals (not filtered - from base completed_work_orders)
+    @total_completed_work_orders = completed_work_orders.distinct.count(:work_order_id)
+    @total_working_days = completed_work_orders.distinct.count('DATE(work_orders.created_at)')
   end
 
   def new
@@ -77,6 +92,24 @@ class WorkersController < ApplicationController
       end
     end
   end
+
+
+      def confirm_delete
+      @worker = Worker.find_by(id: params[:id])
+      unless @worker
+        redirect_to workers_path, alert: "Worker not found" and return
+      end
+
+      authorize @worker, policy_class: WorkerPolicy
+
+      # Only show the modal
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to workers_path
+      end
+    end
+
 
   def destroy
     authorize @worker

@@ -1,26 +1,29 @@
 <tr id="<%= dom_id(unit) %>">
-  <td class="text-center"><%= unit.id %></td>
-  <td><strong><%= unit.name %></strong></td>
-  <td>
-    <span class="badge bg-warning text-dark"><%= unit.unit_type %></span>
-  </td>
-  <td>
-    <small class="text-muted"><%= unit.created_at.strftime("%b %d, %Y %H:%M") if unit.created_at %></small>
-  </td>
-  <td>
-    <small class="text-muted"><%= unit.updated_at.strftime("%b %d, %Y %H:%M") if unit.updated_at %></small>
-  </td>
   <td class="text-center">
-    <div class="btn-group btn-group-sm" role="group">
-      <%= link_to master_data_unit_path(unit), class: "btn btn-info btn-sm", title: "View Details" do %>
-        <i class="bi bi-info-circle"></i>
+    <div class="action-buttons">
+
+      <%= link_to master_data_unit_path(unit),
+            class: "action-btn info",
+            title: "View Details",
+            data: { turbo_frame: "modal" } do %>
+        <i class="bi bi-info-circle-fill"></i>
       <% end %>
-      <%= link_to edit_master_data_unit_path(unit), class: "btn btn-warning btn-sm", title: "Edit", data: { turbo_frame: 'modal' } do %>
-        <i class="bi bi-pencil"></i>
+
+      <%= link_to edit_master_data_unit_path(unit), class: "action-btn warning", title: "Edit", data: { turbo_frame: 'modal' } do %>
+        <i class="bi bi-pencil-fill"></i>
       <% end %>
-      <%= link_to master_data_unit_path(unit), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{unit.name}?" }, class: "btn btn-danger btn-sm", title: "Delete" do %>
-        <i class="bi bi-trash"></i>
+
+      <%= link_to confirm_delete_master_data_unit_path(unit),
+                  class: "action-btn danger",
+                  title: "Delete",
+                  data: { turbo_frame: "modal" } do %>
+        <i class="bi bi-trash-fill"></i>
       <% end %>
     </div>
   </td>
+  <td class="text-center"><%= unit.id %></td>
+  <td><strong><%= unit.name %></strong></td>
+  <td><strong><%= unit.unit_type %></strong></td>
+<td class="text-center text-muted"><%= unit.created_at.strftime("%b %d, %Y %H:%M") if unit.created_at %></td>
+<td class="text-center text-muted"><%= unit.updated_at.strftime("%b %d, %Y %H:%M") if unit.updated_at %></td>
 </tr>

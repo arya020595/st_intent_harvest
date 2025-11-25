@@ -1,7 +1,7 @@
 <div class="modal-content">
   <%= form_with(model: [:master_data, unit], class: "needs-validation", novalidate: true, data: { action: "turbo:submit-end->modal#formSubmitted" }) do |form| %>
     <div class="modal-header">
-      <h5 class="modal-title"><%= unit.persisted? ? 'Edit Unit' : 'New Unit' %></h5>
+      <h5 class="modal-title"><strong><%= unit.persisted? ? 'Edit Unit' : 'Add New Unit' %></strong></h5>
       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
     <div class="modal-body">
@@ -16,17 +16,18 @@
         </div>
       <% end %>
       <div class="mb-3">
-        <%= form.label :name, class: "form-label" %>
-        <%= form.text_field :name, class: "form-control", required: true %>
+        <%= form.label :name, "Unit Name", class: "form-label" %>
+        <%= form.text_field :name, placeholder:"Enter Unit Name", class: "form-control", required: true %>
       </div>
       <div class="mb-3">
-        <%= form.label :unit_type, class: "form-label" %>
-        <%= form.text_field :unit_type, class: "form-control", required: true %>
+        <%= form.label :unit_type, "Unit Type", class: "form-label" %>
+        <%= form.text_field :unit_type, placeholder:"Enter Unit Type", class: "form-control", required: true %>
       </div>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      <%= form.submit "Save Unit", class: "btn btn-primary" %>
+      <%= button_tag type: :submit, class: "btn btn-success" do %>
+        <i class="bi bi-save-fill text-white me-1"></i> Save
+      <% end %>
     </div>
   <% end %>
 </div>

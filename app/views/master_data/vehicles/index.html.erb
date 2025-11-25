@@ -1,40 +1,44 @@
 <div id="flash_messages">
   <%= render "shared/flash" %>
 </div>
-<div class="container-fluid px-4 py-4 vehicles-list" data-controller="multi-sort">
+<div id="vehicles" class="container-fluid px-4 py-4 vehicles-list" data-controller="multi-sort">
   <div class="card shadow-sm">
-    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Vehicles Management</h5>
-      <%= link_to new_master_data_vehicle_path, class: "btn btn-light btn-sm", data: { turbo_frame: 'modal' } do %>
-        <i class="bi bi-plus-circle"></i> Add Vehicle
+    <div class="vehicle_page">
+      <h1 class="mb-0">Master Data - Vehicles</h1>
+
+      <div class="d-flex justify-content-end">
+      <%= link_to new_master_data_vehicle_path, class: "add-button btn btn-primary btn-sm",  data: { turbo_frame: 'modal' } do %>
+        <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Vehicle
       <% end %>
-    </div>
+      </div>
+
     <div class="card-body">
       <%= search_form_for @q, url: master_data_vehicles_path, html: { id: 'vehicle-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
-            <thead class="table-danger">
-              <tr>
+            <thead class="header-row">
+              <tr class="header-row">
+                <th></th>
                 <th class="text-center">
-                  <%= sort_link(@q, :id, 'ID') %>
+                  <%= sort_link(@q, :vehicle_number, 'Vehicle No.') %>
                 </th>
-                <th>
-                  <%= sort_link(@q, :vehicle_number, 'Vehicle Number') %>
-                </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :vehicle_model, 'Vehicle Model') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :created_at, 'Created At') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :updated_at, 'Updated At') %>
                 </th>
-                <th class="text-center">Actions</th>
+
               </tr>
               <tr>
                 <th class="text-center">
-                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1 %>
+                  <div class="d-flex gap-1 justify-content-center">
+                    <%= button_tag 'Search', type: "submit", class: 'btn filter-btn' %>
+                    <%= link_to 'Reset', master_data_vehicles_path, class: 'btn reset-btn' , style: 'font-weight: normal;' %>
+                </div>
                 </th>
                 <th>
                   <%= f.search_field :vehicle_number_cont, class: 'form-control form-control-sm', placeholder: 'Search Vehicle Number..' %>
@@ -44,8 +48,8 @@
                 </th>
                 <th>
                   <div class="input-group input-group-sm">
-                    <input type="text" 
-                           class="form-control form-control-sm cursor-pointer" 
+                    <input type="text"
+                           class="form-control form-control-sm cursor-pointer"
                            placeholder="Select Date Range"
                            data-controller="flatpickr"
                            data-flatpickr-mode-value="range"
@@ -61,8 +65,8 @@
                 </th>
                 <th>
                   <div class="input-group input-group-sm">
-                    <input type="text" 
-                           class="form-control form-control-sm cursor-pointer" 
+                    <input type="text"
+                           class="form-control form-control-sm cursor-pointer"
                            placeholder="Select Date Range"
                            data-controller="flatpickr"
                            data-flatpickr-mode-value="range"
@@ -76,12 +80,7 @@
                   <%= f.hidden_field :updated_at_gteq, value: params.dig(:q, :updated_at_gteq) %>
                   <%= f.hidden_field :updated_at_lteq, value: params.dig(:q, :updated_at_lteq) %>
                 </th>
-                <th class="text-center">
-                  <div class="d-flex gap-1 justify-content-center">
-                    <%= f.submit 'Search', class: 'btn btn-danger btn-sm' %>
-                    <%= link_to 'Reset', master_data_vehicles_path, class: 'btn btn-secondary btn-sm' %>
-                  </div>
-                </th>
+
               </tr>
             </thead>
             <tbody id="vehicle_rows">

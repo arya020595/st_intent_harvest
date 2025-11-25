@@ -9,8 +9,30 @@
 #  updated_at :datetime         not null
 #
 
-one: {}
-# column: value
-#
-two: {}
-# column: value
+kg:
+  name: Kg
+  unit_type: Weight
+
+liter:
+  name: Liter
+  unit_type: Volume
+
+piece:
+  name: Piece
+  unit_type: Count
+
+hour:
+  name: Hour
+  unit_type: Time
+
+day:
+  name: Day
+  unit_type: Time
+
+hectare:
+  name: Hectare
+  unit_type: Area
+
+ton:
+  name: Ton
+  unit_type: Weight

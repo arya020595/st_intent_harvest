@@ -1,41 +1,46 @@
 <div id="flash_messages">
   <%= render "shared/flash" %>
 </div>
-<div class="container-fluid px-4 py-4 categories-list" data-controller="multi-sort">
+<div id="categories" class="container-fluid px-4 py-4 categories-list" data-controller="multi-sort">
   <div class="card shadow-sm">
-    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Categories Management</h5>
-      <%= link_to new_master_data_category_path, class: "btn btn-light btn-sm", data: { turbo_frame: 'modal' } do %>
-        <i class="bi bi-plus-circle"></i> Add Category
-      <% end %>
-    </div>
+    <div class="categories_page">
+      <h1 class="mb-0">Master Data - Categories</h1>
+        <div class="d-flex justify-content-end">
+        <%= link_to new_master_data_category_path, class: "add-button btn btn-primary btn-sm",  data: { turbo_frame: 'modal' } do %>
+          <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Category
+        <% end %>
+        </div>
     <div class="card-body">
       <%= search_form_for @q, url: master_data_categories_path, html: { id: 'category-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
-            <thead class="table-success">
-              <tr>
+            <thead class="header-row">
+              <tr class="header-row">
+                <th></th>
                 <th class="text-center">
-                  <%= sort_link(@q, :id, 'ID') %>
+                  <%= sort_link(@q, :id, 'Category ID') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :name, 'Name') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :category_type, 'Category Type') %>
                 </th>
-                <th>
-                  <%= sort_link(@q, :parent_id, 'Parent Category') %>
-                </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :created_at, 'Created At') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :updated_at, 'Updated At') %>
                 </th>
-                <th class="text-center">Actions</th>
+
               </tr>
               <tr>
+                <th class="text-center">
+                  <div class="filter-buttons">
+                    <%= button_tag 'Search', class: 'btn filter-btn' %>
+                    <%= link_to 'Reset', master_data_categories_path, class: 'btn reset-btn' , style: 'font-weight: normal;' %>
+                  </div>
+                </th>
                 <th class="text-center">
                   <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1 %>
                 </th>
@@ -46,12 +51,9 @@
                   <%= f.search_field :category_type_cont, class: 'form-control form-control-sm', placeholder: 'Search Type..' %>
                 </th>
                 <th>
-                  <%= f.collection_select :parent_id_eq, Category.where.not(parent_id: nil).distinct.select(:parent_id).map(&:parent).compact, :id, :name, { include_blank: 'All Categories' }, class: 'form-control form-control-sm' %>
-                </th>
-                <th>
                   <div class="input-group input-group-sm">
-                    <input type="text" 
-                           class="form-control form-control-sm cursor-pointer" 
+                    <input type="text"
+                           class="form-control form-control-sm cursor-pointer"
                            placeholder="Select Date Range"
                            data-controller="flatpickr"
                            data-flatpickr-mode-value="range"
@@ -67,8 +69,8 @@
                 </th>
                 <th>
                   <div class="input-group input-group-sm">
-                    <input type="text" 
-                           class="form-control form-control-sm cursor-pointer" 
+                    <input type="text"
+                           class="form-control form-control-sm cursor-pointer"
                            placeholder="Select Date Range"
                            data-controller="flatpickr"
                            data-flatpickr-mode-value="range"
@@ -82,12 +84,7 @@
                   <%= f.hidden_field :updated_at_gteq, value: params.dig(:q, :updated_at_gteq) %>
                   <%= f.hidden_field :updated_at_lteq, value: params.dig(:q, :updated_at_lteq) %>
                 </th>
-                <th class="text-center">
-                  <div class="d-flex gap-1 justify-content-center">
-                    <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
-                    <%= link_to 'Reset', master_data_categories_path, class: 'btn btn-secondary btn-sm' %>
-                  </div>
-                </th>
+
               </tr>
             </thead>
             <tbody id="category_rows">
