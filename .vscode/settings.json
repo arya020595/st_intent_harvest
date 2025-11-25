@@ -1,14 +1,18 @@
 {
   // =======================================================
   // TEAM-WIDE SETTINGS - Committed to Git
-  // These settings will apply to all team members
+  // Auto-format on save for all Ruby files
   // =======================================================
 
-  // RuboCop auto-formatting on save
+  // Global editor settings
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
+
+  // Ruby-specific formatting
   "[ruby]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "rubocop.vscode-rubocop",
-    "editor.formatOnType": false,
     "editor.codeActionsOnSave": {
       "source.fixAll.rubocop": "explicit"
     }
@@ -16,27 +20,31 @@
 
   // RuboCop extension settings
   "rubocop.enable": true,
+  "rubocop.mode": "enableUnconditionally",
   "rubocop.onSave": true,
   "rubocop.autocorrect": true,
   "rubocop.autocorrectOnSave": true,
-  "rubocop.useServer": true,
-  "rubocop.mode": "enableUnconditionally",
   "rubocop.safeAutocorrect": false,
+  "rubocop.useServer": true,
 
-  // Enable formatting on save in the workspace (fallback/global)
-  "editor.formatOnSave": true,
-
-  // Additional Ruby settings
-  "ruby.lint": {
-    "rubocop": true
+  // Ruby LSP settings
+  "rubyLsp.enableExperimentalFeatures": true,
+  "rubyLsp.enabledFeatures": {
+    "codeActions": true,
+    "diagnostics": true,
+    "documentHighlights": true,
+    "documentSymbols": true,
+    "foldingRanges": true,
+    "formatting": false,
+    "hover": true,
+    "inlayHint": true,
+    "onTypeFormatting": false,
+    "selectionRanges": true
   },
-  "ruby.format": "rubocop",
 
-  // Editor settings for consistency across team
+  // File cleanup settings
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
-
-  // Git settings
   "files.eol": "\n"
 }
