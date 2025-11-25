@@ -66,7 +66,7 @@
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="work_orders_approvals_rows">
               <% if @work_orders.any? %>
                 <%= render partial: 'work_order_approval_row', collection: @work_orders, as: :work_order %>
               <% else %>
