@@ -6,8 +6,8 @@
   <div class="block_no_page">
   <h1>Master Data - Block No.</h1>
       <div class="d-flex justify-content-end">
-        <%= link_to new_master_data_block_path, 
-                    class: "add-button btn btn-primary btn-sm", 
+        <%= link_to new_master_data_block_path,
+                    class: "add-button btn btn-primary btn-sm",
                     data: { turbo_frame: 'modal' } do %>
           <i class="bi bi-plus-circle-fill text-white me-1"></i> Add Block
         <% end %>
@@ -21,7 +21,7 @@
                 <tr class="header-row">
                   <th></th>
                   <th class="text-center">
-                    <%= sort_link(@q, :block_number, 'Block Number') %>
+                    <%= sort_link(@q, :block_number, 'Block No.') %>
                   </th>
                   <th class="text-center">
                     <%= sort_link(@q, :hectarage, 'Hectarage') %>
@@ -37,7 +37,7 @@
                   <th class="text-center">
                     <div class="filter-buttons">
                       <%= button_tag "Search", type: "submit", class: "btn filter-btn" %>
-                      <%= link_to 'Reset', master_data_blocks_path, class: "btn reset-btn" %>
+                      <%= link_to 'Reset', master_data_blocks_path, class: "btn reset-btn", style: 'font-weight: normal;' %>
                     </div>
                   </th>
                   <th>
@@ -48,8 +48,8 @@
                   </th>
                   <th>
                     <div class="input-group input-group-sm">
-                      <input type="text" 
-                            class="form-control form-control-sm cursor-pointer" 
+                      <input type="text"
+                            class="form-control form-control-sm cursor-pointer"
                             placeholder="Select Date Range"
                             data-controller="flatpickr"
                             data-flatpickr-mode-value="range"
@@ -65,8 +65,8 @@
                   </th>
                   <th>
                     <div class="input-group input-group-sm">
-                      <input type="text" 
-                            class="form-control form-control-sm cursor-pointer" 
+                      <input type="text"
+                            class="form-control form-control-sm cursor-pointer"
                             placeholder="Select Date Range"
                             data-controller="flatpickr"
                             data-flatpickr-mode-value="range"

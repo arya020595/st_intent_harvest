@@ -1,5 +1,5 @@
 <div class="modal fade" id="blockModal" tabindex="-1" aria-labelledby="blockModalLabel" aria-hidden="true" data-bs-backdrop="static" data-controller="modal" data-modal-frame-id-value="modal">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-lg", style="margin-top: 200px; width: 50%;">
     <%= turbo_frame_tag "modal", data: { turbo_action: "advance", action: "turbo:frame-load->modal#show" } do %>
     <% end %>
   </div>

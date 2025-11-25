@@ -1,31 +1,36 @@
 <div id="sidebar" data-controller="sidebar" class="d-flex flex-column flex-shrink-0 p-3 sidebar-bg" style="width: 280px; height: auto; transition: all 0.3s;">
   <a href="<%= root_path %>" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
-    <!-- <span class="fs-4">ST Dashboard</span> -->
+    <!-- Logo / Title -->
   </a>
-  <!-- <hr> -->
+
   <ul id="sidebarAccordion" class="nav nav-pills flex-column mb-auto">
+
+    <!-- Dashboard -->
     <% if can_view_menu?('dashboard.index') %>
       <li class="nav-item">
-        <%= link_to root_path, class: "nav-link #{current_page?(root_path) ? 'active' : 'link-dark'}" do %>
-          <i class="bi bi-speedometer2 me-2"></i>
-          Dashboard
+        <%= link_to root_path, class: "nav-link #{active_nav_item?(root_path) ? 'active' : 'link-dark'}" do %>
+          <i class="bi bi-speedometer2 me-2"></i> Dashboard
         <% end %>
       </li>
       <li>
-        <%= link_to bi_dashboard_path, class: "nav-link #{current_page?(bi_dashboard_path) ? 'active' : 'link-dark'}" do %>
-          <i class="bi bi-bar-chart-line-fill me-2"></i>
-          BI Dashboard
+        <%= link_to bi_dashboard_path, class: "nav-link #{active_nav_item?(bi_dashboard_path) ? 'active' : 'link-dark'}" do %>
+          <i class="bi bi-bar-chart-line-fill me-2"></i> BI Dashboard
         <% end %>
       </li>
     <% end %>
-    <% # Check if user has access to any work order submenu %>
+
+    <!-- Work Orders -->
     <% has_work_order_access = can_view_menu?('work_orders.details.index') || can_view_menu?('work_orders.approvals.index') || can_view_menu?('work_orders.pay_calculations.index') %>
     <% if has_work_order_access %>
+      <% work_order_active = active_controller?('work_orders') %>
       <li>
-        <% work_order_active = active_controller?('work_order') %>
-        <a class="nav-link <%= work_order_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#workOrdersCollapse" href="#" role="button" aria-expanded="<%= work_order_active %>" aria-controls="workOrdersCollapse">
-          <i class="bi bi-clipboard-check-fill me-2"></i>
-          Work Orders
+        <a class="nav-link <%= work_order_active ? 'active' : 'link-dark' %>"
+           data-bs-toggle="collapse"
+           data-bs-target="#workOrdersCollapse"
+           href="#" role="button"
+           aria-expanded="<%= work_order_active %>"
+           aria-controls="workOrdersCollapse">
+          <i class="bi bi-clipboard-check-fill me-2"></i> Work Orders
           <i class="bi bi-chevron-right float-end collapse-chevron"></i>
         </a>
         <div class="collapse <%= 'show' if work_order_active %>" id="workOrdersCollapse" data-bs-parent="#sidebarAccordion">
@@ -43,38 +48,46 @@
         </div>
       </li>
     <% end %>
+
+    <!-- Payslip -->
     <% if can_view_menu?('payslip.index') %>
       <li>
         <%= link_to payslips_path, class: "nav-link #{active_controller?('payslips') ? 'active' : 'link-dark'}" do %>
-          <i class="bi bi-clipboard-data-fill me-2"></i>
-          Payslip
+          <i class="bi bi-clipboard-data-fill me-2"></i> Payslip
         <% end %>
       </li>
     <% end %>
+
+    <!-- Inventory -->
     <% if can_view_menu?('inventory.index') %>
       <li>
         <%= link_to inventories_path, class: "nav-link #{active_controller?('inventories') ? 'active' : 'link-dark'}" do %>
-          <i class="bi bi-box-seam-fill me-2"></i>
-          Inventory
+          <i class="bi bi-box-seam-fill me-2"></i> Inventory
         <% end %>
       </li>
     <% end %>
+
+    <!-- Workers -->
     <% if can_view_menu?('workers.index') %>
       <li>
         <%= link_to workers_path, class: "nav-link #{active_controller?('workers') ? 'active' : 'link-dark'}" do %>
-          <i class="bi bi-people-fill me-2"></i>
-          Workers Profile
+          <i class="bi bi-people-fill me-2"></i> Workers Profile
         <% end %>
       </li>
     <% end %>
-    <% # Check if user has access to any master data submenu %>
+
+    <!-- Master Data -->
     <% has_master_data_access = can_view_menu?('master_data.blocks.index') || can_view_menu?('master_data.units.index') || can_view_menu?('master_data.categories.index') || can_view_menu?('master_data.vehicles.index') || can_view_menu?('master_data.work_order_rates.index') %>
     <% if has_master_data_access %>
+      <% master_data_active = active_controller?('master_data') %>
       <li>
-        <% master_data_active = active_controller?('master_data') %>
-        <a class="nav-link <%= master_data_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#masterDataCollapse" href="#" role="button" aria-expanded="<%= master_data_active %>" aria-controls="masterDataCollapse">
-          <i class="bi bi-database-fill me-2"></i>
-          Master Data
+        <a class="nav-link <%= master_data_active ? 'active' : 'link-dark' %>"
+           data-bs-toggle="collapse"
+           data-bs-target="#masterDataCollapse"
+           href="#" role="button"
+           aria-expanded="<%= master_data_active %>"
+           aria-controls="masterDataCollapse">
+          <i class="bi bi-database-fill me-2"></i> Master Data
           <i class="bi bi-chevron-right float-end collapse-chevron"></i>
         </a>
         <div class="collapse <%= 'show' if master_data_active %>" id="masterDataCollapse" data-bs-parent="#sidebarAccordion">
@@ -98,14 +111,19 @@
         </div>
       </li>
     <% end %>
-    <% # Check if user has access to any user management submenu %>
+
+    <!-- User Management -->
     <% has_user_mgmt_access = can_view_menu?('admin.roles.index') || can_view_menu?('admin.users.index') %>
     <% if has_user_mgmt_access %>
+      <% user_management_active = active_controller?('user_management') %>
       <li>
-        <% user_management_active = active_controller?('user_management') %>
-        <a class="nav-link <%= user_management_active ? 'active' : 'link-dark' %>" data-bs-toggle="collapse" data-bs-target="#userManagementCollapse" href="#" role="button" aria-expanded="<%= user_management_active %>" aria-controls="userManagementCollapse">
-          <i class="bi bi-shield-lock-fill me-2"></i>
-          User Management
+        <a class="nav-link <%= user_management_active ? 'active' : 'link-dark' %>"
+           data-bs-toggle="collapse"
+           data-bs-target="#userManagementCollapse"
+           href="#" role="button"
+           aria-expanded="<%= user_management_active %>"
+           aria-controls="userManagementCollapse">
+          <i class="bi bi-shield-lock-fill me-2"></i> User Management
           <i class="bi bi-chevron-right float-end collapse-chevron"></i>
         </a>
         <div class="collapse <%= 'show' if user_management_active %>" id="userManagementCollapse" data-bs-parent="#sidebarAccordion">
@@ -120,7 +138,9 @@
         </div>
       </li>
     <% end %>
+
   </ul>
+
   <hr/>
   <p class="powered-by">Powered By ST Datablu</p>
 </div>
