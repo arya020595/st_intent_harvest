@@ -60,14 +60,23 @@ class ApplicationPolicy
     end
 
     def resolve
-      if user.has_permission?(build_permission_code('index'))
-        scope.all
-      else
-        scope.none
-      end
+      # Superadmin bypasses all checks - sees everything
+      return scope.all if user.superadmin?
+
+      # Check permission for non-superadmin users
+      return scope.none unless user.has_permission?(build_permission_code('index'))
+
+      # Apply role-based filtering for non-superadmin users
+      apply_role_based_scope
     end
 
     private
+
+    # Override this method in subclasses to implement role-based filtering
+    # Default behavior: return all records if user has permission
+    def apply_role_based_scope
+      scope.all
+    end
 
     def build_permission_code(action)
       "#{permission_resource}.#{action}"
