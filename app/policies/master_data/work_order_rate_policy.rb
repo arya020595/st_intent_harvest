@@ -11,6 +11,17 @@ module MasterData
     # - master_data.work_order_rates.update
     # - master_data.work_order_rates.destroy
 
+    # Define who can delete a block
+    def destroy?
+      # Adjust this to your actual permission logic
+      true
+    end
+
+    # Define who can see the delete confirmation
+    def confirm_delete?
+      destroy?
+    end
+
     private
 
     def permission_resource

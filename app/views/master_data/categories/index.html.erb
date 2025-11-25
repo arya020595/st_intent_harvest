@@ -27,9 +27,6 @@
                   <%= sort_link(@q, :category_type, 'Category Type') %>
                 </th>
                 <th class="text-center">
-                  <%= sort_link(@q, :parent_id, 'Parent Category') %>
-                </th>
-                <th class="text-center">
                   <%= sort_link(@q, :created_at, 'Created At') %>
                 </th>
                 <th class="text-center">
@@ -41,7 +38,7 @@
                 <th class="text-center">
                   <div class="filter-buttons">
                     <%= button_tag 'Search', class: 'btn filter-btn' %>
-                    <%= link_to 'Reset', master_data_categories_path, class: 'btn reset-btn' %>
+                    <%= link_to 'Reset', master_data_categories_path, class: 'btn reset-btn' , style: 'font-weight: normal;' %>
                   </div>
                 </th>
                 <th class="text-center">
@@ -52,9 +49,6 @@
                 </th>
                 <th>
                   <%= f.search_field :category_type_cont, class: 'form-control form-control-sm', placeholder: 'Search Type..' %>
-                </th>
-                <th>
-                  <%= f.collection_select :parent_id_eq, Category.where.not(parent_id: nil).distinct.select(:parent_id).map(&:parent).compact, :id, :name, { include_blank: 'All Categories' }, class: 'form-control form-control-sm' %>
                 </th>
                 <th>
                   <div class="input-group input-group-sm">

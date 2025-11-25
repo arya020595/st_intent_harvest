@@ -77,6 +77,24 @@ module MasterData
       end
     end
 
+
+   def confirm_delete
+      @unit = Unit.find_by(id: params[:id])
+      unless @unit
+        redirect_to master_data_unit_path, alert: "Unit not found" and return
+      end
+
+      authorize @unit, policy_class: MasterData::UnitPolicy
+
+      # Only show the modal
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to master_data_unit_path
+      end
+    end
+
+
     def destroy
       authorize @unit, policy_class: MasterData::UnitPolicy
 

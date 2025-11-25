@@ -23,7 +23,7 @@
                   <%= sort_link(@q, :work_order_name, 'Work Order Name') %>
                 </th>
                 <th class="text-center">
-                  <%= sort_link(@q, :rate, 'Rate') %>
+                  <%= sort_link(@q, :rate, 'Rate(RM)') %>
                 </th>
                 <th class="text-center">
                   <%= sort_link(@q, :unit_id, 'Unit') %>
@@ -39,7 +39,7 @@
                 <th class="text-center">
                   <div class="filter-buttons">
                     <%= button_tag 'Search', type: "submit", class: 'btn filter-btn' %>
-                    <%= link_to 'Reset', master_data_work_order_rates_path, class: 'btn reset-btn' %>
+                    <%= link_to 'Reset', master_data_work_order_rates_path, class: 'btn reset-btn', style: 'font-weight: normal;' %>
                   </div>
                 </th>
                 <th>

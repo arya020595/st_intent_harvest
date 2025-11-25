@@ -1,22 +1,28 @@
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>Block Details</h1>
-      <div class="card">
-        <div class="card-body">
-          <dl class="row">
-            <dt class="col-sm-3">Block Number:</dt>
-            <dd class="col-sm-9"><%= @block.block_number %></dd>
-            <dt class="col-sm-3">Hectarage:</dt>
-            <dd class="col-sm-9"><%= @block.hectarage %></dd>
-          </dl>
-          <div class="mt-3">
-            <%= link_to "Edit", edit_master_data_block_path(@block), class: "btn btn-warning" %>
-            <%= link_to "Back", master_data_blocks_path, class: "btn btn-secondary" %>
-            <%= link_to "Delete", master_data_block_path(@block), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-danger" %>
-          </div>
-        </div>
-      </div>
+<%= turbo_frame_tag "modal" do %>
+  <div class="modal-content">
+
+    <div class="modal-header d-flex justify-content-between align-items-center" style="padding: 20px;">
+      <h5 class="mb-0"><strong>View Block Details</strong></h5>
+      <button type="button" class="btn-close custom-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
+
+    <div class="modal-body">
+      <dl class="row">
+        <dt class="col-sm-3">Block Number:</dt>
+        <dd class="col-sm-9"><%= @block.block_number %></dd>
+
+        <dt class="col-sm-3">Hectarage(Ha):</dt>
+        <dd class="col-sm-9"><%= @block.hectarage %></dd>
+
+
+        <dt class="col-sm-3">Created At:</dt>
+        <dd class="col-sm-9"><%= @block.created_at.strftime("%b %d, %Y %H:%M") %></dd>
+
+        <dt class="col-sm-3">Updated At:</dt>
+        <dd class="col-sm-9"><%= @block.updated_at.strftime("%b %d, %Y %H:%M") %></dd>
+
+      </dl>
+    </div>
+
   </div>
-</div>
+<% end %>

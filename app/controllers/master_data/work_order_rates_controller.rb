@@ -82,6 +82,23 @@ module MasterData
       end
     end
 
+    def confirm_delete
+      @work_order_rate = WorkOrderRate.find_by(id: params[:id])
+      unless @work_order_rate
+        redirect_to work_order_rate_path, alert: "Work Order Rate not found" and return
+      end
+
+      authorize @work_order_rate, policy_class: MasterData::WorkOrderRatePolicy
+
+      # Only show the modal
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to master_data_work_order_rate_path
+      end
+    end
+
+
     def destroy
       authorize @work_order_rate, policy_class: MasterData::WorkOrderRatePolicy
 

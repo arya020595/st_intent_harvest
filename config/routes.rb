@@ -55,15 +55,43 @@ Rails.application.routes.draw do
   resources :inventories
 
   # Workers
-  resources :workers
+  resources :workers do
+    member do
+      get :confirm_delete
+    end
+  end
 
   # Master Data Namespace
   namespace :master_data do
-    resources :vehicles
-    resources :work_order_rates
-    resources :blocks
-    resources :units
-    resources :categories
+    resources :vehicles do
+      member do
+        get :confirm_delete
+      end
+    end
+
+    resources :work_order_rates do
+      member do
+        get :confirm_delete
+      end
+    end
+
+    resources :blocks do
+      member do
+        get :confirm_delete
+      end
+    end
+
+    resources :units do
+      member do
+        get :confirm_delete
+      end
+    end
+
+    resources :categories do
+      member do
+        get :confirm_delete
+      end
+    end
   end
 
   # User Management Namespace

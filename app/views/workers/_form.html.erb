@@ -1,7 +1,7 @@
 <%= form_with(model: worker) do |form| %>
   <div class="modal-header">
     <h5 class="modal-title" id="workerModalLabel">
-      <%= worker.persisted? ? 'Edit Worker' : 'Add New Worker' %>
+    <strong>  <%= worker.persisted? ? 'Edit Worker Profile' : 'Add New Worker Profile' %> </strong>
     </h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
   </div>
@@ -67,14 +67,9 @@
       </div>
     </div>
   </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-      <i class="bi bi-x-circle"></i> Cancel
-    </button>
-    <% if worker.persisted? %>
-      <%= form.submit 'Update Worker', class: "btn btn-success" %>
-    <% else %>
-      <%= form.submit 'Save Worker', class: "btn btn-success" %>
-    <% end %>
-  </div>
+    <div class="modal-footer">
+      <%= button_tag type: :submit, class: "btn btn-success" do %>
+        <i class="bi bi-save-fill text-white me-1"></i> Save
+      <% end %>
+    </div>
 <% end %>
