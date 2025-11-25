@@ -3,15 +3,13 @@
     <div class="d-inline-flex gap-1 justify-content-center" style="min-width: 90px;">
       <%= link_to work_orders_detail_path(work_order),
           class: "action-btn info",
-          title: "View Details",
-          data: { turbo_frame: "modal" } do %>
+          title: "View Details" do %>
         <i class="bi bi-info-circle-fill"></i>
       <% end %>
       <% if work_order.work_order_status.in?(%w[ongoing amendment_required]) %>
         <%= link_to edit_work_orders_detail_path(work_order),
             class: "action-btn warning",
-            title: "Edit",
-            data: { turbo_frame: 'modal' } do %>
+            title: "Edit" do %>
           <i class="bi bi-pencil-fill"></i>
         <% end %>
       <% else %>
