@@ -1,11 +1,11 @@
-#categories {
-  .categories_page {
+#work_orders_details {
+  .work_orders_page {
     padding: 20px;
     background-color: #ffffff;
     border-radius: 8px;
   }
 
-  .categories_page h1 {
+  .work_orders_page h1 {
     background-color: #155e1a;
     color: #ffffff;
     padding: 20px;
@@ -29,8 +29,8 @@
     border: 0;
   }
 
-  #category_rows tr td,
-  #category_rows tr th {
+  #work_orders_details_rows tr td,
+  #work_orders_details_rows tr th {
     padding: 12px 8px;
     text-align: center;
     font-size: 16px;
@@ -64,6 +64,7 @@
   th .filter-buttons {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
   }
 
@@ -75,20 +76,22 @@
   .btn.reset-btn {
     background-color: #0d6efd;
     color: #ffffff;
-    width: 90%;
-  }
-
-  .btn.reset-btn a {
-    font-weight: 0;
+    font-weight: normal !important;
   }
 
   .action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: none;
     border: none;
     padding: 5px;
     border-radius: 5px;
     cursor: pointer;
     text-decoration: none;
+    width: 28px;
+    height: 28px;
+    transition: all 0.2s ease;
   }
 
   .action-btn i {
@@ -111,6 +114,7 @@
   /* Hover Effect */
   .action-btn:hover {
     background-color: rgba(0, 0, 0, 0.05);
+    transform: scale(1.1);
   }
 
   /* Normal page links */
