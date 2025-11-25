@@ -14,6 +14,21 @@ class WorkersController < ApplicationController
 
   def show
     authorize @worker
+
+    # Base query for completed work orders
+    completed_work_orders = @worker.work_order_workers
+                                   .joins(work_order: :work_order_rate)
+                                   .where(work_orders: { work_order_status: 'completed' })
+
+    # Ransack search for previous work orders
+    @q = completed_work_orders.order(work_orders: { created_at: :desc }).ransack(params[:q])
+    @pagy, @work_order_workers = paginate_results(@q.result)
+
+    # Calculate totals from ALL completed work orders (not just filtered results)
+    @total_completed_work_orders = completed_work_orders.distinct.count(:work_order_id)
+    @total_working_days = completed_work_orders.select('DATE(work_orders.created_at) as work_date')
+                                               .distinct
+                                               .count(:work_date)
   end
 
   def new
