@@ -2,9 +2,10 @@
   <td class="text-center">
     <div class="action-buttons">
 
-      <%= link_to master_data_block_path(block),
-                  class: "action-btn info",
-                  title: "View Details" do %>
+  <%= link_to master_data_block_path(block),
+            class: "action-btn info",
+            title: "View Details",
+            data: { turbo_frame: "modal" } do %>
         <i class="bi bi-info-circle-fill"></i>
       <% end %>
 
@@ -15,17 +16,17 @@
         <i class="bi bi-pencil-fill"></i>
       <% end %>
 
-      <%= link_to master_data_block_path(block),
+      <%= link_to confirm_delete_master_data_block_path(block),
                   class: "action-btn danger",
-                  data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{block.block_number}?" },
-                  title: "Delete" do %>
+                  title: "Delete",
+                  data: { turbo_frame: "modal" } do %>
         <i class="bi bi-trash-fill"></i>
       <% end %>
 
+
+
     </div>
   </td>
-
-
 
   <td><%= block.block_number %></td>
 

@@ -15,7 +15,14 @@ module MasterData
 
     def show
       authorize @block, policy_class: MasterData::BlockPolicy
+
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to master_data_blocks_path
+      end
     end
+
 
     def new
       @block = Block.new
@@ -77,27 +84,41 @@ module MasterData
       end
     end
 
-    def destroy
-      authorize @block, policy_class: MasterData::BlockPolicy
+def confirm_delete
+  @block = Block.find_by(id: params[:id])
+  unless @block
+    redirect_to master_data_blocks_path, alert: "Block not found" and return
+  end
 
-      respond_to do |format|
-        if @block.destroy
-          format.turbo_stream do
-            flash.now[:notice] = 'Block was successfully deleted.'
-          end
-          format.html { redirect_to master_data_blocks_url, notice: 'Block was successfully deleted.' }
-        else
-          format.turbo_stream do
-            flash.now[:alert] = "Unable to delete block: #{@block.errors.full_messages.join(', ')}"
-            render :destroy, status: :unprocessable_entity
-          end
-          format.html do
-            redirect_to master_data_blocks_url,
-                        alert: "Unable to delete block: #{@block.errors.full_messages.join(', ')}"
-          end
-        end
+  authorize @block, policy_class: MasterData::BlockPolicy
+
+  # Only render the modal if Turbo frame request
+  if turbo_frame_request?
+    render layout: false
+  else
+    redirect_to master_data_blocks_path
+  end
+end
+
+def destroy
+  authorize @block, policy_class: MasterData::BlockPolicy
+
+  respond_to do |format|
+    if @block.destroy
+      format.turbo_stream # looks for destroy.turbo_stream.erb
+      format.html { redirect_to master_data_blocks_url, notice: 'Block was successfully deleted.' }
+    else
+      format.turbo_stream do
+        flash.now[:alert] = "Unable to delete block: #{@block.errors.full_messages.join(', ')}"
+        render :destroy, status: :unprocessable_entity
+      end
+      format.html do
+        redirect_to master_data_blocks_url,
+                    alert: "Unable to delete block: #{@block.errors.full_messages.join(', ')}"
       end
     end
+  end
+end
 
     private
 

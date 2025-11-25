@@ -77,6 +77,21 @@ module MasterData
       end
     end
 
+    def confirm_delete
+      @vehicle = Vehicle.find_by(id: params[:id])
+      unless @vehicle
+        redirect_to master_data_vehicles_path, alert: "Vehicle not found" and return
+      end
+
+      authorize @vehicle, policy_class: MasterData::VehiclePolicy
+      # Only show the modal
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to master_data_vehicles_path
+      end
+    end
+
     def destroy
       authorize @vehicle, policy_class: MasterData::VehiclePolicy
 

@@ -1,0 +1,18 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title"><strong>Confirm Delete</strong></h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    Are you sure you want to delete Block No. <strong><%= block.block_number %></strong>?
+  </div>
+  <div class="modal-footer">
+    <%= button_to master_data_block_path(block),
+                  method: :delete,
+                  form: { data: { turbo_frame: dom_id(block) } },
+                  class: "btn btn-danger" do %>
+      <i class="bi bi-trash-fill me-1"></i> Delete
+    <% end %>
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+  </div>
+</div>
