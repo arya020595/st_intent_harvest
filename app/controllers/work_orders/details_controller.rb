@@ -36,6 +36,7 @@ module WorkOrders
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
+      @is_field_conductor = current_user.role&.name == 'Field Conductor'
     end
 
     def create
@@ -59,6 +60,7 @@ module WorkOrders
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
+      @is_field_conductor = current_user.role&.name == 'Field Conductor'
     end
 
     def update

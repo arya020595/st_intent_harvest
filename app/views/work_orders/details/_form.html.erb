@@ -4,7 +4,7 @@
     <i class="bi bi-arrow-left me-2"></i> Back to Work Order Details
   <% end %>
 </div>
-<%= form_with(model: [:work_orders, work_order], url: work_order.new_record? ? work_orders_details_path : work_orders_detail_path(work_order), local: true, data: { 
+<%= form_with(model: [:work_orders, work_order], url: work_order.new_record? ? work_orders_details_path : work_orders_detail_path(work_order), local: true, data: {
   controller: "work-order-form",
   work_order_form_inventories_value: Inventory.includes(:category, :unit).all.to_json(include: [:category, :unit]),
   work_order_form_workers_value: @workers.to_json,
@@ -36,17 +36,17 @@
         </div>
         <div class="col-md-6 mb-3">
           <%= form.label :work_order_rate_id, "Work Order", class: "form-label" %>
-          <%= form.collection_select :work_order_rate_id, 
-              WorkOrderRate.includes(:unit).all, 
-              :id, 
-              :work_order_name, 
-              { include_blank: "Select Work Order" }, 
-              { 
-                class: "form-select", 
-                data: { 
+          <%= form.collection_select :work_order_rate_id,
+              WorkOrderRate.includes(:unit).all,
+              :id,
+              :work_order_name,
+              { include_blank: "Select Work Order" },
+              {
+                class: "form-select",
+                data: {
                   action: "change->work-order-form#updateWorkOrderRate",
                   work_order_rates: WorkOrderRate.includes(:unit).all.to_json(include: :unit, methods: :work_order_rate_type).html_safe
-                } 
+                }
               } %>
         </div>
       </div>
@@ -63,22 +63,28 @@
       <div class="row" data-work-order-form-target="normalFieldsSection">
         <div class="col-md-6 mb-3">
           <%= form.label :block_id, "Block No.", class: "form-label" %>
-          <%= form.collection_select :block_id, 
-              Block.all, 
-              :id, 
-              :block_number, 
-              { include_blank: "Select Block No." }, 
+          <%= form.collection_select :block_id,
+              Block.all,
+              :id,
+              :block_number,
+              { include_blank: "Select Block No." },
               { class: "form-select" } %>
         </div>
-        <div class="col-md-6 mb-3">
-          <%= form.label :field_conductor_id, "Field Conductor", class: "form-label" %>
-          <%= form.collection_select :field_conductor_id, 
-              User.joins(:role).where(roles: { name: 'Field Conductor' }), 
-              :id, 
-              :name, 
-              { include_blank: "Select Field Conductor" }, 
-              { class: "form-select" } %>
-        </div>
+        <% if @is_field_conductor %>
+          <!-- Hidden field for auto-filled field conductor -->
+          <%= form.hidden_field :field_conductor_id, value: current_user.id %>
+        <% else %>
+          <!-- Normal select field for non-field conductors -->
+          <div class="col-md-6 mb-3">
+            <%= form.label :field_conductor_id, "Field Conductor", class: "form-label" %>
+            <%= form.collection_select :field_conductor_id,
+                User.joins(:role).where(roles: { name: 'Field Conductor' }),
+                :id,
+                :name,
+                { include_blank: "Select Field Conductor" },
+                { class: "form-select" } %>
+          </div>
+        <% end %>
       </div>
       <div class="row" data-work-order-form-target="normalFieldsSection">
         <div class="col-md-6 mb-3">
