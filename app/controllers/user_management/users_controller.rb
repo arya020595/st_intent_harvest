@@ -4,7 +4,7 @@ module UserManagement
   class UsersController < ApplicationController
     include RansackMultiSort
 
-    before_action :set_user, only: %i[show edit update destroy]
+    before_action :set_user, only: %i[show edit update destroy confirm_delete]
 
     def index
       authorize User, policy_class: UserManagement::UserPolicy
@@ -54,6 +54,18 @@ module UserManagement
         end
       else
         render :edit, status: :unprocessable_entity
+      end
+    end
+
+    def confirm_delete
+
+      authorize @user, policy_class: UserPolicy
+
+      # Only show the modal
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to user_management_users_path
       end
     end
 

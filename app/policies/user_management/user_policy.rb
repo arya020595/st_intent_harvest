@@ -2,6 +2,11 @@
 
 module UserManagement
   class UserPolicy < ApplicationPolicy
+    # Define who can see the delete confirmation
+    def confirm_delete?
+      destroy?
+    end
+
     private
 
     def permission_resource

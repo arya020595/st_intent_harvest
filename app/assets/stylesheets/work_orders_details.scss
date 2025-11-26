@@ -145,3 +145,20 @@
     border-color: #dee2e6;
   }
 }
+
+/* Work Order Form Styles */
+#work_orders_details_form {
+  tr td,
+  tr th {
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 16px;
+    vertical-align: middle;
+  }
+
+  .table thead tr.header-row th,
+  .table thead.table-success th {
+    background-color: #155e1a;
+    color: #ffffff;
+  }
+}

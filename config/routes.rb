@@ -96,7 +96,16 @@ Rails.application.routes.draw do
 
   # User Management Namespace
   namespace :user_management do
-    resources :roles
-    resources :users
+    resources :roles do
+      member do
+        get :confirm_delete
+      end
+    end
+
+    resources :users do
+      member do
+        get :confirm_delete
+      end
+    end
   end
 end

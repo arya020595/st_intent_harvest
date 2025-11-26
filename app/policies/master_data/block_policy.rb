@@ -11,12 +11,6 @@ module MasterData
     # - master_data.blocks.update
     # - master_data.blocks.destroy
 
-    # Define who can delete a block
-    def destroy?
-      # Adjust this to your actual permission logic
-      true
-    end
-
     # Define who can see the delete confirmation
     def confirm_delete?
       destroy?

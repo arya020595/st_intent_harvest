@@ -4,7 +4,7 @@ module UserManagement
   class RolesController < ApplicationController
     include RansackMultiSort
 
-    before_action :set_role, only: %i[show edit update destroy]
+    before_action :set_role, only: %i[show edit update destroy confirm_delete]
 
     def index
       authorize Role, policy_class: UserManagement::RolePolicy
@@ -64,6 +64,17 @@ module UserManagement
           format.html { render :edit, status: :unprocessable_entity }
           format.json { render json: @role.errors, status: :unprocessable_entity }
         end
+      end
+    end
+
+    def confirm_delete
+      authorize @role, policy_class: RolePolicy
+
+      # Only show the modal
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to user_management_roles_path
       end
     end
 
