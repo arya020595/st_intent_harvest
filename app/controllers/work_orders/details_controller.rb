@@ -83,26 +83,11 @@ module WorkOrders
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
 
       if @work_order.destroy
-        respond_to do |format|
-          format.html { redirect_to work_orders_details_path, notice: 'Work order was successfully deleted.' }
-          format.turbo_stream do
-            render turbo_stream: [
-              turbo_stream.remove(helpers.dom_id(@work_order)),
-              turbo_stream.update('flash_messages', partial: 'shared/flash',
-                                                    locals: { flash: { notice: 'Work order was successfully deleted.' } })
-            ]
-          end
-        end
+        notice_message = 'Work order was successfully deleted.'
+        redirect_to work_orders_details_path, notice: notice_message, status: :see_other
       else
-        respond_to do |format|
-          format.html do
-            redirect_to work_orders_detail_path(@work_order), alert: 'There was an error deleting the work order.'
-          end
-          format.turbo_stream do
-            render turbo_stream: turbo_stream.update('flash_messages', partial: 'shared/flash',
-                                                                       locals: { flash: { alert: 'There was an error deleting the work order.' } })
-          end
-        end
+        alert_message = 'There was an error deleting the work order.'
+        redirect_to work_orders_detail_path(@work_order), alert: alert_message, status: :see_other
       end
     end
 
