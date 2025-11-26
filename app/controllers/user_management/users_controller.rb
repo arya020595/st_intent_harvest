@@ -57,6 +57,22 @@ module UserManagement
       end
     end
 
+    def confirm_delete
+      @user = User.find_by(id: params[:id])
+      unless @user
+        redirect_to user_management_users_path, alert: "User not found" and return
+      end
+
+      authorize @user, policy_class: UserPolicy
+
+      # Only show the modal
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to user_management_users_path
+      end
+    end
+
     def destroy
       authorize @user, policy_class: UserManagement::UserPolicy
 

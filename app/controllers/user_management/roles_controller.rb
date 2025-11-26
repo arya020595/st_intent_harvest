@@ -67,6 +67,22 @@ module UserManagement
       end
     end
 
+    def confirm_delete
+      @role = Role.find_by(id: params[:id])
+      unless @role
+        redirect_to user_management_roles_path, alert: "Role not found" and return
+      end
+
+      authorize @role, policy_class: RolePolicy
+
+      # Only show the modal
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to user_management_roles_path
+      end
+    end
+
     def destroy
       authorize @role, policy_class: UserManagement::RolePolicy
 
