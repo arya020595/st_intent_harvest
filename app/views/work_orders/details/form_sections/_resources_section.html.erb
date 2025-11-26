@@ -37,7 +37,7 @@
                   <input type="text" class="form-control form-control-sm" id="resource_category_<%= index %>" value="<%= item.category_name || 'Auto Filled' %>" disabled style="background-color: #e9ecef;">
                 </td>
                 <td>
-                  <input type="text" class="form-control form-control-sm" id="resource_price_<%= index %>" value="<%= item.price ? "RM #{sprintf('%.2f', item.price)}" : 'Auto Filled' %>" disabled style="background-color: #e9ecef;">
+                  <input type="text" class="form-control form-control-sm" id="resource_price_<%= index %>" value="<%= item.price ? number_to_currency(item.price, unit: '', precision: 2) : 'Auto Filled' %>" disabled style="background-color: #e9ecef;">
                 </td>
                 <td>
                   <input type="text" class="form-control form-control-sm" id="resource_unit_<%= index %>" value="<%= item.unit_name || 'Auto Filled' %>" disabled style="background-color: #e9ecef;">
