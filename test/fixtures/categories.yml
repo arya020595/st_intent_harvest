@@ -10,8 +10,22 @@
 #  updated_at    :datetime         not null
 #
 
-one: {}
-# column: value
-#
-two: {}
-# column: value
+material:
+  name: Material
+  category_type: Material
+
+fertilizer:
+  name: Fertilizer
+  category_type: Supply
+
+pesticide:
+  name: Pesticide
+  category_type: Supply
+
+tools:
+  name: Tools
+  category_type: Equipment
+
+equipment:
+  name: Equipment
+  category_type: Equipment

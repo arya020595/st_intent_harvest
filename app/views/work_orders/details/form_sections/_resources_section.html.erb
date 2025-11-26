@@ -1,0 +1,60 @@
+<!-- Resources & Machineries Section -->
+<div class="mb-5" data-work-order-form-target="resourcesSection">
+  <div class="card-header border-bottom pb-2">
+    <div class="fw-bold fs-4" style="color: #155e1a">Resources & Machineries</div>
+  </div>
+  <div class="d-flex justify-content-end mt-3">
+    <button type="button" class="btn btn-success btn-sm p-2 fs-6 fw-bold" style="background-color: #155e1a" data-action="click->work-order-form#addResource">
+      <i class="bi bi-plus-circle-fill text-white me-1"></i> Add Resource
+    </button>
+  </div>
+  <div class="card-body mt-3">
+    <div class="table-responsive">
+      <table class="table table-hover table-sm mb-0">
+        <thead class="table-success">
+          <tr>
+            <th style="width: 25%">Resources Name</th>
+            <th style="width: 20%">Resource Category</th>
+            <th style="width: 15%">Price (RM)</th>
+            <th style="width: 15%">Unit</th>
+            <th style="width: 15%" data-work-order-form-target="amountUsedHeader">Amount Used</th>
+            <th style="width: 10%" class="text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody id="resources-tbody" data-work-order-form-target="resourcesContainer">
+          <% work_order.work_order_items.each_with_index do |item, index| %>
+            <tr data-resource-index="<%= index %>">
+              <td>
+                <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][<%= index %>][inventory_id]" data-action="change->work-order-form#updateResourceDetails" data-resource-index="<%= index %>">
+                  <option value="">Select Resource</option>
+                  <% @inventories.each do |inv| %>
+                    <option value="<%= inv.id %>" data-category="<%= inv.category&.name %>" data-price="<%= inv.price || 0 %>" data-unit="<%= inv.unit&.name %>" <%= 'selected' if inv.id == item.inventory_id %>><%= inv.name %></option>
+                    <% end %>
+                  </select>
+                  <%= hidden_field_tag "work_order[work_order_items_attributes][#{index}][id]", item.id %>
+                </td>
+                <td>
+                  <input type="text" class="form-control form-control-sm" id="resource_category_<%= index %>" value="<%= item.category_name || 'Auto Filled' %>" disabled style="background-color: #e9ecef;">
+                </td>
+                <td>
+                  <input type="text" class="form-control form-control-sm" id="resource_price_<%= index %>" value="<%= item.price ? "RM #{sprintf('%.2f', item.price)}" : 'Auto Filled' %>" disabled style="background-color: #e9ecef;">
+                </td>
+                <td>
+                  <input type="text" class="form-control form-control-sm" id="resource_unit_<%= index %>" value="<%= item.unit_name || 'Auto Filled' %>" disabled style="background-color: #e9ecef;">
+                </td>
+                <td data-work-order-form-target="amountUsedCell">
+                  <input type="number" class="form-control form-control-sm" name="work_order[work_order_items_attributes][<%= index %>][amount_used]" placeholder="0" step="0.01" min="0" value="<%= item.amount_used %>">
+                </td>
+                <input type="hidden" id="resource_destroy_<%= index %>" name="work_order[work_order_items_attributes][<%= index %>][_destroy]" value="0">
+                <td class="text-center">
+                  <button type="button" class="btn btn-danger btn-sm" data-action="click->work-order-form#removeResource" data-resource-index="<%= index %>">
+                    <i class="bi bi-trash me-1"></i>
+                  </button>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
