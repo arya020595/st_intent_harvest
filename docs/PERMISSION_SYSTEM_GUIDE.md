@@ -86,7 +86,7 @@ This permission system implements a **convention-based, self-maintaining authori
 "work_orders.pay_calculations.show" # View pay calculation
 "master_data.blocks.create"         # Create block
 "master_data.vehicles.destroy"      # Delete vehicle
-"admin.users.index"                 # List users
+"user_management.users.index"       # List users
 ```
 
 ### Validation Rules
@@ -153,8 +153,8 @@ user.clear_permission_cache!                    # Clear cache after role change
 # Key Constants:
 SPECIAL_CASES = {
   'dashboard.index' => :root_path,
-  'admin.users.index' => :user_management_users_path,
-  'admin.roles.index' => :user_management_roles_path
+  'user_management.users.index' => :user_management_users_path,
+  'user_management.roles.index' => :user_management_roles_path
 }
 
 PERMISSION_PRIORITY = %w[
@@ -757,7 +757,7 @@ end
 
 ### Issue: Path doesn't match convention
 
-**Example:** Route is `/user_management/users` but permission is `admin.users.index`
+**Example:** Route is `/user_management/users` but permission is `user_management.users.index`
 
 **Solution:** Add to `SPECIAL_CASES`
 
@@ -765,8 +765,8 @@ end
 # app/services/user_redirect_service.rb
 SPECIAL_CASES = {
   'dashboard.index' => :root_path,
-  'admin.users.index' => :user_management_users_path,  # Special mapping
-  'admin.roles.index' => :user_management_roles_path,   # Special mapping
+  'user_management.users.index' => :user_management_users_path,  # Special mapping
+  'user_management.roles.index' => :user_management_roles_path,   # Special mapping
   'projects.index' => :custom_projects_path             # Add your special case
 }.freeze
 ```
