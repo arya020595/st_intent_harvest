@@ -4,7 +4,7 @@ module UserManagement
   class UsersController < ApplicationController
     include RansackMultiSort
 
-    before_action :set_user, only: %i[show edit update destroy]
+    before_action :set_user, only: %i[show edit update destroy confirm_delete]
 
     def index
       authorize User, policy_class: UserManagement::UserPolicy
@@ -58,10 +58,6 @@ module UserManagement
     end
 
     def confirm_delete
-      @user = User.find_by(id: params[:id])
-      unless @user
-        redirect_to user_management_users_path, alert: "User not found" and return
-      end
 
       authorize @user, policy_class: UserPolicy
 

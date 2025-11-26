@@ -4,7 +4,7 @@ module UserManagement
   class RolesController < ApplicationController
     include RansackMultiSort
 
-    before_action :set_role, only: %i[show edit update destroy]
+    before_action :set_role, only: %i[show edit update destroy confirm_delete]
 
     def index
       authorize Role, policy_class: UserManagement::RolePolicy
@@ -68,11 +68,6 @@ module UserManagement
     end
 
     def confirm_delete
-      @role = Role.find_by(id: params[:id])
-      unless @role
-        redirect_to user_management_roles_path, alert: "Role not found" and return
-      end
-
       authorize @role, policy_class: RolePolicy
 
       # Only show the modal
