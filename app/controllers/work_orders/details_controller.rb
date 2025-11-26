@@ -5,7 +5,7 @@ module WorkOrders
     include RansackMultiSort
     include ResponseHandling
 
-    before_action :set_work_order, only: %i[show edit update destroy mark_complete]
+    before_action :set_work_order, only: %i[show edit update destroy mark_complete confirm_delete]
 
     def index
       authorize WorkOrder, policy_class: WorkOrders::DetailPolicy
@@ -83,9 +83,26 @@ module WorkOrders
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
 
       if @work_order.destroy
-        redirect_to work_orders_details_path, notice: 'Work order was successfully deleted.'
+        respond_to do |format|
+          format.html { redirect_to work_orders_details_path, notice: 'Work order was successfully deleted.' }
+          format.turbo_stream do
+            render turbo_stream: [
+              turbo_stream.remove(helpers.dom_id(@work_order)),
+              turbo_stream.update('flash_messages', partial: 'shared/flash',
+                                                    locals: { flash: { notice: 'Work order was successfully deleted.' } })
+            ]
+          end
+        end
       else
-        redirect_to work_orders_detail_path(@work_order), alert: 'There was an error deleting the work order.'
+        respond_to do |format|
+          format.html do
+            redirect_to work_orders_detail_path(@work_order), alert: 'There was an error deleting the work order.'
+          end
+          format.turbo_stream do
+            render turbo_stream: turbo_stream.update('flash_messages', partial: 'shared/flash',
+                                                                       locals: { flash: { alert: 'There was an error deleting the work order.' } })
+          end
+        end
       end
     end
 
@@ -100,6 +117,11 @@ module WorkOrders
         success_path: work_orders_detail_path(@work_order),
         error_path: work_orders_detail_path(@work_order)
       )
+    end
+
+    def confirm_delete
+      authorize @work_order, policy_class: WorkOrders::DetailPolicy
+      # Render the confirmation modal
     end
 
     private
