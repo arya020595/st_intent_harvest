@@ -1,6 +1,6 @@
 <!-- Worker Details Section -->
 <div class="mb-5 mt-5" data-work-order-form-target="workersSection">
-  <div class="card-header bg-white border-bottom pb-2">
+  <div class="card-header border-bottom pb-2">
     <div class="fw-bold fs-4" style="color: #155e1a">Worker Details</div>
   </div>
   <div class="d-flex justify-content-end mt-3">
@@ -37,11 +37,11 @@
                   <input type="number" class="form-control form-control-sm" id="worker_quantity_<%= index %>" name="work_order[work_order_workers_attributes][<%= index %>][work_area_size]" placeholder="0" step="0.01" min="0" value="<%= wow.work_area_size %>" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="<%= index %>">
                 </td>
                 <td>
-                  <input type="text" class="form-control form-control-sm" id="worker_rate_<%= index %>" value="<%= wow.rate ? "RM #{sprintf('%.2f', wow.rate)}" : 'Auto Calculate' %>" disabled style="background-color: #e9ecef;">
+                  <input type="text" class="form-control form-control-sm" id="worker_rate_<%= index %>" value="<%= wow.rate ? number_to_currency(wow.rate, unit: '', precision: 2) : 'Auto Calculate' %>" disabled style="background-color: #e9ecef;">
                   <input type="hidden" id="worker_rate_value_<%= index %>" name="work_order[work_order_workers_attributes][<%= index %>][rate]" value="<%= wow.rate || 0 %>">
                 </td>
                 <td>
-                  <input type="text" class="form-control form-control-sm" id="worker_amount_<%= index %>" value="<%= wow.amount ? "RM #{sprintf('%.2f', wow.amount)}" : 'Auto Calculate' %>" disabled style="background-color: #e9ecef;">
+                  <input type="text" class="form-control form-control-sm" id="worker_amount_<%= index %>" value="<%= wow.amount ? number_to_currency(wow.amount, unit: '', precision: 2) : 'Auto Calculate' %>" disabled style="background-color: #e9ecef;">
                   <input type="hidden" id="worker_amount_value_<%= index %>" name="work_order[work_order_workers_attributes][<%= index %>][amount]" value="<%= wow.amount || 0 %>">
                 </td>
                 <td>
