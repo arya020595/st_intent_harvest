@@ -15,7 +15,20 @@
             </tr>
             <tr>
               <th>
-                <%= f.date_field :work_order_created_at_eq, class: 'form-control form-control-sm', placeholder: 'Select Date' %>
+                <div class="input-group input-group-sm">
+                  <input type="text"
+                         class="form-control form-control-sm cursor-pointer"
+                         placeholder="Select Date Range"
+                         data-controller="flatpickr"
+                         data-flatpickr-mode-value="range"
+                         data-flatpickr-date-format-value="d-m-Y"
+                         data-flatpickr-field-name-value="q[work_order_created_at]">
+                  <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
+                    <i class="bi bi-calendar-range"></i>
+                  </span>
+                </div>
+                <%= f.hidden_field :work_order_created_at_gteq, value: params.dig(:q, :work_order_created_at_gteq) %>
+                <%= f.hidden_field :work_order_created_at_lteq, value: params.dig(:q, :work_order_created_at_lteq) %>
               </th>
               <th>
                 <%= f.number_field :work_order_id_eq, class: 'form-control form-control-sm', placeholder: 'Search Work Order...', min: 1 %>
