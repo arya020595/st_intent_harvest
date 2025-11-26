@@ -40,13 +40,13 @@ class ApplicationPolicy
 
   # Build full permission code from action
   # @param action [String] The action (e.g., 'index', 'show', 'create', 'update', 'destroy')
-  # @return [String] Full permission code (e.g., 'admin.users.index')
+  # @return [String] Full permission code (e.g., 'user_management.users.index')
   def build_permission_code(action)
     "#{permission_resource}.#{action}"
   end
 
   # Override this method in subclasses to map to correct permission resource
-  # @return [String] Format: "namespace.resource" (e.g., "admin.users", "workorders.orders")
+  # @return [String] Format: "namespace.resource" (e.g., "user_management.users", "work_orders.details")
   def permission_resource
     raise NotImplementedError, "#{self.class.name} must implement #permission_resource"
   end
