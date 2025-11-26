@@ -1,5 +1,5 @@
-<nav aria-label="breadcrumb" class="mb-3 text-white p-3 rounded fs-5" style="background-color: #155e1a;">
-  <ol class="breadcrumb mb-0 fw-bold " style="background: none; padding-left: 0;">
+<nav aria-label="breadcrumb" class="mb-3 text-white p-3 rounded fs-5">
+  <ol class="breadcrumb mb-0 fw-bold">
     <% breadcrumbs.each_with_index do |(text, url), index| %>
       <% if index == breadcrumbs.length - 1 %>
         <li class="breadcrumb-item breadcrumb-last text-white" aria-current="page"><%= text %></li>
@@ -10,14 +10,4 @@
       <% end %>
     <% end %>
   </ol>
-  <style>
-    .breadcrumb-item + .breadcrumb-item::before {
-      content: "-" !important;
-      color: #ffffff !important;
-    }
-    .breadcrumb-item + .breadcrumb-last::before {
-      content: ">" !important;
-      color: #ffffff !important;
-    }
-  </style>
 </nav>

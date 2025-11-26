@@ -1,0 +1,15 @@
+// Breadcrumb Styling
+
+nav[aria-label="breadcrumb"] {
+  .breadcrumb-item + .breadcrumb-item::before {
+    content: "-" !important;
+    color: #ffffff !important;
+  }
+
+  .breadcrumb-item + .breadcrumb-last::before {
+    content: ">" !important;
+    color: #ffffff !important;
+  }
+
+  background-color: #155e1a;
+}
