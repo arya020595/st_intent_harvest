@@ -12,7 +12,7 @@ namespace.resource.action
 
 **Examples:**
 
-- `admin.users.index` - List users in admin panel
+- `user_management.users.index` - List users in user management
 - `workorders.orders.create` - Create work orders
 - `hr.employees.destroy` - Delete employees
 
@@ -126,18 +126,18 @@ end
 
 Map your models/controllers to appropriate namespaces:
 
-| Model/Controller | Namespace    | Resource           | Full Code                 |
-| ---------------- | ------------ | ------------------ | ------------------------- |
-| `User`           | `admin`      | `users`            | `admin.users.index`       |
-| `Role`           | `admin`      | `roles`            | `admin.roles.index`       |
-| `Worker`         | `hr`         | `employees`        | `hr.employees.index`      |
-| `Inventory`      | `inventory`  | `items`            | `inventory.items.index`   |
-| `WorkOrder`      | `workorders` | `orders`           | `workorders.orders.index` |
-| `PayCalculation` | `hr`         | `payroll`          | `hr.payroll.index`        |
-| `Vehicle`        | `inventory`  | `items` or `admin` | `inventory.items.index`   |
-| `Block`          | `admin`      | `blocks`           | `admin.blocks.index`      |
-| `Category`       | `admin`      | `categories`       | `admin.categories.index`  |
-| `Unit`           | `admin`      | `units`            | `admin.units.index`       |
+| Model/Controller | Namespace         | Resource           | Full Code                     |
+| ---------------- | ----------------- | ------------------ | ----------------------------- |
+| `User`           | `user_management` | `users`            | `user_management.users.index` |
+| `Role`           | `user_management` | `roles`            | `user_management.roles.index` |
+| `Worker`         | `hr`              | `employees`        | `hr.employees.index`          |
+| `Inventory`      | `inventory`       | `items`            | `inventory.items.index`       |
+| `WorkOrder`      | `workorders`      | `orders`           | `workorders.orders.index`     |
+| `PayCalculation` | `hr`              | `payroll`          | `hr.payroll.index`            |
+| `Vehicle`        | `inventory`       | `items` or `admin` | `inventory.items.index`       |
+| `Block`          | `admin`           | `blocks`           | `admin.blocks.index`          |
+| `Category`       | `admin`           | `categories`       | `admin.categories.index`      |
+| `Unit`           | `admin`           | `units`            | `admin.units.index`           |
 
 ## View Usage
 
@@ -145,8 +145,8 @@ In your views, use the permission code directly:
 
 ```erb
 <%# Check if user can create users %>
-<% if current_user.has_permission?("admin.users.create") %>
-  <%= link_to "New User", new_admin_user_path, class: "btn btn-primary" %>
+<% if current_user.has_permission?("user_management.users.create") %>
+  <%= link_to "New User", new_user_management_user_path, class: "btn btn-primary" %>
 <% end %>
 
 <%# Check if user can export reports %>
@@ -190,7 +190,7 @@ Update `db/seeds/permissions.rb` when adding new resources:
 
 ```ruby
 resources = {
-  "admin.users" => %w[index show create update destroy],
+  "user_management.users" => %w[index show create update destroy],
   "workorders.orders" => %w[index show create update destroy complete approve],
   # Add your new resources here
 }
@@ -244,7 +244,7 @@ class Scope < ApplicationPolicy::Scope
   private
 
   def permission_resource
-    'admin.users'
+    'user_management.users'
   end
 end
 ```
@@ -253,7 +253,7 @@ end
 
 ### NotImplementedError: must implement #permission_resource
 
-**Problem:** Policy doesn't define `permission_resource`  
+**Problem:** Policy doesn't define `permission_resource`
 **Solution:** Add the method to both policy and scope:
 
 ```ruby
@@ -266,7 +266,7 @@ end
 
 ### Permission always returns false
 
-**Problem:** Permission code not in database or not assigned to role  
+**Problem:** Permission code not in database or not assigned to role
 **Solutions:**
 
 1. Check permission exists: `Permission.find_by(code: 'namespace.resource.action')`
@@ -276,7 +276,7 @@ end
 
 ### Policy not using correct resource
 
-**Problem:** Using wrong namespace or resource name  
+**Problem:** Using wrong namespace or resource name
 **Solution:** Check mapping table above and update `permission_resource` method
 
 ## Best Practices
@@ -300,5 +300,5 @@ See these files for complete examples:
 
 ---
 
-**Last Updated:** November 20, 2025  
+**Last Updated:** November 20, 2025
 **System Version:** Permission Refactoring v2.0

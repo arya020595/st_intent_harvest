@@ -15,7 +15,7 @@ module ApplicationHelper
   end
 
   # Check if user has permission to view a menu item
-  # @param permission_code [String] Full permission code (e.g., 'admin.users.index')
+  # @param permission_code [String] Full permission code (e.g., 'user_management.users.index')
   def can_view_menu?(permission_code)
     return true unless current_user # Show to guests (will be caught by authentication)
 

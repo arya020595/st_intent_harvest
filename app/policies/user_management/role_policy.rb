@@ -6,17 +6,18 @@ module UserManagement
     def confirm_delete?
       destroy?
     end
+
     private
 
     def permission_resource
-      'admin.roles'
+      'user_management.roles'
     end
 
     class Scope < ApplicationPolicy::Scope
       private
 
       def permission_resource
-        'admin.roles'
+        'user_management.roles'
       end
     end
   end
