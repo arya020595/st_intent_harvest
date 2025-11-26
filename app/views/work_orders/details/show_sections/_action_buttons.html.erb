@@ -11,7 +11,7 @@
     <% end %>
   <% end %>
   <% if work_order_policy.mark_complete? %>
-    <%= link_to mark_complete_work_orders_detail_path(work_order), method: :patch, data: { turbo_method: :patch }, class: "btn btn fw-bold fs-6 text-white", style: "background-color: #151B54" do %>
+    <%= link_to mark_complete_work_orders_detail_path(work_order), method: :patch, data: { turbo_method: :patch }, class: "btn fw-bold fs-6 text-white", style: "background-color: #151B54" do %>
       <i class="bi bi-check-circle me-1 text-white"></i> Work Order Complete
     <% end %>
   <% end %>
