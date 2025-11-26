@@ -354,7 +354,7 @@ export default class extends Controller {
         <input type="hidden" id="resource_destroy_${index}" name="work_order[work_order_items_attributes][${index}][_destroy]" value="0">
         <td class="text-center">
           <button type="button" class="btn btn-danger btn-sm" data-action="click->work-order-form#removeResource" data-resource-index="${index}">
-            <i class="bi bi-trash"></i>
+            <i class="bi bi-trash text-white"></i>
           </button>
         </td>
       </tr>
@@ -453,7 +453,7 @@ export default class extends Controller {
         <input type="hidden" id="worker_destroy_${index}" name="work_order[work_order_workers_attributes][${index}][_destroy]" value="0">
         <td class="text-center">
           <button type="button" class="btn btn-danger btn-sm" data-action="click->work-order-form#removeWorker" data-worker-index="${index}">
-            <i class="bi bi-trash"></i>
+            <i class="bi bi-trash text-white"></i>
           </button>
         </td>
       </tr>
