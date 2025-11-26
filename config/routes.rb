@@ -29,6 +29,7 @@ Rails.application.routes.draw do
     resources :details do
       member do
         patch :mark_complete
+        get :confirm_delete
       end
     end
     resources :approvals, only: %i[index show update] do

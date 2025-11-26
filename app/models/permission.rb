@@ -40,11 +40,12 @@ end
 # Table name: permissions
 #
 #  id         :integer          not null, primary key
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
 #  code       :string           not null
 #  name       :string           not null
 #  resource   :string           not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  section    :string
 #
 # Indexes
 #
