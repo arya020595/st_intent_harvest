@@ -1,44 +1,53 @@
 <div id="flash_messages">
   <%= render "shared/flash" %>
 </div>
-<div class="container-fluid px-4 py-4 users-list" data-controller="multi-sort">
+<div  id="users" class="container-fluid px-4 py-4 users-list" data-controller="multi-sort">
   <div class="card shadow-sm">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Users Management</h5>
-      <%= link_to new_user_management_user_path, data: { turbo_frame: "modal" }, class: "btn btn-light btn-sm" do %>
-        <i class="bi bi-plus-circle"></i> Add User
+    <div class="users_page">
+      <h1 class="mb-0">User Management - Users</h1>
+
+      <div class="d-flex justify-content-end">
+      <%= link_to new_user_management_user_path, class: "add-button btn btn-primary btn-sm",  data: { turbo_frame: 'modal' } do %>
+        <i class="bi bi-plus-circle-fill text-white me-1"></i>Add User
       <% end %>
-    </div>
+      </div>
+
     <div class="card-body">
       <%= search_form_for @q, url: user_management_users_path, html: { id: 'user-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
-            <thead class="table-primary">
-              <tr>
+            <thead class="header-row">
+              <tr class="header-row">
+                <th></th>
                 <th class="text-center">
                   <%= sort_link(@q, :id, 'ID') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :name, 'Name') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :email, 'Email') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :role_id, 'Role') %>
                 </th>
                 <th class="text-center">
                   <%= sort_link(@q, :is_active, 'Status') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :created_at, 'Created At') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :updated_at, 'Updated At') %>
                 </th>
-                <th class="text-center">Actions</th>
               </tr>
               <tr>
+              <th class="text-center">
+                  <div class="d-flex gap-1 justify-content-center">
+                    <%= button_tag 'Search', type: "submit", class: 'btn filter-btn' %>
+                    <%= link_to 'Reset', user_management_roles_path, class: 'btn reset-btn', style: 'font-weight: normal;' %>
+                  </div>
+                </th>
                 <th class="text-center">
                   <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1 %>
                 </th>
@@ -62,8 +71,8 @@
                 </th>
                 <th>
                   <div class="input-group input-group-sm">
-                    <input type="text" 
-                           class="form-control form-control-sm cursor-pointer" 
+                    <input type="text"
+                           class="form-control form-control-sm cursor-pointer"
                            placeholder="Select Date Range"
                            data-controller="flatpickr"
                            data-flatpickr-mode-value="range"
@@ -79,8 +88,8 @@
                 </th>
                 <th>
                   <div class="input-group input-group-sm">
-                    <input type="text" 
-                           class="form-control form-control-sm cursor-pointer" 
+                    <input type="text"
+                           class="form-control form-control-sm cursor-pointer"
                            placeholder="Select Date Range"
                            data-controller="flatpickr"
                            data-flatpickr-mode-value="range"
@@ -94,12 +103,7 @@
                   <%= f.hidden_field :updated_at_gteq, value: params.dig(:q, :updated_at_gteq) %>
                   <%= f.hidden_field :updated_at_lteq, value: params.dig(:q, :updated_at_lteq) %>
                 </th>
-                <th class="text-center">
-                  <div class="d-flex gap-1 justify-content-center">
-                    <%= f.submit 'Search', class: 'btn btn-primary btn-sm' %>
-                    <%= link_to 'Reset', user_management_users_path, class: 'btn btn-secondary btn-sm' %>
-                  </div>
-                </th>
+
               </tr>
             </thead>
             <tbody id="users-table-body">

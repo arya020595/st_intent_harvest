@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_22_200000) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_26_021452) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -118,6 +118,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_22_200000) do
     t.datetime "created_at", null: false
     t.string "name", null: false
     t.string "resource", null: false
+    t.string "section"
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_permissions_on_code", unique: true
     t.index ["resource"], name: "index_permissions_on_resource"
