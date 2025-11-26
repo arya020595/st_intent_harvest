@@ -4,13 +4,13 @@
     <div class="fw-bold fs-4" style="color: #155e1a">Resources & Machineries</div>
   </div>
   <div class="d-flex justify-content-end mt-3">
-    <button type="button" class="btn btn-success btn-sm p-2 fs-6 fw-bold" data-action="click->work-order-form#addResource">
+    <button type="button" class="btn btn-success btn-sm p-2 fs-6 fw-bold" style="background-color: #155e1a" data-action="click->work-order-form#addResource">
       <i class="bi bi-plus-circle-fill text-white me-1"></i> Add Resource
     </button>
   </div>
   <div class="card-body mt-3">
     <div class="table-responsive">
-      <table class="table table-bordered mb-0">
+      <table class="table table-hover table-sm mb-0">
         <thead class="table-success">
           <tr>
             <th style="width: 25%">Resources Name</th>
@@ -48,7 +48,7 @@
                 <input type="hidden" id="resource_destroy_<%= index %>" name="work_order[work_order_items_attributes][<%= index %>][_destroy]" value="0">
                 <td class="text-center">
                   <button type="button" class="btn btn-danger btn-sm" data-action="click->work-order-form#removeResource" data-resource-index="<%= index %>">
-                    <i class="bi bi-trash"></i>
+                    <i class="bi bi-trash me-1"></i>
                   </button>
                 </td>
               </tr>

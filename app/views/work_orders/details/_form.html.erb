@@ -1,4 +1,4 @@
-<%= form_with(model: [:work_orders, work_order], url: work_order.new_record? ? work_orders_details_path : work_orders_detail_path(work_order), local: true, data: {
+<%= form_with(model: [:work_orders, work_order], url: work_order.new_record? ? work_orders_details_path : work_orders_detail_path(work_order), local: true, html: { id: 'work_orders_details_form' }, data: {
   controller: "work-order-form",
   work_order_form_inventories_value: Inventory.includes(:category, :unit).all.to_json(include: [:category, :unit]),
   work_order_form_workers_value: @workers.to_json,
