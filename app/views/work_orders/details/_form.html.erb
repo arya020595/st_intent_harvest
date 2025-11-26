@@ -1,9 +1,3 @@
-<!-- Back to Work Order Details Link -->
-<div class="mb-3">
-  <%= link_to work_orders_details_path, class: "text-decoration-none text-success d-inline-flex align-items-center" do %>
-    <i class="bi bi-arrow-left me-2"></i> Back to Work Order Details
-  <% end %>
-</div>
 <%= form_with(model: [:work_orders, work_order], url: work_order.new_record? ? work_orders_details_path : work_orders_detail_path(work_order), local: true, data: {
   controller: "work-order-form",
   work_order_form_inventories_value: Inventory.includes(:category, :unit).all.to_json(include: [:category, :unit]),
