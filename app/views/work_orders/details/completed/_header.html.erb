@@ -7,13 +7,16 @@
     <p class="mb-0 text-center">Distribution of Piece Rated Work</p>
   </div>
   <div class="text-end">
-    <% badge_class = case work_order.work_order_status
-      when 'ongoing' then 'bg-info'
-      when 'pending' then 'bg-warning'
-      when 'amendment_required' then 'bg-danger'
-      when 'completed' then 'bg-success'
-      else 'bg-secondary'
-    end %>
-    <span class="badge <%= badge_class %>"><%= work_order.work_order_status&.humanize %></span>
+    <div class="fw-bold fs-5 d-flex align-items-center justify-content-center">
+      <span class="me-2">Status</span>
+      <% badge_class = case work_order.work_order_status
+                      when 'ongoing' then 'bg-info'
+                      when 'pending' then 'bg-warning'
+                      when 'amendment_required' then 'bg-danger'
+                      when 'completed' then 'bg-success'
+                      else 'bg-secondary'
+                    end %>
+      <span class="badge rounded-pill <%= badge_class %>"><%= work_order.work_order_status&.humanize %></span>
+    </div>
   </div>
 </div>

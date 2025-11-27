@@ -15,11 +15,12 @@
 <% if work_order.work_order_status == 'amendment_required' %>
   <% if amendment_history&.remarks.present? %>
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-      <h5 class="alert-heading">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>This Work Order Must Be Amended!
-      </h5>
+      <div class="alert-heading fs-5 fw-bold">
+        <i class="bi bi-info-circle me-3 fs-5 fw-bold"></i>
+        <span class="text-dark">This Work Order Must Be Amended!</span>
+      </div>
       <hr>
-      <p class="mb-0"><strong>Remarks:</strong></p>
+      <p class="mb-3"><strong>Remarks:</strong></p>
       <p class="mb-0"><%= amendment_history.remarks %></p>
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
