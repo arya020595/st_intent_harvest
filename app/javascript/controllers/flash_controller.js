@@ -15,13 +15,17 @@ export default class extends Controller {
   }
 
   dismiss() {
-    // Find Bootstrap Alert instance if available, otherwise just remove element
-    const bsAlert = window.bootstrap?.Alert?.getInstance(this.element);
-    if (bsAlert) {
-      bsAlert.close();
-    } else {
-      this.element.remove();
+    // Use Bootstrap Alert for graceful fade-out when available
+    const Alert = window.bootstrap?.Alert;
+    if (Alert) {
+      const instance =
+        Alert.getInstance?.(this.element) || new Alert(this.element);
+      instance.close();
+      return;
     }
+
+    // Fallback: remove element immediately
+    this.element.remove();
   }
 
   disconnect() {

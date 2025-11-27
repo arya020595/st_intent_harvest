@@ -1,13 +1,10 @@
-<div id="flash_messages">
-  <%= render "shared/flash" %>
-</div>
+<div id="url-manager"></div>
 <div id="worker_profile" class="container-fluid px-4 py-4 workers-profile" data-controller="multi-sort">
   <div class="card shadow-sm">
     <div class="worker_profile_page">
       <h1 class="mb-0">Workers Profile</h1>
-
       <div class="d-flex justify-content-end">
-        <%= link_to new_worker_path, class: "add-button btn btn-primary btn-sm",  data: { turbo_frame: 'modal', modal_size: "modal-lg" } do %>
+        <%= link_to new_worker_path, class: "add-button btn btn-primary btn-sm", **modal_link_data(size: 'modal-lg') do %>
           <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Worker
         <% end %>
       </div>
@@ -34,10 +31,9 @@
                 <th class="text-center">
                   <%= sort_link(@q, :hired_date, 'Hired Date') %>
                 </th>
-
               </tr>
               <tr>
-               <th class="text-center">
+                <th class="text-center">
                   <div class="filter-buttons">
                     <%= button_tag 'Search', class: 'btn filter-btn' %>
                     <%= link_to 'Reset', workers_path, class: 'btn reset-btn', style: 'font-weight: normal;' %>
@@ -71,13 +67,12 @@
                            data-flatpickr-date-format-value="d-m-Y"
                            data-flatpickr-field-name-value="q[hired_date]">
                     <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
-                      <i class="bi bi-calendar-range"></i>
+                      <i data-action="click->flatpickr#open" class="bi bi-calendar-range"></i>
                     </span>
                   </div>
                   <%= f.hidden_field :hired_date_gteq, value: params.dig(:q, :hired_date_gteq) %>
                   <%= f.hidden_field :hired_date_lteq, value: params.dig(:q, :hired_date_lteq) %>
                 </th>
-
               </tr>
             </thead>
             <tbody id="workers-table-body">
@@ -86,7 +81,7 @@
               <% else %>
                 <tr>
                   <td colspan="6" class="text-center text-muted py-4">
-                    No workers found. <%= link_to 'Add a new worker', new_worker_path, data: { turbo_frame: "modal" }, class: 'text-decoration-none' %>
+                    No workers found. <%= link_to 'Add a new worker', new_worker_path, **modal_link_data(size: 'modal-lg'), class: 'text-decoration-none' %>
                   </td>
                 </tr>
               <% end %>

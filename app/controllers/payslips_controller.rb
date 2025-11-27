@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PayslipsController < ApplicationController
   before_action :set_workers, only: %i[index]
   before_action :set_worker_and_date_params, only: %i[show]
@@ -20,9 +22,8 @@ class PayslipsController < ApplicationController
   # GET /payslips/:id
   def show
     data_result = PayslipServices::FetchPayslipDataService.new(worker: @worker, month_year: @month_year).call
-    if data_result.failure?
-      render_no_payslip_error and return
-    end
+
+    render_no_payslip_error and return if data_result.failure?
 
     data = data_result.value!
     @payslip         = data[:payslip]

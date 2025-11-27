@@ -1,18 +1,15 @@
-<div id="flash_messages">
-  <%= render "shared/flash" %>
-</div>
+<div id="url-manager"></div>
 <div id="block_no" class="container-fluid px-4 py-4 block-list" data-controller="multi-sort">
-<div class="card shadow-sm">
-  <div class="block_no_page">
-  <h1>Master Data - Block No.</h1>
+  <div class="card shadow-sm">
+    <div class="block_no_page">
+      <h1>Master Data - Block No.</h1>
       <div class="d-flex justify-content-end">
         <%= link_to new_master_data_block_path,
                     class: "add-button btn btn-primary btn-sm",
-                    data: { turbo_frame: 'modal' } do %>
+                    **modal_link_data do %>
           <i class="bi bi-plus-circle-fill text-white me-1"></i> Add Block
         <% end %>
       </div>
-
       <div class="card-body">
         <%= search_form_for @q, url: master_data_blocks_path, html: { id: 'block-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
           <div class="table-responsive">
@@ -56,7 +53,7 @@
                 <% else %>
                   <tr>
                     <td colspan="6" class="text-center text-muted py-4">
-                      No blocks found. <%= link_to 'Add a new block', new_master_data_block_path, class: 'text-decoration-none', data: { turbo_frame: 'modal' } %>
+                      No blocks found. <%= link_to 'Add a new block', new_master_data_block_path, class: 'text-decoration-none', **modal_link_data %>
                     </td>
                   </tr>
                 <% end %>
@@ -76,8 +73,8 @@
             <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
           </div>
         </div>
-        </div>
       </div>
     </div>
+  </div>
 </div>
 <%= render "modal" %>

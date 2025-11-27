@@ -8,34 +8,27 @@
             title: "View Details" do %>
           <i class="bi bi-info-circle-fill"></i>
         <% end %>
-      <% else %>
-        <!-- Invisible placeholder to maintain spacing -->
-        <span class="action-btn" style="visibility: hidden;">
-          <i class="bi bi-info-circle-fill"></i>
-        </span>
       <% end %>
       <% if work_order_policy.edit? %>
         <%= link_to edit_work_orders_detail_path(work_order),
-            class: "action-btn warning",
-            title: "Edit" do %>
+              class: "action-btn warning",
+              title: "Edit" do %>
           <i class="bi bi-pencil-fill"></i>
         <% end %>
       <% else %>
-        <!-- Invisible placeholder to maintain spacing -->
-        <span class="action-btn" style="visibility: hidden;">
+        <span class="action-btn warning disabled opacity-50" aria-disabled="true" title="Edit unavailable for Pending/Completed">
           <i class="bi bi-pencil-fill"></i>
         </span>
       <% end %>
       <% if work_order_policy.destroy? %>
         <%= link_to confirm_delete_work_orders_detail_path(work_order),
-              class: "action-btn danger",
-              title: "Delete",
-              data: { turbo_frame: "modal" } do %>
+                class: "action-btn danger",
+                title: "Delete",
+                **modal_link_data(size: "modal-md") do %>
           <i class="bi bi-trash-fill"></i>
         <% end %>
       <% else %>
-        <!-- Invisible placeholder to maintain spacing -->
-        <span class="action-btn" style="visibility: hidden;">
+        <span class="action-btn danger disabled opacity-50" aria-disabled="true" title="Delete unavailable for Pending/Completed">
           <i class="bi bi-trash-fill"></i>
         </span>
       <% end %>

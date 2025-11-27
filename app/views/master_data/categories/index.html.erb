@@ -1,12 +1,10 @@
-<div id="flash_messages">
-  <%= render "shared/flash" %>
-</div>
+<div id="url-manager"></div>
 <div id="categories" class="container-fluid px-4 py-4 categories-list" data-controller="multi-sort">
   <div class="card shadow-sm">
     <div class="categories_page">
       <h1 class="mb-0">Master Data - Categories</h1>
       <div class="d-flex justify-content-end">
-        <%= link_to new_master_data_category_path, class: "add-button btn btn-primary btn-sm",  data: { turbo_frame: 'modal' } do %>
+        <%= link_to new_master_data_category_path, class: "add-button btn btn-primary btn-sm", **modal_link_data do %>
           <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Category
         <% end %>
       </div>
@@ -59,7 +57,7 @@
                 <% else %>
                   <tr>
                     <td colspan="7" class="text-center text-muted py-4">
-                      No categories found. <%= link_to 'Add a new category', new_master_data_category_path, class: 'text-decoration-none', data: { turbo_frame: 'modal' } %>
+                      No categories found. <%= link_to 'Add a new category', new_master_data_category_path, class: 'text-decoration-none', **modal_link_data %>
                     </td>
                   </tr>
                 <% end %>

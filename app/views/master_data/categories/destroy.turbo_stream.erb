@@ -1,2 +1,7 @@
+<%# Best Practice: Turbo Stream + Stimulus Controller Pattern %>
 <%= turbo_stream.remove dom_id(@category) %>
+<%= turbo_stream.update "modal", "" %>
 <%= turbo_stream.update "flash_messages", partial: "shared/flash" %>
+<%= turbo_stream.update "url-manager",
+    partial: "shared/url_updater",
+    locals: { url: master_data_categories_path } %>

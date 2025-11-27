@@ -1,25 +1,23 @@
 <tr id="<%= dom_id(work_order_rate) %>">
-<td class="text-center">
-  <div class="action-buttons">
-  <%= link_to master_data_work_order_rate_path(work_order_rate),
+  <td class="text-center">
+    <div class="action-buttons">
+      <%= link_to master_data_work_order_rate_path(work_order_rate),
             class: "action-btn info",
             title: "View Details",
-            data: { turbo_frame: "modal" } do %>
+            **modal_link_data do %>
         <i class="bi bi-info-circle-fill"></i>
       <% end %>
-
-    <%= link_to edit_master_data_work_order_rate_path(work_order_rate), class: "action-btn warning", title: "Edit", data: { turbo_frame: 'modal' } do %>
-      <i class="bi bi-pencil-fill"></i>
-    <% end %>
-
-    <%= link_to confirm_delete_master_data_work_order_rate_path(work_order_rate),
+      <%= link_to edit_master_data_work_order_rate_path(work_order_rate), class: "action-btn warning", title: "Edit", **modal_link_data do %>
+        <i class="bi bi-pencil-fill"></i>
+      <% end %>
+      <%= link_to confirm_delete_master_data_work_order_rate_path(work_order_rate),
                   class: "action-btn danger",
                   title: "Delete",
-                  data: { turbo_frame: "modal" } do %>
+                  **modal_link_data(size: "modal-md") do %>
         <i class="bi bi-trash-fill"></i>
-    <% end %>
-  </div>
-</td>
+      <% end %>
+    </div>
+  </td>
   <td><%= work_order_rate.work_order_name %></td>
   <td class="text-center">
     <%= number_to_currency(work_order_rate.rate, unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %>
