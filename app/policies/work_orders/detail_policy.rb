@@ -26,7 +26,7 @@ module WorkOrders
     end
 
     def destroy?
-      user.has_permission?(build_permission_code('destroy')) && !completed?
+      user.has_permission?(build_permission_code('destroy')) && !destroyable?
     end
 
     def confirm_delete?
@@ -43,8 +43,8 @@ module WorkOrders
       record.work_order_status.in?(%w[ongoing amendment_required])
     end
 
-    def completed?
-      record.work_order_status == 'completed'
+    def destroyable?
+      record.work_order_status.in?(%w[pending completed])
     end
 
     class Scope < ApplicationPolicy::Scope
