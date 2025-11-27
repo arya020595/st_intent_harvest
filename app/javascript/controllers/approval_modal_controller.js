@@ -7,6 +7,8 @@ export default class extends Controller {
     "submitField",
     "buttonGroup",
     "approvalRemarks",
+    "errorMessage",
+    "errorText",
   ];
   static values = {
     workOrderId: String,
@@ -35,6 +37,7 @@ export default class extends Controller {
     this.hideElement(this.submitFieldTarget);
     this.showElement(this.buttonGroupTarget);
     this.approvalRemarksTarget.value = "";
+    this.hideError();
   }
 
   selectAmendment(event) {
@@ -109,9 +112,12 @@ export default class extends Controller {
 
   validateRemarks(remarks) {
     if (!remarks) {
-      this.showError("Please provide remarks for the amendment request");
+      this.showInlineError("Please provide remarks for the amendment request");
+      this.approvalRemarksTarget.classList.add("is-invalid");
       return false;
     }
+    this.hideError();
+    this.approvalRemarksTarget.classList.remove("is-invalid");
     return true;
   }
 
@@ -183,8 +189,22 @@ export default class extends Controller {
   }
 
   showSuccess(message) {
-    // You can replace this with a better notification system (e.g., toast)
-    alert(message);
+    // Success handled by redirect, no need for alert
+    console.log(message);
+  }
+
+  showInlineError(message) {
+    if (this.hasErrorMessageTarget && this.hasErrorTextTarget) {
+      this.errorTextTarget.textContent = message;
+      this.errorMessageTarget.style.display = "block";
+    }
+  }
+
+  hideError() {
+    if (this.hasErrorMessageTarget) {
+      this.errorMessageTarget.style.display = "none";
+      this.approvalRemarksTarget.classList.remove("is-invalid");
+    }
   }
 
   showError(message) {
