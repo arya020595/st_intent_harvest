@@ -83,11 +83,25 @@ module WorkOrders
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
 
       if @work_order.destroy
-        notice_message = 'Work order was successfully deleted.'
-        redirect_to work_orders_details_path, notice: notice_message, status: :see_other
+        respond_to do |format|
+          format.turbo_stream do
+            flash.now[:notice] = 'Work order was successfully deleted.'
+          end
+          format.html do
+            redirect_to work_orders_details_path, notice: 'Work order was successfully deleted.', status: :see_other
+          end
+        end
       else
-        alert_message = 'There was an error deleting the work order.'
-        redirect_to work_orders_detail_path(@work_order), alert: alert_message, status: :see_other
+        respond_to do |format|
+          format.turbo_stream do
+            flash.now[:alert] = 'There was an error deleting the work order.'
+            render turbo_stream: turbo_stream.update('flash_messages', partial: 'shared/flash')
+          end
+          format.html do
+            redirect_to work_orders_detail_path(@work_order), alert: 'There was an error deleting the work order.',
+                                                              status: :see_other
+          end
+        end
       end
     end
 
@@ -106,7 +120,13 @@ module WorkOrders
 
     def confirm_delete
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
-      # Render the confirmation modal
+
+      # Only show the modal
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to work_orders_details_path
+      end
     end
 
     private

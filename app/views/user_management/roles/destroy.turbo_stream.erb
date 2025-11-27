@@ -1,8 +1,3 @@
 <%= turbo_stream.remove dom_id(@role) %>
-<%= turbo_stream.replace "flash_messages" do %>
-  <div class="alert alert-info alert-dismissible fade show" role="alert" data-controller="flash" data-flash-delay-value="5000">
-    <i class="bi bi-info-circle-fill"></i>
-    <%= flash[:notice] || flash.now[:notice] || 'Role deleted successfully.' %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-<% end %>
+<%= turbo_stream.update "modal", "" %>
+<%= turbo_stream.update "flash_messages", partial: "shared/flash" %>
