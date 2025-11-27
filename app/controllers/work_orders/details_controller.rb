@@ -5,7 +5,7 @@ module WorkOrders
     include RansackMultiSort
     include ResponseHandling
 
-    before_action :set_work_order, only: %i[show edit update destroy mark_complete]
+    before_action :set_work_order, only: %i[show edit update destroy mark_complete confirm_delete]
 
     def index
       authorize WorkOrder, policy_class: WorkOrders::DetailPolicy
@@ -83,9 +83,11 @@ module WorkOrders
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
 
       if @work_order.destroy
-        redirect_to work_orders_details_path, notice: 'Work order was successfully deleted.'
+        notice_message = 'Work order was successfully deleted.'
+        redirect_to work_orders_details_path, notice: notice_message, status: :see_other
       else
-        redirect_to work_orders_detail_path(@work_order), alert: 'There was an error deleting the work order.'
+        alert_message = 'There was an error deleting the work order.'
+        redirect_to work_orders_detail_path(@work_order), alert: alert_message, status: :see_other
       end
     end
 
@@ -100,6 +102,11 @@ module WorkOrders
         success_path: work_orders_detail_path(@work_order),
         error_path: work_orders_detail_path(@work_order)
       )
+    end
+
+    def confirm_delete
+      authorize @work_order, policy_class: WorkOrders::DetailPolicy
+      # Render the confirmation modal
     end
 
     private

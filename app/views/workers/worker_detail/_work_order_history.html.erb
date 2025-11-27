@@ -1,9 +1,10 @@
-<div class="border-bottom mt-5 pb-2">
-  <div class="fw-bold fs-4" style="color: #155e1a">Work Order Details (<%= (Date.strptime(pay_calculation.month_year, '%Y-%m').strftime('%B') rescue pay_calculation.month_year) %>)</div>
+<div class="mt-5">
+  <div class="fw-bold fs-4" style="color: #155e1a">Previous Work Orders</div>
 </div>
-<div id="work_orders_pay_calculations" class="card shadow-sm mb-4">
+<hr>
+<div id="work_orders_pay_calculations" class="card shadow-sm mb-4 mt-4">
   <div class="card-body">
-    <%= search_form_for q, url: worker_detail_work_orders_pay_calculation_path(pay_calculation, worker_id: worker.id), method: :get, html: { id: 'work-order-details-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
+    <%= search_form_for q, url: worker_path(worker), method: :get, html: { id: 'work-order-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
       <div class="table-responsive">
         <table class="table table-hover table-sm mb-0">
           <thead class="header-row">
@@ -19,7 +20,7 @@
               <th class="text-center">
                 <div class="d-flex gap-1 justify-content-center">
                   <%= f.submit 'Search', class: 'btn btn filter-btn' %>
-                  <%= link_to 'Reset', worker_detail_work_orders_pay_calculation_path(pay_calculation, worker_id: worker.id), class: 'btn btn reset-btn' %>
+                  <%= link_to 'Reset', worker_path(worker), class: 'btn btn reset-btn' %>
                 </div>
               </th>
               <th class="text-center">
@@ -39,10 +40,19 @@
                 <%= f.hidden_field :work_order_created_at_lteq, value: params.dig(:q, :work_order_created_at_lteq) %>
               </th>
               <th class="text-center">
-                <%= f.number_field :work_order_id_eq, class: 'form-control form-control-sm', placeholder: 'Search Work Order...', min: 1 %>
+                <%= f.search_field :work_order_id_cont, class: 'form-control form-control-sm', placeholder: 'Search Work Order...' %>
               </th>
               <th class="text-center">
-                <%= f.search_field :work_order_work_order_rate_work_order_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Work Order Name...' %>
+                <%= f.select :work_order_work_order_rate_work_order_name_cont,
+                    options_for_select([['Select Work Order Name', '']], params.dig(:q, :work_order_work_order_rate_work_order_name_cont)),
+                    {},
+                    { class: 'form-select form-select-sm',
+                      data: {
+                        controller: 'select2',
+                        select2_placeholder_value: 'Select Work Order Name',
+                        select2_allow_clear_value: true
+                      }
+                    } %>
               </th>
               <th class="text-end">
               </th>
@@ -62,14 +72,10 @@
                   <td class="text-end"><%= number_to_currency(work_order_worker.amount, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
                 </tr>
               <% end %>
-              <tr class="table-secondary">
-                <td colspan="5" class="text-end"><strong>Total Gross Salary (RM)</strong></td>
-                <td class="text-end"><strong><%= number_to_currency(pay_calculation_detail.gross_salary, unit: '', separator: '.', delimiter: ',', precision: 2) %></strong></td>
-              </tr>
             <% else %>
               <tr>
                 <td colspan="6" class="text-center text-muted py-4">
-                  No work orders found for this worker in <%= pay_calculation.month_year %>.
+                  No previous work orders found for this worker.
                 </td>
               </tr>
             <% end %>
@@ -77,7 +83,6 @@
         </table>
       </div>
     <% end %>
-    <!-- Pagination -->
     <% if work_order_workers.any? %>
       <div class="d-flex justify-content-between align-items-center mt-3">
         <div class="d-flex align-items-center gap-2">

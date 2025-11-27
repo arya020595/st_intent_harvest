@@ -5,15 +5,17 @@
     [(Date.strptime(@pay_calculation.month_year, '%Y-%m').strftime('%B %Y') rescue @pay_calculation.month_year), work_orders_pay_calculation_path(@pay_calculation)],
     [@worker.name, nil]
   ] %>
+  <!-- Back Button -->
   <div class="mb-3">
-    <%= link_to work_orders_pay_calculation_path(@pay_calculation), class: "text-decoration-none text-success d-inline-flex align-items-center" do %>
+    <%= link_to work_orders_pay_calculation_path(@pay_calculation), class: "text-decoration-none text-dark d-inline-flex align-items-center fs-5 fw-bold" do %>
       <i class="bi bi-arrow-left me-2"></i> Back to <%= (Date.strptime(@pay_calculation.month_year, '%Y-%m').strftime('%B %Y') rescue @pay_calculation.month_year) %>
     <% end %>
   </div>
+  <hr>
   <%= render 'work_orders/pay_calculations/worker_detail/worker_info', worker: @worker %>
-  <%= render 'work_orders/pay_calculations/worker_detail/work_order_details', 
-             pay_calculation: @pay_calculation, 
-             work_order_workers: @work_order_workers, 
+  <%= render 'work_orders/pay_calculations/worker_detail/work_order_details',
+             pay_calculation: @pay_calculation,
+             work_order_workers: @work_order_workers,
              pay_calculation_detail: @pay_calculation_detail,
              q: @q,
              pagy: @pagy,

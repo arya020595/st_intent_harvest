@@ -435,7 +435,7 @@ end
 
 test "has_permission? returns false when user lacks permission" do
   user = users(:clerk)
-  assert_not user.has_permission?('admin.users.index')
+  assert_not user.has_permission?('user_management.users.index')
 end
 
 test "superadmin bypasses all permission checks" do
@@ -634,8 +634,8 @@ docker compose exec web rails db:seed RAILS_ENV=production
 ```ruby
 {
   'dashboard.index' => :root_path,
-  'admin.users.index' => :user_management_users_path,
-  'admin.roles.index' => :user_management_roles_path
+  'user_management.users.index' => :user_management_users_path,
+  'user_management.roles.index' => :user_management_roles_path
 }
 ```
 
@@ -655,7 +655,7 @@ docker compose exec web rails db:seed RAILS_ENV=production
   inventory
   workers
   master_data
-  admin
+  user_management
 ]
 ```
 
@@ -706,7 +706,7 @@ Name can't be blank
 You are not authorized to perform this action.
 ```
 
-**Triggered by:** `Pundit::NotAuthorizedError`  
+**Triggered by:** `Pundit::NotAuthorizedError`
 **Handling:** `ApplicationController#user_not_authorized`
 
 ---
@@ -859,5 +859,5 @@ end
 
 ---
 
-**Full Documentation:** [PERMISSION_SYSTEM_GUIDE.md](./PERMISSION_SYSTEM_GUIDE.md)  
+**Full Documentation:** [PERMISSION_SYSTEM_GUIDE.md](./PERMISSION_SYSTEM_GUIDE.md)
 **Quick Start:** [PERMISSION_QUICK_START.md](./PERMISSION_QUICK_START.md)

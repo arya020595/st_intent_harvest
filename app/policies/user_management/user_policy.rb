@@ -10,14 +10,14 @@ module UserManagement
     private
 
     def permission_resource
-      'admin.users'
+      'user_management.users'
     end
 
     class Scope < ApplicationPolicy::Scope
       private
 
       def permission_resource
-        'admin.users'
+        'user_management.users'
       end
     end
   end

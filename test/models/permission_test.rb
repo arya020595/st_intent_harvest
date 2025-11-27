@@ -9,6 +9,7 @@
 #  code       :string           not null
 #  name       :string           not null
 #  resource   :string           not null
+#  section    :string
 #
 # Indexes
 #

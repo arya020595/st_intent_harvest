@@ -1,18 +1,14 @@
-<div class="card shadow-sm mb-4">
-  <div class="card-body">
-    <div class="row">
-      <div class="col-md-4">
-        <p class="mb-2"><strong>Worker Name</strong></p>
-        <p class="text-muted"><%= worker.name %></p>
-      </div>
-      <div class="col-md-4">
-        <p class="mb-2"><strong>Worker Type</strong></p>
-        <p class="text-muted"><%= worker.worker_type&.titleize || 'N/A' %></p>
-      </div>
-      <div class="col-md-4">
-        <p class="mb-2"><strong>Nationality</strong></p>
-        <p class="text-muted"><%= worker.nationality&.titleize || 'N/A' %></p>
-      </div>
-    </div>
+<div class="mt-5 mb-2">
+  <div class="row mb-2">
+    <div class="col-md-2 col-5 fw-bold fs-5">Worker Name</div>
+    <div class="col-md-10 col-7 fs-5"><%= worker.name %></div>
+  </div>
+  <div class="row mb-2 py-3">
+    <div class="col-md-2 col-5 fw-bold fs-5">Worker Type</div>
+    <div class="col-md-10 col-7 fs-5"><%= worker.worker_type&.titleize || 'N/A' %></div>
+  </div>
+  <div class="row mb-2">
+    <div class="col-md-2 col-5 fw-bold fs-5">Nationality</div>
+    <div class="col-md-10 col-7 fs-5"><%= worker.nationality&.titleize || 'N/A' %></div>
   </div>
 </div>
