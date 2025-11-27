@@ -6,18 +6,11 @@
      aria-hidden="true"
      data-controller="modal"
      data-modal-frame-id-value="modal">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <%= turbo_frame_tag "modal", data: { action: "turbo:frame-load->modal#show" } do %>
         <!-- Form content will be injected here -->
       <% end %>
     </div>
-  </div>
-</div>
-
-<div class="modal fade" id="workerModal" tabindex="-1" aria-labelledby="workerModalLabel" aria-hidden="true" data-bs-backdrop="static" data-controller="modal" data-modal-frame-id-value="modal">
-  <div class="modal-dialog modal-lg" style="margin-top: 200px; width: 50%;">
-    <%= turbo_frame_tag "modal", data: { turbo_action: "advance", action: "turbo:frame-load->modal#show" } do %>
-    <% end %>
   </div>
 </div>

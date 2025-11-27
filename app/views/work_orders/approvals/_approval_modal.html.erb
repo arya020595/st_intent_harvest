@@ -40,6 +40,10 @@
                     class="form-control"
                     placeholder="Enter your remarks here"
                     rows="4" required maxlength="500"></textarea>
+          <div data-approval-modal-target="errorMessage" class="text-danger text-start mt-2 small" style="display: none;">
+            <i class="bi bi-exclamation-circle me-1"></i>
+            <span data-approval-modal-target="errorText"></span>
+          </div>
         </div>
         <!-- Submit Approval Button (Initially Hidden) -->
         <div data-approval-modal-target="submitField" style="display: none;">
