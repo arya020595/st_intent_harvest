@@ -2,7 +2,6 @@
 <tr id="<%= dom_id(work_order) %>">
   <td class="text-center">
     <div class="d-inline-flex gap-1 justify-content-center" style="min-width: 90px;">
-      <% disabled_by_status = %w[completed pending].include?(work_order.work_order_status) %>
       <% if work_order_policy.show? %>
         <%= link_to work_orders_detail_path(work_order),
             class: "action-btn info",
