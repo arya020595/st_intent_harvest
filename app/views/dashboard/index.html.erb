@@ -60,7 +60,7 @@
                   <td><%= work_order.start_date&.strftime("%d %b %Y").presence || 'N/A' %></td>
                   <td><%= work_order.block&.block_number.presence || 'N/A' %></td>
                   <td>
-                    <span class="badge 
+                    <span class="badge
                       <%= case work_order.work_order_status
                           when 'ongoing' then 'bg-primary'
                           when 'pending' then 'bg-warning'
@@ -72,7 +72,7 @@
                     </span>
                   </td>
                   <td>
-                    <%= link_to "View", "#", class: "btn btn-sm btn-primary" %>
+                    <%= link_to "View", work_orders_detail_path(work_order), class: "btn btn-sm btn-primary" %>
                   </td>
                 </tr>
               <% end %>
@@ -95,7 +95,7 @@
           <div class="d-flex gap-2">
             <%= link_to "New Work Order", new_work_orders_detail_path, class: "btn btn-primary" %>
             <%= link_to "View All Work Orders", work_orders_details_path, class: "btn btn-outline-primary" %>
-            <%= link_to "Pending Approvals", work_orders_approvals_path, class: "btn btn-outline-warning" %>
+            <%= link_to "Pending Approvals", work_orders_approvals_path(q: { work_order_status_eq: 'pending' }), class: "btn btn-outline-warning" %>
           </div>
         </div>
       </div>
