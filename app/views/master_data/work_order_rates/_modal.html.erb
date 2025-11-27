@@ -1,6 +1,17 @@
-<div class="modal fade" id="workOrderRateModal" tabindex="-1" aria-labelledby="workOrderRateModalLabel" aria-hidden="true" data-bs-backdrop="static" data-controller="modal" data-modal-frame-id-value="modal">
-  <div class="modal-dialog modal-lg" style="margin-top: 200px; width: 50%;">
-    <%= turbo_frame_tag "modal", data: { turbo_action: "advance", action: "turbo:frame-load->modal#show" } do %>
-    <% end %>
+<!-- Modal container kept on the page; content is loaded via Turbo Frame -->
+<div class="modal fade"
+     id="workOrderRateModal"
+     tabindex="-1"
+     aria-labelledby="workOrderRateModalLabel"
+     aria-hidden="true"
+     data-bs-backdrop="static"
+     data-controller="modal"
+     data-modal-frame-id-value="modal">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <%= turbo_frame_tag "modal", data: { turbo_action: "advance", action: "turbo:frame-load->modal#show" } do %>
+        <!-- Form content will be injected here -->
+      <% end %>
+    </div>
   </div>
 </div>
