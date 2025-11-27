@@ -5,14 +5,14 @@
       <%= link_to user_management_role_path(role),
       class: "action-btn info",
       title: "View Details",
-      data: { turbo_frame: "modal", modal_size: "modal-xl" } do %>
+      **modal_link_data(size: 'modal-xl') do %>
         <i class="bi bi-info-circle-fill"></i>
       <% end %>
       <!-- EDIT: Medium -->
       <%= link_to edit_user_management_role_path(role),
       class: "action-btn warning",
       title: "Edit",
-      data: { turbo_frame: "modal", modal_size: "modal-xl" } do %>
+      **modal_link_data(size: 'modal-xl') do %>
         <i class="bi bi-pencil-fill"></i>
       <% end %>
       <!-- DELETE: Medium -->
