@@ -1,4 +1,3 @@
-<!-- Modal container kept on the page; content is loaded via Turbo Frame -->
 <div class="modal fade"
      id="roleModal"
      tabindex="-1"
@@ -6,12 +5,9 @@
      aria-hidden="true"
      data-controller="modal"
      data-modal-frame-id-value="modal">
-  <div class="modal-dialog modal-xl modal-dialog-centered">
-    <!-- modal-xl for larger screens, will shrink automatically on smaller screens -->
+  <div class="modal-dialog modal-dialog-centered" id="modalDialog">
     <div class="modal-content">
-      <%= turbo_frame_tag "modal", data: { action: "turbo:frame-load->modal#show" } do %>
-        <!-- Form content will be injected here -->
-      <% end %>
+      <%= turbo_frame_tag "modal", data: { action: "turbo:frame-load->modal#show" } %>
     </div>
   </div>
 </div>

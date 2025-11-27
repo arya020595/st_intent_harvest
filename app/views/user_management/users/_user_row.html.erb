@@ -10,7 +10,7 @@
       <%= link_to confirm_delete_user_management_user_path(user),
         class: "action-btn danger",
         title: "Delete",
-        data: { turbo_frame: "modal" } do %>
+        data: { turbo_frame: "modal", modal_size: "modal-sm" } do %>
         <i class="bi bi-trash-fill"></i>
     <% end %>
     </div>
@@ -27,6 +27,6 @@
       <span class="text-danger fw-bold">Inactive</span>
     <% end %>
   </td>
-    <td class="text-center text-muted"><%= user.created_at.strftime("%b %d, %Y %H:%M") if user.created_at %></td>
-    <td class="text-center text-muted"><%= user.updated_at.strftime("%b %d, %Y %H:%M") if user.updated_at %></td>
+    <td class="text-center"><%= user.created_at.strftime("%b %d, %Y %H:%M") if user.created_at %></td>
+    <td class="text-center"><%= user.updated_at.strftime("%b %d, %Y %H:%M") if user.updated_at %></td>
 </tr>

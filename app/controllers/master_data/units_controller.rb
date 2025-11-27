@@ -4,7 +4,7 @@ module MasterData
   class UnitsController < ApplicationController
     include RansackMultiSort
 
-    before_action :set_unit, only: %i[show edit update destroy]
+    before_action :set_unit, only: %i[show edit update destroy confirm_delete]
 
     def index
       authorize Unit, policy_class: MasterData::UnitPolicy
@@ -79,11 +79,6 @@ module MasterData
 
 
    def confirm_delete
-      @unit = Unit.find_by(id: params[:id])
-      unless @unit
-        redirect_to master_data_unit_path, alert: "Unit not found" and return
-      end
-
       authorize @unit, policy_class: MasterData::UnitPolicy
 
       # Only show the modal
@@ -119,8 +114,16 @@ module MasterData
     private
 
     def set_unit
-      @unit = Unit.find(params[:id])
+      @unit = Unit.find_by(id: params[:id])
+      return if @unit.present?
+
+      if turbo_frame_request?
+        render turbo_stream: turbo_stream.replace("modal", ""), status: :ok
+      else
+        redirect_to master_data_units_path
+      end
     end
+
 
     def unit_params
       params.require(:unit).permit(
