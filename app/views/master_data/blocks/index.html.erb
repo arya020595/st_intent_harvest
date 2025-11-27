@@ -43,40 +43,8 @@
                   <th class="text-center">
                     <%= f.number_field :hectarage_eq, class: 'form-control form-control-sm', placeholder: 'Hectarage', step: 0.01 %>
                   </th>
-                  <th>
-                    <div class="input-group input-group-sm">
-                      <input type="text"
-                            class="form-control form-control-sm cursor-pointer"
-                            placeholder="Select Date Range"
-                            data-controller="flatpickr"
-                            data-flatpickr-mode-value="range"
-                            data-flatpickr-date-format-value="d-m-Y H:i"
-                            data-flatpickr-enable-time-value="true"
-                            data-flatpickr-field-name-value="q[created_at]">
-                      <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
-                        <i class="bi bi-calendar-range"></i>
-                      </span>
-                    </div>
-                    <%= f.hidden_field :created_at_gteq, value: params.dig(:q, :created_at_gteq) %>
-                    <%= f.hidden_field :created_at_lteq, value: params.dig(:q, :created_at_lteq) %>
-                  </th>
-                  <th>
-                    <div class="input-group input-group-sm">
-                      <input type="text"
-                            class="form-control form-control-sm cursor-pointer"
-                            placeholder="Select Date Range"
-                            data-controller="flatpickr"
-                            data-flatpickr-mode-value="range"
-                            data-flatpickr-date-format-value="d-m-Y H:i"
-                            data-flatpickr-enable-time-value="true"
-                            data-flatpickr-field-name-value="q[updated_at]">
-                      <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
-                        <i class="bi bi-calendar-range"></i>
-                      </span>
-                    </div>
-                    <%= f.hidden_field :updated_at_gteq, value: params.dig(:q, :updated_at_gteq) %>
-                    <%= f.hidden_field :updated_at_lteq, value: params.dig(:q, :updated_at_lteq) %>
-                  </th>
+                  <th></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody id="block_rows">

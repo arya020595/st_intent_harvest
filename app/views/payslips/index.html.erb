@@ -7,35 +7,63 @@
         <h4>Payslip Filter</h4>
         <hr/>
         <%= form_with url: payslips_path, method: :get, local: true do |f| %>
+
+          <!-- MONTH -->
           <div class="form-group mt-2">
             <%= f.label :month, "Month" %>
             <% available_months = PayCalculation.distinct.pluck(:month_year).map { |d| Date.parse(d + '-01').month }.uniq.sort %>
-            <%= f.select :month,
-      available_months.map { |m| [Date::MONTHNAMES[m], m] },
-      { selected: params[:month] },
-      class: "form-control" %>
+
+            <select name="month" id="month" class="form-control">
+              <option value="" disabled <%= "selected" if params[:month].blank? %> class="text-muted">
+                Select Month
+              </option>
+              <% available_months.each do |m| %>
+                <option value="<%= m %>" <%= "selected" if params[:month].to_s == m.to_s %>>
+                  <%= Date::MONTHNAMES[m] %>
+                </option>
+              <% end %>
+            </select>
           </div>
+
+          <!-- YEAR -->
           <div class="form-group mt-2">
             <%= f.label :year, "Year" %>
             <% available_years = PayCalculation.distinct.pluck(:month_year).map { |d| Date.parse(d + '-01').year }.uniq.sort %>
-            <%= f.select :year,
-      available_years,
-      { selected: params[:year] },
-      class: "form-control" %>
+
+            <select name="year" id="year" class="form-control">
+              <option value="" disabled <%= "selected" if params[:year].blank? %> class="text-muted">
+                Select Year
+              </option>
+              <% available_years.each do |y| %>
+                <option value="<%= y %>" <%= "selected" if params[:year].to_s == y.to_s %>>
+                  <%= y %>
+                </option>
+              <% end %>
+            </select>
           </div>
+
+          <!-- WORKER -->
           <div class="form-group mt-2">
             <%= f.label :worker_id, "Worker" %>
-            <%= f.collection_select :worker_id,
-                  Worker.all,
-                  :id,
-                  :name,
-                  { selected: params[:worker_id] },
-                  class: "form-control" %>
+
+            <select name="worker_id" id="worker_id" class="form-control">
+              <option value="" disabled <%= "selected" if params[:worker_id].blank? %> class="text-muted">
+                Select Worker
+              </option>
+              <% Worker.all.each do |w| %>
+                <option value="<%= w.id %>" <%= "selected" if params[:worker_id].to_s == w.id.to_s %>>
+                  <%= w.name %>
+                </option>
+              <% end %>
+            </select>
           </div>
+
           <%= f.submit "Generate", class: "btn btn-success w-100 mt-3" %>
+
         <% end %>
       </div>
     </div>
+
     <!-- RIGHT SIDE: PDF VIEWER -->
     <div class="col-md-9">
       <div class="card p-3" style="text-align: center;">
@@ -47,7 +75,7 @@
         <% else %>
           <%= image_tag "clipboard-icon.png",
                 alt: "No Payslip Selected",
-                style: "display: block; margin: 0 auto;",
+                class: "d-block mx-auto",
                 width: "100px",
                 height: "100px" %>
           <p class="text-muted mt-4">

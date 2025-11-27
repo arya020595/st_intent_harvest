@@ -15,7 +15,6 @@
     margin-bottom: 30px;
     }
 
-
     #vehicle_rows tr td,
     #vehicle_rows tr th {
         padding: 12px 8px;
@@ -28,7 +27,6 @@
     padding: 15px 10px;
     text-decoration: none;
     color: #ffffff !important;;
-    font-weight: 900;
     }
 
     .add-button {
@@ -41,7 +39,6 @@
     text-decoration: none;
     font-size: 16px;
     color: #ffffff;
-    font-weight: 900;
     border: 0;
     }
 
@@ -51,6 +48,10 @@
     color: #ffffff;
     }
 
+    .card-body{
+        margin-top: -10px;
+        padding: 2px;
+    }
 
     .table thead tr.header-row th {
         background-color: #155e1a;
@@ -61,7 +62,6 @@
     .table thead.header-row th a {
     color: #ffffff !important;
     text-decoration: none !important;
-    font-weight: 900;
     }
 
 
