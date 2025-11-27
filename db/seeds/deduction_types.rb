@@ -17,7 +17,7 @@ DeductionType.delete_all
 # Different for Local vs Foreign employees
 DeductionType.create!([
                         {
-                          code: 'EPF',
+                          code: 'EPF_MALAYSIAN',
                           name: 'EPF (Employees Provident Fund) - Malaysian',
                           description: 'Malaysian employees: Employee 11% | Employer 13% (retirement savings)',
                           employee_contribution: 11.0, # 11%
@@ -32,7 +32,7 @@ DeductionType.create!([
 
 DeductionType.create!([
                         {
-                          code: 'EPF',
+                          code: 'EPF_FOREIGN',
                           name: 'EPF (Employees Provident Fund) - Foreign',
                           description: 'Foreign employees: Employee 2% | Employer 2% (retirement savings)',
                           employee_contribution: 2.0, # 2%
