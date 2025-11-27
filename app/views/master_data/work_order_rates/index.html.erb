@@ -75,7 +75,7 @@
           <span class="text-muted small">Show</span>
           <%= per_page_selector(current: params[:per_page] || 10) %>
           <span class="text-muted small">
-            <%== @pagy.info_tag(item_name: 'Work Order Rates') %>
+            <%= @pagy.info_tag(item_name: 'Work Order Rates') %>
           </span>
         </div>
         <div>
