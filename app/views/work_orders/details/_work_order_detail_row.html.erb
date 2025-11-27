@@ -30,7 +30,7 @@
         <%= link_to confirm_delete_work_orders_detail_path(work_order),
               class: "action-btn danger",
               title: "Delete",
-              data: { turbo_frame: "modal" } do %>
+              **modal_link_data(size: "modal-md") do %>
           <i class="bi bi-trash-fill"></i>
         <% end %>
       <% else %>

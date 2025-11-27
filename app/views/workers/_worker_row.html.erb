@@ -7,12 +7,11 @@
       <%= link_to edit_worker_path(worker), class: "action-btn warning", title: "Edit", data: { turbo_frame: 'modal', modal_size: "modal-lg" } do %>
         <i class="bi bi-pencil-fill"></i>
       <% end %>
-
       <%= link_to confirm_delete_worker_path(worker),
                       class: "action-btn danger",
                       title: "Delete",
-                      data: { turbo_frame: "modal", modal_size: "modal-sm" } do %>
-            <i class="bi bi-trash-fill"></i>
+                      **modal_link_data(size: "modal-md") do %>
+        <i class="bi bi-trash-fill"></i>
       <% end %>
     </div>
   </td>

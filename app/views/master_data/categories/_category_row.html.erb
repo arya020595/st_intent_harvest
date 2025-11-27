@@ -13,7 +13,7 @@
       <%= link_to confirm_delete_master_data_category_path(category),
                   class: "action-btn danger",
                   title: "Delete",
-                  data: { turbo_frame: "modal" } do %>
+                  **modal_link_data(size: "modal-md") do %>
         <i class="bi bi-trash-fill"></i>
       <% end %>
     </div>

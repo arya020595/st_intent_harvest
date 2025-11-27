@@ -5,7 +5,6 @@
   <div class="card shadow-sm">
     <div class="worker_profile_page">
       <h1 class="mb-0">Workers Profile</h1>
-
       <div class="d-flex justify-content-end">
         <%= link_to new_worker_path, class: "add-button btn btn-primary btn-sm",  data: { turbo_frame: 'modal', modal_size: "modal-lg" } do %>
           <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Worker
@@ -34,10 +33,9 @@
                 <th class="text-center">
                   <%= sort_link(@q, :hired_date, 'Hired Date') %>
                 </th>
-
               </tr>
               <tr>
-               <th class="text-center">
+                <th class="text-center">
                   <div class="filter-buttons">
                     <%= button_tag 'Search', class: 'btn filter-btn' %>
                     <%= link_to 'Reset', workers_path, class: 'btn reset-btn', style: 'font-weight: normal;' %>
@@ -71,13 +69,12 @@
                            data-flatpickr-date-format-value="d-m-Y"
                            data-flatpickr-field-name-value="q[hired_date]">
                     <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
-                      <i class="bi bi-calendar-range"></i>
+                      <i data-action="click->flatpickr#open" class="bi bi-calendar-range"></i>
                     </span>
                   </div>
                   <%= f.hidden_field :hired_date_gteq, value: params.dig(:q, :hired_date_gteq) %>
                   <%= f.hidden_field :hired_date_lteq, value: params.dig(:q, :hired_date_lteq) %>
                 </th>
-
               </tr>
             </thead>
             <tbody id="workers-table-body">
