@@ -45,7 +45,14 @@ module UserManagement
     def update
       authorize @user, policy_class: UserManagement::UserPolicy
 
-      if @user.update(user_params)
+      # Allow updating other attributes without forcing a password change.
+      # If both password fields are blank, drop them so model validations don't trigger.
+      update_attrs = user_params
+      if update_attrs[:password].blank? && update_attrs[:password_confirmation].blank?
+        update_attrs = update_attrs.except(:password, :password_confirmation)
+      end
+
+      if @user.update(update_attrs)
         respond_to do |format|
           format.turbo_stream do
             flash.now[:notice] = 'User updated successfully.'
@@ -58,7 +65,6 @@ module UserManagement
     end
 
     def confirm_delete
-
       authorize @user, policy_class: UserPolicy
 
       # Only show the modal
@@ -96,7 +102,8 @@ module UserManagement
         :password,
         :password_confirmation,
         :name,
-        :role_id
+        :role_id,
+        :is_active
       )
     end
   end
