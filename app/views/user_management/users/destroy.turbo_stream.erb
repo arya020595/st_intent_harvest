@@ -1,3 +1,12 @@
+<%# Best Practice: Turbo Stream + Stimulus Controller Pattern %>
+<%# 1. Remove deleted row from DOM %>
 <%= turbo_stream.remove dom_id(@user) %>
+<%# 2. Close modal %>
 <%= turbo_stream.update "modal", "" %>
+<%# 3. Show flash message %>
 <%= turbo_stream.update "flash_messages", partial: "shared/flash" %>
+<%# 4. Update browser URL (prevents RecordNotFound on refresh) %>
+<%# BEST PRACTICE: Use Stimulus controller instead of eval() or inline JS %>
+<%= turbo_stream.update "url-manager",
+    partial: "shared/url_updater",
+    locals: { url: user_management_users_path } %>
