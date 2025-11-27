@@ -22,8 +22,8 @@
 
     </div>
   </td>
-  <td><strong><%= vehicle.vehicle_number %></strong></td>
+  <td><%= vehicle.vehicle_number %></td>
   <td><%= vehicle.vehicle_model %></td>
-  <td class="text-center text-muted"><%= vehicle.created_at.strftime("%b %d, %Y %H:%M") if vehicle.created_at %></td>
-  <td class="text-center text-muted"><%= vehicle.updated_at.strftime("%b %d, %Y %H:%M") if vehicle.updated_at %></td>
+  <td class="text-center"><%= vehicle.created_at.strftime("%b %d, %Y %H:%M") if vehicle.created_at %></td>
+  <td class="text-center"><%= vehicle.updated_at.strftime("%b %d, %Y %H:%M") if vehicle.updated_at %></td>
 </tr>
