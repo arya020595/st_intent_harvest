@@ -1,3 +1,6 @@
+<div id="flash_messages">
+  <%= render "shared/flash" %>
+</div>
 <div id="roles" class="container-fluid px-4 py-4 roles-list" data-controller="multi-sort">
   <div class="card shadow-sm">
     <div class="roles_page">
@@ -83,7 +86,7 @@
               <% else %>
                 <tr>
                   <td colspan="5" class="text-center text-muted py-4">
-                    No roles found. <%= link_to 'Add a new role', new_user_management_role_path, class: 'text-decoration-none' %>
+                    No roles found. <%= link_to 'Add a new role', new_user_management_role_path, class: 'text-decoration-none', **modal_link_data(size: 'modal-xl') %>
                   </td>
                 </tr>
               <% end %>
