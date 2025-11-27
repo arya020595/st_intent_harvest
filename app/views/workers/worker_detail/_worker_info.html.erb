@@ -1,0 +1,36 @@
+<div class="mt-5 mb-2">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="row mb-2">
+        <div class="col-md-3 col-5 fw-bold fs-5">Worker Name</div>
+        <div class="col-md-9 col-7 fs-5"><%= worker.name %></div>
+      </div>
+      <div class="row mb-2 py-3">
+        <div class="col-md-3 col-5 fw-bold fs-5">Worker Type</div>
+        <div class="col-md-9 col-7 fs-5"><%= worker.worker_type&.titleize || 'N/A' %></div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-md-3 col-5 fw-bold fs-5">Nationality</div>
+        <div class="col-md-9 col-7 fs-5"><%= worker.nationality&.titleize || 'N/A' %></div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="row mb-2">
+        <div class="col-md-3 col-5 fw-bold fs-5">Hired Date</div>
+        <div class="col-md-9 col-7 fs-5"><%= worker.hired_date&.strftime('%d-%m-%Y') || 'N/A' %></div>
+      </div>
+      <div class="row mb-2 py-3">
+        <div class="col-md-3 col-5 fw-bold fs-5">Gender</div>
+        <div class="col-md-9 col-7 fs-5"><%= @worker.gender %></div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-md-3 col-5 fw-bold fs-5">Status</div>
+        <div class="col-md-9 col-7 fs-5"> <% if @worker.is_active %>
+            <span class="badge bg-success">Active</span>
+          <% else %>
+            <span class="badge bg-secondary">Inactive</span>
+          <% end %></div>
+      </div>
+    </div>
+  </div>
+</div>
