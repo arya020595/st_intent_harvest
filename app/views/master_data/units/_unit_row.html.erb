@@ -22,8 +22,8 @@
     </div>
   </td>
   <td class="text-center"><%= unit.id %></td>
-  <td><strong><%= unit.name %></strong></td>
-  <td><strong><%= unit.unit_type %></strong></td>
-<td class="text-center text-muted"><%= unit.created_at.strftime("%b %d, %Y %H:%M") if unit.created_at %></td>
-<td class="text-center text-muted"><%= unit.updated_at.strftime("%b %d, %Y %H:%M") if unit.updated_at %></td>
+  <td><%= unit.name %></td>
+  <td><%= unit.unit_type %></td>
+<td class="text-center"><%= unit.created_at.strftime("%b %d, %Y %H:%M") if unit.created_at %></td>
+<td class="text-center"><%= unit.updated_at.strftime("%b %d, %Y %H:%M") if unit.updated_at %></td>
 </tr>

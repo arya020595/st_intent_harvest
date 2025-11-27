@@ -51,16 +51,38 @@ export default class extends Controller {
     );
   }
 
-  show() {
-    // In rare cases the action may fire before connect created the instance
-    if (!this.modal && this.BootstrapModal) {
-      this.modal = new this.BootstrapModal(this.element, {
-        backdrop: "static",
-        keyboard: false,
-      });
-    }
-    if (this.modal) this.modal.show();
+ show(event) {
+  // Ensure Bootstrap modal exists
+  if (!this.modal && this.BootstrapModal) {
+    this.modal = new this.BootstrapModal(this.element, {
+      backdrop: "static",
+      keyboard: false,
+    });
   }
+
+  // -------------------------------------------------
+  // Apply modal size based on clicked link
+  // -------------------------------------------------
+  const modalDialog = this.element.querySelector(".modal-dialog");
+
+  if (modalDialog) {
+    // Remove previous sizes
+    modalDialog.classList.remove("modal-sm", "modal-lg", "modal-xl");
+
+    // Get the last clicked modal trigger
+    const trigger = window.lastModalTrigger;
+
+    // Apply the requested size
+    if (trigger?.dataset?.modalSize) {
+      modalDialog.classList.add(trigger.dataset.modalSize);
+    }
+  }
+  // -------------------------------------------------
+
+  // Actually show the modal
+  this.modal.show();
+}
+
 
   formSubmitted(event) {
     const { success } = event.detail;

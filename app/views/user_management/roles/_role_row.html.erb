@@ -1,23 +1,36 @@
 <tr id="<%= dom_id(role) %>">
 <td class="text-center">
-    <div class="action-buttons">
-      <%= link_to user_management_role_path(role), class: "action-btn info", title: "View Details", data: { turbo_frame: 'modal' } do %>
-        <i class="bi bi-info-circle-fill"></i>
-      <% end %>
-      <%= link_to edit_user_management_role_path(role), class: "action-btn warning", title: "Edit", data: { turbo_frame: 'modal' } do %>
-        <i class="bi bi-pencil-fill"></i>
-      <% end %>
+  <div class="action-buttons">
 
-      <%= link_to confirm_delete_user_management_role_path(role),
-        class: "action-btn danger",
-        title: "Delete",
-        data: { turbo_frame: "modal" } do %>
-        <i class="bi bi-trash-fill"></i>
+    <!-- VIEW: Wide -->
+    <%= link_to user_management_role_path(role),
+      class: "action-btn info",
+      title: "View Details",
+      data: { turbo_frame: "modal", modal_size: "modal-xl" } do %>
+      <i class="bi bi-info-circle-fill"></i>
     <% end %>
-    </div>
-  </td>
-  <td class="text-center"><%= role.id %></td>
-  <td><%= role.name %></td>
-  <td class="text-center text-muted"><%= role.created_at.strftime("%b %d, %Y %H:%M") if role.created_at %></td>
-  <td class="text-center text-muted"><%= role.updated_at.strftime("%b %d, %Y %H:%M") if role.updated_at %></td>
+
+    <!-- EDIT: Medium -->
+    <%= link_to edit_user_management_role_path(role),
+      class: "action-btn warning",
+      title: "Edit",
+      data: { turbo_frame: "modal", modal_size: "modal-xl" } do %>
+      <i class="bi bi-pencil-fill"></i>
+    <% end %>
+
+    <!-- DELETE: Small -->
+    <%= link_to confirm_delete_user_management_role_path(role),
+      class: "action-btn danger",
+      title: "Delete",
+      data: { turbo_frame: "modal", modal_size: "modal-sm" } do %>
+      <i class="bi bi-trash-fill"></i>
+    <% end %>
+
+  </div>
+</td>
+
+<td class="text-center"><%= role.id %></td>
+<td><%= role.name %></td>
+<td class="text-center"><%= role.created_at.strftime("%b %d, %Y %H:%M") %></td>
+<td class="text-center"><%= role.updated_at.strftime("%b %d, %Y %H:%M") %></td>
 </tr>

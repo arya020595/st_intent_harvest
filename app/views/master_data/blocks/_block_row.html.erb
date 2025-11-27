@@ -22,9 +22,6 @@
                   data: { turbo_frame: "modal" } do %>
         <i class="bi bi-trash-fill"></i>
       <% end %>
-
-
-
     </div>
   </td>
 
@@ -34,7 +31,7 @@
     <%= number_with_precision(block.hectarage, precision: 2) if block.hectarage %>
   </td>
 
-<td class="text-center text-muted"><%= block.created_at.strftime("%b %d, %Y %H:%M") if block.created_at %></td>
-<td class="text-center text-muted"><%= block.updated_at.strftime("%b %d, %Y %H:%M") if block.updated_at %></td>
+<td class="text-center"><%= block.created_at.strftime("%b %d, %Y %H:%M") if block.created_at %></td>
+<td class="text-center"><%= block.updated_at.strftime("%b %d, %Y %H:%M") if block.updated_at %></td>
 
 </tr>
