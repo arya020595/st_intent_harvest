@@ -2,35 +2,35 @@
   <h1 class="mb-4">Dashboard</h1>
   <!-- Statistics Cards -->
   <div class="row g-4 mb-4">
-    <div class="col-md-3">
+    <div class="col-md-3 text-center">
       <div class="card text-bg-primary">
         <div class="card-body">
-          <h5 class="card-title">Ongoing</h5>
-          <p class="card-text display-4"><%= @ongoing_work_orders %></p>
+          <h5 class="card-title fw-bold">Ongoing</h5>
+          <p class="card-text display-4 text-white"><%= @ongoing_work_orders %></p>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card text-bg-warning">
+    <div class="col-md-3 text-center">
+      <div class="card text-white text-bg-warning">
         <div class="card-body">
-          <h5 class="card-title">Pending Approval</h5>
-          <p class="card-text display-4"><%= @pending_work_orders %></p>
+          <h5 class="card-title fw-bold">Pending Approval</h5>
+          <p class="card-text display-4 text-white"><%= @pending_work_orders %></p>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 text-center">
       <div class="card text-bg-danger">
         <div class="card-body">
-          <h5 class="card-title">Amendment Required</h5>
-          <p class="card-text display-4"><%= @amendment_required_work_orders %></p>
+          <h5 class="card-title fw-bold">Amendment Required</h5>
+          <p class="card-text display-4 text-white"><%= @amendment_required_work_orders %></p>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 text-center">
       <div class="card text-bg-success">
         <div class="card-body">
-          <h5 class="card-title">Completed</h5>
-          <p class="card-text display-4"><%= @completed_work_orders %></p>
+          <h5 class="card-title fw-bold">Completed</h5>
+          <p class="card-text display-4 text-white"><%= @completed_work_orders %></p>
         </div>
       </div>
     </div>
