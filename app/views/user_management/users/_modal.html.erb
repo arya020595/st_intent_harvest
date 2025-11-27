@@ -6,7 +6,7 @@
      aria-hidden="true"
      data-controller="modal"
      data-modal-frame-id-value="modal">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
       <%= turbo_frame_tag "modal", data: { action: "turbo:frame-load->modal#show" } do %>
         <!-- Form content will be injected here -->
