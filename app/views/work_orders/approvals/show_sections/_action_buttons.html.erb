@@ -1,0 +1,7 @@
+<div class="d-flex justify-content-end gap-2 mb-5">
+  <% if work_order.may_approve? || work_order.may_request_amendment? %>
+    <button type="button" class="btn btn-success fw-bold fs-6 text-white" data-bs-toggle="modal" data-bs-target="#approvalModal">
+      <i class="bi bi-check-circle me-1 text-white"></i> Approve Work Order
+    </button>
+  <% end %>
+</div>

@@ -2,35 +2,35 @@
   <h1 class="mb-4">Dashboard</h1>
   <!-- Statistics Cards -->
   <div class="row g-4 mb-4">
-    <div class="col-md-3">
+    <div class="col-md-3 text-center">
       <div class="card text-bg-primary">
         <div class="card-body">
-          <h5 class="card-title">Ongoing</h5>
-          <p class="card-text display-4"><%= @ongoing_work_orders %></p>
+          <h5 class="card-title fw-bold">Ongoing</h5>
+          <p class="card-text display-4 text-white"><%= @ongoing_work_orders %></p>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card text-bg-warning">
+    <div class="col-md-3 text-center">
+      <div class="card text-white text-bg-warning">
         <div class="card-body">
-          <h5 class="card-title">Pending Approval</h5>
-          <p class="card-text display-4"><%= @pending_work_orders %></p>
+          <h5 class="card-title fw-bold">Pending Approval</h5>
+          <p class="card-text display-4 text-white"><%= @pending_work_orders %></p>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 text-center">
       <div class="card text-bg-danger">
         <div class="card-body">
-          <h5 class="card-title">Amendment Required</h5>
-          <p class="card-text display-4"><%= @amendment_required_work_orders %></p>
+          <h5 class="card-title fw-bold">Amendment Required</h5>
+          <p class="card-text display-4 text-white"><%= @amendment_required_work_orders %></p>
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 text-center">
       <div class="card text-bg-success">
         <div class="card-body">
-          <h5 class="card-title">Completed</h5>
-          <p class="card-text display-4"><%= @completed_work_orders %></p>
+          <h5 class="card-title fw-bold">Completed</h5>
+          <p class="card-text display-4 text-white"><%= @completed_work_orders %></p>
         </div>
       </div>
     </div>
@@ -60,7 +60,7 @@
                   <td><%= work_order.start_date&.strftime("%d %b %Y").presence || 'N/A' %></td>
                   <td><%= work_order.block&.block_number.presence || 'N/A' %></td>
                   <td>
-                    <span class="badge 
+                    <span class="badge
                       <%= case work_order.work_order_status
                           when 'ongoing' then 'bg-primary'
                           when 'pending' then 'bg-warning'
@@ -72,7 +72,7 @@
                     </span>
                   </td>
                   <td>
-                    <%= link_to "View", "#", class: "btn btn-sm btn-primary" %>
+                    <%= link_to "View", work_orders_detail_path(work_order), class: "btn btn-sm btn-primary" %>
                   </td>
                 </tr>
               <% end %>
@@ -95,7 +95,7 @@
           <div class="d-flex gap-2">
             <%= link_to "New Work Order", new_work_orders_detail_path, class: "btn btn-primary" %>
             <%= link_to "View All Work Orders", work_orders_details_path, class: "btn btn-outline-primary" %>
-            <%= link_to "Pending Approvals", work_orders_approvals_path, class: "btn btn-outline-warning" %>
+            <%= link_to "Pending Approvals", work_orders_approvals_path(q: { work_order_status_eq: 'pending' }), class: "btn btn-outline-warning" %>
           </div>
         </div>
       </div>

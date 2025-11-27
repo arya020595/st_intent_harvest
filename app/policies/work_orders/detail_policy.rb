@@ -18,11 +18,19 @@ module WorkOrders
     end
 
     def edit?
-      editable?
+      user.has_permission?(build_permission_code('edit')) && editable?
     end
 
     def update?
-      editable?
+      user.has_permission?(build_permission_code('update')) && editable?
+    end
+
+    def destroy?
+      user.has_permission?(build_permission_code('destroy')) && !completed?
+    end
+
+    def confirm_delete?
+      destroy?
     end
 
     private
@@ -33,6 +41,10 @@ module WorkOrders
 
     def editable?
       record.work_order_status.in?(%w[ongoing amendment_required])
+    end
+
+    def completed?
+      record.work_order_status == 'completed'
     end
 
     class Scope < ApplicationPolicy::Scope
