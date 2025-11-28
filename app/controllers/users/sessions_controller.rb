@@ -7,6 +7,9 @@ module Users
     # Skip authentication for login pages
     skip_before_action :authenticate_user!, only: %i[new create]
 
+    # Use custom layout for Devise sessions
+    layout 'devise/application'
+
     # POST /resource/sign_in
     def create
       # Clear any existing session data before sign in

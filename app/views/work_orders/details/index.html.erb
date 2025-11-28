@@ -47,14 +47,17 @@
                   <%= f.search_field :block_block_number_cont, class: 'form-control form-control-sm', placeholder: 'Search Block...' %>
                 </th>
                 <th class="text-center">
-                  <div class="input-group input-group-sm">
+                  <div class="input-group input-group-sm"
+                          data-controller="flatpickr"
+                          data-flatpickr-mode-value="range"
+                          data-flatpickr-date-format-value="d-m-Y"
+                          data-flatpickr-field-name-value="q[start_date]"
+                      >
                     <input type="text"
                            class="form-control form-control-sm cursor-pointer"
                            placeholder="Select Date Range"
-                           data-controller="flatpickr"
-                           data-flatpickr-mode-value="range"
-                           data-flatpickr-date-format-value="d-m-Y"
-                           data-flatpickr-field-name-value="q[start_date]">
+                           data-flatpickr-target="input"
+                           >
                     <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
                       <i class="bi bi-calendar-range"></i>
                     </span>

@@ -3,32 +3,33 @@ import flatpickr from "flatpickr";
 
 /**
  * Flatpickr Controller
- * 
+ *
  * A reusable Stimulus controller for date/datetime picking with Flatpickr library.
  * Supports single date, multiple dates, and date range modes.
  * Automatically syncs with Ransack hidden fields for Rails search forms.
- * 
+ *
  * @example Basic usage (single date)
- *   <input type="text" 
+ *   <input type="text"
  *          data-controller="flatpickr"
  *          data-flatpickr-date-format-value="d-m-Y">
- * 
+ *
  * @example Range mode with Ransack integration
- *   <input type="text" 
+ *   <input type="text"
  *          data-controller="flatpickr"
  *          data-flatpickr-mode-value="range"
  *          data-flatpickr-date-format-value="d-m-Y"
  *          data-flatpickr-field-name-value="q[hired_date]">
  *   <%= f.hidden_field :hired_date_gteq %>
  *   <%= f.hidden_field :hired_date_lteq %>
- * 
+ *
  * @example With time picker
- *   <input type="text" 
+ *   <input type="text"
  *          data-controller="flatpickr"
  *          data-flatpickr-enable-time-value="true"
  *          data-flatpickr-date-format-value="d-m-Y H:i">
  */
 export default class extends Controller {
+  static targets = ["input"];
   static values = {
     mode: { type: String, default: "single" }, // single, multiple, range
     dateFormat: { type: String, default: "Y-m-d" }, // Display format
@@ -58,7 +59,7 @@ export default class extends Controller {
    */
   initializeFlatpickr() {
     const config = this.buildFlatpickrConfig();
-    this.picker = flatpickr(this.element, config);
+    this.picker = flatpickr(this.inputTarget, config);
   }
 
   /**
@@ -81,6 +82,11 @@ export default class extends Controller {
     }
 
     return config;
+  }
+
+  // Public method to open the date picker programmatically
+  open() {
+    if (this.picker) this.picker.open();
   }
 
   /**
