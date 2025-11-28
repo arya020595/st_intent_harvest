@@ -20,10 +20,6 @@
         <%= form.text_field :name, placeholder: "Enter Category Name", class: "form-control", required: true %>
       </div>
       <div class="mb-3">
-        <%= form.label :category_type, "Category Type", class: "form-label" %>
-        <%= form.text_field :category_type, placeholder: "Enter Category Type", class: "form-control", required: true %>
-      </div>
-      <div class="mb-3">
         <%= form.label :parent_id, "Parent Category", class: "form-label" %>
         <%= form.collection_select :parent_id, Category.all, :id, :name, { include_blank: "None (Top Level)" }, class: "form-select" %>
       </div>

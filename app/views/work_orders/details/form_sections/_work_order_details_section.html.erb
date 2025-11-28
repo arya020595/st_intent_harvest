@@ -3,12 +3,14 @@
   <div class="card-header border-bottom pb-2">
     <div class="fw-bold fs-4" style="color: #155e1a">Work Order Details</div>
   </div>
+
   <div class="card-body mt-3">
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Work Order ID</label>
         <input type="text" class="form-control" value="Auto Filled" disabled style="background-color: #e9ecef;">
       </div>
+
       <div class="col-md-6 mb-3">
         <%= form.label :work_order_rate_id, "Work Order", class: "form-label fw-bold" %>
         <%= form.collection_select :work_order_rate_id,
@@ -25,16 +27,19 @@
             } %>
       </div>
     </div>
+
     <div class="row" data-work-order-form-target="rateDetailsSection">
       <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Work Order Rate (RM)</label>
         <input type="text" class="form-control" id="work_order_rate_display" value="Auto Filled" disabled style="background-color: #e9ecef;">
       </div>
+
       <div class="col-md-6 mb-3" data-work-order-form-target="unitSection">
         <label class="form-label fw-bold">Unit of Measurement</label>
         <input type="text" class="form-control" id="work_order_unit_display" value="Auto Filled" disabled style="background-color: #e9ecef;">
       </div>
     </div>
+
     <div class="row" data-work-order-form-target="normalFieldsSection">
       <div class="col-md-6 mb-3">
         <%= form.label :block_id, "Block No.", class: "form-label fw-bold" %>
@@ -45,9 +50,21 @@
             { include_blank: "Select Block No." },
             { class: "form-select" } %>
       </div>
+
       <% if @is_field_conductor %>
-        <!-- Hidden field for auto-filled field conductor -->
+        <!-- Display Field Conductor Name -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Field Conductor</label>
+          <input type="text"
+                 class="form-control"
+                 value="<%= current_user.name %>"
+                 disabled
+                 style="background-color: #e9ecef;">
+        </div>
+
+        <!-- Hidden field to store the ID -->
         <%= form.hidden_field :field_conductor_id, value: current_user.id %>
+
       <% else %>
         <!-- Normal select field for non-field conductors -->
         <div class="col-md-6 mb-3">
@@ -61,12 +78,14 @@
         </div>
       <% end %>
     </div>
+
     <div class="row" data-work-order-form-target="normalFieldsSection">
       <div class="col-md-6 mb-3">
         <%= form.label :start_date, "Starting Date", class: "form-label fw-bold" %>
         <%= form.date_field :start_date, class: "form-control", placeholder: "DD-MM-YYYY" %>
       </div>
     </div>
+
     <div class="row" data-work-order-form-target="workMonthSection" style="display: none;">
       <div class="col-md-6 mb-3">
         <%= form.label :work_month, "Work Month", class: "form-label fw-bold" %>
