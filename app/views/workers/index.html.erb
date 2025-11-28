@@ -58,16 +58,19 @@
                       { class: 'form-select form-select-sm' } %>
                 </th>
                 <th class="text-center">
-                  <div class="input-group input-group-sm">
+                  <div class="input-group input-group-sm"
+                          data-controller="flatpickr"
+                          data-flatpickr-mode-value="range"
+                          data-flatpickr-date-format-value="d-m-Y"
+                          data-flatpickr-field-name-value="q[hired_date]"
+                      >
                     <input type="text"
                            class="form-control form-control-sm cursor-pointer"
                            placeholder="Select Date Range"
-                           data-controller="flatpickr"
-                           data-flatpickr-mode-value="range"
-                           data-flatpickr-date-format-value="d-m-Y"
-                           data-flatpickr-field-name-value="q[hired_date]">
+                           data-flatpickr-target="input"
+                           >
                     <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
-                      <i data-action="click->flatpickr#open" class="bi bi-calendar-range"></i>
+                      <i class="bi bi-calendar-range"></i>
                     </span>
                   </div>
                   <%= f.hidden_field :hired_date_gteq, value: params.dig(:q, :hired_date_gteq) %>
