@@ -58,18 +58,22 @@
               </th>
               <th></th>
               <th class="text-center">
-                <div class="input-group input-group-sm" style="min-width: 220px;">
-                  <input type="text"
-                        class="form-control form-control-sm cursor-pointer"
-                        placeholder="Select Date Range"
-                        data-controller="flatpickr"
-                        data-flatpickr-mode-value="range"
-                        data-flatpickr-date-format-value="d-m-Y"
-                        data-flatpickr-field-name-value="q[input_date]">
-                </div>
+                <div class="date-filter-cell">
+                  <div class="input-group input-group-sm"
+                      data-controller="flatpickr"
+                      data-flatpickr-mode-value="range"
+                      data-flatpickr-date-format-value="d-m-Y"
+                      data-flatpickr-field-name-value="q[input_date]">
 
-                <%= f.hidden_field :input_date_gteq, value: params.dig(:q, :input_date_gteq) %>
-                <%= f.hidden_field :input_date_lteq, value: params.dig(:q, :input_date_lteq) %>
+                    <input type="text"
+                          class="form-control form-control-sm cursor-pointer"
+                          placeholder="Select Date Range"
+                          data-flatpickr-target="input">
+                  </div>
+
+                  <%= f.hidden_field :input_date_gteq %>
+                  <%= f.hidden_field :input_date_lteq %>
+                </div>
               </th>
           </tr>
         </thead>
