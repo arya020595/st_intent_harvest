@@ -63,20 +63,11 @@
                       options_for_select([['Active', true], ['Inactive', false]], f.object.is_active_eq),
                       { include_blank: 'Select Status..' },
                       { class: 'form-select form-select-sm' } %>
-                </th>
-                <th></th>
-                <th></th>
-
-              </tr>
-            </thead>
-            <tbody id="users-table-body">
-              <% if @users.any? %>
-                <%= render partial: 'user_row', collection: @users, as: :user %>
-              <% else %>
-                <tr>
-                  <td colspan="8" class="text-center text-muted py-4">
-                    No users found. <%= link_to 'Add a new user', new_user_management_user_path, data: { turbo_frame: "modal" }, class: 'text-decoration-none' %>
-                  </td>
+                  </th>
+                  <th>
+                  </th>
+                  <th>
+                  </th>
                 </tr>
               </thead>
               <tbody id="users-table-body">
