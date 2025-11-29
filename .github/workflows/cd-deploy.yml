@@ -31,13 +31,14 @@ jobs:
           SHORT_SHA=$(echo "$FULL_SHA" | cut -c1-7)
           ACTOR='${{ github.actor }}'
           RUN_URL='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          COMMIT_MSG=$(echo ${{ toJson(github.event.workflow_run.head_commit.message || 'Manual dispatch') }} | sed 's/\\n/\n/g')
 
           payload=$(jq -n \
             --arg repo "$REPO" \
             --arg branch "$BRANCH" \
             --arg sha "$SHORT_SHA" \
             --arg actor "$ACTOR" \
-            --arg msg ${{ toJson(github.event.workflow_run.head_commit.message || 'Manual dispatch') }} \
+            --arg msg "$COMMIT_MSG" \
             --arg runurl "$RUN_URL" \
             '{
               text: ":rocket: Production deployment started",
@@ -126,6 +127,7 @@ jobs:
           END_TIME=$(date +%s)
           DURATION=$(( END_TIME - START_TIME ))
           HUMAN_DURATION=$(printf '%02dm:%02ds' $((DURATION/60)) $((DURATION%60)))
+          COMMIT_MSG=$(echo ${{ toJson(github.event.workflow_run.head_commit.message || 'Manual dispatch') }} | sed 's/\\n/\n/g')
 
           if [ "$STATUS" = "success" ]; then
             TITLE="✅ Production Deployment Succeeded"
@@ -144,7 +146,7 @@ jobs:
             --arg branch "$BRANCH" \
             --arg sha "$SHORT_SHA" \
             --arg actor "$ACTOR" \
-            --arg msg ${{ toJson(github.event.workflow_run.head_commit.message || 'Manual dispatch') }} \
+            --arg msg "$COMMIT_MSG" \
             --arg runurl "$RUN_URL" \
             --arg result "$RESULT_LINE" \
             --arg dur "$HUMAN_DURATION" \
