@@ -12,7 +12,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -40,19 +40,19 @@ jobs:
             --arg msg ${{ toJson(github.event.workflow_run.head_commit.message || 'Manual dispatch') }} \
             --arg runurl "$RUN_URL" \
             '{
-              "text": ":rocket: Production deployment started",
-              "blocks": [
-                { "type": "header", "text": { "type": "plain_text", "text": "🚀 Production Deployment Started" } },
-                { "type": "section", "fields": [
-                    { "type": "mrkdwn", "text": "*Repository:*\n\(\$repo)" },
-                    { "type": "mrkdwn", "text": "*Branch:*\n\(\$branch)" },
-                    { "type": "mrkdwn", "text": "*Commit:*\n\(\$sha)" },
-                    { "type": "mrkdwn", "text": "*Actor:*\n\(\$actor)" }
+              text: ":rocket: Production deployment started",
+              blocks: [
+                { type: "header", text: { type: "plain_text", text: "🚀 Production Deployment Started" } },
+                { type: "section", fields: [
+                    { type: "mrkdwn", text: ("*Repository:*\n" + $repo) },
+                    { type: "mrkdwn", text: ("*Branch:*\n" + $branch) },
+                    { type: "mrkdwn", text: ("*Commit:*\n" + $sha) },
+                    { type: "mrkdwn", text: ("*Actor:*\n" + $actor) }
                   ]
                 },
-                { "type": "section", "text": { "type": "mrkdwn", "text": "*Message:*\n\(\$msg)" } },
-                { "type": "context", "elements": [
-                    { "type": "mrkdwn", "text": "<\(\$runurl)|View workflow run>" }
+                { type: "section", text: { type: "mrkdwn", text: ("*Message:*\n" + $msg) } },
+                { type: "context", elements: [
+                    { type: "mrkdwn", text: ("<" + $runurl + "|View workflow run>") }
                   ]
                 }
               ]
@@ -149,21 +149,21 @@ jobs:
             --arg result "$RESULT_LINE" \
             --arg dur "$HUMAN_DURATION" \
             '{
-              "text": $title,
-              "blocks": [
-                { "type": "header", "text": { "type": "plain_text", "text": $title } },
-                { "type": "section", "fields": [
-                    { "type": "mrkdwn", "text": "*Repository:*\n\(\$repo)" },
-                    { "type": "mrkdwn", "text": "*Branch:*\n\(\$branch)" },
-                    { "type": "mrkdwn", "text": "*Commit:*\n\(\$sha)" },
-                    { "type": "mrkdwn", "text": "*Actor:*\n\(\$actor)" },
-                    { "type": "mrkdwn", "text": "\(\$result)" },
-                    { "type": "mrkdwn", "text": "*Duration:*\n\(\$dur)" }
+              text: $title,
+              blocks: [
+                { type: "header", text: { type: "plain_text", text: $title } },
+                { type: "section", fields: [
+                    { type: "mrkdwn", text: ("*Repository:*\n" + $repo) },
+                    { type: "mrkdwn", text: ("*Branch:*\n" + $branch) },
+                    { type: "mrkdwn", text: ("*Commit:*\n" + $sha) },
+                    { type: "mrkdwn", text: ("*Actor:*\n" + $actor) },
+                    { type: "mrkdwn", text: $result },
+                    { type: "mrkdwn", text: ("*Duration:*\n" + $dur) }
                   ]
                 },
-                { "type": "section", "text": { "type": "mrkdwn", "text": "*Message:*\n\(\$msg)" } },
-                { "type": "context", "elements": [
-                    { "type": "mrkdwn", "text": "<\(\$runurl)|View workflow run>" }
+                { type: "section", text: { type: "mrkdwn", text: ("*Message:*\n" + $msg) } },
+                { type: "context", elements: [
+                    { type: "mrkdwn", text: ("<" + $runurl + "|View workflow run>") }
                   ]
                 }
               ]
