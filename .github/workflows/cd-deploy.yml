@@ -57,7 +57,7 @@ jobs:
                 }
               ]
             }')
-          echo "$payload" | curl -s -X POST -H 'Content-type: application/json' -d @- "$SLACK_WEBHOOK_URL"
+          echo "$payload" | curl -s -X POST -H 'Content-type: application/json' -d @- "$SLACK_WEBHOOK_URL" || echo "Warning: Failed to send Slack notification"
           echo "Sent Slack start notification"
 
       - name: Deploy to production server
