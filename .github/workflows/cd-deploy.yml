@@ -17,11 +17,13 @@ jobs:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     steps:
+      - name: Set deployment start time
+        run: |
+          echo "START_TIME=$(date +%s)" >> $GITHUB_ENV
+
       - name: Notify Slack - Deployment Starting
         run: |
           set -e
-          START_TIME=$(date +%s)
-          echo "START_TIME=$START_TIME" >> $GITHUB_ENV
 
           REPO="${{ github.repository }}"
           BRANCH="${{ github.event.workflow_run.head_branch || github.ref_name }}"
