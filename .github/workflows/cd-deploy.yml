@@ -127,17 +127,16 @@ jobs:
 
           if [ "$STATUS" = "success" ]; then
             TITLE="✅ Production Deployment Succeeded"
-            EMOJI=":white_check_mark:"
             RESULT_LINE="*Result:* Success"
             COLOR="#2eb886"
-          else
+            else
             TITLE="❌ Production Deployment Failed"
-            EMOJI=":x:"
             RESULT_LINE="*Result:* Failure"
             COLOR="#e01e5a"
-          fi
+            fi
 
-          payload=$(jq -n \
+            payload=$(jq -n \
+            --arg color "$COLOR" \
             --arg title "$TITLE" \
             --arg repo "$REPO" \
             --arg branch "$BRANCH" \
