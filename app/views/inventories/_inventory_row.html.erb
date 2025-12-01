@@ -1,7 +1,8 @@
+<% policy = record_policy(inventory, InventoryPolicy) %>
 <tr id="<%= dom_id(inventory) %>">
   <td class="text-center">
     <div class="action-buttons">
-      <% if record_policy(inventory, InventoryPolicy).show? %>
+      <% if policy.show? %>
         <%= link_to inventory_path(inventory),
               class: "action-btn info",
               title: "View Details",
@@ -15,7 +16,7 @@
           <i class="bi bi-info-circle-fill"></i>
         <% end %>
       <% end %>
-      <% if record_policy(inventory, InventoryPolicy).edit? %>
+      <% if policy.edit? %>
         <%= link_to edit_inventory_path(inventory),
                     class: "action-btn warning",
                     title: "Edit",
@@ -29,7 +30,7 @@
           <i class="bi bi-pencil-fill"></i>
         <% end %>
       <% end %>
-      <% if record_policy(inventory, InventoryPolicy).confirm_delete? %>
+      <% if policy.confirm_delete? %>
         <%= link_to confirm_delete_inventory_path(inventory),
                     class: "action-btn danger",
                     title: "Delete",
