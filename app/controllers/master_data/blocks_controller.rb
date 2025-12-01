@@ -23,7 +23,6 @@ module MasterData
       end
     end
 
-
     def new
       @block = Block.new
       authorize @block, policy_class: MasterData::BlockPolicy
@@ -98,31 +97,30 @@ module MasterData
     def destroy
       authorize @block, policy_class: MasterData::BlockPolicy
 
-          if @block.destroy
-            respond_to do |format|
-              format.turbo_stream do
-                flash.now[:notice] = 'Block deleted successfully.'
-              end
-              format.html { redirect_to master_data_blocks_path, notice: 'Block deleted successfully.' }
-            end
-          else
-            redirect_to master_data_blocks_path, alert: 'Failed to delete block.'
+      if @block.destroy
+        respond_to do |format|
+          format.turbo_stream do
+            flash.now[:notice] = 'Block deleted successfully.'
           end
+          format.html { redirect_to master_data_blocks_path, notice: 'Block deleted successfully.' }
         end
+      else
+        redirect_to master_data_blocks_path, alert: 'Failed to delete block.'
+      end
+    end
 
-        private
+    private
 
     def set_block
       @block = Block.find_by(id: params[:id])
       return if @block.present?
 
       if turbo_frame_request?
-        render turbo_stream: turbo_stream.replace("modal", ""), status: :ok
+        render turbo_stream: turbo_stream.replace('modal', ''), status: :ok
       else
         redirect_to master_data_blocks_path
       end
     end
-
 
     def block_params
       params.require(:block).permit(
