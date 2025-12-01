@@ -10,6 +10,14 @@ class InventoryPolicy < ApplicationPolicy
   # - inventory.update
   # - inventory.destroy
 
+  def new?
+    create?
+  end
+
+  def edit?
+    update?
+  end
+
   private
 
   def permission_resource

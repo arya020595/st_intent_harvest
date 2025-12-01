@@ -37,18 +37,34 @@ class ApplicationController < ActionController::Base
     new_user_session_path
   end
 
+  # Handle unauthorized access attempts
+  # For Turbo requests: Show flash message and close modals
+  # For HTML requests: Redirect to safe location
   def user_not_authorized
-    flash[:alert] = 'You are not authorized to perform this action.'
+    message = 'You are not authorized to perform this action.'
 
-    # Get user's first accessible path, but avoid redirect loop
-    redirect_path = if request.referrer.present? && request.referrer != request.url
-                      # Redirect to previous page if it exists and is different
-                      request.referrer
-                    else
-                      # Redirect to user's first accessible resource
-                      send(current_user.first_accessible_path)
-                    end
+    respond_to do |format|
+      format.turbo_stream do
+        flash.now[:alert] = message
+        render turbo_stream: [
+          turbo_stream.update('modal', ''),
+          turbo_stream.append('flash_messages', partial: 'shared/flash'),
+          turbo_stream.action(:hide_modals, '')
+        ]
+      end
+      format.html do
+        flash[:alert] = message
+        redirect_to safe_redirect_path, allow_other_host: true
+      end
+    end
+  end
 
-    redirect_to redirect_path, allow_other_host: true
+  # Determine safe redirect path to avoid redirect loops
+  def safe_redirect_path
+    if request.referrer.present? && request.referrer != request.url
+      request.referrer
+    else
+      send(current_user.first_accessible_path)
+    end
   end
 end
