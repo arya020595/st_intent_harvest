@@ -22,9 +22,6 @@
                     <%= sort_link(@q, :name, 'Name') %>
                   </th>
                   <th class="text-center">
-                    <%= sort_link(@q, :category_type, 'Category Type') %>
-                  </th>
-                  <th class="text-center">
                     <%= sort_link(@q, :created_at, 'Created At') %>
                   </th>
                   <th class="text-center">
@@ -43,9 +40,6 @@
                   </th>
                   <th>
                     <%= f.search_field :name_cont, class: 'form-control form-control-sm', placeholder: 'Search Name..' %>
-                  </th>
-                  <th>
-                    <%= f.search_field :category_type_cont, class: 'form-control form-control-sm', placeholder: 'Search Type..' %>
                   </th>
                   <th></th>
                   <th></th>

@@ -1,10 +1,11 @@
 <%= form_with(model: worker) do |form| %>
   <div class="modal-header">
     <h5 class="modal-title" id="workerModalLabel">
-    <strong>  <%= worker.persisted? ? 'Edit Worker Profile' : 'Add New Worker Profile' %> </strong>
+      <strong><%= worker.persisted? ? 'Edit Worker Profile' : 'Add New Worker Profile' %></strong>
     </h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
   </div>
+
   <div class="modal-body">
     <% if worker.errors.any? %>
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -20,6 +21,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
     <% end %>
+
     <div class="row">
       <div class="col-md-6 mb-3">
         <%= form.label :name, "Worker Name", class: "form-label fw-semibold" %>
@@ -33,6 +35,7 @@
             { class: "form-select", required: true } %>
       </div>
     </div>
+
     <div class="row">
       <div class="col-md-6 mb-3">
         <%= form.label :gender, class: "form-label fw-semibold" %>
@@ -46,19 +49,25 @@
         <%= form.date_field :hired_date, class: "form-control", required: true %>
       </div>
     </div>
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <%= form.label :nationality, class: "form-label fw-semibold" %>
-        <%= form.select :nationality,
-            Worker::NATIONALITIES.map { |n| [n, n] },
-            { include_blank: "Select Nationality" },
-            { class: "form-select" } %>
-      </div>
-      <div class="col-md-6 mb-3">
-        <%= form.label :identity_number, "IC/Passport No.", class: "form-label fw-semibold" %>
-        <%= form.text_field :identity_number, class: "form-control", placeholder: "Enter IC or Passport number" %>
+
+    <!-- NATIONALITY + ID FIELD -->
+    <div data-controller="nationality">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <%= form.label :nationality, class: "form-label fw-semibold" %>
+          <%= form.select :nationality,
+              Worker::NATIONALITIES.map { |n| [n, n] },
+              { include_blank: "Select Nationality" },
+              { class: "form-select", data: { action: "change->nationality#toggleIdentity" } } %>
+        </div>
+
+        <div class="col-md-6 mb-3" data-nationality-target="identityField">
+          <%= form.label :identity_number, "IC/Passport No.", class: "form-label fw-semibold" %>
+          <%= form.text_field :identity_number, class: "form-control", placeholder: "Enter IC or Passport number" %>
+        </div>
       </div>
     </div>
+
     <div class="mb-3">
       <div class="form-check form-switch">
         <%= form.check_box :is_active, class: "form-check-input", role: "switch" %>
@@ -67,9 +76,10 @@
       </div>
     </div>
   </div>
-    <div class="modal-footer">
-      <%= button_tag type: :submit, class: "btn btn-success" do %>
-        <i class="bi bi-save-fill text-white me-1"></i> Save
-      <% end %>
-    </div>
+
+  <div class="modal-footer">
+    <%= button_tag type: :submit, class: "btn btn-success" do %>
+      <i class="bi bi-save-fill text-white me-1"></i> Save
+    <% end %>
+  </div>
 <% end %>
