@@ -37,8 +37,6 @@ module WorkOrders
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
       @is_field_conductor = current_user.role&.name == 'Field Conductor'
-      #Add this condition only for the user who is "field conductor" role.
-      @field_conductor_name = current_user.name if @is_field_conductor
     end
 
     def create
@@ -63,8 +61,6 @@ module WorkOrders
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
       @is_field_conductor = current_user.role&.name == 'Field Conductor'
-      #Add this condition only for the user who is "field conductor" role.
-      @field_conductor_name = current_user.name if @is_field_conductor
     end
 
     def update
