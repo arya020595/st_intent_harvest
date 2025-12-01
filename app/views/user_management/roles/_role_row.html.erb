@@ -2,25 +2,34 @@
   <td class="text-center">
     <div class="action-buttons">
       <!-- VIEW: Wide -->
-      <%= link_to user_management_role_path(role),
-      class: "action-btn info",
-      title: "View Details",
-      **modal_link_data(size: 'modal-xl') do %>
-        <i class="bi bi-info-circle-fill"></i>
+      <% if record_policy(role, UserManagement::RolePolicy).show? %>
+        <%= link_to user_management_role_path(role), class: "action-btn info", title: "View Details", **modal_link_data(size: 'modal-xl') do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to user_management_role_path(role), class: "action-btn info", title: "View Details" do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
       <% end %>
       <!-- EDIT: Medium -->
-      <%= link_to edit_user_management_role_path(role),
-      class: "action-btn warning",
-      title: "Edit",
-      **modal_link_data(size: 'modal-xl') do %>
-        <i class="bi bi-pencil-fill"></i>
+      <% if record_policy(role, UserManagement::RolePolicy).edit? %>
+        <%= link_to edit_user_management_role_path(role), class: "action-btn warning", title: "Edit", **modal_link_data(size: 'modal-xl') do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to edit_user_management_role_path(role), class: "action-btn warning", title: "Edit" do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
       <% end %>
       <!-- DELETE: Medium -->
-      <%= link_to confirm_delete_user_management_role_path(role),
-      class: "action-btn danger",
-      title: "Delete",
-      **modal_link_data(size: "modal-md") do %>
-        <i class="bi bi-trash-fill"></i>
+      <% if record_policy(role, UserManagement::RolePolicy).confirm_delete? %>
+        <%= link_to confirm_delete_user_management_role_path(role), class: "action-btn danger", title: "Delete", **modal_link_data(size: "modal-md") do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to confirm_delete_user_management_role_path(role), class: "action-btn danger", title: "Delete" do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
       <% end %>
     </div>
   </td>
