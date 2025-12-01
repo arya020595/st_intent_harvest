@@ -17,6 +17,14 @@ module WorkOrders
       user.has_permission?(build_permission_code('worker_detail'))
     end
 
+    def new?
+      create?
+    end
+
+    def edit?
+      update?
+    end
+
     private
 
     def permission_resource
