@@ -11,8 +11,8 @@
         <% end %>
       <% end %>
       <% if record_policy(vehicle, MasterData::VehiclePolicy).edit? %>
-        <i class="bi bi-pencil-fill"></i>
         <%= link_to edit_master_data_vehicle_path(vehicle), class: "action-btn warning", title: "Edit", **modal_link_data do %>
+          <i class="bi bi-pencil-fill"></i>
         <% end %>
       <% else %>
         <%= link_to edit_master_data_vehicle_path(vehicle), class: "action-btn warning", title: "Edit" do %>
@@ -20,8 +20,8 @@
         <% end %>
       <% end %>
       <% if record_policy(vehicle, MasterData::VehiclePolicy).confirm_delete? %>
-        <i class="bi bi-trash-fill"></i>
         <%= link_to confirm_delete_master_data_vehicle_path(vehicle), class: "action-btn danger", title: "Delete", **modal_link_data(size: "modal-md") do %>
+          <i class="bi bi-trash-fill"></i>
         <% end %>
       <% else %>
         <%= link_to confirm_delete_master_data_vehicle_path(vehicle), class: "action-btn danger", title: "Delete" do %>
