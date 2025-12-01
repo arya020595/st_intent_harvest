@@ -48,7 +48,7 @@ class ApplicationController < ActionController::Base
         flash.now[:alert] = message
         render turbo_stream: [
           turbo_stream.update('modal', ''),
-          turbo_stream.append('flash_messages', partial: 'shared/flash'),
+          turbo_stream.update('flash_messages', partial: 'layouts/flash'),
           turbo_stream.action(:hide_modals, '')
         ]
       end
