@@ -1,14 +1,8 @@
 <tr id="<%= dom_id(worker) %>">
   <td class="text-center">
     <div class="action-buttons">
-      <% if record_policy(worker, WorkerPolicy).show? %>
-        <%= link_to worker_path(worker), class: "action-btn info", title: "View Details", **modal_link_data(size: 'modal-lg') do %>
-          <i class="bi bi-info-circle-fill"></i>
-        <% end %>
-      <% else %>
-        <%= link_to worker_path(worker), class: "action-btn info", title: "View Details" do %>
-          <i class="bi bi-info-circle-fill"></i>
-        <% end %>
+      <%= link_to worker_path(worker), class: "action-btn info", title: "View Details" do %>
+        <i class="bi bi-info-circle-fill"></i>
       <% end %>
       <% if record_policy(worker, WorkerPolicy).edit? %>
         <%= link_to edit_worker_path(worker), class: "action-btn warning", title: "Edit", **modal_link_data(size: 'modal-lg') do %>
