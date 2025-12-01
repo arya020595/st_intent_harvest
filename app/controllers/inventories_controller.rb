@@ -1,13 +1,13 @@
 class InventoriesController < ApplicationController
+  include RansackMultiSort
+
   before_action :set_inventory, only: %i[show edit update destroy confirm_delete]
 
   def index
     authorize Inventory
 
-    @q = policy_scope(Inventory).ransack(params[:q])
-    @q.sorts = 'input_date desc' if @q.sorts.empty?
-
-    @pagy, @inventories = pagy(@q.result(distinct: true).order(created_at: :desc))
+    apply_ransack_search(policy_scope(Inventory).order(input_date: :desc))
+    @pagy, @inventories = paginate_results(@q.result(distinct: true))
 
     @categories = Category.all
     @units = Unit.all
