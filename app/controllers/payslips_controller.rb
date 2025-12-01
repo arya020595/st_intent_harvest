@@ -104,8 +104,6 @@ class PayslipsController < ApplicationController
     render_pdf_error
   end
 
-  private
-
   def render_pdf_error
     render html: '<h1>PDF Generation Error</h1><p>Please try again later.</p>'.html_safe, status: :internal_server_error
   end

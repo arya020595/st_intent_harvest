@@ -1,0 +1,55 @@
+<% policy = record_policy(inventory, InventoryPolicy) %>
+<tr id="<%= dom_id(inventory) %>">
+  <td class="text-center">
+    <div class="action-buttons">
+      <% if policy.show? %>
+        <%= link_to inventory_path(inventory),
+              class: "action-btn info",
+              title: "View Details",
+              **modal_link_data do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to inventory_path(inventory),
+              class: "action-btn info",
+              title: "View Details" do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
+      <% end %>
+      <% if policy.edit? %>
+        <%= link_to edit_inventory_path(inventory),
+                    class: "action-btn warning",
+                    title: "Edit",
+                    **modal_link_data do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to edit_inventory_path(inventory),
+                    class: "action-btn warning",
+                    title: "Edit" do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
+      <% end %>
+      <% if policy.confirm_delete? %>
+        <%= link_to confirm_delete_inventory_path(inventory),
+                    class: "action-btn danger",
+                    title: "Delete",
+                    **modal_link_data(size: "modal-md") do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to confirm_delete_inventory_path(inventory),
+                    class: "action-btn danger",
+                    title: "Delete" do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
+      <% end %>
+    </div>
+  </td>
+  <td><%= inventory.name %></td>
+  <td><%= inventory.category&.name %></td>
+  <td><%= inventory.unit&.name %></td>
+  <td class="text-center"><%= inventory.stock_quantity %></td>
+  <td class="text-center"><%= inventory.input_date.strftime("%d-%m-%Y") if inventory.input_date %></td>
+  <td class="text-center">RM <%= number_with_precision(inventory.price, precision: 2, delimiter: ',') %></td>
+</tr>
