@@ -1,20 +1,32 @@
 <tr id="<%= dom_id(category) %>">
   <td class="text-center">
     <div class="action-buttons">
-      <%= link_to master_data_category_path(category),
-            class: "action-btn info",
-            title: "View Details",
-            **modal_link_data do %>
-        <i class="bi bi-info-circle-fill"></i>
+      <% if record_policy(category, MasterData::CategoryPolicy).show? %>
+        <%= link_to master_data_category_path(category), class: "action-btn info", title: "View Details", **modal_link_data do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to master_data_category_path(category), class: "action-btn info", title: "View Details" do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
       <% end %>
-      <%= link_to edit_master_data_category_path(category), class: "action-btn warning", title: "Edit", **modal_link_data do %>
-        <i class="bi bi-pencil-fill"></i>
+      <% if record_policy(category, MasterData::CategoryPolicy).edit? %>
+        <%= link_to edit_master_data_category_path(category), class: "action-btn warning", title: "Edit", **modal_link_data do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to edit_master_data_category_path(category), class: "action-btn warning", title: "Edit" do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
       <% end %>
-      <%= link_to confirm_delete_master_data_category_path(category),
-                  class: "action-btn danger",
-                  title: "Delete",
-                  **modal_link_data(size: "modal-md") do %>
-        <i class="bi bi-trash-fill"></i>
+      <% if record_policy(category, MasterData::CategoryPolicy).confirm_delete? %>
+        <%= link_to confirm_delete_master_data_category_path(category), class: "action-btn danger", title: "Delete", **modal_link_data(size: "modal-md") do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to confirm_delete_master_data_category_path(category), class: "action-btn danger", title: "Delete" do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
       <% end %>
     </div>
   </td>
