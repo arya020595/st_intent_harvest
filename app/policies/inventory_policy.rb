@@ -18,6 +18,11 @@ class InventoryPolicy < ApplicationPolicy
     update?
   end
 
+  # Align delete confirmation permission with destroy?
+  def confirm_delete?
+    destroy?
+  end
+
   private
 
   def permission_resource

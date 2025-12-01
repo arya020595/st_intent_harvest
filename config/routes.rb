@@ -53,7 +53,11 @@ Rails.application.routes.draw do
   end
 
   # Inventory
-  resources :inventories
+  resources :inventories do
+    member do
+      get :confirm_delete
+    end
+  end
 
   # Workers
   resources :workers do
