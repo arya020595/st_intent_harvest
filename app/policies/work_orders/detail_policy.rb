@@ -17,8 +17,12 @@ module WorkOrders
       user.has_permission?(build_permission_code('mark_complete')) && editable?
     end
 
+    def new?
+      create?
+    end
+
     def edit?
-      user.has_permission?(build_permission_code('edit')) && editable?
+      update?
     end
 
     def update?
