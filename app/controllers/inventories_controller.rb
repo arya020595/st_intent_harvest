@@ -2,11 +2,15 @@ class InventoriesController < ApplicationController
   include RansackMultiSort
 
   before_action :set_inventory, only: %i[show edit update destroy confirm_delete]
+  before_action :load_collections, only: %i[new edit create update]
 
   def index
     authorize Inventory
 
-    apply_ransack_search(policy_scope(Inventory).order(input_date: :desc))
+    # Eager load associations used in the view to avoid N+1
+    base = policy_scope(Inventory).includes(:unit, :category).order(input_date: :desc)
+    apply_ransack_search(base)
+
     @pagy, @inventories = paginate_results(@q.result(distinct: true))
 
     @categories = Category.all
@@ -125,6 +129,12 @@ class InventoriesController < ApplicationController
     else
       redirect_to inventories_path and return
     end
+  end
+
+  # Provide categories and units for the form partial
+  def load_collections
+    @categories = Category.where.not(parent_id: nil)
+    @units = Unit.order(:name)
   end
 
   # Only allow a list of trusted parameters through

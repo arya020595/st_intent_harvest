@@ -51,15 +51,17 @@
           <label class="form-label fw-bold">Starting Date</label>
           <input type="text" class="form-control" value="<%= work_order.start_date&.strftime('%d-%m-%Y') || '-' %>" disabled style="background-color: #e9ecef;">
         </div>
-        <% if work_order.completed? %>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Completion Date</label>
+          <input type="text" class="form-control" value="<%= work_order.completion_date&.strftime('%d-%m-%Y') || '-' %>" disabled style="background-color: #e9ecef;">
+        </div>
+      </div>
+      <% if work_order.completed? %>
+        <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-label fw-bold">Approved By</label>
             <input type="text" class="form-control" value="<%= work_order.approved_by || '-' %>" disabled style="background-color: #e9ecef;">
           </div>
-        <% end %>
-      </div>
-      <% if work_order.completed? %>
-        <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-label fw-bold">Approved At</label>
             <input type="text" class="form-control" value="<%= work_order.approved_at&.strftime('%d-%m-%Y %H:%M') || '-' %>" disabled style="background-color: #e9ecef;">

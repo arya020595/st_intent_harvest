@@ -22,7 +22,7 @@
         </div>
         <div class="col-md-6">
           <%= form.label :category_id, class: "form-label" %>
-          <%= form.collection_select :category_id, Category.order(:name), :id, :name,
+          <%= form.collection_select :category_id, @categories.order(:name), :id, :name,
                 { include_blank: "Select category" }, class: "form-select" %>
         </div>
         <div class="col-md-6">
