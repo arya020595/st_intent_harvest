@@ -23,6 +23,7 @@ export default class extends Controller {
     "workMonthSection",
     "quantityHeader",
     "quantityCell",
+    "rateCell",
     "amountUsedHeader",
     "amountUsedCell",
   ];
@@ -294,6 +295,28 @@ export default class extends Controller {
         }
       }
     });
+
+    // Toggle rate field editability for work_days type
+    if (this.hasRateCellTarget) {
+      this.rateCellTargets.forEach((cell) => {
+        const rateInput = cell.querySelector('input[id^="worker_rate_input_"]');
+        const rateDisplay = cell.querySelector(
+          'input[id^="worker_rate_"][id$!="_value"][id$!="_input"]'
+        );
+
+        if (rateInput && rateDisplay) {
+          if (showDays) {
+            // Work days: show editable input, hide disabled display
+            rateInput.style.display = "block";
+            rateDisplay.style.display = "none";
+          } else {
+            // Normal/Resources: hide editable input, show disabled display
+            rateInput.style.display = "none";
+            rateDisplay.style.display = "block";
+          }
+        }
+      });
+    }
   }
 
   updateAllWorkerRates() {
@@ -444,12 +467,20 @@ export default class extends Controller {
       isWorkDays ? "block" : "none"
     };">
         </td>
-        <td>
+        <td data-work-order-form-target="rateCell">
+          <!-- Editable input for work_days type -->
+          <input type="number" class="form-control form-control-sm" id="worker_rate_input_${index}" placeholder="Rate" step="0.01" min="0" data-action="input->work-order-form#handleRateInput" data-worker-index="${index}" style="display: ${
+      isWorkDays ? "block" : "none"
+    };">
+          <!-- Display field for normal/resources type -->
           <input type="text" class="form-control form-control-sm" id="worker_rate_${index}" value="${
       this.currentWorkOrderRate > 0
         ? `RM ${this.currentWorkOrderRate.toFixed(2)}`
         : "Auto Calculate"
-    }" disabled style="background-color: #e9ecef;">
+    }" disabled style="background-color: #e9ecef; display: ${
+      isWorkDays ? "none" : "block"
+    };">
+          <!-- Hidden field for actual value -->
           <input type="hidden" id="worker_rate_value_${index}" name="work_order[work_order_workers_attributes][${index}][rate]" value="${(
       this.currentWorkOrderRate || 0
     ).toFixed(2)}">
@@ -503,6 +534,23 @@ export default class extends Controller {
 
   calculateWorkerAmount(event) {
     const index = event.currentTarget.dataset.workerIndex;
+    this.calculateWorkerAmountByIndex(index);
+  }
+
+  handleRateInput(event) {
+    const index = event.currentTarget.dataset.workerIndex;
+    const rateInput = event.currentTarget;
+    const rateValue = parseFloat(rateInput.value) || 0;
+
+    // Update hidden field value
+    const rateValueField = document.getElementById(
+      `worker_rate_value_${index}`
+    );
+    if (rateValueField) {
+      rateValueField.value = rateValue.toFixed(2);
+    }
+
+    // Recalculate amount
     this.calculateWorkerAmountByIndex(index);
   }
 
