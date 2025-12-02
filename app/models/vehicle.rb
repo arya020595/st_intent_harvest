@@ -3,6 +3,7 @@
 class Vehicle < ApplicationRecord
   validates :vehicle_number, presence: true, uniqueness: true
 
+  has_many :work_orders, dependent: :nullify
   # Display name for dropdowns
   def display_name
     vehicle_model.present? ? "#{vehicle_number} - #{vehicle_model}" : vehicle_number
