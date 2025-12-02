@@ -16,6 +16,16 @@
         <label class="form-label fw-bold">Work Order</label>
         <div class="p-2 rounded"><%= work_order.work_order_rate_name %></div>
       </div>
+      <% if work_order.resources_type? && work_order.vehicle.present? %>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Vehicle Number</label>
+          <div class="p-2 rounded"><%= work_order.vehicle_number || 'N/A' %></div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Vehicle Model</label>
+          <div class="p-2 rounded"><%= work_order.vehicle_model || 'N/A' %></div>
+        </div>
+      <% end %>
       <% if work_order.normal_type? %>
         <div class="col-md-6 mb-3">
           <label class="form-label fw-bold">Rate (RM)</label>
