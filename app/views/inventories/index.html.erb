@@ -1,107 +1,15 @@
 <% content_for :title, "Inventory | ST Intent Harvest" %>
-<div id="inventory">
-<div class="inventory-page">
-  <h1>Inventory</h1>
-
-<button type="button" class="add-button btn btn-primary" id="openModalBtn">
-  <%= fa_icon "plus-circle", class: "text-muted me-2 align-middle" %> Add Inventory
-</button>
-
-
-
-  <!-- INVENTORY TABLE WITH FILTER FORM -->
-  <%= search_form_for @q, url: inventories_path, method: :get do |f| %>
-    <div class="inventory-table-container mt-4">
-      <table id="inventoryTable">
-        <thead>
-            <tr>
-                <th></th>
-                <th class="header-row">
-                  <%= sort_link(@q, :name, 'Name') %>
-                </th>
-                <th>
-                  <%= sort_link(@q, :category_id, 'Category') %>
-                </th>
-                <th>
-                  <%= sort_link(@q, :unit_id, 'Unit') %>
-                </th>
-                <th class="text-center">
-                  <%= sort_link(@q, :quantity, 'Quantity') %>
-                </th>
-                <th class="text-center">
-                  <%= sort_link(@q, :input_date, 'Input Date') %>
-                </th>
-                <th class="text-center">
-                  <%= sort_link(@q, :price, 'Price') %>
-                </th>
-          </tr>
-
-          <!-- FILTER ROW -->
-          <tr>
-          <th>
-              <div class="filter-buttons">
-                <%= button_tag "Search", type: "submit", class: "btn filter-btn" %>
-                <%= link_to "Reset", inventories_path, class: "btn reset-btn" %>
-              </div>
-            </th>
-            <th><%= f.text_field :name_cont, class: "form-control form-control-sm", placeholder: "Search Name" %></th>
-            <th>
-                <%= f.select :category_id_eq,
-                            options_from_collection_for_select(@categories, :id, :name),
-                            { include_blank: "Select Category" },
-                            class: "form-control form-control-sm" %>
-              </th>
-              <th>
-                <%= f.select :unit_id_eq,
-                            options_from_collection_for_select(@units, :id, :name),
-                            { include_blank: "Select Unit" },
-                            class: "form-control form-control-sm" %>
-              </th>
-              <th></th>
-
-
-                <th class="text-center">
-                  <div class="input-group input-group-sm"
-                          data-controller="flatpickr"
-                          data-flatpickr-mode-value="range"
-                          data-flatpickr-date-format-value="d-m-Y"
-                          data-flatpickr-field-name-value="q[input_date]"
-                      >
-                    <input type="text"
-                           class="form-control form-control-sm cursor-pointer"
-                           placeholder="Select Date Range"
-                           data-flatpickr-target="input"
-                           >
-                  </div>
-                  <%= f.hidden_field :input_date_gteq, value: params.dig(:q, :input_date_gteq) %>
-                  <%= f.hidden_field :input_date_lteq, value: params.dig(:q, :input_date_lteq) %>
-                </th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <% if @inventories.any? %>
-            <% @inventories.each do |inventory| %>
-              <tr data-supplier="<%= inventory.supplier %>">
-                <td class="text-center">
-                  <a href="#" title="Info" class="mx-1" data-turbo="false"><i class="bi bi-info-circle-fill info-icon text-primary" data-id="<%= inventory.id %>"></i></a>
-                  <a href="#" title="Edit" class="mx-1" data-turbo="false"><i class="bi bi-pencil-fill edit-icon text-warning" data-id="<%= inventory.id %>"></i></a>
-                  <a href="#" title="Delete" class="mx-1" data-turbo="false"><i class="bi bi-trash-fill delete-icon text-danger" data-id="<%= inventory.id %>"></i></a>
-                </td>
-                <td><%= inventory.name %></td>
-                <td data-id="<%= inventory.category_id %>"><%= inventory.category&.name %></td>
-                <td data-id="<%= inventory.unit_id %>"><%= inventory.unit&.name %></td>
-                <td><%= inventory.stock_quantity %></td>
-                <td><%= inventory.input_date.strftime("%d-%m-%Y") if inventory.input_date %></td>
-                <td>RM <%= number_with_precision(inventory.price, precision: 2, delimiter: ',') %></td>
-              </tr>
-            <% end %>
-          <% else %>
-            <tr id="noDataRow" style="text-align: center; color: #6c757d;">
-              <td colspan="8">
-                <i class="fa fa-exclamation-circle"></i> There is no data!
-              </td>
-            </tr>
+<div id="url-manager"></div>
+<div id="inventories" class="container-fluid px-4 py-4 inventories-list" data-controller="multi-sort">
+  <div class="card shadow-sm">
+    <div class="inventories_page">
+      <h1 class="mb-0">Inventory</h1>
+      <div class="d-flex justify-content-end">
+        <% if record_policy(Inventory.new, InventoryPolicy).new? %>
+          <%= link_to new_inventory_path,
+                      class: "add-button btn btn-primary btn-sm",
+                      **modal_link_data do %>
+            <i class="bi bi-plus-circle-fill text-white me-1"></i> Add Inventory
           <% end %>
         <% else %>
           <%= link_to new_inventory_path,
