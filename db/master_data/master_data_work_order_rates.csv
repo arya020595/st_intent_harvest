@@ -1,0 +1,31 @@
+work_order_name,rate,unit_of_measurement,work_order_rate_type
+Harvesting Above 6 Years,42,Metric ton (M/ton),normal
+Harvesting Below 6 Years,47.25,Metric ton (M/ton),normal
+FFB Loading Below 6 years,8,Metric ton (M/ton),normal
+FFB Loading Above 6 years,5.5,Metric ton (M/ton),normal
+Harvesting Bunches,0.25,Bunch,normal
+Loading Ramp (0-1500MT),1.5,Metric ton (M/ton),normal
+FFB Checker,1,Metric ton (M/ton),normal
+Manuring 0.5kg/palm,5.25,Bag,normal
+Manuring 1.0kg -1.5kg/palm,4.72,Bag,normal
+Manuring 2.0kg -2.5kg/palm,4.2,Bag,normal
+Manuring 3.0kg -3.5kg/palm,3.67,Bag,normal
+Loading Fertilizer to Tractor,0.25,Bag,normal
+Loading Fertilizer from Lorry to Store,0.35,Bag,normal
+Circle and Path Spray,33.6,Ha,normal
+Selective Spray,24.93,Ha,normal
+Lallang Spray,8.4,Ha,normal
+Roadside Spray,33.6,Ha,normal
+Blanket Slashing,77,Ha,normal
+Open Row Slashing,44,Ha,normal
+Selective Slashing,33,Ha,normal
+Slashing Bamboo,33,Ha,normal
+Decreeping/Circle Weeding,26.12,Ha,normal
+Planting,2,Palm,normal
+Loading and Unloading Seedling,0.4,Palm,normal
+Circle Raking,0.2,Kg,normal
+EFB Mulching,4.2,Mt,normal
+Transport FFB Ramp to Mill Lorry 3MT(250MT),5,Mt,normal
+Transport FFB Ramp to Mill Lorry 3MT(251MT),6,Mt,normal
+Transport FFB Ramp to Mill Lorry 3MT(750MT),3,Mt,normal
+Transport FFB Ramp to Mill Lorry 3MT(751MT),3.5,Mt,normal
