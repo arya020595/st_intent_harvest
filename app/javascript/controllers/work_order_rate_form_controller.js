@@ -25,7 +25,7 @@ export default class extends Controller {
       this.rateFieldTarget.style.display = "none";
       const rateInput = this.rateFieldTarget.querySelector("input");
       if (rateInput) {
-        rateInput.value = 0;
+        rateInput.value = '';
         rateInput.removeAttribute("required");
       }
     } else {
