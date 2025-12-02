@@ -25,8 +25,12 @@
       <%# Date field - varies by work order type %>
       <% if work_order.normal_type? %>
         <div class="col-md-6 mb-3">
-          <label class="form-label fw-bold">Date</label>
-          <div class="p-2 rounded"><%= @completion_history&.created_at&.strftime('%d-%m-%Y') || work_order.start_date&.strftime('%d-%m-%Y') || '-' %></div>
+          <label class="form-label fw-bold">Starting Date</label>
+          <div class="p-2 rounded"><%= work_order.start_date&.strftime('%d-%m-%Y') || '-' %></div>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Completion Date</label>
+          <div class="p-2 rounded"><%= work_order.completion_date&.strftime('%d-%m-%Y') || @completion_history&.created_at&.strftime('%d-%m-%Y') || '-' %></div>
         </div>
       <% else %>
         <div class="col-md-6 mb-3">

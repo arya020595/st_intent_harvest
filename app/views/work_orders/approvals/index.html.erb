@@ -24,6 +24,9 @@
                   <%= sort_link(@q, :start_date, 'Start Date') %>
                 </th>
                 <th class="text-center">
+                  <%= sort_link(@q, :completion_date, 'Completion Date') %>
+                </th>
+                <th class="text-center">
                   <%= sort_link(@q, :work_order_status, 'Status') %>
                 </th>
               </tr>
@@ -63,6 +66,25 @@
                   <%= f.hidden_field :start_date_lteq, value: params.dig(:q, :start_date_lteq) %>
                 </th>
                 <th class="text-center">
+                  <div class="input-group input-group-sm"
+                          data-controller="flatpickr"
+                          data-flatpickr-mode-value="range"
+                          data-flatpickr-date-format-value="d-m-Y"
+                          data-flatpickr-field-name-value="q[completion_date]"
+                      >
+                    <input type="text"
+                           class="form-control form-control-sm cursor-pointer"
+                           placeholder="Select Date Range"
+                           data-flatpickr-target="input"
+                           >
+                    <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
+                      <i class="bi bi-calendar-range"></i>
+                    </span>
+                  </div>
+                  <%= f.hidden_field :completion_date_gteq, value: params.dig(:q, :completion_date_gteq) %>
+                  <%= f.hidden_field :completion_date_lteq, value: params.dig(:q, :completion_date_lteq) %>
+                </th>
+                <th class="text-center">
                   <%= f.select :work_order_status_eq,
                       options_for_select([['Pending', 'pending'], ['Amendment Required', 'amendment_required'], ['Completed', 'completed']], f.object.work_order_status_eq),
                       { include_blank: 'Select Status..' },
@@ -75,7 +97,7 @@
                 <%= render partial: 'work_order_approval_row', collection: @work_orders, as: :work_order %>
               <% else %>
                 <tr>
-                  <td colspan="6" class="text-center text-muted py-4">
+                  <td colspan="7" class="text-center text-muted py-4">
                     No work orders found for approval.
                   </td>
                 </tr>
