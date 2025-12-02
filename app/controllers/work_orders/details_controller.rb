@@ -36,6 +36,7 @@ module WorkOrders
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
+      @vehicles = Vehicle.all
       @is_field_conductor = current_user.role&.name == 'Field Conductor'
     end
 
@@ -45,6 +46,7 @@ module WorkOrders
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
+      @vehicles = Vehicle.all
 
       draft = params[:draft].present?
       result = service.call(draft: draft)
@@ -60,6 +62,7 @@ module WorkOrders
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
+      @vehicles = Vehicle.all
       @is_field_conductor = current_user.role&.name == 'Field Conductor'
     end
 
@@ -67,6 +70,7 @@ module WorkOrders
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
+      @vehicles = Vehicle.all
 
       service = WorkOrderServices::UpdateService.new(@work_order, work_order_params)
       submit = params[:submit].present?
@@ -143,6 +147,7 @@ module WorkOrders
         :completion_date,
         :work_month,
         :field_conductor_id,
+        :vehicle_id,
         work_order_workers_attributes: %i[
           id
           worker_id

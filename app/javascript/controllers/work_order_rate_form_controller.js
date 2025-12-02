@@ -2,30 +2,45 @@ import { Controller } from "@hotwired/stimulus";
 
 // Connects to data-controller="work-order-rate-form"
 export default class extends Controller {
-  static targets = ["rateType", "unitField"];
+  static targets = ["rateType", "unitField", "rateField"];
 
   connect() {
     // Initialize visibility on page load
-    this.toggleUnit();
+    this.toggleUnitAndRate();
   }
 
-  toggleUnit() {
+  toggleUnitAndRate() {
     const selectedType = this.rateTypeTarget.value;
 
-    // Hide unit field when "work_days" is selected
+    // Hide unit field and rate field when "work_days" is selected
     if (selectedType === "work_days") {
+      // Hide and disable unit field
       this.unitFieldTarget.style.display = "none";
-      // Remove required attribute when hidden
       const unitSelect = this.unitFieldTarget.querySelector("select");
       if (unitSelect) {
         unitSelect.removeAttribute("required");
       }
+
+      // Hide rate field (including label) and set value to 0
+      this.rateFieldTarget.style.display = "none";
+      const rateInput = this.rateFieldTarget.querySelector("input");
+      if (rateInput) {
+        rateInput.value = '';
+        rateInput.removeAttribute("required");
+      }
     } else {
+      // Show unit field for normal and resources types
       this.unitFieldTarget.style.display = "block";
-      // Add required attribute when visible (for normal and resources)
       const unitSelect = this.unitFieldTarget.querySelector("select");
       if (unitSelect && selectedType !== "") {
         unitSelect.setAttribute("required", "required");
+      }
+
+      // Show rate field (including label) and add required attribute
+      this.rateFieldTarget.style.display = "block";
+      const rateInput = this.rateFieldTarget.querySelector("input");
+      if (rateInput && selectedType !== "") {
+        rateInput.setAttribute("required", "required");
       }
     }
   }

@@ -35,6 +35,17 @@
         <input type="text" class="form-control" id="work_order_unit_display" value="Auto Filled" disabled style="background-color: #e9ecef;">
       </div>
     </div>
+    <div class="row" data-work-order-form-target="vehicleSection" style="display: none;">
+      <div class="col-md-6 mb-3">
+        <%= form.label :vehicle_id, "Vehicle", class: "form-label fw-bold" %>
+        <%= form.collection_select :vehicle_id,
+            @vehicles,
+            :id,
+            :display_name,
+            { include_blank: "Select Vehicle" },
+            { class: "form-select" } %>
+      </div>
+    </div>
     <div class="row" data-work-order-form-target="normalFieldsSection">
       <div class="col-md-6 mb-3">
         <%= form.label :block_id, "Block No.", class: "form-label fw-bold" %>
