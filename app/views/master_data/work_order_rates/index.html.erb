@@ -5,8 +5,14 @@
     <div class="work_order_rates_page">
       <h1 class="mb-0">Master Data - Work Order Rates</h1>
       <div class="d-flex justify-content-end">
-        <%= link_to new_master_data_work_order_rate_path, class: "add-button btn btn-primary btn-sm", **modal_link_data do %>
-          <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Work Order Rate
+        <% if record_policy(WorkOrderRate.new, MasterData::WorkOrderRatePolicy).new? %>
+          <%= link_to new_master_data_work_order_rate_path, class: "add-button btn btn-primary btn-sm", **modal_link_data do %>
+            <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Work Order Rate
+          <% end %>
+        <% else %>
+          <%= link_to new_master_data_work_order_rate_path, class: "add-button btn btn-primary btn-sm" do %>
+            <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Work Order Rate
+          <% end %>
         <% end %>
       </div>
       <div class="card-body">
@@ -60,7 +66,12 @@
                 <% else %>
                   <tr>
                     <td colspan="7" class="text-center text-muted py-4">
-                      No work order rates found. <%= link_to 'Add a new work order rate', new_master_data_work_order_rate_path, class: 'text-decoration-none', **modal_link_data %>
+                      No work order rates found.
+                      <% if record_policy(WorkOrderRate.new, MasterData::WorkOrderRatePolicy).new? %>
+                        <%= link_to 'Add a new work order rate', new_master_data_work_order_rate_path, class: 'text-decoration-none', **modal_link_data %>
+                      <% else %>
+                        <%= link_to 'Add a new work order rate', new_master_data_work_order_rate_path, class: 'text-decoration-none' %>
+                      <% end %>
                     </td>
                   </tr>
                 <% end %>

@@ -1,20 +1,35 @@
 <tr id="<%= dom_id(work_order_rate) %>">
   <td class="text-center">
     <div class="action-buttons">
-      <%= link_to master_data_work_order_rate_path(work_order_rate),
+      <% if record_policy(work_order_rate, MasterData::WorkOrderRatePolicy).show? %>
+        <%= link_to master_data_work_order_rate_path(work_order_rate),
             class: "action-btn info",
             title: "View Details",
             **modal_link_data do %>
-        <i class="bi bi-info-circle-fill"></i>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to master_data_work_order_rate_path(work_order_rate), class: "action-btn info", title: "View Details" do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
       <% end %>
-      <%= link_to edit_master_data_work_order_rate_path(work_order_rate), class: "action-btn warning", title: "Edit", **modal_link_data do %>
-        <i class="bi bi-pencil-fill"></i>
+      <% if record_policy(work_order_rate, MasterData::WorkOrderRatePolicy).edit? %>
+        <%= link_to edit_master_data_work_order_rate_path(work_order_rate), class: "action-btn warning", title: "Edit", **modal_link_data do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to edit_master_data_work_order_rate_path(work_order_rate), class: "action-btn warning", title: "Edit" do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
       <% end %>
-      <%= link_to confirm_delete_master_data_work_order_rate_path(work_order_rate),
-                  class: "action-btn danger",
-                  title: "Delete",
-                  **modal_link_data(size: "modal-md") do %>
-        <i class="bi bi-trash-fill"></i>
+      <% if record_policy(work_order_rate, MasterData::WorkOrderRatePolicy).confirm_delete? %>
+        <%= link_to confirm_delete_master_data_work_order_rate_path(work_order_rate), class: "action-btn danger", title: "Delete", **modal_link_data(size: "modal-md") do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to confirm_delete_master_data_work_order_rate_path(work_order_rate), class: "action-btn danger", title: "Delete" do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
       <% end %>
     </div>
   </td>

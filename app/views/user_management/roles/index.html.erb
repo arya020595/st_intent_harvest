@@ -5,8 +5,14 @@
     <div class="roles_page">
       <h1 class="mb-0">User Management - Roles</h1>
       <div class="d-flex justify-content-end">
-        <%= link_to new_user_management_role_path, class: "add-button btn btn-primary btn-sm", **modal_link_data(size: 'modal-xl') do %>
-          <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Role
+        <% if record_policy(Role.new, UserManagement::RolePolicy).new? %>
+          <%= link_to new_user_management_role_path, class: "add-button btn btn-primary btn-sm", **modal_link_data(size: 'modal-xl') do %>
+            <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Role
+          <% end %>
+        <% else %>
+          <%= link_to new_user_management_role_path, class: "add-button btn btn-primary btn-sm" do %>
+            <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Role
+          <% end %>
         <% end %>
       </div>
     </div>
@@ -45,7 +51,6 @@
                 </th>
                 <th></th>
                 <th></th>
-
               </tr>
             </thead>
             <tbody id="roles-table-body">
@@ -54,7 +59,12 @@
               <% else %>
                 <tr>
                   <td colspan="5" class="text-center text-muted py-4">
-                    No roles found. <%= link_to 'Add a new role', new_user_management_role_path, class: 'text-decoration-none', **modal_link_data(size: 'modal-xl') %>
+                    No roles found.
+                    <% if record_policy(Role.new, UserManagement::RolePolicy).new? %>
+                      <%= link_to 'Add a new role', new_user_management_role_path, class: 'text-decoration-none', **modal_link_data(size: 'modal-xl') %>
+                    <% else %>
+                      <%= link_to 'Add a new role', new_user_management_role_path, class: 'text-decoration-none' %>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>

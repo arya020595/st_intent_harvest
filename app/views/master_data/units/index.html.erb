@@ -5,8 +5,14 @@
     <div class="units_page">
       <h1 class="mb-0">Master Data - Units</h1>
       <div class="d-flex justify-content-end">
-        <%= link_to new_master_data_unit_path, class: "add-button btn btn-primary btn-sm", **modal_link_data do %>
-          <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Unit
+        <% if record_policy(Unit.new, MasterData::UnitPolicy).new? %>
+          <%= link_to new_master_data_unit_path, class: "add-button btn btn-primary btn-sm", **modal_link_data do %>
+            <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Unit
+          <% end %>
+        <% else %>
+          <%= link_to new_master_data_unit_path, class: "add-button btn btn-primary btn-sm" do %>
+            <i class="bi bi-plus-circle-fill text-white me-1"></i> Add Unit
+          <% end %>
         <% end %>
       </div>
       <div class="card-body">
@@ -60,7 +66,12 @@
                 <% else %>
                   <tr>
                     <td colspan="6" class="text-center text-muted py-4">
-                      No units found. <%= link_to 'Add a new unit', new_master_data_unit_path, class: 'text-decoration-none', **modal_link_data %>
+                      No units found.
+                      <% if record_policy(Unit.new, MasterData::UnitPolicy).new? %>
+                        <%= link_to 'Add a new unit', new_master_data_unit_path, class: 'text-decoration-none', **modal_link_data %>
+                      <% else %>
+                        <%= link_to 'Add a new unit', new_master_data_unit_path, class: 'text-decoration-none' %>
+                      <% end %>
                     </td>
                   </tr>
                 <% end %>

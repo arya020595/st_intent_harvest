@@ -1,0 +1,6 @@
+<%= turbo_stream.remove dom_id(@inventory) %>
+<%= turbo_stream.update "modal", "" %>
+<%= turbo_stream.update "flash_messages", partial: "shared/flash" %>
+<%= turbo_stream.update "url-manager",
+    partial: "shared/url_updater",
+    locals: { url: inventories_path } %>

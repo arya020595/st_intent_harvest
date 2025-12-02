@@ -6,22 +6,22 @@ puts 'Seeding Permissions...'
 resources = {
   'dashboard' => %w[index],
 
-  'work_orders.details' => %w[index show new create edit update destroy mark_complete],
+  'work_orders.details' => %w[index show create update destroy mark_complete],
   'work_orders.approvals' => %w[index show update approve request_amendment],
-  'work_orders.pay_calculations' => %w[index show new create edit update destroy worker_detail],
+  'work_orders.pay_calculations' => %w[index show create update destroy worker_detail],
 
-  'payslip' => %w[index show export],
-  'inventory' => %w[index show new create edit update destroy],
-  'workers' => %w[index show new create edit update destroy],
+  'payslip' => %w[show],
+  'inventory' => %w[index show create update destroy],
+  'workers' => %w[index show create update destroy],
 
-  'master_data.blocks' => %w[index show new create edit update destroy],
-  'master_data.categories' => %w[index show new create edit update destroy],
-  'master_data.units' => %w[index show new create edit update destroy],
-  'master_data.vehicles' => %w[index show new create edit update destroy],
-  'master_data.work_order_rates' => %w[index show new create edit update destroy],
+  'master_data.blocks' => %w[index show create update destroy],
+  'master_data.categories' => %w[index show create update destroy],
+  'master_data.units' => %w[index show create update destroy],
+  'master_data.vehicles' => %w[index show create update destroy],
+  'master_data.work_order_rates' => %w[index show create update destroy],
 
-  'user_management.roles' => %w[index show new create edit update destroy],
-  'user_management.users' => %w[index show new create edit update destroy],
+  'user_management.roles' => %w[index show create update destroy],
+  'user_management.users' => %w[index show create update destroy]
 }
 
 # Section mapping
@@ -32,8 +32,8 @@ SECTION_MAPPING = {
   'inventory' => 'Inventory',
   'workers' => 'Workers List',
   'master_data' => 'Master Data',
-  'user_management' => 'User Management',
-}
+  'user_management' => 'User Management'
+}.freeze
 
 # Custom action name mapping
 ACTION_NAME_MAPPING = {
@@ -42,9 +42,8 @@ ACTION_NAME_MAPPING = {
   'destroy' => 'delete',
   'request_amendment' => 'request amendment',
   'worker_detail' => 'worker detail',
-  'mark_complere' => 'mark complete',
-
-}
+  'mark_complete' => 'mark complete'
+}.freeze
 
 created_count = 0
 updated_count = 0

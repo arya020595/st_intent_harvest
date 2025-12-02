@@ -1,43 +1,44 @@
-<tr id="<%= dom_id(block) %>">
+<% policy = record_policy(inventory, InventoryPolicy) %>
+<tr id="<%= dom_id(inventory) %>">
   <td class="text-center">
     <div class="action-buttons">
-      <% if record_policy(block, MasterData::BlockPolicy).show? %>
-        <%= link_to master_data_block_path(block),
+      <% if policy.show? %>
+        <%= link_to inventory_path(inventory),
               class: "action-btn info",
               title: "View Details",
               **modal_link_data do %>
           <i class="bi bi-info-circle-fill"></i>
         <% end %>
       <% else %>
-        <%= link_to master_data_block_path(block),
+        <%= link_to inventory_path(inventory),
               class: "action-btn info",
               title: "View Details" do %>
           <i class="bi bi-info-circle-fill"></i>
         <% end %>
       <% end %>
-      <% if record_policy(block, MasterData::BlockPolicy).edit? %>
-        <%= link_to edit_master_data_block_path(block),
+      <% if policy.edit? %>
+        <%= link_to edit_inventory_path(inventory),
                     class: "action-btn warning",
                     title: "Edit",
                     **modal_link_data do %>
           <i class="bi bi-pencil-fill"></i>
         <% end %>
       <% else %>
-        <%= link_to edit_master_data_block_path(block),
+        <%= link_to edit_inventory_path(inventory),
                     class: "action-btn warning",
                     title: "Edit" do %>
           <i class="bi bi-pencil-fill"></i>
         <% end %>
       <% end %>
-      <% if record_policy(block, MasterData::BlockPolicy).confirm_delete? %>
-        <%= link_to confirm_delete_master_data_block_path(block),
+      <% if policy.confirm_delete? %>
+        <%= link_to confirm_delete_inventory_path(inventory),
                     class: "action-btn danger",
                     title: "Delete",
                     **modal_link_data(size: "modal-md") do %>
           <i class="bi bi-trash-fill"></i>
         <% end %>
       <% else %>
-        <%= link_to confirm_delete_master_data_block_path(block),
+        <%= link_to confirm_delete_inventory_path(inventory),
                     class: "action-btn danger",
                     title: "Delete" do %>
           <i class="bi bi-trash-fill"></i>
@@ -45,10 +46,10 @@
       <% end %>
     </div>
   </td>
-  <td><%= block.block_number %></td>
-  <td class="text-center">
-    <%= number_with_precision(block.hectarage, precision: 2) if block.hectarage %>
-  </td>
-  <td class="text-center"><%= block.created_at.strftime("%b %d, %Y %H:%M") if block.created_at %></td>
-  <td class="text-center"><%= block.updated_at.strftime("%b %d, %Y %H:%M") if block.updated_at %></td>
+  <td><%= inventory.name %></td>
+  <td><%= inventory.category&.name %></td>
+  <td><%= inventory.unit&.name %></td>
+  <td class="text-center"><%= inventory.stock_quantity %></td>
+  <td class="text-center"><%= inventory.input_date.strftime("%d-%m-%Y") if inventory.input_date %></td>
+  <td class="text-center">RM <%= number_with_precision(inventory.price, precision: 2, delimiter: ',') %></td>
 </tr>

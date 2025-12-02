@@ -1,0 +1,3 @@
+<%= turbo_stream.replace dom_id(@inventory), partial: "inventories/inventory_row", locals: { inventory: @inventory } %>
+<%= turbo_stream.update "modal", "" %>
+<%= turbo_stream.update "flash_messages", partial: "shared/flash" %>

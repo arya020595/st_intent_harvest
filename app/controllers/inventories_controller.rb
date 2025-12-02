@@ -1,65 +1,113 @@
-#This defines a controller which inheritates (OOP allows class(subclass) to reuse in a hiearchical structure) 
-#from the base controller from the app.
-
-#before running CRUD, rails will execute the set_inventory method to load the correct record from the database
 class InventoriesController < ApplicationController
-  before_action :set_inventory, only: %i[show edit update destroy]
+  include RansackMultiSort
 
-#'authorize/pundit is used to check if the user is allowed to view inventory items'
-def index
-  authorize Inventory
+  before_action :set_inventory, only: %i[show edit update destroy confirm_delete]
 
-  @q = policy_scope(Inventory).ransack(params[:q]) #this sets up the serach/filter functionality from Ransack
-  @q.sorts = 'input_date desc' if @q.sorts.empty? #if the user did'nt choose a sort order, default to ordering by input_date descending.
+  def index
+    authorize Inventory
 
-  @pagy, @inventories = pagy(@q.result(distinct: true).order(created_at: :desc)) #it runs the search query first, it uses Pagy for pagination and @inventories is the pagination list of inventories
+    apply_ransack_search(policy_scope(Inventory).order(input_date: :desc))
+    @pagy, @inventories = paginate_results(@q.result(distinct: true))
 
-  @categories = Category.all #this loads all cateories for dropdown filter
-  @units = Unit.all #this loads all units for dropdown filter
+    @categories = Category.all
+    @units = Unit.all
+  end
 
-end
+  # GET /inventories/new
+  def new
+    @inventory = Inventory.new
+    authorize @inventory
 
-  #this section builds new inventory items using strong params, then it checks if the user is allowed to create it.
+    if turbo_frame_request?
+      render layout: false
+    else
+      redirect_to inventories_path
+    end
+  end
+
+  # GET /inventories/:id
+  def show
+    authorize @inventory
+
+    if turbo_frame_request?
+      render layout: false
+    else
+      redirect_to inventories_path
+    end
+  end
+
+  # GET /inventories/:id/edit
+  def edit
+    authorize @inventory
+
+    if turbo_frame_request?
+      render layout: false
+    else
+      redirect_to inventories_path
+    end
+  end
+
+  # GET /inventories/:id/confirm_delete
+  def confirm_delete
+    authorize @inventory
+
+    # Only render the modal if Turbo frame request
+    if turbo_frame_request?
+      render layout: false
+    else
+      redirect_to inventories_path
+    end
+  end
+
   def create
     @inventory = Inventory.new(inventory_params)
     authorize @inventory
 
-    #Condition where if add a new inventory item it will return a success message bubble.
-    if @inventory.save
-      redirect_to inventories_path, notice: 'Inventory added successfully!'
-    #Otherwise, if failed it rebuilds all required instance variables needed by the index page.
-    else
-      # Rebuild data for re-render
-      @q = policy_scope(Inventory).ransack(params[:q])
-      @pagy, @inventories = pagy(@q.result.order(created_at: :desc))
-      @categories = Category.all
-      @units = Unit.all
-      render :index, status: :unprocessable_entity #this renders the index view again (not redirect) return http 422
+    respond_to do |format|
+      if @inventory.save
+        format.turbo_stream do
+          flash.now[:notice] = 'Inventory was successfully created.'
+        end
+        format.html { redirect_to inventories_path, notice: 'Inventory was successfully created.' }
+      else
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace('modal', partial: 'inventories/form', locals: { inventory: @inventory }),
+                 status: :unprocessable_entity
+        end
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
-  #this section updates the existed inventory item and firstly it checks permission for updating the item.
   def update
     authorize @inventory
 
-    #Condition where if updating an existing inventory item it will return a success message bubble.
-    if @inventory.update(inventory_params)
-      redirect_to inventories_path, notice: 'Inventory updated successfully!'
-
-    #Otherwise, if failed it will return an error message.
-    else
-      render :edit, status: :unprocessable_entity
+    respond_to do |format|
+      if @inventory.update(inventory_params)
+        format.turbo_stream do
+          flash.now[:notice] = 'Inventory was successfully updated.'
+        end
+        format.html { redirect_to inventories_path, notice: 'Inventory was successfully updated.' }
+      else
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace('modal', partial: 'inventories/form', locals: { inventory: @inventory }),
+                 status: :unprocessable_entity
+        end
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 
-
-  #this section deletes existing inventory items, it checks permissions if the user is allowed to delete it.
   def destroy
     authorize @inventory
 
-    #deletes the item if possible and redirects with appropriate message. 
     if @inventory.destroy
-      redirect_to inventories_path, notice: 'Inventory deleted successfully!'
+      respond_to do |format|
+        format.turbo_stream do
+          flash.now[:notice] = 'Inventory deleted successfully.'
+        end
+        format.html { redirect_to inventories_path, notice: 'Inventory deleted successfully.' }
+      end
     else
       redirect_to inventories_path, alert: 'Failed to delete inventory.'
     end
@@ -67,15 +115,19 @@ end
 
   private
 
-
-    #Loads the inventory item using the ID in the URL. Used edit/update/destroy
+  # Loads the inventory item using the ID in the URL
   def set_inventory
-    @inventory = Inventory.find(params[:id])
+    @inventory = Inventory.find_by(id: params[:id])
+    return if @inventory.present?
+
+    if turbo_frame_request?
+      render turbo_stream: turbo_stream.replace('modal', ''), status: :ok and return
+    else
+      redirect_to inventories_path and return
+    end
   end
 
-
-  #Ensures only allowed fields can be submitted from forms.
-  #Protect against mass-assignment vulnerabilities.
+  # Only allow a list of trusted parameters through
   def inventory_params
     params.require(:inventory).permit(
       :name,

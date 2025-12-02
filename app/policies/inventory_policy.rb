@@ -10,6 +10,19 @@ class InventoryPolicy < ApplicationPolicy
   # - inventory.update
   # - inventory.destroy
 
+  def new?
+    create?
+  end
+
+  def edit?
+    update?
+  end
+
+  # Align delete confirmation permission with destroy?
+  def confirm_delete?
+    destroy?
+  end
+
   private
 
   def permission_resource

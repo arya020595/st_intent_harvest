@@ -5,10 +5,17 @@
     <div class="block_no_page">
       <h1>Master Data - Block No.</h1>
       <div class="d-flex justify-content-end">
-        <%= link_to new_master_data_block_path,
-                    class: "add-button btn btn-primary btn-sm",
-                    **modal_link_data do %>
-          <i class="bi bi-plus-circle-fill text-white me-1"></i> Add Block
+        <% if record_policy(Block.new, MasterData::BlockPolicy).new? %>
+          <%= link_to new_master_data_block_path,
+                      class: "add-button btn btn-primary btn-sm",
+                      **modal_link_data do %>
+            <i class="bi bi-plus-circle-fill text-white me-1"></i> Add Block
+          <% end %>
+        <% else %>
+          <%= link_to new_master_data_block_path,
+                      class: "add-button btn btn-primary btn-sm" do %>
+            <i class="bi bi-plus-circle-fill text-white me-1"></i> Add Block
+          <% end %>
         <% end %>
       </div>
       <div class="card-body">
@@ -54,7 +61,12 @@
                 <% else %>
                   <tr>
                     <td colspan="6" class="text-center text-muted py-4">
-                      No blocks found. <%= link_to 'Add a new block', new_master_data_block_path, class: 'text-decoration-none', **modal_link_data %>
+                      No blocks found.
+                      <% if record_policy(Block.new, MasterData::BlockPolicy).new? %>
+                        <%= link_to 'Add a new block', new_master_data_block_path, class: 'text-decoration-none', **modal_link_data %>
+                      <% else %>
+                        <%= link_to 'Add a new block', new_master_data_block_path, class: 'text-decoration-none' %>
+                      <% end %>
                     </td>
                   </tr>
                 <% end %>
