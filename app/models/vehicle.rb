@@ -3,6 +3,12 @@
 class Vehicle < ApplicationRecord
   validates :vehicle_number, presence: true, uniqueness: true
 
+  has_many :work_orders, dependent: :nullify
+  # Display name for dropdowns
+  def display_name
+    vehicle_model.present? ? "#{vehicle_number} - #{vehicle_model}" : vehicle_number
+  end
+
   # Ransack configuration
   def self.ransackable_attributes(_auth_object = nil)
     %w[id vehicle_number vehicle_model created_at updated_at]

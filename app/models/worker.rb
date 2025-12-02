@@ -4,8 +4,7 @@ class Worker < ApplicationRecord
   # Constants for form options
   WORKER_TYPES = ['Part - Time', 'Full - Time'].freeze
   GENDERS = %w[Male Female].freeze
-NATIONALITIES = ["Local", "Foreigner", "Foreigner (No Passport)"].freeze
-
+  NATIONALITIES = ['Local', 'Foreigner', 'Foreigner (No Passport)'].freeze
 
   has_many :work_order_workers, dependent: :destroy
   has_many :work_orders, through: :work_order_workers

@@ -18,6 +18,7 @@ export default class extends Controller {
     "workersSection",
     "rateDetailsSection",
     "unitSection",
+    "vehicleSection",
     "normalFieldsSection",
     "workMonthSection",
     "quantityHeader",
@@ -190,6 +191,9 @@ export default class extends Controller {
     const unitSection = this.hasUnitSectionTarget
       ? this.unitSectionTarget
       : null;
+    const vehicleSection = this.hasVehicleSectionTarget
+      ? this.vehicleSectionTarget
+      : null;
     const quantityHeaders = this.hasQuantityHeaderTarget
       ? this.quantityHeaderTargets
       : [];
@@ -203,11 +207,12 @@ export default class extends Controller {
       normalFields: normalFieldsSection.length,
       workMonth: !!workMonthSection,
       unit: !!unitSection,
+      vehicle: !!vehicleSection,
     });
 
     if (this.currentRateType === "resources") {
       console.log(">>> RESOURCES MODE - Hiding workers");
-      // Show: Work Order ID, Work Order, Resources (without amount used)
+      // Show: Work Order ID, Work Order, Vehicle, Resources (without amount used)
       if (resourcesSection) {
         resourcesSection.style.display = "block";
         console.log("Resources section shown");
@@ -219,6 +224,10 @@ export default class extends Controller {
       normalFieldsSection.forEach((el) => (el.style.display = "none"));
       if (workMonthSection) workMonthSection.style.display = "none";
       if (unitSection) unitSection.style.display = "block";
+      if (vehicleSection) {
+        vehicleSection.style.display = "block";
+        console.log("Vehicle section shown");
+      }
 
       // Hide amount used column in resources
       amountUsedHeaders.forEach((header) => (header.style.display = "none"));
@@ -229,23 +238,25 @@ export default class extends Controller {
       }
     } else if (this.currentRateType === "work_days") {
       // Show: Work Order ID, Work Order, Work Month, Worker Details (Days instead of Quantity)
-      // HIDE Resources & Machineries
+      // HIDE Resources & Machineries and Vehicle
       if (resourcesSection) resourcesSection.style.display = "none";
       if (workersSection) workersSection.style.display = "block";
       normalFieldsSection.forEach((el) => (el.style.display = "none"));
       if (workMonthSection) workMonthSection.style.display = "flex";
       if (unitSection) unitSection.style.display = "none";
+      if (vehicleSection) vehicleSection.style.display = "none";
 
       // Change header to "Days" and show work_days input
       quantityHeaders.forEach((header) => (header.textContent = "Days"));
       this.toggleWorkerQuantityFields(true); // true = show days
     } else {
-      // Normal: Show all fields
+      // Normal: Show all fields except vehicle
       if (resourcesSection) resourcesSection.style.display = "block";
       if (workersSection) workersSection.style.display = "block";
       normalFieldsSection.forEach((el) => (el.style.display = "flex"));
       if (workMonthSection) workMonthSection.style.display = "none";
       if (unitSection) unitSection.style.display = "block";
+      if (vehicleSection) vehicleSection.style.display = "none";
 
       // Show amount used in resources
       amountUsedHeaders.forEach(

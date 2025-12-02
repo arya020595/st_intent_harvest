@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_02_061056) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_02_083921) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -244,6 +244,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_02_061056) do
     t.string "field_conductor_name"
     t.date "start_date"
     t.datetime "updated_at", null: false
+    t.bigint "vehicle_id"
+    t.string "vehicle_model"
+    t.string "vehicle_number"
     t.date "work_month", comment: "First day of the month for Mandays calculation"
     t.bigint "work_order_rate_id"
     t.string "work_order_rate_name"
@@ -254,6 +257,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_02_061056) do
     t.index ["block_id", "work_order_rate_id"], name: "index_work_orders_on_block_and_rate"
     t.index ["block_id"], name: "index_work_orders_on_block_id"
     t.index ["field_conductor_id"], name: "index_work_orders_on_field_conductor_id"
+    t.index ["vehicle_id"], name: "index_work_orders_on_vehicle_id"
     t.index ["work_order_rate_id"], name: "index_work_orders_on_work_order_rate_id"
     t.index ["work_order_rate_type"], name: "index_work_orders_on_work_order_rate_type"
     t.index ["work_order_rate_unit_name"], name: "index_work_orders_on_work_order_rate_unit_name"
@@ -287,5 +291,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_02_061056) do
   add_foreign_key "work_order_workers", "workers"
   add_foreign_key "work_orders", "blocks"
   add_foreign_key "work_orders", "users", column: "field_conductor_id"
+  add_foreign_key "work_orders", "vehicles", validate: false
   add_foreign_key "work_orders", "work_order_rates"
 end
