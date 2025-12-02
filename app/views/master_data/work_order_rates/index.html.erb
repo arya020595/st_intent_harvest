@@ -25,6 +25,9 @@
                     <%= sort_link(@q, :work_order_name, 'Work Order Name') %>
                   </th>
                   <th class="text-center">
+                    <%= sort_link(@q, :work_order_rate_type, 'Rate Type') %>
+                  </th>
+                  <th class="text-center">
                     <%= sort_link(@q, :rate, 'Rate(RM)') %>
                   </th>
                   <th class="text-center">
@@ -46,6 +49,9 @@
                   </th>
                   <th>
                     <%= f.search_field :work_order_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Name..' %>
+                  </th>
+                  <th>
+                    <%= f.collection_select :work_order_rate_type_eq, WorkOrderRate.work_order_rate_types.keys, :to_s, :titleize, { include_blank: 'All Types' }, class: 'form-control form-control-sm' %>
                   </th>
                   <th class="text-center">
                     <%= f.number_field :rate_eq, class: 'form-control form-control-sm', placeholder: 'Rate', step: 0.01 %>
