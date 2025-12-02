@@ -140,6 +140,7 @@ module WorkOrders
         :block_id,
         :work_order_rate_id,
         :start_date,
+        :completion_date,
         :work_month,
         :field_conductor_id,
         work_order_workers_attributes: %i[

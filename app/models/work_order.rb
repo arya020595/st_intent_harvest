@@ -49,6 +49,7 @@ class WorkOrder < ApplicationRecord
     %w[
       id
       start_date
+      completion_date
       work_order_status
       block_number
       block_hectarage

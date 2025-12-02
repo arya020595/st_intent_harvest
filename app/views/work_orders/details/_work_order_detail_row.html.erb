@@ -36,6 +36,7 @@
   <td><%= work_order.work_order_rate_name %></td>
   <td><%= work_order.block_number.presence || 'N/A' %></td>
   <td class="text-center"><%= work_order.start_date&.strftime('%d-%m-%Y') || '-' %></td>
+  <td class="text-center"><%= work_order.completion_date&.strftime('%d-%m-%Y') || '-' %></td>
   <td class="text-center">
     <% badge_class = case work_order.work_order_status
       when 'ongoing' then 'bg-info'

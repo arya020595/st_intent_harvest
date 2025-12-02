@@ -51,6 +51,10 @@
           <label class="form-label fw-bold">Starting Date</label>
           <input type="text" class="form-control" value="<%= work_order.start_date&.strftime('%d-%m-%Y') || '-' %>" disabled style="background-color: #e9ecef;">
         </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Completion Date</label>
+          <input type="text" class="form-control" value="<%= work_order.completion_date&.strftime('%d-%m-%Y') || '-' %>" disabled style="background-color: #e9ecef;">
+        </div>
       </div>
     </fieldset>
   </div>
