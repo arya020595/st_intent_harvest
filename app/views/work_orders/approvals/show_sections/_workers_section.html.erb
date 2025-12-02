@@ -1,47 +1,63 @@
 <!-- Worker Details Section -->
-<div class="mb-5 mt-5">
-  <div class="border-bottom pb-2">
-    <div class="fw-bold fs-4" style="color: #155e1a">Worker Details</div>
-  </div>
-  <div class="card-body mt-3">
-    <div class="table-responsive">
-      <table class="table table-hover table-sm mb-0">
-        <thead class="table-success">
-          <tr>
-            <th style="width: 5%">No</th>
-            <th style="width: 30%">Worker Name</th>
-            <th style="width: 15%"><%= work_order.work_order_rate_unit_name.presence || 'Quantity(Ha)' %></th>
-            <th style="width: 15%">Rate (RM)</th>
-            <th style="width: 15%">Amount (RM)</th>
-            <th style="width: 20%">Remarks</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if work_order.work_order_workers.any? %>
-            <% work_order.work_order_workers.each_with_index do |worker, index| %>
+<%# Hide entire section for resources type %>
+<% unless work_order.work_order_rate_type == "resources" %>
+  <div class="mb-5 mt-5">
+    <div class="border-bottom pb-2">
+      <div class="fw-bold fs-4" style="color: #155e1a">Worker Details</div>
+    </div>
+    <div class="card-body mt-3">
+      <div class="table-responsive">
+        <table class="table table-hover table-sm mb-0">
+          <thead class="table-success">
+            <tr>
+              <th style="width: 5%">No</th>
+              <th style="width: 30%">Worker Name</th>
+              <%# Show "Days" for work_days type, otherwise show unit name or default %>
+              <th style="width: 15%">
+                <%= work_order.work_order_rate_type == "work_days" ? "Days" : (work_order.work_order_rate_unit_name.presence || 'Quantity(Ha)') %>
+              </th>
+              <th style="width: 15%">Rate (RM)</th>
+              <th style="width: 15%">Amount (RM)</th>
+              <th style="width: 20%">Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if work_order.work_order_workers.any? %>
+              <% work_order.work_order_workers.each_with_index do |worker, index| %>
+                <tr>
+                  <td class="text-center"><%= index + 1 %></td>
+                  <td><%= worker.worker_name %></td>
+                  <%# Show work_days for work_days type, otherwise show work_area_size %>
+                  <td>
+                    <%= work_order.work_order_rate_type == "work_days" ?
+                        number_with_precision(worker.work_days, precision: 2) :
+                        number_with_precision(worker.work_area_size, precision: 2) %>
+                  </td>
+                  <td><%= number_to_currency(worker.rate, unit: 'RM ', precision: 2) %></td>
+                  <td><%= number_to_currency(worker.amount, unit: 'RM ', precision: 2) %></td>
+                  <td><%= worker.remarks || '-' %></td>
+                </tr>
+              <% end %>
+              <tr class="table-secondary fw-bold">
+                <td colspan="2" class="text-center">Total</td>
+                <%# Sum work_days for work_days type, otherwise sum work_area_size %>
+                <td>
+                  <%= work_order.work_order_rate_type == "work_days" ?
+                      number_with_precision(work_order.work_order_workers.sum(:work_days), precision: 2) :
+                      number_with_precision(work_order.work_order_workers.sum(:work_area_size), precision: 2) %>
+                </td>
+                <td></td>
+                <td><%= number_to_currency(work_order.work_order_workers.sum(:amount), unit: 'RM ', precision: 2) %></td>
+                <td></td>
+              </tr>
+            <% else %>
               <tr>
-                <td class="text-center"><%= index + 1 %></td>
-                <td><%= worker.worker_name %></td>
-                <td><%= number_with_precision(worker.work_area_size, precision: 2) %></td>
-                <td><%= number_to_currency(worker.rate, unit: 'RM ', precision: 2) %></td>
-                <td><%= number_to_currency(worker.amount, unit: 'RM ', precision: 2) %></td>
-                <td><%= worker.remarks || '-' %></td>
+                <td colspan="6" class="text-center text-muted">No workers assigned</td>
               </tr>
             <% end %>
-            <tr class="table-secondary fw-bold">
-              <td colspan="2" class="text-center">Total</td>
-              <td><%= number_with_precision(work_order.work_order_workers.sum(:work_area_size), precision: 2) %></td>
-              <td></td>
-              <td><%= number_to_currency(work_order.work_order_workers.sum(:amount), unit: 'RM ', precision: 2) %></td>
-              <td></td>
-            </tr>
-          <% else %>
-            <tr>
-              <td colspan="6" class="text-center text-muted">No workers assigned</td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-</div>
+<% end %>
