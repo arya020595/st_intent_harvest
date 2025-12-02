@@ -1,3 +1,4 @@
+<% content_for :title, "Master Data - Work Order Rates | ST Intent Harvest" %>
 <div class="modal-content" data-controller="work-order-rate-form">
   <%= form_with(model: [:master_data, work_order_rate], class: "needs-validation", novalidate: true, data: { action: "turbo:submit-end->modal#formSubmitted" }) do |form| %>
     <div class="modal-header">
