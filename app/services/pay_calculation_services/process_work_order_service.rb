@@ -38,7 +38,7 @@ module PayCalculationServices
     end
 
     def month_year
-      @month_year ||= work_order.created_at.strftime(MONTH_YEAR_FORMAT)
+      @month_year ||= work_order.completion_date.strftime(MONTH_YEAR_FORMAT)
     end
 
     def find_or_create_pay_calculation

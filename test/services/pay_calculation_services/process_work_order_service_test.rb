@@ -15,9 +15,9 @@ module PayCalculationServices
       @work_order = WorkOrder.create!(
         work_order_rate: @work_order_rate,
         work_order_status: 'completed',
-        start_date: Date.today,
-        block: @block,
-        created_at: Time.zone.local(2025, 11, 18) # November 2025 to avoid fixture conflicts
+        start_date: Date.new(2025, 11, 1),
+        completion_date: Date.new(2025, 11, 18), # November 2025 - used for pay calculation month
+        block: @block
       )
 
       @worker1 = workers(:one)
@@ -36,7 +36,7 @@ module PayCalculationServices
         @service.call
       end
 
-      month_year = @work_order.created_at.strftime('%Y-%m')
+      month_year = @work_order.completion_date.strftime('%Y-%m')
       pay_calc = PayCalculation.find_by(month_year: month_year)
       assert_not_nil pay_calc
     end
@@ -67,7 +67,7 @@ module PayCalculationServices
 
       @service.call
 
-      month_year = @work_order.created_at.strftime('%Y-%m')
+      month_year = @work_order.completion_date.strftime('%Y-%m')
       pay_calc = PayCalculation.find_by(month_year: month_year)
       detail = pay_calc.pay_calculation_details.find_by(worker: @worker1)
 
@@ -80,7 +80,7 @@ module PayCalculationServices
         work_order_rate: work_days_rate,
         work_order_status: 'completed',
         work_month: Date.new(2025, 12, 1), # Required for work_days type (Date object)
-        created_at: Time.zone.local(2025, 12, 1) # December 2025
+        completion_date: Date.new(2025, 12, 15) # December 2025 - used for pay calculation
       )
 
       work_order.work_order_workers.create!(
@@ -130,7 +130,7 @@ module PayCalculationServices
       work_order2 = WorkOrder.create!(
         work_order_rate: @work_order.work_order_rate,
         work_order_status: 'completed',
-        created_at: @work_order.created_at,
+        completion_date: @work_order.completion_date, # Same month as first work order
         start_date: @work_order.start_date,
         block: block2 # Different block to avoid uniqueness constraint
       )
@@ -143,7 +143,7 @@ module PayCalculationServices
       service2 = ProcessWorkOrderService.new(work_order2)
       service2.call
 
-      month_year = @work_order.created_at.strftime('%Y-%m')
+      month_year = @work_order.completion_date.strftime('%Y-%m')
       pay_calc = PayCalculation.find_by(month_year: month_year)
       detail = pay_calc.pay_calculation_details.find_by(worker: @worker1)
 
@@ -164,7 +164,7 @@ module PayCalculationServices
 
       @service.call
 
-      month_year = @work_order.created_at.strftime('%Y-%m')
+      month_year = @work_order.completion_date.strftime('%Y-%m')
       pay_calc = PayCalculation.find_by(month_year: month_year)
 
       # Reload to get fresh data from database
@@ -184,7 +184,7 @@ module PayCalculationServices
 
       result = @service.call
       assert result.success?
-      assert_includes result.value_or(''), @work_order.created_at.strftime('%Y-%m')
+      assert_includes result.value_or(''), @work_order.completion_date.strftime('%Y-%m')
     end
 
     test 'returns success when no workers to process' do

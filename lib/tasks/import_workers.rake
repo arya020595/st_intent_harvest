@@ -107,11 +107,14 @@ class WorkersRowProcessor
     @row = row
     @stats = stats
 
-    @name = row[:name]&.strip
-    @nationality = row[:nationality]&.strip
-    @gender = row[:gender]&.strip
+    @name            = row[:name]&.strip
+    @nationality     = row[:nationality]&.strip
+    @gender          = row[:gender]&.strip
     @identity_number = row[:identity_number]&.strip
-    @worker_type = row[:worker_type]&.strip
+    @worker_type     = row[:worker_type]&.strip
+
+    # NEW FIELD: is_active (boolean)
+    @is_active       = normalize_boolean(row[:is_active])
   end
 
   def process
@@ -128,11 +131,19 @@ class WorkersRowProcessor
 
   private
 
-  attr_reader :row, :stats, :name, :nationality, :gender, :identity_number, :worker_type
+  attr_reader :row, :stats, :name, :nationality, :gender,
+              :identity_number, :worker_type, :is_active
 
   def skip(reason)
     puts "⚠ Row #{stats[:total]} skipped: #{reason}"
     stats[:skipped] += 1
+  end
+
+  # Convert various TRUE/FALSE formats to boolean
+  def normalize_boolean(value)
+    return false if value.nil?
+    truthy = %w[true yes 1 t y].freeze
+    truthy.include?(value.to_s.strip.downcase)
   end
 
   # Upsert using composite key: name + nationality + gender
@@ -140,11 +151,22 @@ class WorkersRowProcessor
     worker = Worker.find_by(name: name, nationality: nationality, gender: gender)
 
     if worker
-      worker.update!(identity_number: identity_number, worker_type: worker_type)
+      worker.update!(
+        identity_number: identity_number,
+        worker_type: worker_type,
+        is_active: is_active
+      )
       puts "Updated: #{name} (#{worker_type})"
       stats[:updated] += 1
     else
-      Worker.create!(name: name, nationality: nationality, gender: gender, identity_number: identity_number, worker_type: worker_type)
+      Worker.create!(
+        name: name,
+        nationality: nationality,
+        gender: gender,
+        identity_number: identity_number,
+        worker_type: worker_type,
+        is_active: is_active
+      )
       puts "✓ Created: #{name} (#{worker_type})"
       stats[:created] += 1
     end
@@ -158,17 +180,18 @@ class WorkersSampleFormatter
   def self.display
     puts "Sample CSV format for workers:"
     puts "=" * 80
-    puts "name,nationality,gender,identity_number,worker_type"
-    puts "John Doe,Local,Male,830310126331,Full - Time"
-    puts "Jane Smith,Foreigner,Female,X5490686,Part - Time"
+    puts "name,nationality,gender,identity_number,worker_type,is_active"
+    puts "John Doe,Local,Male,830310126331,Full - Time,TRUE"
+    puts "Jane Smith,Foreigner,Female,X5490686,Part - Time,FALSE"
     puts "=" * 80
 
     puts "\nCOLUMN DESCRIPTION:"
     puts " name            - Worker full name (required)"
-    puts " nationality     - Local/Foreigner/Foreigner (No Passport) (required)"
-    puts " gender          - Male/Female (required)"
+    puts " nationality     - Local / Foreigner / Foreigner (No Passport) (required)"
+    puts " gender          - Male / Female (required)"
     puts " identity_number - Unique ID or passport (optional for 'SMART SABAH')"
     puts " worker_type     - Full - Time / Part - Time (required)"
+    puts " is_active       - TRUE/FALSE (required)"
   end
 end
 
@@ -189,7 +212,7 @@ class WorkersLister
     puts "=" * 80
 
     workers.each do |w|
-      puts "• #{w.name.ljust(25)} | #{w.nationality.ljust(20)} | #{w.gender.ljust(6)} | #{w.identity_number.to_s.ljust(15)} | #{w.worker_type}"
+      puts "• #{w.name.ljust(25)} | #{w.nationality.ljust(20)} | #{w.gender.ljust(6)} | #{w.identity_number.to_s.ljust(15)} | #{w.worker_type} | Active: #{w.is_active}"
     end
 
     puts "\n#{workers.count} total workers"

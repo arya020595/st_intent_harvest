@@ -2,35 +2,35 @@
 
 require 'csv'
 
-# Users Import Rake Tasks
-namespace :users do
-  desc 'Import users from CSV'
+# Categories Import Rake Tasks
+namespace :categories do
+  desc 'Import categories from CSV'
   task :import, [:file_path] => :environment do |_t, args|
-    importer = UsersImporter.new(args[:file_path])
+    importer = CategoriesImporter.new(args[:file_path])
     importer.import
   end
 
   desc 'Display sample CSV format'
   task :sample do
-    UsersSampleFormatter.display
+    CategoriesSampleFormatter.display
   end
 
-  desc 'List all users'
+  desc 'List all categories'
   task list: :environment do
-    UsersLister.display
+    CategoriesLister.display
   end
 
-  desc 'Delete all users (dangerous!)'
+  desc 'Delete all categories (dangerous!)'
   task delete_all: :environment do
-    UsersDeleter.execute
+    CategoriesDeleter.execute
   end
 end
 
 # ================================
-# USERS IMPORTER
+# CATEGORIES IMPORTER
 # ================================
-class UsersImporter
-  DEFAULT_CSV_PATH = Rails.root.join('db/master_data/master_data_users.csv').freeze
+class CategoriesImporter
+  DEFAULT_CSV_PATH = Rails.root.join('db/master_data/master_data_category.csv').freeze
 
   def initialize(file_path = nil)
     @file_path = file_path || DEFAULT_CSV_PATH
@@ -62,14 +62,14 @@ class UsersImporter
   end
 
   def header
-    puts "Importing users from #{file_path}"
+    puts "Importing categories from #{file_path}"
     puts "=" * 80
   end
 
   def parse_rows
     CSV.foreach(file_path, headers: true, header_converters: :symbol) do |row|
       stats[:total] += 1
-      UsersRowProcessor.new(row, stats).process
+      CategoriesRowProcessor.new(row, stats).process
     rescue StandardError => e
       puts "Unexpected error on row #{stats[:total]}: #{e.message}"
       stats[:errors] += 1
@@ -102,23 +102,19 @@ end
 # ================================
 # ROW PROCESSOR
 # ================================
-class UsersRowProcessor
+class CategoriesRowProcessor
   def initialize(row, stats)
     @row = row
     @stats = stats
 
-    @name     = row[:name]&.strip
-    @role     = row[:role]&.strip
-    @email    = row[:email]&.strip&.downcase
-    @password = row[:password]&.strip
+    @name        = row[:category_type]&.strip
+    @parent_name = row[:parent_category]&.strip
   end
 
   def process
     return skip("name is missing") if name.blank?
-    return skip("email is missing") if email.blank?
-    return skip("password is missing") if password.blank?
 
-    upsert_user
+    upsert_category
   rescue ActiveRecord::RecordInvalid => e
     puts "Validation error on row #{stats[:total]}: #{e.message}"
     stats[:errors] += 1
@@ -126,36 +122,26 @@ class UsersRowProcessor
 
   private
 
-  attr_reader :row, :stats, :name, :role, :email, :password
+  attr_reader :row, :stats, :name, :parent_name
 
   def skip(reason)
     puts "⚠ Row #{stats[:total]} skipped: #{reason}"
     stats[:skipped] += 1
   end
 
-  def find_role(role_name)
-    return nil if role_name.blank?
-    Role.find_by(name: role_name.strip)
-  end
+  def upsert_category
+    # Find parent by name unless parent is "-"
+    parent = (parent_name.present? && parent_name != '-') ? Category.find_by(name: parent_name) : nil
 
-  def upsert_user
-    role_record = find_role(role)
+    category = Category.find_by(name: name)
 
-    if role_record.nil?
-      puts "❌ Row #{stats[:total]} error: Role '#{role}' does not exist."
-      stats[:errors] += 1
-      return
-    end
-
-    user = User.find_by(email: email)
-
-    if user
-      user.update!(name: name, role: role_record, password: password)
-      puts "Updated: #{email} (#{name}, #{role_record.name})"
+    if category
+      category.update!(parent_id: parent&.id)
+      puts "Updated: #{name} (Parent: #{parent_name || '-'})"
       stats[:updated] += 1
     else
-      User.create!(name: name, email: email, role: role_record, password: password)
-      puts "✓ Created: #{email} (#{name}, #{role_record.name})"
+      Category.create!(name: name, parent_id: parent&.id)
+      puts "✓ Created: #{name} (Parent: #{parent_name || '-'})"
       stats[:created] += 1
     end
   end
@@ -164,67 +150,66 @@ end
 # ================================
 # SAMPLE FORMATTER
 # ================================
-class UsersSampleFormatter
+class CategoriesSampleFormatter
   def self.display
-    puts "Sample CSV format for users:"
+    puts "Sample CSV format for categories:"
     puts "=" * 80
-    puts "name,role,email,password"
-    puts "John Doe,Manager,john@example.com,securepassword123"
-    puts "Sarah Tan,Clerk,sarah@example.com,securepassword123"
-    puts "Michael Lee,Field Conductor,mlee@example.com,securepassword123"
+    puts "category_type,parent_category"
+    puts "Diesel,-"
+    puts "Petrol,-"
+    puts "Spare Part,-"
     puts "=" * 80
 
     puts "\nCOLUMN DESCRIPTION:"
-    puts " name     - User full name (required)"
-    puts " role     - Matches 'roles.name' in DB (required)"
-    puts " email    - Unique email (required)"
-    puts " password - User password (required)"
+    puts " category_type   - Name of the category (required)"
+    puts " parent_category - Parent category name or '-' if none (required)"
   end
 end
 
 # ================================
-# LIST USERS
+# LIST CATEGORIES
 # ================================
-class UsersLister
+class CategoriesLister
   def self.display
-    users = User.includes(:role).order(:name)
+    categories = Category.order(:name)
 
-    if users.empty?
-      puts "No users found."
+    if categories.empty?
+      puts "No categories found."
       return
     end
 
     puts "=" * 80
-    puts "Users List"
+    puts "Categories List"
     puts "=" * 80
 
-    users.each do |u|
-      puts "• #{u.name.ljust(25)} | #{u.role&.name.to_s.ljust(15)} | #{u.email}"
+    categories.each do |c|
+      parent_name = c.parent&.name || '-'
+      puts "• #{c.name.ljust(30)} | Parent: #{parent_name}"
     end
 
-    puts "\n#{users.count} total users"
+    puts "\n#{categories.count} total categories"
   end
 end
 
 # ================================
-# DELETE ALL USERS
+# DELETE ALL CATEGORIES
 # ================================
-class UsersDeleter
+class CategoriesDeleter
   def self.execute
-    count = User.count
+    count = Category.count
 
     if count.zero?
-      puts "No users to delete."
+      puts "No categories to delete."
       return
     end
 
-    puts "WARNING: This will delete all #{count} users!"
+    puts "WARNING: This will delete all #{count} categories!"
     print "Type 'yes' to confirm: "
     confirm = $stdin.gets.chomp
 
     if confirm.downcase == "yes"
-      User.delete_all
-      puts "✓ Deleted all #{count} users"
+      Category.delete_all
+      puts "✓ Deleted all #{count} categories"
     else
       puts "Deletion cancelled."
     end
