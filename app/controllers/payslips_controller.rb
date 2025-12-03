@@ -31,8 +31,7 @@ class PayslipsController < ApplicationController
     data = data_result.value!
     @payslip            = data[:payslip]
     @payslip_detail     = data[:payslip_detail]
-    # Force load filtered work orders into memory to avoid PDF showing extra months
-    @work_order_workers = data[:work_order_workers].to_a
+    @work_order_workers = data[:work_order_workers]
     @month_year_date    = data[:month_year_date]
 
     respond_to do |format|
@@ -46,7 +45,7 @@ class PayslipsController < ApplicationController
   # Extract worker and date from params[:id] (format: "workerId-year-month")
   def set_worker_and_date_params
     worker_id, @year, @month = params[:id].split('-').map(&:to_i)
-    @worker = Worker.find_by(id: worker_id)
+    @worker = Worker.find(worker_id)
     @month_year = format('%04d-%02d', @year, @month)
   end
 
