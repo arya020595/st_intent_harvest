@@ -67,7 +67,7 @@ module WorkOrders
       @work_order_workers = @worker.work_order_workers
                                    .joins(:work_order)
                                    .where(work_orders: {
-                                            created_at: month_start..month_end,
+                                            completion_date: month_start..month_end,
                                             work_order_status: 'completed',
                                             work_order_rate_type: %w[normal work_days]
                                           })
