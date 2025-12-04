@@ -29,6 +29,7 @@ class PayCalculation < ApplicationRecord
     %w[
       id
       month_year
+      month_year_formatted
       total_gross_salary
       total_deductions
       total_net_salary
@@ -39,6 +40,12 @@ class PayCalculation < ApplicationRecord
 
   def self.ransackable_associations(_auth_object = nil)
     %w[pay_calculation_details workers]
+  end
+
+  # Custom ransacker to search by formatted month name (e.g., "December 2025")
+  # This allows searching by month name instead of just the stored format (YYYY-MM)
+  ransacker :month_year_formatted do
+    Arel.sql("to_char(to_date(month_year, 'YYYY-MM'), 'Month YYYY')")
   end
 end
 
