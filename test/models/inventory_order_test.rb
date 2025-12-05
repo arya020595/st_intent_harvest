@@ -20,7 +20,7 @@
 #  index_inventory_orders_on_purchase_date  (purchase_date)
 #
 
-require 'test_helper'
+require "test_helper"
 
 class InventoryOrderTest < ActiveSupport::TestCase
   def setup
@@ -74,16 +74,16 @@ class InventoryOrderTest < ActiveSupport::TestCase
 
   test "should not calculate unit_price when quantity is nil" do
     order = InventoryOrder.new(@valid_attributes.except(:quantity))
-    order.save
     
-    assert_nil order.unit_price
+    assert_not order.valid?
+    assert_includes order.errors[:quantity], "can't be blank"
   end
 
   test "should not calculate unit_price when total_price is nil" do
     order = InventoryOrder.new(@valid_attributes.except(:total_price))
-    order.save
     
-    assert_nil order.unit_price
+    assert_not order.valid?
+    assert_includes order.errors[:total_price], "can't be blank"
   end
 
   # Tests for quantity validation
