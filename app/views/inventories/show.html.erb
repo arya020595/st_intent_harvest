@@ -39,8 +39,12 @@
                   <td><%= order.supplier %></td>
                   <td><%= order.purchase_date.strftime("%d-%m-%Y") %></td>
                   <td class="text-end"><%= order.quantity %></td>
-                  <td class="text-end">RM <%= number_with_precision(order.unit_price, precision: 2, delimiter: ',') %></td>
-                  <td class="text-end">RM <%= number_with_precision(order.total_price, precision: 2, delimiter: ',') %></td>
+                  <td class="text-end">
+                    <%= number_to_currency(order.unit_price, unit: 'RM ', precision: 2) %>
+                  </td>
+                  <td class="text-end">
+                    <%= number_to_currency(order.total_price, unit: 'RM ', precision: 2) %>
+                  </td>
                 </tr>
               <% end %>
             </tbody>
