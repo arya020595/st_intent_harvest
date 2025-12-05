@@ -54,7 +54,7 @@
               </tr>
             </thead>
             <tbody data-inventory-form-target="ordersContainer">
-              <%= form.fields_for :inventory_orders do |order_form| %>
+              <%= form.fields_for :inventory_orders, @recent_orders do |order_form| %>
                 <%= render 'inventory_order_fields', f: order_form %>
               <% end %>
             </tbody>
