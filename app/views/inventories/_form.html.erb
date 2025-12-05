@@ -37,9 +37,9 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h6 class="mb-0 fw-bold"><%= inventory.persisted? ? 'Add New Purchase Orders' : 'Purchase Orders' %></h6>
           <button type="button"
-                  class="btn btn-sm btn-primary"
+                  class="btn btn-sm btn-success text-white"
                   data-action="click->inventory-form#addOrder">
-            <i class="bi bi-plus-circle me-1"></i> Add Row
+            <i class="bi bi-plus-circle-fill text-white me-1"></i> Add Row
           </button>
         </div>
         <div class="table-responsive">
@@ -85,7 +85,7 @@
       <td class="text-center">
         <input type="hidden" name="inventory[inventory_orders_attributes][NEW_RECORD][_destroy]" value="" />
         <button type="button" class="btn btn-sm btn-danger" data-action="click->inventory-form#removeOrder" title="Remove">
-          <i class="bi bi-trash"></i>
+          <i class="bi bi-trash-fill text-white"></i>
         </button>
       </td>
     </tr>
