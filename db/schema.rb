@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_02_083921) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_05_063006) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -76,16 +76,24 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_02_083921) do
   create_table "inventories", force: :cascade do |t|
     t.bigint "category_id"
     t.datetime "created_at", null: false
-    t.string "currency", default: "RM"
-    t.date "input_date"
     t.string "name", null: false
-    t.decimal "price", precision: 10, scale: 2
-    t.integer "stock_quantity", default: 0
-    t.string "supplier"
     t.bigint "unit_id"
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_inventories_on_category_id"
     t.index ["unit_id"], name: "index_inventories_on_unit_id"
+  end
+
+  create_table "inventory_orders", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "inventory_id", null: false
+    t.date "purchase_date", null: false
+    t.integer "quantity", null: false
+    t.string "supplier", null: false
+    t.decimal "total_price", precision: 10, scale: 2, null: false
+    t.decimal "unit_price", precision: 10, scale: 2
+    t.datetime "updated_at", null: false
+    t.index ["inventory_id"], name: "index_inventory_orders_on_inventory_id"
+    t.index ["purchase_date"], name: "index_inventory_orders_on_purchase_date"
   end
 
   create_table "pay_calculation_details", force: :cascade do |t|
@@ -277,6 +285,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_02_083921) do
 
   add_foreign_key "inventories", "categories"
   add_foreign_key "inventories", "units"
+  add_foreign_key "inventory_orders", "inventories"
   add_foreign_key "pay_calculation_details", "pay_calculations"
   add_foreign_key "pay_calculation_details", "workers"
   add_foreign_key "roles_permissions", "permissions"
