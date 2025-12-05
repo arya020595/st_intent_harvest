@@ -2,7 +2,7 @@ class InventoriesController < ApplicationController
   include RansackMultiSort
 
   before_action :set_inventory, only: %i[show edit update destroy confirm_delete]
-  before_action :load_collections, only: %i[new edit create update]
+  before_action :load_collections, only: %i[new edit]
 
   def index
     authorize Inventory
@@ -136,7 +136,7 @@ class InventoriesController < ApplicationController
 
   # Provide categories and units for the form partial
   def load_collections
-    @categories = Category.where.not(parent_id: nil)
+    @categories = Category.all
     @units = Unit.order(:name)
   end
 
