@@ -20,18 +20,38 @@
 
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
+# First order for inventory one - NPK Fertilizer
+order_one_first:
   inventory: one
-  quantity: 1
-  unit_price: 9.99
-  total_price: 9.99
-  supplier: MyString
-  purchase_date: 2025-12-05
+  quantity: 50
+  unit_price: 5.00
+  total_price: 250.00
+  supplier: Supplier One
+  purchase_date: <%= 10.days.ago.to_date %>
 
-two:
+# Second order for inventory one - NPK Fertilizer
+order_one_second:
+  inventory: one
+  quantity: 30
+  unit_price: 5.50
+  total_price: 165.00
+  supplier: Supplier One
+  purchase_date: <%= 5.days.ago.to_date %>
+
+# Third order for inventory one - NPK Fertilizer
+order_one_third:
+  inventory: one
+  quantity: 20
+  unit_price: 5.25
+  total_price: 105.00
+  supplier: Supplier Two
+  purchase_date: <%= 2.days.ago.to_date %>
+
+# Single order for inventory two - Herbicide
+order_two_first:
   inventory: two
-  quantity: 1
-  unit_price: 9.99
-  total_price: 9.99
-  supplier: MyString
-  purchase_date: 2025-12-05
+  quantity: 50
+  unit_price: 3.60
+  total_price: 180.00
+  supplier: Supplier Two
+  purchase_date: <%= 5.days.ago.to_date %>
