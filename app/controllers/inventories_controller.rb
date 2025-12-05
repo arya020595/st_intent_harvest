@@ -22,6 +22,7 @@ class InventoriesController < ApplicationController
     @inventory = Inventory.new
     @inventory.inventory_orders.build # Initialize with one empty order row
     authorize @inventory
+    @recent_orders = @inventory.inventory_orders
 
     if turbo_frame_request?
       render layout: false
@@ -77,6 +78,7 @@ class InventoriesController < ApplicationController
         end
         format.html { redirect_to inventories_path, notice: 'Inventory was successfully created.' }
       else
+        @recent_orders = @inventory.inventory_orders
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace('modal', partial: 'inventories/form', locals: { inventory: @inventory }),
                  status: :unprocessable_entity
@@ -96,6 +98,7 @@ class InventoriesController < ApplicationController
         end
         format.html { redirect_to inventories_path, notice: 'Inventory was successfully updated.' }
       else
+        @recent_orders = @inventory.inventory_orders.order(id: :desc).limit(5)
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace('modal', partial: 'inventories/form', locals: { inventory: @inventory }),
                  status: :unprocessable_entity
