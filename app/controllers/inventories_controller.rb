@@ -2,13 +2,13 @@ class InventoriesController < ApplicationController
   include RansackMultiSort
 
   before_action :set_inventory, only: %i[show edit update destroy confirm_delete]
-  before_action :load_collections, only: %i[new edit create update]
+  before_action :load_collections, only: %i[new edit]
 
   def index
     authorize Inventory
 
     # Eager load associations used in the view to avoid N+1
-    base = policy_scope(Inventory).includes(:unit, :category).order(input_date: :desc)
+    base = policy_scope(Inventory).includes(:unit, :category).order(created_at: :desc)
     apply_ransack_search(base)
 
     @pagy, @inventories = paginate_results(@q.result(distinct: true))
@@ -20,6 +20,7 @@ class InventoriesController < ApplicationController
   # GET /inventories/new
   def new
     @inventory = Inventory.new
+    @inventory.inventory_orders.build # Initialize with one empty order row
     authorize @inventory
 
     if turbo_frame_request?
@@ -32,6 +33,7 @@ class InventoriesController < ApplicationController
   # GET /inventories/:id
   def show
     authorize @inventory
+    @recent_orders = @inventory.inventory_orders.order(purchase_date: :desc).limit(5)
 
     if turbo_frame_request?
       render layout: false
@@ -43,6 +45,7 @@ class InventoriesController < ApplicationController
   # GET /inventories/:id/edit
   def edit
     authorize @inventory
+    @recent_orders = @inventory.inventory_orders.order(id: :desc).limit(5)
 
     if turbo_frame_request?
       render layout: false
@@ -124,16 +127,14 @@ class InventoriesController < ApplicationController
     @inventory = Inventory.find_by(id: params[:id])
     return if @inventory.present?
 
-    if turbo_frame_request?
-      render turbo_stream: turbo_stream.replace('modal', ''), status: :ok and return
-    else
-      redirect_to inventories_path and return
-    end
+    render(turbo_stream: turbo_stream.replace('modal', ''), status: :ok) and return if turbo_frame_request?
+
+    redirect_to inventories_path
   end
 
   # Provide categories and units for the form partial
   def load_collections
-    @categories = Category.where.not(parent_id: nil)
+    @categories = Category.all
     @units = Unit.order(:name)
   end
 
@@ -141,13 +142,9 @@ class InventoriesController < ApplicationController
   def inventory_params
     params.require(:inventory).permit(
       :name,
-      :stock_quantity,
-      :price,
-      :currency,
-      :supplier,
-      :input_date,
       :unit_id,
-      :category_id
+      :category_id,
+      inventory_orders_attributes: %i[id quantity total_price supplier purchase_date _destroy]
     )
   end
 end
