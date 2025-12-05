@@ -25,22 +25,13 @@
                 <tr class="header-row">
                   <th></th>
                   <th class="text-center">
-                    <%= sort_link(@q, :name, 'Name') %>
+                    <%= sort_link(@q, :name, 'Inventory Name') %>
                   </th>
                   <th class="text-center">
                     <%= sort_link(@q, :category_id, 'Category') %>
                   </th>
                   <th class="text-center">
                     <%= sort_link(@q, :unit_id, 'Unit') %>
-                  </th>
-                  <th class="text-center">
-                    <%= sort_link(@q, :stock_quantity, 'Quantity') %>
-                  </th>
-                  <th class="text-center">
-                    <%= sort_link(@q, :input_date, 'Input Date') %>
-                  </th>
-                  <th class="text-center">
-                    <%= sort_link(@q, :price, 'Price') %>
                   </th>
                 </tr>
                 <tr>
@@ -65,27 +56,6 @@
                                 { include_blank: "Select Unit" },
                                 class: "form-select form-select-sm" %>
                   </th>
-                  <th></th>
-                  <th class="text-center">
-                    <div class="input-group input-group-sm"
-                              data-controller="flatpickr"
-                              data-flatpickr-mode-value="range"
-                              data-flatpickr-date-format-value="d-m-Y"
-                              data-flatpickr-field-name-value="q[input_date]"
-                          >
-                      <input type="text"
-                             class="form-control form-control-sm cursor-pointer"
-                             placeholder="Select Date Range"
-                             data-flatpickr-target="input"
-                             >
-                      <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
-                        <i class="bi bi-calendar-range"></i>
-                      </span>
-                    </div>
-                    <%= f.hidden_field :input_date_gteq, value: params.dig(:q, :input_date_gteq) %>
-                    <%= f.hidden_field :input_date_lteq, value: params.dig(:q, :input_date_lteq) %>
-                  </th>
-                  <th></th>
                 </tr>
               </thead>
               <tbody id="inventory_rows">
@@ -93,7 +63,7 @@
                   <%= render partial: 'inventory_row', collection: @inventories, as: :inventory %>
                 <% else %>
                   <tr>
-                    <td colspan="7" class="text-center text-muted py-4">
+                    <td colspan="4" class="text-center text-muted py-4">
                       No inventories found.
                       <% if record_policy(Inventory.new, InventoryPolicy).new? %>
                         <%= link_to 'Add a new inventory', new_inventory_path, class: 'text-decoration-none', **modal_link_data %>

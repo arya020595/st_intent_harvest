@@ -1,0 +1,37 @@
+# == Schema Information
+#
+# Table name: inventory_orders
+#
+#  id            :integer          not null, primary key
+#  inventory_id  :integer          not null
+#  quantity      :integer          not null
+#  unit_price    :decimal(10, 2)
+#  total_price   :decimal(10, 2)   not null
+#  supplier      :string           not null
+#  purchase_date :date             not null
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#
+# Indexes
+#
+#  index_inventory_orders_on_inventory_id   (inventory_id)
+#  index_inventory_orders_on_purchase_date  (purchase_date)
+#
+
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  inventory: one
+  quantity: 1
+  unit_price: 9.99
+  total_price: 9.99
+  supplier: MyString
+  purchase_date: 2025-12-05
+
+two:
+  inventory: two
+  quantity: 1
+  unit_price: 9.99
+  total_price: 9.99
+  supplier: MyString
+  purchase_date: 2025-12-05
