@@ -13,7 +13,7 @@
         <dt class="col-sm-3">Unit:</dt>
         <dd class="col-sm-9"><%= @inventory.unit&.name || '-' %></dd>
         <dt class="col-sm-3">Total Stock:</dt>
-        <dd class="col-sm-9"><%= @inventory.total_stock %> <%= @inventory.unit&.name %></dd>
+        <dd class="col-sm-9"><%= @inventory.total_stock %><%= @inventory.unit&.name ? " #{@inventory.unit.name}" : " -" %></dd>
       </dl>
       <% if @recent_orders.any? %>
         <div class="d-flex justify-content-between align-items-center mb-3">
