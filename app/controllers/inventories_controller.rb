@@ -127,11 +127,9 @@ class InventoriesController < ApplicationController
     @inventory = Inventory.find_by(id: params[:id])
     return if @inventory.present?
 
-    if turbo_frame_request?
-      render turbo_stream: turbo_stream.replace('modal', ''), status: :ok and return
-    else
-      redirect_to inventories_path and return
-    end
+    render(turbo_stream: turbo_stream.replace('modal', ''), status: :ok) and return if turbo_frame_request?
+
+    redirect_to inventories_path
   end
 
   # Provide categories and units for the form partial
