@@ -17,30 +17,15 @@
 
 one:
   name: "NPK Fertilizer 15-15-15"
-  currency: "RM"
-  price: 250.00
-  stock_quantity: 100
-  supplier: "Supplier One"
-  input_date: <%= 10.days.ago.to_date %>
   category: fertilizer
   unit: kg
 
 two:
   name: "Herbicide Glyphosate"
-  currency: "RM"
-  price: 180.00
-  stock_quantity: 50
-  supplier: "Supplier Two"
-  input_date: <%= 5.days.ago.to_date %>
   category: pesticide
   unit: liter
 
 three:
   name: "Pruning Shears"
-  currency: "RM"
-  price: 75.00
-  stock_quantity: 25
-  supplier: "Tool Supply Co"
-  input_date: <%= 15.days.ago.to_date %>
   category: tools
   unit: piece
