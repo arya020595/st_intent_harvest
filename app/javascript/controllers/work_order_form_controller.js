@@ -17,6 +17,7 @@ export default class extends Controller {
     "resourcesSection",
     "workersSection",
     "rateDetailsSection",
+    "rateFieldSection",
     "unitSection",
     "vehicleSection",
     "normalFieldsSection",
@@ -189,6 +190,9 @@ export default class extends Controller {
     const workMonthSection = this.hasWorkMonthSectionTarget
       ? this.workMonthSectionTarget
       : null;
+    const rateFieldSection = this.hasRateFieldSectionTarget
+      ? this.rateFieldSectionTarget
+      : null;
     const unitSection = this.hasUnitSectionTarget
       ? this.unitSectionTarget
       : null;
@@ -207,6 +211,7 @@ export default class extends Controller {
       workers: !!workersSection,
       normalFields: normalFieldsSection.length,
       workMonth: !!workMonthSection,
+      rateField: !!rateFieldSection,
       unit: !!unitSection,
       vehicle: !!vehicleSection,
     });
@@ -224,6 +229,7 @@ export default class extends Controller {
       }
       normalFieldsSection.forEach((el) => (el.style.display = "none"));
       if (workMonthSection) workMonthSection.style.display = "none";
+      if (rateFieldSection) rateFieldSection.style.display = "block";
       if (unitSection) unitSection.style.display = "block";
       if (vehicleSection) {
         vehicleSection.style.display = "block";
@@ -244,6 +250,7 @@ export default class extends Controller {
       if (workersSection) workersSection.style.display = "block";
       normalFieldsSection.forEach((el) => (el.style.display = "none"));
       if (workMonthSection) workMonthSection.style.display = "flex";
+      if (rateFieldSection) rateFieldSection.style.display = "none";
       if (unitSection) unitSection.style.display = "none";
       if (vehicleSection) vehicleSection.style.display = "none";
 
@@ -256,6 +263,7 @@ export default class extends Controller {
       if (workersSection) workersSection.style.display = "block";
       normalFieldsSection.forEach((el) => (el.style.display = "flex"));
       if (workMonthSection) workMonthSection.style.display = "none";
+      if (rateFieldSection) rateFieldSection.style.display = "block";
       if (unitSection) unitSection.style.display = "block";
       if (vehicleSection) vehicleSection.style.display = "none";
 
