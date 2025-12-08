@@ -43,21 +43,20 @@
                 <tr>
                   <th class="text-center">
                     <div class="filter-buttons">
-                      <%= button_tag 'Search', type: "submit", class: 'btn filter-btn' %>
                       <%= link_to 'Reset', master_data_work_order_rates_path, class: 'btn reset-btn', style: 'font-weight: normal;' %>
                     </div>
                   </th>
                   <th>
-                    <%= f.search_field :work_order_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Name..' %>
+                    <%= f.search_field :work_order_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Name..', data: { action: "input->search-form#autoSubmit" } %>
                   </th>
                   <th>
-                    <%= f.collection_select :work_order_rate_type_eq, WorkOrderRate.work_order_rate_types.keys, :to_s, :titleize, { include_blank: 'All Types' }, class: 'form-control form-control-sm' %>
+                    <%= f.collection_select :work_order_rate_type_eq, WorkOrderRate.work_order_rate_types.keys, :to_s, :titleize, { include_blank: 'All Types' }, class: 'form-control form-control-sm', data: { action: "input->search-form#autoSubmit" } %>
                   </th>
                   <th class="text-center">
-                    <%= f.number_field :rate_eq, class: 'form-control form-control-sm', placeholder: 'Rate', step: 0.01 %>
+                    <%= f.number_field :rate_eq, class: 'form-control form-control-sm', placeholder: 'Rate', step: 0.01, data: { action: "input->search-form#autoSubmit" }%>
                   </th>
                   <th>
-                    <%= f.collection_select :unit_id_eq, Unit.all, :id, :name, { include_blank: 'All Units' }, class: 'form-control form-control-sm' %>
+                    <%= f.collection_select :unit_id_eq, Unit.all, :id, :name, { include_blank: 'All Units' }, class: 'form-control form-control-sm', data: { action: "input->search-form#autoSubmit" } %>
                   </th>
                   <th>
                   </th>
