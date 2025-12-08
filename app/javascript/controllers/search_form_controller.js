@@ -3,6 +3,14 @@ import { Controller } from "@hotwired/stimulus";
 /**
  * SearchFormController
  *
+ * Handles search form submissions to ensure pagination resets to page 1.
+ * This prevents issues where searching from page 2+ would show no results.
+ *
+ * Usage:
+ *   <%= search_form_for @q, html: { data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
+ *     ...
+ *   <% end %>
+ *
  * Handles:
  *  - autoSubmit: Debounced form submit (use for text fields)
  *  - instantSubmit: Immediate form submit (use for dropdowns or checkboxes)
@@ -37,20 +45,20 @@ export default class extends Controller {
     const url = new URL(form.action || window.location.href);
     const formData = new FormData(form);
 
-    // Clear any existing params
+    // Clear existing search params
     url.search = "";
 
-    // Add submitted form parameters
+    // Add all form data to URL params
     for (const [key, value] of formData.entries()) {
       if (value !== "") {
         url.searchParams.append(key, value);
       }
     }
 
-    // Always reset to page 1
+    // Ensure page parameter is removed (will default to page 1)
     url.searchParams.delete("page");
 
-    // Redirect
+    // Navigate to the new URL
     window.location.href = url.toString();
   }
 }

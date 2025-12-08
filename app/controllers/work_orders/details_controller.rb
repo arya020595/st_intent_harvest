@@ -37,7 +37,7 @@ module WorkOrders
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
       @vehicles = Vehicle.all
-      @is_field_conductor = current_user.role&.name == 'Field Conductor'
+      @is_field_conductor = current_user.field_conductor?
     end
 
     def create
@@ -63,7 +63,7 @@ module WorkOrders
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
       @vehicles = Vehicle.all
-      @is_field_conductor = current_user.role&.name == 'Field Conductor'
+      @is_field_conductor = current_user.field_conductor?
     end
 
     def update

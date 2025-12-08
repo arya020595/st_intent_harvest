@@ -330,16 +330,13 @@ export default class extends Controller {
   updateAllWorkerRates() {
     if (!this.hasWorkersContainerTarget) return;
 
-    // Update rate for all existing worker rows
+    // Update rate for all existing worker rows (regardless of selection)
     const workerRows = this.workersContainerTarget.querySelectorAll(
       "tr[data-worker-index]"
     );
     workerRows.forEach((row) => {
       const index = row.dataset.workerIndex;
-      const workerSelect = row.querySelector("select");
-      if (workerSelect && workerSelect.value) {
-        this.applyWorkerRate(index);
-      }
+      this.applyWorkerRate(index);
     });
   }
 
@@ -364,7 +361,7 @@ export default class extends Controller {
         (inv) =>
           `<option value="${inv.id}" data-category="${this.escapeHTML(
             inv.category?.name || ""
-          )}" data-price="${inv.price || 0}" data-unit="${this.escapeHTML(
+          )}" data-unit="${this.escapeHTML(
             inv.unit?.name || ""
           )}">${this.escapeHTML(inv.name)}</option>`
       )
@@ -383,9 +380,6 @@ export default class extends Controller {
         </td>
         <td>
           <input type="text" class="form-control form-control-sm" id="resource_category_${index}" value="Auto Filled" disabled style="background-color: #e9ecef;">
-        </td>
-        <td>
-          <input type="text" class="form-control form-control-sm" id="resource_price_${index}" value="Auto Filled" disabled style="background-color: #e9ecef;">
         </td>
         <td>
           <input type="text" class="form-control form-control-sm" id="resource_unit_${index}" value="Auto Filled" disabled style="background-color: #e9ecef;">
@@ -412,19 +406,14 @@ export default class extends Controller {
     if (!selectedOption.value) {
       document.getElementById(`resource_category_${index}`).value =
         "Auto Filled";
-      document.getElementById(`resource_price_${index}`).value = "Auto Filled";
       document.getElementById(`resource_unit_${index}`).value = "Auto Filled";
       return;
     }
 
     const category = selectedOption.dataset.category || "N/A";
-    const price = selectedOption.dataset.price || "0";
     const unit = selectedOption.dataset.unit || "N/A";
 
     document.getElementById(`resource_category_${index}`).value = category;
-    document.getElementById(`resource_price_${index}`).value = `RM ${parseFloat(
-      price
-    ).toFixed(2)}`;
     document.getElementById(`resource_unit_${index}`).value = unit;
   }
 
