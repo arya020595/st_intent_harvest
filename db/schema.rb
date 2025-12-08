@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_05_063006) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_08_090125) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -231,7 +231,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_05_063006) do
     t.decimal "rate", precision: 10, scale: 2
     t.text "remarks"
     t.datetime "updated_at", null: false
-    t.integer "work_area_size"
+    t.decimal "work_area_size", precision: 10, scale: 3
     t.integer "work_days", comment: "How many days worker works in given month"
     t.bigint "work_order_id", null: false
     t.bigint "worker_id", null: false
