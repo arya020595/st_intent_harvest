@@ -457,7 +457,7 @@ export default class extends Controller {
           </select>
         </td>
         <td data-work-order-form-target="quantityCell">
-          <input type="number" class="form-control form-control-sm" id="worker_quantity_${index}" name="work_order[work_order_workers_attributes][${index}][work_area_size]" placeholder="0" step="0.01" min="0" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="${index}" style="display: ${
+          <input type="number" class="form-control form-control-sm" id="worker_quantity_${index}" name="work_order[work_order_workers_attributes][${index}][work_area_size]" placeholder="0" step="0.001" min="0" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="${index}" style="display: ${
       isWorkDays ? "none" : "block"
     };">
           <input type="number" class="form-control form-control-sm" id="worker_days_${index}" name="work_order[work_order_workers_attributes][${index}][work_days]" placeholder="0" step="1" min="0" max="31" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="${index}" style="display: ${

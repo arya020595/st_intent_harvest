@@ -30,8 +30,8 @@
                   <%# Show work_days for work_days type, otherwise show work_area_size %>
                   <td>
                     <%= work_order.work_order_rate_type == "work_days" ?
-                        number_with_precision(worker.work_days, precision: 2) :
-                        number_with_precision(worker.work_area_size, precision: 2) %>
+                        worker.work_days :
+                        worker.work_area_size %>
                   </td>
                   <td><%= number_to_currency(worker.rate, unit: 'RM ', precision: 2) %></td>
                   <td><%= number_to_currency(worker.amount, unit: 'RM ', precision: 2) %></td>
@@ -43,8 +43,8 @@
                 <%# Sum work_days for work_days type, otherwise sum work_area_size %>
                 <td>
                   <%= work_order.work_order_rate_type == "work_days" ?
-                      number_with_precision(work_order.work_order_workers.sum(:work_days), precision: 2) :
-                      number_with_precision(work_order.work_order_workers.sum(:work_area_size), precision: 2) %>
+                      work_order.work_order_workers.sum(:work_days) :
+                      work_order.work_order_workers.sum(:work_area_size) %>
                 </td>
                 <td></td>
                 <td><%= number_to_currency(work_order.work_order_workers.sum(:amount), unit: 'RM ', precision: 2) %></td>

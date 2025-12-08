@@ -73,7 +73,7 @@
         <div class="col-md-6 mb-3">
           <%= form.label :field_conductor_id, "Field Conductor", class: "form-label fw-bold" %>
           <%= form.collection_select :field_conductor_id,
-              User.joins(:role).where(roles: { name: 'Field Conductor' }),
+              User.field_conductors,
               :id,
               :name,
               { include_blank: "Select Field Conductor" },

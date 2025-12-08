@@ -27,7 +27,7 @@
                   <td class="text-center"><%= index + 1 %></td>
                   <td><%= worker.worker_name %></td>
                   <td>
-                    <%= work_order.work_order_rate_type == "work_days" ? worker.work_days : number_with_precision(worker.work_area_size, precision: 2) %>
+                    <%= work_order.work_order_rate_type == "work_days" ? worker.work_days : worker.work_area_size %>
                   </td>
                   <td><%= number_to_currency(worker.rate, unit: '', precision: 2) %></td>
                   <td><%= number_to_currency(worker.amount, unit: '', precision: 2) %></td>
@@ -37,7 +37,7 @@
               <tr class="table-secondary fw-bold">
                 <td colspan="2" class="text-center">Total</td>
                 <td>
-                  <%= work_order.work_order_rate_type == "work_days" ? work_order.work_order_workers.sum(:work_days) : number_with_precision(work_order.work_order_workers.sum(:work_area_size), precision: 2) %>
+                  <%= work_order.work_order_rate_type == "work_days" ? work_order.work_order_workers.sum(:work_days) : work_order.work_order_workers.sum(:work_area_size) %>
                 </td>
                 <td></td>
                 <td><%= number_to_currency(work_order.work_order_workers.sum(:amount), unit: '', precision: 2) %></td>
