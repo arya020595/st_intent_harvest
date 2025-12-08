@@ -37,7 +37,7 @@ module WorkOrders
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
       @vehicles = Vehicle.all
-      @is_field_conductor = current_user.role&.name == 'Field Conductor'
+      @is_field_conductor = field_conductor?
     end
 
     def create
@@ -63,7 +63,7 @@ module WorkOrders
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
       @vehicles = Vehicle.all
-      @is_field_conductor = current_user.role&.name == 'Field Conductor'
+      @is_field_conductor = field_conductor?
     end
 
     def update
@@ -137,6 +137,17 @@ module WorkOrders
 
     def set_work_order
       @work_order = WorkOrder.find(params[:id])
+    end
+
+    def field_conductor?
+      return false unless current_user.role&.permissions&.any?
+
+      # Get all permission codes for the user's role
+      permission_codes = current_user.role.permissions.pluck(:code)
+
+      # Field conductor only has work_orders.details permissions
+      # If there's any permission that doesn't start with 'work_orders.details', user is NOT a field conductor
+      permission_codes.none? { |code| !code.start_with?('work_orders.details') }
     end
 
     def work_order_params
