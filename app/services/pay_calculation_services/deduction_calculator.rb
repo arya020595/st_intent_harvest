@@ -4,7 +4,7 @@ module PayCalculationServices
   class DeductionCalculator
     DeductionResult = Struct.new(:deduction_breakdown, :employee_deduction, :employer_deduction, keyword_init: true)
 
-    VALID_NATIONALITIES = %w[local foreigner].freeze
+    VALID_NATIONALITIES = %w[local foreigner foreigner_no_passport].freeze
 
     class << self
       # Calculate deductions for a specific month and worker
