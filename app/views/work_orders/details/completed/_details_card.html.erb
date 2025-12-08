@@ -52,10 +52,10 @@
       <div class="col-md-6 mb-3">
         <label class="form-label fw-bold">Total Amount</label>
         <div class="p-2 rounded">
-          RM <%= if work_order.resources_type?
-                   number_to_currency(work_order.work_order_items.sum(:price), unit: '', separator: '.', delimiter: ',', precision: 2)
+          <%= if work_order.resources_type?
+                   number_to_currency(work_order.work_order_items.sum(:price), unit: 'RM ', separator: '.', delimiter: ',', precision: 2)
                  else
-                   number_to_currency(work_order.work_order_workers.sum(:amount), unit: '', separator: '.', delimiter: ',', precision: 2)
+                   number_to_currency(work_order.work_order_workers.sum(:amount), unit: 'RM ', separator: '.', delimiter: ',', precision: 2)
                  end %>
         </div>
       </div>
