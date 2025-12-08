@@ -46,7 +46,7 @@ class User < ApplicationRecord
 
     # Field conductor only has work_orders.details permissions
     # If there's any permission that doesn't start with 'work_orders.details', user is NOT a field conductor
-    permission_codes.none? { |code| !code.start_with?('work_orders.details') }
+    permission_codes.all? { |code| code.start_with?('work_orders.details') }
   end
 
   # Clear cached permissions (call after role change)
