@@ -41,12 +41,12 @@ class User < ApplicationRecord
   def field_conductor?
     return false unless role&.permissions&.any?
 
-    # Get all permission codes for the user's role
-    permission_codes = role.permissions.pluck(:code)
+    # Use cached permission codes to avoid redundant queries
+    @permission_codes ||= role.permissions.pluck(:code)
 
     # Field conductor only has work_orders.details permissions
     # If there's any permission that doesn't start with 'work_orders.details', user is NOT a field conductor
-    permission_codes.all? { |code| code.start_with?('work_orders.details') }
+    @permission_codes.all? { |code| code.start_with?('work_orders.details') }
   end
 
   # Clear cached permissions (call after role change)
