@@ -84,9 +84,19 @@
                 </th>
                 <th class="text-center">
                   <%= f.select :work_order_status_eq,
-                      options_for_select([['Pending', 'pending'], ['Amendment Required', 'amendment_required'], ['Completed', 'completed']], f.object.work_order_status_eq),
+                      options_for_select(
+                        [
+                          ['Pending', 'pending'],
+                          ['Amendment Required', 'amendment_required'],
+                          ['Completed', 'completed']
+                        ],
+                        f.object.work_order_status_eq
+                      ),
                       { include_blank: 'Select Status..' },
-                      { class: 'form-select form-select-sm' } %>
+                      {
+                        class: 'form-select form-select-sm',
+                        data: { action: "change->search-form#instantSubmit" }
+                      } %>
                 </th>
               </tr>
             </thead>

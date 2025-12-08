@@ -48,14 +48,14 @@
                                 options_from_collection_for_select(@categories, :id, :name),
                                 { include_blank: "Select Category" },
                                 class: "form-select form-select-sm",
-                                data: { action: "input->search-form#autoSubmit" } %>
+                                data: { action: "input->search-form#instantSubmit" } %>
                   </th>
                   <th>
                     <%= f.select :unit_id_eq,
                                 options_from_collection_for_select(@units, :id, :name),
                                 { include_blank: "Select Unit" },
                                 class: "form-select form-select-sm",
-                                data: { action: "input->search-form#autoSubmit" } %>
+                                data: { action: "input->search-form#instantSubmit" } %>
                   </th>
                 </tr>
               </thead>

@@ -4,23 +4,31 @@ import { Controller } from "@hotwired/stimulus";
  * SearchFormController
  *
  * Handles:
- *  - Auto-submit when user types in filters (debounced)
- *  - Resetting pagination to page 1 on submit
+ *  - autoSubmit: Debounced form submit (use for text fields)
+ *  - instantSubmit: Immediate form submit (use for dropdowns or checkboxes)
+ *  - resetPage: Rebuilds URL and removes pagination before navigating
  */
 export default class extends Controller {
   /**
-   * Auto-submit the form when user types in a field.
-   * Debounced to avoid excessive calls.
+   * Debounced auto-submit (e.g. for text inputs)
    */
   autoSubmit(event) {
     clearTimeout(this.timeout);
 
     this.timeout = setTimeout(() => {
       this.element.requestSubmit();
-    }, 300); // adjust debounce delay if needed
+    }, 300); // adjust debounce time as needed
   }
+
   /**
-   * Reset pagination to page 1 when form is submitted
+   * Immediate submit (no debounce)
+   */
+  instantSubmit(event) {
+    this.element.requestSubmit();
+  }
+
+  /**
+   * Reset pagination and rebuild URL on form submission
    */
   resetPage(event) {
     event.preventDefault();
@@ -29,17 +37,17 @@ export default class extends Controller {
     const url = new URL(form.action || window.location.href);
     const formData = new FormData(form);
 
-    // Clear existing search params
+    // Clear any existing params
     url.search = "";
 
-    // Apply new search params
+    // Add submitted form parameters
     for (const [key, value] of formData.entries()) {
       if (value !== "") {
         url.searchParams.append(key, value);
       }
     }
 
-    // Remove pagination parameter (forces page 1)
+    // Always reset to page 1
     url.searchParams.delete("page");
 
     // Redirect
