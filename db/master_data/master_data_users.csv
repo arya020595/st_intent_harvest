@@ -1,12 +1,12 @@
 name,role,email,password
 ZULFIKA SUHAIMI,Manager,zulfikasuhaimi28@gmail.com,zulfika@Intent123
 ADDERLEYY APIN,Manager,adderleyyapingdel@gmail.com,adderleyy@Intent123
-MOHD SAHRULNIZAM BIN ABDUL MALIK,Field Conductor,mohdsahrulnizam5@gmail.com,shahrul@Intent123
-DANIEL RAYNER SOPIJI,Field Conductor,raynerd641@gmail.com,daniel@Intent123
-ASEZHAR ALIAS,Field Conductor,asezharalias92@gmail.com,asezhar@Intent123
-DANIEL MUDAIR,Field Conductor,danieldanielmudair@gmail.com,daniel@Intent123
-SUHENDRA,Field Conductor,Suhendra75@gmail.com,suhendra@Intent123
-JIEY ERLISTHER JILIEO,Field Conductor,jieyerlistherjilieo@gmail.com,jiey@Intent123
+MOHD SAHRULNIZAM BIN ABDUL MALIK,Field Supervisor,mohdsahrulnizam5@gmail.com,shahrul@Intent123
+DANIEL RAYNER SOPIJI,Field Supervisor,raynerd641@gmail.com,daniel@Intent123
+ASEZHAR ALIAS,Field Supervisor,asezharalias92@gmail.com,asezhar@Intent123
+DANIEL MUDAIR,Field Supervisor,danieldanielmudair@gmail.com,daniel@Intent123
+SUHENDRA,Field Supervisor,Suhendra75@gmail.com,suhendra@Intent123
+JIEY ERLISTHER JILIEO,Field Supervisor,jieyerlistherjilieo@gmail.com,jiey@Intent123
 JUHIMA SAMUN,Clerk,Jue949@gmail.com,juhima@Intent123
 MADONNA JUNILAH,Clerk,Madonna8849@gmail.com,mandonna@Intent123
 SUSHINIA DARIUS,Clerk,suhsniadarius@gmail.com,sushina@Intent123
@@ -16,3 +16,6 @@ TSEN PEI CHAN,Superadmin,tps@intentharvest.com,tsen@Intent123
 YEO HOCK HIAN,Superadmin,issacyeo62@gmail.com,yeo@Intent123
 CHEANG BOON LIANG,Manager,cheang_163_ggd@gmail.com,cheang@Intent123
 Super Admin,Superadmin,superadmin@example.com,superadmin123!
+Field Supervisor,Field Supervisor,fieldsupervisor@example.com,fieldsupervisor123!
+Clerk,Clerk,clerk@example.com,clerk123!
+Manager,Manager,manager@example.com,manager123!
