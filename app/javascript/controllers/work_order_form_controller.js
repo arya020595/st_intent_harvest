@@ -330,16 +330,13 @@ export default class extends Controller {
   updateAllWorkerRates() {
     if (!this.hasWorkersContainerTarget) return;
 
-    // Update rate for all existing worker rows
+    // Update rate for all existing worker rows (regardless of selection)
     const workerRows = this.workersContainerTarget.querySelectorAll(
       "tr[data-worker-index]"
     );
     workerRows.forEach((row) => {
       const index = row.dataset.workerIndex;
-      const workerSelect = row.querySelector("select");
-      if (workerSelect && workerSelect.value) {
-        this.applyWorkerRate(index);
-      }
+      this.applyWorkerRate(index);
     });
   }
 
