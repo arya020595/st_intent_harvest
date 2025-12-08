@@ -32,15 +32,14 @@
               <tr>
                 <th class="text-center">
                   <div class="d-flex gap-1 justify-content-center">
-                    <%= f.submit 'Search', class: 'btn btn filter-btn' %>
                     <%= link_to 'Reset', work_orders_approvals_path, class: 'btn btn reset-btn' %>
                   </div>
                 </th>
                 <th class="text-center">
-                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1 %>
+                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1, data: { action: "input->search-form#autoSubmit" } %>
                 </th>
                 <th>
-                  <%= f.search_field :work_order_rate_work_order_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Rate..' %>
+                  <%= f.search_field :work_order_rate_work_order_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Rate..', data: { action: "input->search-form#autoSubmit" } %>
                 </th>
                 <th>
                   <%= f.search_field :block_block_number_cont, class: 'form-control form-control-sm', placeholder: 'Search Block..' %>
@@ -85,9 +84,19 @@
                 </th>
                 <th class="text-center">
                   <%= f.select :work_order_status_eq,
-                      options_for_select([['Pending', 'pending'], ['Amendment Required', 'amendment_required'], ['Completed', 'completed']], f.object.work_order_status_eq),
+                      options_for_select(
+                        [
+                          ['Pending', 'pending'],
+                          ['Amendment Required', 'amendment_required'],
+                          ['Completed', 'completed']
+                        ],
+                        f.object.work_order_status_eq
+                      ),
                       { include_blank: 'Select Status..' },
-                      { class: 'form-select form-select-sm' } %>
+                      {
+                        class: 'form-select form-select-sm',
+                        data: { action: "change->search-form#instantSubmit" }
+                      } %>
                 </th>
               </tr>
             </thead>

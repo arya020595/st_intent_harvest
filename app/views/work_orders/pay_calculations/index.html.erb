@@ -26,18 +26,17 @@
               <tr>
                 <th class="text-center">
                   <div class="d-flex gap-1 justify-content-center">
-                    <%= f.submit 'Search', class: 'btn btn filter-btn' %>
                     <%= link_to 'Reset', work_orders_pay_calculations_path, class: 'btn btn reset-btn' %>
                   </div>
                 </th>
                 <th class="text-center">
-                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1 %>
+                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1, data: { action: "input->search-form#autoSubmit" } %>
                 </th>
                 <th>
-                  <%= f.search_field :month_year_formatted_cont, class: 'form-control form-control-sm', placeholder: 'Search Month/Year..' %>
+                  <%= f.search_field :month_year_cont, class: 'form-control form-control-sm', placeholder: 'Search Month/Year..', data: { action: "input->search-form#autoSubmit" } %>
                 </th>
                 <th class="text-center">
-                  <%= f.number_field :total_net_salary_eq, class: 'form-control form-control-sm', placeholder: 'Total', step: '0.01' %>
+                  <%= f.number_field :total_net_salary_eq, class: 'form-control form-control-sm', placeholder: 'Total', step: '0.01', data: { action: "input->search-form#autoSubmit" } %>
                 </th>
                 <th class="text-center">
                 </th>
