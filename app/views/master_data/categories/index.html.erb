@@ -28,9 +28,6 @@
                     <%= sort_link(@q, :name, 'Name') %>
                   </th>
                   <th class="text-center">
-                    <%= sort_link(@q, :parent_name, 'Parent Category') %>
-                  </th>
-                  <th class="text-center">
                     <%= sort_link(@q, :created_at, 'Created At') %>
                   </th>
                   <th class="text-center">
@@ -61,7 +58,7 @@
                   <%= render partial: 'category_row', collection: @categories, as: :category %>
                 <% else %>
                   <tr>
-                    <td colspan="6" class="text-center text-muted py-4">
+                    <td colspan="5" class="text-center text-muted py-4">
                       No categories found.
                       <% if record_policy(Category.new, MasterData::CategoryPolicy).new? %>
                         <%= link_to 'Add a new category', new_master_data_category_path, class: 'text-decoration-none', **modal_link_data %>

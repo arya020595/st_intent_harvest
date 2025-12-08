@@ -49,7 +49,4 @@
   <td><%= inventory.name %></td>
   <td><%= inventory.category&.name %></td>
   <td><%= inventory.unit&.name %></td>
-  <td class="text-center"><%= inventory.stock_quantity %></td>
-  <td class="text-center"><%= inventory.input_date.strftime("%d-%m-%Y") if inventory.input_date %></td>
-  <td class="text-center">RM <%= number_with_precision(inventory.price, precision: 2, delimiter: ',') %></td>
 </tr>

@@ -2,54 +2,30 @@
 #
 # Table name: inventories
 #
-#  id             :bigint           not null, primary key
-#  currency       :string           default("RM")
-#  input_date     :date
-#  name           :string           not null
-#  price          :decimal(10, 2)
-#  stock_quantity :integer          default(0)
-#  supplier       :string
-#  created_at     :datetime         not null
-#  updated_at     :datetime         not null
-#  category_id    :bigint
-#  unit_id        :bigint
+#  id          :integer          not null, primary key
+#  category_id :integer
+#  created_at  :datetime         not null
+#  name        :string           not null
+#  unit_id     :integer
+#  updated_at  :datetime         not null
 #
 # Indexes
 #
 #  index_inventories_on_category_id  (category_id)
 #  index_inventories_on_unit_id      (unit_id)
 #
-# Foreign Keys
-#
-#  fk_rails_...  (category_id => categories.id)
-#  fk_rails_...  (unit_id => units.id)
-#
+
 one:
   name: "NPK Fertilizer 15-15-15"
-  currency: "RM"
-  price: 250.00
-  stock_quantity: 100
-  supplier: "Supplier One"
-  input_date: <%= 10.days.ago.to_date %>
   category: fertilizer
   unit: kg
 
 two:
   name: "Herbicide Glyphosate"
-  currency: "RM"
-  price: 180.00
-  stock_quantity: 50
-  supplier: "Supplier Two"
-  input_date: <%= 5.days.ago.to_date %>
   category: pesticide
   unit: liter
 
 three:
   name: "Pruning Shears"
-  currency: "RM"
-  price: 75.00
-  stock_quantity: 25
-  supplier: "Tool Supply Co"
-  input_date: <%= 15.days.ago.to_date %>
   category: tools
   unit: piece
