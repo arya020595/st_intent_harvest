@@ -48,7 +48,7 @@ end
 #  rate           :decimal(10, 2)
 #  remarks        :text
 #  updated_at     :datetime         not null
-#  work_area_size :integer
+#  work_area_size :decimal(10, 3)
 #  work_days      :integer
 #  work_order_id  :integer          not null
 #  worker_id      :integer          not null
