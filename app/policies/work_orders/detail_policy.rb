@@ -61,8 +61,7 @@ module WorkOrders
       # Override to implement role-based filtering
       def apply_role_based_scope
         # Field conductors only see their own work orders
-        role_name = user.role&.name
-        if role_name&.casecmp('field conductor')&.zero?
+        if user.field_conductor?
           scope.where(field_conductor_id: user.id)
         else
           # Other roles (manager, clerk, etc.) with permission see all work orders
