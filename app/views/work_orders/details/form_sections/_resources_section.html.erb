@@ -13,11 +13,10 @@
       <table class="table table-hover table-sm mb-0">
         <thead class="table-success">
           <tr>
-            <th style="width: 25%">Resources Name</th>
-            <th style="width: 20%">Resource Category</th>
-            <th style="width: 15%">Price (RM)</th>
+            <th style="width: 35%">Resources Name</th>
+            <th style="width: 30%">Resource Category</th>
             <th style="width: 15%">Unit</th>
-            <th style="width: 15%" data-work-order-form-target="amountUsedHeader">Amount Used</th>
+            <th style="width: 10%" data-work-order-form-target="amountUsedHeader">Amount Used</th>
             <th style="width: 10%" class="text-center">Action</th>
           </tr>
         </thead>
@@ -28,16 +27,13 @@
                 <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][<%= index %>][inventory_id]" data-action="change->work-order-form#updateResourceDetails" data-resource-index="<%= index %>">
                   <option value="">Select Resource</option>
                   <% @inventories.each do |inv| %>
-                    <option value="<%= inv.id %>" data-category="<%= inv.category&.name %>" data-price="<%= inv.price || 0 %>" data-unit="<%= inv.unit&.name %>" <%= 'selected' if inv.id == item.inventory_id %>><%= inv.name %></option>
+                    <option value="<%= inv.id %>" data-category="<%= inv.category&.name %>" data-unit="<%= inv.unit&.name %>" <%= 'selected' if inv.id == item.inventory_id %>><%= inv.name %></option>
                     <% end %>
                   </select>
                   <%= hidden_field_tag "work_order[work_order_items_attributes][#{index}][id]", item.id %>
                 </td>
                 <td>
                   <input type="text" class="form-control form-control-sm" id="resource_category_<%= index %>" value="<%= item.category_name || 'Auto Filled' %>" disabled style="background-color: #e9ecef;">
-                </td>
-                <td>
-                  <input type="text" class="form-control form-control-sm" id="resource_price_<%= index %>" value="<%= item.price ? number_to_currency(item.price, unit: '', precision: 2) : 'Auto Filled' %>" disabled style="background-color: #e9ecef;">
                 </td>
                 <td>
                   <input type="text" class="form-control form-control-sm" id="resource_unit_<%= index %>" value="<%= item.unit_name || 'Auto Filled' %>" disabled style="background-color: #e9ecef;">
