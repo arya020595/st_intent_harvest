@@ -4,7 +4,16 @@ class Worker < ApplicationRecord
   # Constants for form options
   WORKER_TYPES = ['Part - Time', 'Full - Time'].freeze
   GENDERS = %w[Male Female].freeze
-  NATIONALITIES = ['Local', 'Foreigner', 'Foreigner (No Passport)'].freeze
+  # Nationality values - stored as business logic values (lowercase, underscored)
+  # These are used directly in deduction calculations without transformation
+  NATIONALITIES = %w[local foreigner foreigner_no_passport].freeze
+
+  # Human-readable labels for UI display
+  NATIONALITY_LABELS = {
+    'local' => 'Local',
+    'foreigner' => 'Foreigner',
+    'foreigner_no_passport' => 'Foreigner (No Passport)'
+  }.freeze
 
   has_many :work_order_workers, dependent: :destroy
   has_many :work_orders, through: :work_order_workers
@@ -19,9 +28,17 @@ class Worker < ApplicationRecord
   scope :active, -> { where(is_active: true) }
   scope :inactive, -> { where(is_active: false) }
   scope :by_type, ->(type) { where(worker_type: type) if type.present? }
-  scope :local, -> { where(nationality: 'Local') }
-  scope :foreign, -> { where(nationality: 'Foreigner') }
-  scope :foreign, -> { where(nationality: 'Foreigner (No Passport)') }
+  scope :local, -> { where(nationality: 'local') }
+  scope :foreigner, -> { where(nationality: %w[foreigner foreigner_no_passport]) }
+  scope :foreigner_with_passport, -> { where(nationality: 'foreigner') }
+  scope :foreigner_no_passport, -> { where(nationality: 'foreigner_no_passport') }
+
+  # Class method for form select options
+  # Returns array of [label, value] pairs for Rails select helper
+  # Example: [['Local', 'local'], ['Foreigner', 'foreigner'], ...]
+  def self.nationality_options
+    NATIONALITY_LABELS.map { |value, label| [label, value] }
+  end
 
   # Ransack configuration
   def self.ransackable_attributes(_auth_object = nil)
