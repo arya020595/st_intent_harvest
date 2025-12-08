@@ -36,6 +36,19 @@ class User < ApplicationRecord
     role&.name&.casecmp('superadmin')&.zero?
   end
 
+  # Check if user is a field conductor
+  # Field conductor only has work_orders.details.* permissions and nothing else
+  def field_conductor?
+    return false unless role&.permissions&.any?
+
+    # Use cached permission codes to avoid redundant queries
+    @permission_codes ||= role.permissions.pluck(:code)
+
+    # Field conductor only has work_orders.details permissions
+    # If there's any permission that doesn't start with 'work_orders.details', user is NOT a field conductor
+    @permission_codes.all? { |code| code.start_with?('work_orders.details') }
+  end
+
   # Clear cached permissions (call after role change)
   def clear_permission_cache!
     @permission_codes = nil
