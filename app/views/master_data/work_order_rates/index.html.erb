@@ -53,7 +53,7 @@
                     <%= f.collection_select :work_order_rate_type_eq, WorkOrderRate.work_order_rate_types.keys, :to_s, :titleize, { include_blank: 'All Types' }, class: 'form-control form-control-sm', data: { action: "input->search-form#instantSubmit" } %>
                   </th>
                   <th class="text-center">
-                    <%= f.number_field :rate_eq, class: 'form-control form-control-sm', placeholder: 'Rate', step: 0.01, data: { action: "input->search-form#autoSubmit" }%>
+                    <%= f.number_field :rate_eq, class: 'form-control form-control-sm', placeholder: 'Rate', step: 0.01, data: { action: "input->search-form#autoSubmit" } %>
                   </th>
                   <th>
                     <%= f.collection_select :unit_id_eq, Unit.all, :id, :name, { include_blank: 'All Units' }, class: 'form-control form-control-sm', data: { action: "input->search-form#instantSubmit" } %>
