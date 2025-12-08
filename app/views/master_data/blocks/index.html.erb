@@ -40,15 +40,14 @@
                 <tr>
                   <th class="text-center">
                     <div class="filter-buttons">
-                      <%= button_tag "Search", type: "submit", class: "btn filter-btn" %>
                       <%= link_to 'Reset', master_data_blocks_path, class: "btn reset-btn", style: 'font-weight: normal;' %>
                     </div>
                   </th>
                   <th>
-                    <%= f.search_field :block_number_cont, class: 'form-control form-control-sm', placeholder: 'Search Block Number..' %>
+                    <%= f.search_field :block_number_cont, class: 'form-control form-control-sm', placeholder: 'Search Block Number..', data: { action: "input->search-form#autoSubmit" } %>
                   </th>
                   <th class="text-center">
-                    <%= f.number_field :hectarage_eq, class: 'form-control form-control-sm', placeholder: 'Hectarage', step: 0.01 %>
+                    <%= f.number_field :hectarage_eq, class: 'form-control form-control-sm', placeholder: 'Hectarage', step: 0.01, data: { action: "input->search-form#autoSubmit" } %>
                   </th>
                   <th></th>
                   <th></th>

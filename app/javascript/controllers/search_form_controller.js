@@ -10,11 +10,33 @@ import { Controller } from "@hotwired/stimulus";
  *   <%= search_form_for @q, html: { data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
  *     ...
  *   <% end %>
+ *
+ * Handles:
+ *  - autoSubmit: Debounced form submit (use for text fields)
+ *  - instantSubmit: Immediate form submit (use for dropdowns or checkboxes)
+ *  - resetPage: Rebuilds URL and removes pagination before navigating
  */
 export default class extends Controller {
   /**
-   * Reset pagination to page 1 when form is submitted
-   * @param {Event} event - Form submit event
+   * Debounced auto-submit (e.g. for text inputs)
+   */
+  autoSubmit(event) {
+    clearTimeout(this.timeout);
+
+    this.timeout = setTimeout(() => {
+      this.element.requestSubmit();
+    }, 300); // adjust debounce time as needed
+  }
+
+  /**
+   * Immediate submit (no debounce)
+   */
+  instantSubmit(event) {
+    this.element.requestSubmit();
+  }
+
+  /**
+   * Reset pagination and rebuild URL on form submission
    */
   resetPage(event) {
     event.preventDefault();
@@ -28,7 +50,7 @@ export default class extends Controller {
 
     // Add all form data to URL params
     for (const [key, value] of formData.entries()) {
-      if (value !== '') {
+      if (value !== "") {
         url.searchParams.append(key, value);
       }
     }

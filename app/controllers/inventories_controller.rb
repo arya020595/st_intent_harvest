@@ -33,7 +33,7 @@ class InventoriesController < ApplicationController
   # GET /inventories/:id
   def show
     authorize @inventory
-    @recent_orders = @inventory.inventory_orders.order(purchase_date: :desc).limit(5)
+    @recent_orders = @inventory.inventory_orders.order(id: :desc).limit(5)
 
     if turbo_frame_request?
       render layout: false

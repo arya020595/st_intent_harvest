@@ -94,17 +94,22 @@ export default class extends Controller {
    * @private
    * @param {Array<Date>} selectedDates - Array of selected dates
    */
-  handleRangeClose(selectedDates) {
-    if (selectedDates.length === 2) {
-      const [startDate, endDate] = selectedDates;
-      this.syncRansackFields(startDate, endDate);
-    } else if (selectedDates.length === 1) {
-      // Clear fields on partial selection to avoid stale data
-      this.clearRansackFields();
-    } else if (selectedDates.length === 0) {
-      this.clearRansackFields();
+
+    handleRangeClose(selectedDates) {
+      if (selectedDates.length === 2) { // Only trigger when both start and end are picked
+        const [startDate, endDate] = selectedDates;
+        this.syncRansackFields(startDate, endDate);
+
+        // Trigger the form auto-submit
+        const form = this.element.closest("form");
+        if (form) {
+          form.requestSubmit(); // Submits the form (works with Rails UJS or Turbo)
+        }
+      } else {
+        this.clearRansackFields(); // Clear hidden fields if selection incomplete
+      }
     }
-  }
+
 
   /**
    * Load existing dates from hidden fields (for page reload/back button)
