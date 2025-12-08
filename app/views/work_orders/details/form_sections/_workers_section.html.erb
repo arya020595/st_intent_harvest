@@ -34,7 +34,7 @@
                   <%= hidden_field_tag "work_order[work_order_workers_attributes][#{index}][id]", wow.id %>
                 </td>
                 <td>
-                  <input type="number" class="form-control form-control-sm" id="worker_quantity_<%= index %>" name="work_order[work_order_workers_attributes][<%= index %>][work_area_size]" placeholder="0" step="0.01" min="0" value="<%= wow.work_area_size %>" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="<%= index %>">
+                  <input type="number" class="form-control form-control-sm" id="worker_quantity_<%= index %>" name="work_order[work_order_workers_attributes][<%= index %>][work_area_size]" placeholder="0" step="0.001" min="0" value="<%= wow.work_area_size %>" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="<%= index %>">
                 </td>
                 <td data-work-order-form-target="rateCell">
                   <!-- Display field (visible) -->

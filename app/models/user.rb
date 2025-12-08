@@ -10,6 +10,14 @@ class User < ApplicationRecord
 
   validates :name, presence: true
 
+  # Scope to get field conductors (users who only have work_orders.details permissions)
+  scope :field_conductors, lambda {
+    joins(role: :permissions)
+      .group('users.id')
+      .having("COUNT(DISTINCT permissions.code) > 0 AND COUNT(DISTINCT CASE WHEN permissions.code NOT LIKE 'work_orders.details%' THEN 1 END) = 0")
+      .select('users.*')
+  }
+
   # Check if user has a specific permission code
   # Superadmin role bypasses all permission checks
   # Example: user.has_permission?("admin.users.index")

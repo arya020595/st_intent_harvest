@@ -10,8 +10,6 @@ class WorkOrderItem < ApplicationRecord
 
   # Denormalize inventory details
   denormalize :item_name, from: :inventory, attribute: :name
-  # Temporarily removed
-  # denormalize :price, from: :inventory
 
   # Denormalize nested associations using path option
   denormalize :unit_name, from: :inventory, path: 'unit.name'
