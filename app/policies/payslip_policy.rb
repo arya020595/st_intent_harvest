@@ -6,8 +6,8 @@ class PayslipPolicy < ApplicationPolicy
   # - payslip.show
   # - payslip.export
 
-  def index?
-    show?
+  def show?
+    index?
   end
 
   private

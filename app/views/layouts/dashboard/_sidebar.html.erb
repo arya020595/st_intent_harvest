@@ -46,7 +46,7 @@
       </li>
     <% end %>
     <!-- Payslip -->
-    <% if can_view_menu?('payslip.index') %>
+    <% if can_view_menu?('payslip.show') %>
       <li>
         <%= link_to payslips_path, class: "nav-link #{active_controller?('payslips') ? 'active' : 'link-dark'}" do %>
           <i class="bi bi-clipboard-data-fill me-2"></i> Payslip
