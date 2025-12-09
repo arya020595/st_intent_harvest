@@ -24,28 +24,27 @@
                 <th class="text-center">
                   <%= sort_link(@q, :worker_id, 'Worker ID') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :worker_name, 'Worker Name') %>
                 </th>
-                <th class="text-end">
-                  <%= sort_link(@q, :net_salary, 'Nett Salary (RM)') %>
+                <th class="text-center">
+                  <%= sort_link(@q, :net_salary, 'Net Salary (RM)') %>
                 </th>
               </tr>
               <tr>
                 <th class="text-center">
                   <div class="d-flex gap-1 justify-content-center">
-                    <%= f.submit 'Search', class: 'btn btn filter-btn' %>
-                    <%= link_to 'Reset', work_orders_pay_calculation_path(@pay_calculation), class: 'btn btn reset-btn' %>
+                    <%= link_to 'Reset', work_orders_pay_calculation_path(@pay_calculation), class: 'btn btn reset-btn', style: "width: 120px;" %>
                   </div>
                 </th>
                 <th class="text-center">
-                  <%= f.number_field :worker_id_eq, class: 'form-control form-control-sm', placeholder: 'Worker ID', min: 1 %>
+                  <%= f.number_field :worker_id_eq, class: 'form-control form-control-sm', placeholder: 'Worker ID', min: 1, data: { action: "input->search-form#autoSubmit" } %>
                 </th>
-                <th>
-                  <%= f.search_field :worker_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Worker Name..' %>
+                <th class="text-center">
+                  <%= f.search_field :worker_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Worker Name..', data: { action: "input->search-form#autoSubmit" } %>
                 </th>
-                <th class="text-end">
-                  <%= f.number_field :net_salary_eq, class: 'form-control form-control-sm', placeholder: 'Nett Salary (RM)', step: '0.01' %>
+                <th class="text-center">
+                  <%= f.number_field :net_salary_eq, class: 'form-control form-control-sm', placeholder: 'Net Salary (RM)', step: '0.01', data: { action: "input->search-form#autoSubmit" } %>
                 </th>
               </tr>
             </thead>
@@ -63,8 +62,8 @@
                       </div>
                     </td>
                     <td class="text-center"><%= detail.worker.id %></td>
-                    <td><%= detail.worker.name %></td>
-                    <td class="text-end"><%= number_to_currency(detail.net_salary, unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %></td>
+                    <td class="text-center"><%= detail.worker.name %></td>
+                    <td class="text-center"><%= number_to_currency(detail.net_salary, unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %></td>
                   </tr>
                 <% end %>
               <% else %>
