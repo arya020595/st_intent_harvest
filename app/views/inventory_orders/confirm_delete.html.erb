@@ -1,0 +1,43 @@
+<%= turbo_frame_tag "modal" do %>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">
+          <i class="bi bi-exclamation-triangle-fill"></i> Confirm Delete
+        </h5>
+        <%= link_to inventory_inventory_orders_path(@inventory), data: { turbo_frame: "_top" }, class: "btn-close btn-close-white" do %>
+        <% end %>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-3">Are you sure you want to delete this purchase order?</p>
+
+        <div class="alert alert-warning">
+          <h6 class="alert-heading"><i class="bi bi-info-circle"></i> Order Details</h6>
+          <ul class="mb-0">
+            <li><strong>Inventory:</strong> <%= @inventory.name %></li>
+            <li><strong>Supplier:</strong> <%= @inventory_order.supplier %></li>
+            <li><strong>Purchase Date:</strong> <%= @inventory_order.purchase_date.strftime("%d %B %Y") %></li>
+            <li><strong>Quantity:</strong> <%= number_with_delimiter(@inventory_order.quantity) %> <%= @inventory.unit&.name %></li>
+            <li><strong>Total Price:</strong> RM <%= number_with_precision(@inventory_order.total_price, precision: 2) %></li>
+          </ul>
+        </div>
+
+        <p class="text-danger mb-0">
+          <strong>Warning:</strong> This action cannot be undone. The order will be permanently removed from the inventory history.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <%= link_to "Cancel", inventory_inventory_orders_path(@inventory), class: "btn btn-secondary", data: { turbo_frame: "_top" } %>
+        <%= button_to "Delete Order",
+            inventory_inventory_order_path(@inventory, @inventory_order),
+            method: :delete,
+            class: "btn btn-danger",
+            data: { turbo_frame: "_top" } do %>
+          <i class="bi bi-trash"></i> Delete Order
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

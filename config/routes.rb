@@ -57,6 +57,11 @@ Rails.application.routes.draw do
     member do
       get :confirm_delete
     end
+    resources :inventory_orders do
+      member do
+        get :confirm_delete
+      end
+    end
   end
 
   # Workers
