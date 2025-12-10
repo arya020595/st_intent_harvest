@@ -1,0 +1,28 @@
+<!-- Breadcrumb -->
+<%= render 'shared/breadcrumb', breadcrumbs: [
+  ['Work Order', work_orders_details_path],
+  ['Work Order Details', nil],
+  ['View Work Order', nil]
+] %>
+<!-- Back Button -->
+<div class="mb-3">
+  <%= link_to work_orders_details_path, class: "text-decoration-none text-dark d-inline-flex align-items-center fs-5 fw-bold" do %>
+    <i class="bi bi-arrow-left me-2"></i> Back to Work Order Details
+  <% end %>
+</div>
+<hr>
+<!-- Amendment Required Alert -->
+<% if work_order.work_order_status == 'amendment_required' %>
+  <% if amendment_history&.remarks.present? %>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <div class="alert-heading fs-5 fw-bold">
+        <i class="bi bi-info-circle me-3 fs-5 fw-bold"></i>
+        <span class="text-dark">This Work Order Must Be Amended!</span>
+      </div>
+      <hr>
+      <p class="mb-3"><strong>Remarks:</strong></p>
+      <p class="mb-0"><%= amendment_history.remarks %></p>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% end %>
+<% end %>

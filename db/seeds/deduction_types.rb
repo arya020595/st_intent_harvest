@@ -14,16 +14,31 @@ effective_start_date = Date.new(Date.current.year, 1, 1)
 DeductionType.delete_all
 
 # EPF (Employees Provident Fund) - Percentage based
-# Same for both Local and Foreign employees
+# Different for Local vs Foreign employees
 DeductionType.create!([
                         {
-                          code: 'EPF',
-                          name: 'EPF (Employees Provident Fund)',
-                          description: 'Employees Provident Fund - retirement savings (11% employee, 12% employer)',
+                          code: 'EPF_MALAYSIAN',
+                          name: 'EPF (Employees Provident Fund) - Malaysian',
+                          description: 'Malaysian employees: Employee 11% | Employer 13% (retirement savings)',
                           employee_contribution: 11.0, # 11%
-                          employer_contribution: 12.0, # 12%
+                          employer_contribution: 13.0, # 13%
                           calculation_type: 'percentage',
-                          applies_to_nationality: 'all',
+                          applies_to_nationality: 'local',
+                          is_active: true,
+                          effective_from: effective_start_date,
+                          effective_until: nil
+                        }
+                      ])
+
+DeductionType.create!([
+                        {
+                          code: 'EPF_FOREIGN',
+                          name: 'EPF (Employees Provident Fund) - Foreign',
+                          description: 'Foreign employees: Employee 2% | Employer 2% (retirement savings)',
+                          employee_contribution: 2.0, # 2%
+                          employer_contribution: 2.0, # 2%
+                          calculation_type: 'percentage',
+                          applies_to_nationality: 'foreigner',
                           is_active: true,
                           effective_from: effective_start_date,
                           effective_until: nil

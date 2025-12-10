@@ -1,0 +1,5 @@
+<%= render "shared/confirm_delete",
+           item_name: "Block #{@block.block_number}",
+           item_type: "Block",
+           delete_path: master_data_block_path(@block),
+           form_id: "deleteBlockForm" %>

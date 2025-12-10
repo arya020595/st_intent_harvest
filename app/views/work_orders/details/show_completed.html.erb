@@ -1,4 +1,4 @@
-<div class="container-fluid px-4 py-4">
+<div id="work_orders_details" class="container-fluid px-4 py-4">
   <!-- Breadcrumb -->
   <%= render 'shared/breadcrumb', breadcrumbs: [
     ['Work Order', work_orders_details_path],
@@ -7,10 +7,11 @@
   ] %>
   <!-- Back Button -->
   <div class="mb-3">
-    <%= link_to work_orders_details_path, class: "text-decoration-none text-success d-inline-flex align-items-center" do %>
+    <%= link_to work_orders_details_path, class: "text-decoration-none text-dark d-inline-flex align-items-center fs-5 fw-bold" do %>
       <i class="bi bi-arrow-left me-2"></i> Back to Work Order Details
     <% end %>
   </div>
+  <hr>
   <!-- Header: Company Logo and Status Badge -->
   <%= render 'work_orders/details/completed/header', work_order: @work_order %>
   <!-- Work Order Details Card -->

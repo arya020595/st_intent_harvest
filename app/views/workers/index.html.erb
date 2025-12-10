@@ -1,20 +1,27 @@
-<div id="flash_messages">
-  <%= render "shared/flash" %>
-</div>
-<div class="container-fluid px-4 py-4 workers-profile" data-controller="multi-sort">
+<div id="url-manager"></div>
+<div id="worker_profile" class="container-fluid px-4 py-4 workers-profile" data-controller="multi-sort">
   <div class="card shadow-sm">
-    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Workers Profile</h5>
-      <%= link_to new_worker_path, data: { turbo_frame: "modal" }, class: "btn btn-light btn-sm" do %>
-        <i class="bi bi-plus-circle"></i> Add Worker
-      <% end %>
+    <div class="worker_profile_page">
+      <h1 class="mb-0">Workers Profile</h1>
+      <div class="d-flex justify-content-end">
+        <% if record_policy(Worker.new, WorkerPolicy).new? %>
+          <%= link_to new_worker_path, class: "add-button btn btn-primary btn-sm", **modal_link_data(size: 'modal-lg') do %>
+            <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Worker
+          <% end %>
+        <% else %>
+          <%= link_to new_worker_path, class: "add-button btn btn-primary btn-sm" do %>
+            <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Worker
+          <% end %>
+        <% end %>
+      </div>
     </div>
     <div class="card-body">
       <%= search_form_for @q, url: workers_path, html: { id: 'worker-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
-            <thead class="table-success">
-              <tr>
+            <thead class="header-row">
+              <tr class="header-row">
+                <th></th>
                 <th class="text-center">
                   <%= sort_link(@q, :id, 'Worker ID') %>
                 </th>
@@ -30,48 +37,53 @@
                 <th class="text-center">
                   <%= sort_link(@q, :hired_date, 'Hired Date') %>
                 </th>
-                <th class="text-center">Actions</th>
               </tr>
               <tr>
                 <th class="text-center">
-                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID (e.g., 137)', min: 1 %>
+                  <div class="filter-buttons justify-content-center">
+                    <%= link_to 'Reset', workers_path, class: 'btn reset-btn', style: 'font-weight: normal; width: 120px;' %>
+                  </div>
+                </th>
+                <th class="text-center">
+                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID (e.g., 137)', min: 1, data: { action: "input->search-form#autoSubmit" } %>
                 </th>
                 <th>
-                  <%= f.search_field :name_cont, class: 'form-control form-control-sm', placeholder: 'Search Name..' %>
+                  <%= f.search_field :name_cont, class: 'form-control form-control-sm', placeholder: 'Search Name..', data: { action: "input->search-form#autoSubmit" } %>
                 </th>
                 <th>
                   <%= f.select :worker_type_eq,
                       options_for_select(Worker::WORKER_TYPES.map { |t| [t, t] }, f.object.worker_type_eq),
                       { include_blank: 'Select Type..' },
-                      { class: 'form-select form-select-sm' } %>
+                      { class: 'form-select form-select-sm',
+                      data: { action: "input->search-form#instantSubmit" }
+                       } %>
                 </th>
                 <th class="text-center">
                   <%= f.select :is_active_eq,
                       options_for_select([['Active', true], ['Inactive', false]], f.object.is_active_eq),
                       { include_blank: 'Select Status..' },
-                      { class: 'form-select form-select-sm' } %>
+                      { class: 'form-select form-select-sm',
+                      data: { action: "input->search-form#instantSubmit" }
+                      } %>
                 </th>
                 <th class="text-center">
-                  <div class="input-group input-group-sm">
+                  <div class="input-group input-group-sm"
+                          data-controller="flatpickr"
+                          data-flatpickr-mode-value="range"
+                          data-flatpickr-date-format-value="d-m-Y"
+                          data-flatpickr-field-name-value="q[hired_date]"
+                      >
                     <input type="text"
                            class="form-control form-control-sm cursor-pointer"
                            placeholder="Select Date Range"
-                           data-controller="flatpickr"
-                           data-flatpickr-mode-value="range"
-                           data-flatpickr-date-format-value="d-m-Y"
-                           data-flatpickr-field-name-value="q[hired_date]">
+                           data-flatpickr-target="input"
+                           >
                     <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
                       <i class="bi bi-calendar-range"></i>
                     </span>
                   </div>
                   <%= f.hidden_field :hired_date_gteq, value: params.dig(:q, :hired_date_gteq) %>
                   <%= f.hidden_field :hired_date_lteq, value: params.dig(:q, :hired_date_lteq) %>
-                </th>
-                <th class="text-center">
-                  <div class="d-flex gap-1 justify-content-center">
-                    <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
-                    <%= link_to 'Reset', workers_path, class: 'btn btn-secondary btn-sm' %>
-                  </div>
                 </th>
               </tr>
             </thead>
@@ -81,7 +93,12 @@
               <% else %>
                 <tr>
                   <td colspan="6" class="text-center text-muted py-4">
-                    No workers found. <%= link_to 'Add a new worker', new_worker_path, data: { turbo_frame: "modal" }, class: 'text-decoration-none' %>
+                    No workers found.
+                    <% if record_policy(Worker.new, WorkerPolicy).new? %>
+                      <%= link_to 'Add a new worker', new_worker_path, **modal_link_data(size: 'modal-lg'), class: 'text-decoration-none' %>
+                    <% else %>
+                      <%= link_to 'Add a new worker', new_worker_path, class: 'text-decoration-none' %>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>

@@ -40,13 +40,13 @@ class ApplicationPolicy
 
   # Build full permission code from action
   # @param action [String] The action (e.g., 'index', 'show', 'create', 'update', 'destroy')
-  # @return [String] Full permission code (e.g., 'admin.users.index')
+  # @return [String] Full permission code (e.g., 'user_management.users.index')
   def build_permission_code(action)
     "#{permission_resource}.#{action}"
   end
 
   # Override this method in subclasses to map to correct permission resource
-  # @return [String] Format: "namespace.resource" (e.g., "admin.users", "workorders.orders")
+  # @return [String] Format: "namespace.resource" (e.g., "user_management.users", "work_orders.details")
   def permission_resource
     raise NotImplementedError, "#{self.class.name} must implement #permission_resource"
   end
@@ -60,14 +60,23 @@ class ApplicationPolicy
     end
 
     def resolve
-      if user.has_permission?(build_permission_code('index'))
-        scope.all
-      else
-        scope.none
-      end
+      # Superadmin bypasses all checks - sees everything
+      return scope.all if user.superadmin?
+
+      # Check permission for non-superadmin users
+      return scope.none unless user.has_permission?(build_permission_code('index'))
+
+      # Apply role-based filtering for non-superadmin users
+      apply_role_based_scope
     end
 
     private
+
+    # Override this method in subclasses to implement role-based filtering
+    # Default behavior: return all records if user has permission
+    def apply_role_based_scope
+      scope.all
+    end
 
     def build_permission_code(action)
       "#{permission_resource}.#{action}"

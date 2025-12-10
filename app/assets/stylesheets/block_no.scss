@@ -23,9 +23,14 @@
         vertical-align: middle;
     }
 
+    .card-body{
+        margin-top: -10px;
+        padding: 2px;
+    }
+
     .add-button {
     background-color: #155e1a;
-    margin-top: 20px;
+    margin-top: 10px;
     margin-bottom: 20px;
     border-radius: 10px;
     float: right;
@@ -33,7 +38,6 @@
     text-decoration: none;
     font-size: 16px;
     color: #ffffff;
-    font-weight: 900;
     border: 0;
     }
 
@@ -46,14 +50,12 @@
     .table thead.header-row th a {
     color: #ffffff !important;
     text-decoration: none !important;
-    font-weight: 900;
     }
 
     .header-row th {
     padding: 15px 10px;
     text-decoration: none;
-    color: #ffffff !important;;
-    font-weight: 900;
+    color: #ffffff !important;
     }
 
     .table thead tr.header-row th {

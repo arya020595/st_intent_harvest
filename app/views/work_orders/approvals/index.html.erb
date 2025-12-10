@@ -1,50 +1,61 @@
-<div class="container-fluid px-4 py-4 work-order-approvals" data-controller="multi-sort">
+<div id="work_orders_approvals" class="container-fluid px-4 py-4 work-order-approvals" data-controller="multi-sort">
   <div class="card shadow-sm">
-    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Work Order Approvals</h5>
+    <div class="work_orders_page">
+      <h1 class="mb-0">Work Order Approvals</h1>
     </div>
     <div class="card-body">
       <%= search_form_for @q, url: work_orders_approvals_path, html: { id: 'work-order-approval-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
-            <thead class="table-success">
-              <tr>
+            <thead class="header-row">
+              <tr class="header-row">
+                <th></th>
                 <th class="text-center">
                   <%= sort_link(@q, :id, 'ID') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :work_order_rate_work_order_name, 'Work Order Rate') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :block_block_number, 'Block') %>
                 </th>
                 <th class="text-center">
                   <%= sort_link(@q, :start_date, 'Start Date') %>
                 </th>
                 <th class="text-center">
+                  <%= sort_link(@q, :completion_date, 'Completion Date') %>
+                </th>
+                <th class="text-center">
                   <%= sort_link(@q, :work_order_status, 'Status') %>
                 </th>
-                <th class="text-center">Actions</th>
               </tr>
               <tr>
                 <th class="text-center">
-                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1 %>
+                  <div class="d-flex gap-1 justify-content-center">
+                    <%= link_to 'Reset', work_orders_approvals_path, class: 'btn btn reset-btn', style: "width: 120px;" %>
+                  </div>
+                </th>
+                <th class="text-center">
+                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1, data: { action: "input->search-form#autoSubmit" } %>
                 </th>
                 <th>
-                  <%= f.search_field :work_order_rate_work_order_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Rate..' %>
+                  <%= f.search_field :work_order_rate_work_order_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Rate..', data: { action: "input->search-form#autoSubmit" } %>
                 </th>
                 <th>
                   <%= f.search_field :block_block_number_cont, class: 'form-control form-control-sm', placeholder: 'Search Block..' %>
                 </th>
                 <th class="text-center">
-                  <div class="input-group input-group-sm">
-                    <input type="text" 
-                           class="form-control form-control-sm cursor-pointer" 
+                  <div class="input-group input-group-sm"
+                          data-controller="flatpickr"
+                          data-flatpickr-mode-value="range"
+                          data-flatpickr-date-format-value="d-m-Y"
+                          data-flatpickr-field-name-value="q[start_date]"
+                      >
+                    <input type="text"
+                           class="form-control form-control-sm cursor-pointer"
                            placeholder="Select Date Range"
-                           data-controller="flatpickr"
-                           data-flatpickr-mode-value="range"
-                           data-flatpickr-date-format-value="d-m-Y"
-                           data-flatpickr-field-name-value="q[start_date]">
+                           data-flatpickr-target="input"
+                           >
                     <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
                       <i class="bi bi-calendar-range"></i>
                     </span>
@@ -53,25 +64,48 @@
                   <%= f.hidden_field :start_date_lteq, value: params.dig(:q, :start_date_lteq) %>
                 </th>
                 <th class="text-center">
-                  <%= f.select :work_order_status_eq,
-                      options_for_select([['Pending', 'pending'], ['Amendment Required', 'amendment_required'], ['Completed', 'completed']], f.object.work_order_status_eq),
-                      { include_blank: 'Select Status..' },
-                      { class: 'form-select form-select-sm' } %>
+                  <div class="input-group input-group-sm"
+                          data-controller="flatpickr"
+                          data-flatpickr-mode-value="range"
+                          data-flatpickr-date-format-value="d-m-Y"
+                          data-flatpickr-field-name-value="q[completion_date]"
+                      >
+                    <input type="text"
+                           class="form-control form-control-sm cursor-pointer"
+                           placeholder="Select Date Range"
+                           data-flatpickr-target="input"
+                           >
+                    <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
+                      <i class="bi bi-calendar-range"></i>
+                    </span>
+                  </div>
+                  <%= f.hidden_field :completion_date_gteq, value: params.dig(:q, :completion_date_gteq) %>
+                  <%= f.hidden_field :completion_date_lteq, value: params.dig(:q, :completion_date_lteq) %>
                 </th>
                 <th class="text-center">
-                  <div class="d-flex gap-1 justify-content-center">
-                    <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
-                    <%= link_to 'Reset', work_orders_approvals_path, class: 'btn btn-secondary btn-sm' %>
-                  </div>
+                  <%= f.select :work_order_status_eq,
+                      options_for_select(
+                        [
+                          ['Pending', 'pending'],
+                          ['Amendment Required', 'amendment_required'],
+                          ['Completed', 'completed']
+                        ],
+                        f.object.work_order_status_eq
+                      ),
+                      { include_blank: 'Select Status..' },
+                      {
+                        class: 'form-select form-select-sm',
+                        data: { action: "change->search-form#instantSubmit" }
+                      } %>
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="work_orders_approvals_rows">
               <% if @work_orders.any? %>
                 <%= render partial: 'work_order_approval_row', collection: @work_orders, as: :work_order %>
               <% else %>
                 <tr>
-                  <td colspan="6" class="text-center text-muted py-4">
+                  <td colspan="7" class="text-center text-muted py-4">
                     No work orders found for approval.
                   </td>
                 </tr>

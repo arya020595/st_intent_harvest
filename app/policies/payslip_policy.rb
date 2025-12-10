@@ -6,8 +6,8 @@ class PayslipPolicy < ApplicationPolicy
   # - payslip.show
   # - payslip.export
 
-  def export?
-    user.has_permission?(build_permission_code('export'))
+  def show?
+    index?
   end
 
   private
@@ -17,6 +17,8 @@ class PayslipPolicy < ApplicationPolicy
   end
 
   class Scope < ApplicationPolicy::Scope
+    # Inherits default scope behavior
+
     private
 
     def permission_resource

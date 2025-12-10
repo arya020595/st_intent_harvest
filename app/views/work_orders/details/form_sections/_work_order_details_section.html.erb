@@ -1,0 +1,101 @@
+<!-- Work Order Details Section -->
+<div class="mb-4">
+  <div class="card-header border-bottom pb-2">
+    <div class="fw-bold fs-4" style="color: #155e1a">Work Order Details</div>
+  </div>
+  <div class="card-body mt-3">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-bold">Work Order ID</label>
+        <input type="text" class="form-control" value="Auto Filled" disabled style="background-color: #e9ecef;">
+      </div>
+      <div class="col-md-6 mb-3">
+        <%= form.label :work_order_rate_id, "Work Order", class: "form-label fw-bold" %>
+        <%= form.collection_select :work_order_rate_id,
+            WorkOrderRate.includes(:unit).all,
+            :id,
+            :work_order_name,
+            { include_blank: "Select Work Order" },
+            {
+              class: "form-select",
+              data: {
+                action: "change->work-order-form#updateWorkOrderRate",
+                work_order_rates: WorkOrderRate.includes(:unit).all.to_json(include: :unit, methods: :work_order_rate_type).html_safe
+              }
+            } %>
+      </div>
+    </div>
+    <div class="row" data-work-order-form-target="rateDetailsSection">
+      <div class="col-md-6 mb-3" data-work-order-form-target="rateFieldSection">
+        <label class="form-label fw-bold">Work Order Rate (RM)</label>
+        <input type="text" class="form-control" id="work_order_rate_display" value="Auto Filled" disabled style="background-color: #e9ecef;">
+      </div>
+      <div class="col-md-6 mb-3" data-work-order-form-target="unitSection">
+        <label class="form-label fw-bold">Unit of Measurement</label>
+        <input type="text" class="form-control" id="work_order_unit_display" value="Auto Filled" disabled style="background-color: #e9ecef;">
+      </div>
+    </div>
+    <div class="row" data-work-order-form-target="vehicleSection" style="display: none;">
+      <div class="col-md-6 mb-3">
+        <%= form.label :vehicle_id, "Vehicle", class: "form-label fw-bold" %>
+        <%= form.collection_select :vehicle_id,
+            @vehicles,
+            :id,
+            :display_name,
+            { include_blank: "Select Vehicle" },
+            { class: "form-select" } %>
+      </div>
+    </div>
+    <div class="row" data-work-order-form-target="normalFieldsSection">
+      <div class="col-md-6 mb-3">
+        <%= form.label :block_id, "Block No.", class: "form-label fw-bold" %>
+        <%= form.collection_select :block_id,
+            Block.all,
+            :id,
+            :block_number,
+            { include_blank: "Select Block No." },
+            { class: "form-select" } %>
+      </div>
+      <% if @is_field_conductor %>
+        <!-- Display Field Conductor Name -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Field Conductor</label>
+          <input type="text"
+                 class="form-control"
+                 value="<%= current_user.name %>"
+                 disabled
+                 style="background-color: #e9ecef;">
+        </div>
+        <!-- Hidden field to store the ID -->
+        <%= form.hidden_field :field_conductor_id, value: current_user.id %>
+      <% else %>
+        <!-- Normal select field for non-field conductors -->
+        <div class="col-md-6 mb-3">
+          <%= form.label :field_conductor_id, "Field Conductor", class: "form-label fw-bold" %>
+          <%= form.collection_select :field_conductor_id,
+              User.field_conductors,
+              :id,
+              :name,
+              { include_blank: "Select Field Conductor" },
+              { class: "form-select" } %>
+        </div>
+      <% end %>
+    </div>
+    <div class="row" data-work-order-form-target="normalFieldsSection">
+      <div class="col-md-6 mb-3">
+        <%= form.label :start_date, "Starting Date", class: "form-label fw-bold" %>
+        <%= form.date_field :start_date, class: "form-control", placeholder: "DD-MM-YYYY" %>
+      </div>
+      <div class="col-md-6 mb-3">
+        <%= form.label :completion_date, "Completion Date", class: "form-label fw-bold" %>
+        <%= form.date_field :completion_date, class: "form-control", placeholder: "DD-MM-YYYY" %>
+      </div>
+    </div>
+    <div class="row" data-work-order-form-target="workMonthSection" style="display: none;">
+      <div class="col-md-6 mb-3">
+        <%= form.label :work_month, "Work Month", class: "form-label fw-bold" %>
+        <%= form.month_field :work_month, class: "form-control" %>
+      </div>
+    </div>
+  </div>
+</div>

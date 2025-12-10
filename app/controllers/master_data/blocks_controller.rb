@@ -4,7 +4,7 @@ module MasterData
   class BlocksController < ApplicationController
     include RansackMultiSort
 
-    before_action :set_block, only: %i[show edit update destroy]
+    before_action :set_block, only: %i[show edit update destroy confirm_delete]
 
     def index
       authorize Block, policy_class: MasterData::BlockPolicy
@@ -15,6 +15,12 @@ module MasterData
 
     def show
       authorize @block, policy_class: MasterData::BlockPolicy
+
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to master_data_blocks_path
+      end
     end
 
     def new
@@ -77,32 +83,43 @@ module MasterData
       end
     end
 
+    def confirm_delete
+      authorize @block, policy_class: MasterData::BlockPolicy
+
+      # Only render the modal if Turbo frame request
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to master_data_blocks_path
+      end
+    end
+
     def destroy
       authorize @block, policy_class: MasterData::BlockPolicy
 
-      respond_to do |format|
-        if @block.destroy
+      if @block.destroy
+        respond_to do |format|
           format.turbo_stream do
-            flash.now[:notice] = 'Block was successfully deleted.'
+            flash.now[:notice] = 'Block deleted successfully.'
           end
-          format.html { redirect_to master_data_blocks_url, notice: 'Block was successfully deleted.' }
-        else
-          format.turbo_stream do
-            flash.now[:alert] = "Unable to delete block: #{@block.errors.full_messages.join(', ')}"
-            render :destroy, status: :unprocessable_entity
-          end
-          format.html do
-            redirect_to master_data_blocks_url,
-                        alert: "Unable to delete block: #{@block.errors.full_messages.join(', ')}"
-          end
+          format.html { redirect_to master_data_blocks_path, notice: 'Block deleted successfully.' }
         end
+      else
+        redirect_to master_data_blocks_path, alert: 'Failed to delete block.'
       end
     end
 
     private
 
     def set_block
-      @block = Block.find(params[:id])
+      @block = Block.find_by(id: params[:id])
+      return if @block.present?
+
+      if turbo_frame_request?
+        render turbo_stream: turbo_stream.replace('modal', ''), status: :ok
+      else
+        redirect_to master_data_blocks_path
+      end
     end
 
     def block_params

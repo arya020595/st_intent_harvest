@@ -4,7 +4,7 @@ module MasterData
   class VehiclesController < ApplicationController
     include RansackMultiSort
 
-    before_action :set_vehicle, only: %i[show edit update destroy]
+    before_action :set_vehicle, only: %i[show edit update destroy confirm_delete]
 
     def index
       authorize Vehicle, policy_class: MasterData::VehiclePolicy
@@ -77,6 +77,16 @@ module MasterData
       end
     end
 
+    def confirm_delete
+      authorize @vehicle, policy_class: MasterData::VehiclePolicy
+      # Only show the modal
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to master_data_vehicles_path
+      end
+    end
+
     def destroy
       authorize @vehicle, policy_class: MasterData::VehiclePolicy
 
@@ -101,8 +111,15 @@ module MasterData
 
     private
 
-    def set_vehicle
-      @vehicle = Vehicle.find(params[:id])
+   def set_vehicle
+      @vehicle = Vehicle.find_by(id: params[:id])
+      return if @vehicle.present?
+
+      if turbo_frame_request?
+        render turbo_stream: turbo_stream.replace("modal", ""), status: :ok
+      else
+        redirect_to master_data_vehicles_path
+      end
     end
 
     def vehicle_params

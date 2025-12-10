@@ -1,0 +1,5 @@
+<%= render "shared/confirm_delete",
+           item_name: @worker.name,
+           item_type: "Worker",
+           delete_path: worker_path(@worker),
+           form_id: "deleteWorkerForm" %>

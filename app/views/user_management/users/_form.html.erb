@@ -1,7 +1,9 @@
 <%= form_with(model: [:user_management, user]) do |form| %>
   <div class="modal-header">
     <h5 class="modal-title" id="userModalLabel">
+      <strong>
       <%= user.persisted? ? 'Edit User' : 'Add New User' %>
+      </strong>
     </h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
   </div>
@@ -59,14 +61,9 @@
       </div>
     </div>
   </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-      <i class="bi bi-x-circle"></i> Cancel
-    </button>
-    <% if user.persisted? %>
-      <%= form.submit 'Update User', class: "btn btn-primary" %>
-    <% else %>
-      <%= form.submit 'Save User', class: "btn btn-primary" %>
-    <% end %>
-  </div>
+    <div class="modal-footer">
+      <%= button_tag type: :submit, class: "btn btn-success" do %>
+        <i class="bi bi-save-fill text-white me-1"></i>Save
+      <% end %>
+    </div>
 <% end %>

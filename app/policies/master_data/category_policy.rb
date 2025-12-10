@@ -11,6 +11,19 @@ module MasterData
     # - master_data.categories.update
     # - master_data.categories.destroy
 
+    # Define who can see the delete confirmation
+    def confirm_delete?
+      destroy?
+    end
+
+    def new?
+      create?
+    end
+
+    def edit?
+      update?
+    end
+
     private
 
     def permission_resource

@@ -1,18 +1,15 @@
 <%# Workers Details Table - For normal_type and work_days_type work orders %>
 <div class="card shadow-sm mb-4">
-  <div class="card-header bg-success text-white">
-    <h5 class="mb-0">Workers Details</h5>
-  </div>
-  <div class="card-body">
+  <div class="p-4">
     <div class="table-responsive">
-      <table class="table table-bordered table-hover">
-        <thead class="table-success">
-          <tr>
-            <th>No</th>
+      <table class="table table-hover table-sm mb-0">
+        <thead class="header-row">
+          <tr class="header-row">
+            <th class="text-center">No</th>
             <th>Worker Name</th>
-            <th><%= work_order.work_order_rate_unit_name.presence || (work_order.work_days_type? ? 'Days' : 'Quantity(Ha)') %></th>
-            <th>Rate (RM)</th>
-            <th>Amount (RM)</th>
+            <th class="text-center"><%= work_order.work_order_rate_unit_name.presence || (work_order.work_days_type? ? 'Days' : 'Quantity(Ha)') %></th>
+            <th class="text-center">Rate (RM)</th>
+            <th class="text-center">Amount (RM)</th>
             <th>Remarks</th>
           </tr>
         </thead>
@@ -20,31 +17,33 @@
           <% if work_order.work_order_workers.any? %>
             <% work_order.work_order_workers.each_with_index do |worker, index| %>
               <tr>
-                <td><%= index + 1 %></td>
+                <td class="text-center"><%= index + 1 %></td>
                 <td><%= worker.worker_name %></td>
-                <td>
+                <td class="text-center">
                   <%= if work_order.work_days_type?
                           worker.work_days || 0
                         else
-                          number_with_precision(worker.work_area_size, precision: 2)
+                          worker.work_area_size
                         end %>
                 </td>
-                <td><%= number_to_currency(worker.rate, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
-                <td><%= number_to_currency(worker.amount, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+                <td class="text-center"><%= number_to_currency(worker.rate, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+                <td class="text-center"><%= number_to_currency(worker.amount, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
                 <td><%= worker.remarks || '-' %></td>
               </tr>
             <% end %>
-            <tr class="table-secondary fw-bold">
-              <td colspan="2" class="text-center">Total</td>
-              <td>
-                <%= if work_order.work_days_type?
-                        work_order.work_order_workers.sum("COALESCE(work_days, 0)")
-                      else
-                        number_with_precision(work_order.work_order_workers.sum(:work_area_size), precision: 2)
-                      end %>
+            <tr class="table-secondary">
+              <td colspan="2" class="text-center"><strong>Total</strong></td>
+              <td class="text-center">
+                <strong>
+                  <%= if work_order.work_days_type?
+                          work_order.work_order_workers.sum("COALESCE(work_days, 0)")
+                        else
+                          work_order.work_order_workers.sum(:work_area_size)
+                        end %>
+                </strong>
               </td>
               <td></td>
-              <td><%= number_to_currency(work_order.work_order_workers.sum(:amount), unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+              <td class="text-center"><strong><%= number_to_currency(work_order.work_order_workers.sum(:amount), unit: '', separator: '.', delimiter: ',', precision: 2) %></strong></td>
               <td></td>
             </tr>
           <% else %>

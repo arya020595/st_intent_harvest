@@ -1,0 +1,11 @@
+name,unit_type
+Litres,Volume
+Bag,Count
+Gram,Weight
+Unit,Count
+Kilogram,Weight
+Piece,Count
+Hour,Time
+Day,Time
+Hectare,Area
+Ton,Weight

@@ -5,17 +5,24 @@
 @import "payslip";
 @import "font-awesome";
 @import "inventories";
+@import "workers_profile";
 @import "block_no";
 @import "unit";
 @import "categories";
 @import "vehicles";
 @import "work_order_rates";
+@import "work_orders_details";
+@import "work_orders_approvals";
+@import "work_orders_pay_calculations";
+@import "users";
+@import "roles";
+@import "breadcrumb";
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
 
 * {
   font-family: "Nunito", sans-serif;
   color: #000000;
 }
-
 
 //Collapsed sidebar
 .sidebar-collapsed {
@@ -29,7 +36,7 @@
 .sidebar-collapsed ul,
 .sidebar-collapsed li,
 .sidebar-collapsed a {
-  display: none;  //Hide all menu items
+  display: none; //Hide all menu items
 }
 
 /* Optional: make the main content full width */

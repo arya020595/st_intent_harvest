@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class PayslipsController < ApplicationController
   before_action :set_workers, only: %i[index]
   before_action :set_worker_and_date_params, only: %i[show]
@@ -9,8 +11,8 @@ class PayslipsController < ApplicationController
     return unless params[:worker_id].present? && params[:month].present? && params[:year].present?
 
     @worker = Worker.find_by(id: params[:worker_id])
-    month = params[:month].to_i
-    year  = params[:year].to_i
+    month   = params[:month].to_i
+    year    = params[:year].to_i
 
     return unless @worker && month.positive? && year.positive?
 
@@ -19,16 +21,18 @@ class PayslipsController < ApplicationController
 
   # GET /payslips/:id
   def show
-    data_result = PayslipServices::FetchPayslipDataService.new(worker: @worker, month_year: @month_year).call
-    if data_result.failure?
-      render_no_payslip_error and return
-    end
+    data_result = PayslipServices::FetchPayslipDataService.new(
+      worker: @worker,
+      month_year: @month_year
+    ).call
+
+    render_no_payslip_error and return if data_result.failure?
 
     data = data_result.value!
-    @payslip         = data[:payslip]
-    @payslip_detail  = data[:payslip_detail]
+    @payslip            = data[:payslip]
+    @payslip_detail     = data[:payslip_detail]
     @work_order_workers = data[:work_order_workers]
-    @month_year_date = data[:month_year_date]
+    @month_year_date    = data[:month_year_date]
 
     respond_to do |format|
       format.html
@@ -38,33 +42,30 @@ class PayslipsController < ApplicationController
 
   private
 
-  # Extract worker and date parameters from route
+  # Extract worker and date from params[:id] (format: "workerId-year-month")
   def set_worker_and_date_params
-    # params[:id] = "workerId-year-month"
     worker_id, @year, @month = params[:id].split('-').map(&:to_i)
     @worker = Worker.find(worker_id)
     @month_year = format('%04d-%02d', @year, @month)
   end
 
-  # (Removed load_payslip_data before_action – now inlined inside show for clarity.)
-
-  # Prepare a dynamic payslip path for a worker/month/year
+  # Generate dynamic payslip URL
   def payslip_path_for_worker(worker, year, month, format: :pdf)
     payslip_path(id: "#{worker.id}-#{year}-#{month}", format: format)
   end
 
-  # Load all workers for dropdown selection
+  # Load workers for dropdown
   def set_workers
     @workers = Worker.all
   end
 
-  # Render error message when no payslip data exists
+  # Show error if no payslip data
   def render_no_payslip_error
     error_message = build_error_message
 
     respond_to do |format|
       format.html { render html: error_message.html_safe, status: :not_found }
-      format.pdf { render html: error_message.html_safe, status: :not_found }
+      format.pdf  { render html: error_message.html_safe, status: :not_found }
     end
   end
 
@@ -75,14 +76,15 @@ class PayslipsController < ApplicationController
 
     <<~HTML
       <h1>No Payslip Available</h1>
-      <p>No payslip data found for #{worker_name} in #{month_name}.#{' '}
+      <p>No payslip data found for #{worker_name} in #{month_name}.
       Please ensure work orders have been completed and processed for this month.</p>
     HTML
   end
 
-  # Extracted PDF rendering logic to keep action thin
+  # PDF rendering logic
   def render_payslip_pdf
     html = render_to_string(template: 'payslips/show', layout: 'pdf', formats: :html)
+
     service_result = PayslipServices::GeneratePayslipPdfService.new(
       html: html,
       worker: @worker,
@@ -98,14 +100,13 @@ class PayslipsController < ApplicationController
     Rails.logger.error "Payslip PDF service failure: #{e.class}: #{e.message}"
     render_pdf_error
   rescue StandardError => e
-    # Catch any other unexpected errors to ensure user-facing stability.
-    Rails.logger.error "Unexpected error during payslip PDF generation: #{e.class}: #{e.message}"
+    Rails.logger.error "Unexpected error during PDF generation: #{e.class}: #{e.message}"
     render_pdf_error
   end
 
-  private
-
+  # PDF fallback error page
   def render_pdf_error
-    render html: '<h1>PDF Generation Error</h1><p>Please try again later.</p>'.html_safe, status: :internal_server_error
+    render html: '<h1>PDF Generation Error</h1><p>Please try again later.</p>'.html_safe,
+           status: :internal_server_error
   end
 end

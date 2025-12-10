@@ -1,72 +1,93 @@
-<%= form_with(model: inventory, local: true, id: form_id, class: "needs-validation", novalidate: true) do |form| %>
-  <% if inventory.errors.any? %>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      <h5 class="alert-heading">
-        <i class="bi bi-exclamation-triangle me-2"></i>
-        <%= pluralize(inventory.errors.count, "error") %> prohibited this inventory item from being saved:
-      </h5>
-      <ul class="mb-0">
-        <% inventory.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="modal-content" data-controller="inventory-form">
+  <%= form_with(model: inventory, class: "needs-validation", novalidate: true, data: { action: "turbo:submit-end->modal#formSubmitted" }) do |form| %>
+    <div class="modal-header">
+      <h5 class="modal-title"><strong><%= inventory.persisted? ? 'Edit Inventory' : 'Add New Inventory' %></strong></h5>
+      <button type="button" class="btn-close custom-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <% if inventory.errors.any? %>
+        <div class="alert alert-danger">
+          <h5><%= pluralize(inventory.errors.count, "error") %> prohibited this inventory from being saved:</h5>
+          <ul>
+            <% inventory.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <!-- Master Inventory Fields -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <%= form.label :name, "Inventory Name", class: "form-label fw-bold" %>
+          <%= form.text_field :name, class: "form-control", placeholder: "Enter item name", required: true %>
+        </div>
+        <div class="col-md-4">
+          <%= form.label :category_id, "Category", class: "form-label fw-bold" %>
+          <%= form.collection_select :category_id, @categories.order(:name), :id, :name,
+                { include_blank: "Select category" }, class: "form-select" %>
+        </div>
+        <div class="col-md-4">
+          <%= form.label :unit_id, "Unit", class: "form-label fw-bold" %>
+          <%= form.collection_select :unit_id, Unit.order(:name), :id, :name,
+                { include_blank: "Select unit" }, class: "form-select" %>
+        </div>
+      </div>
+      <!-- Purchase Orders Section -->
+      <div class="border-top pt-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="mb-0 fw-bold"><%= inventory.persisted? ? 'Add New Purchase Orders' : 'Purchase Orders' %></h6>
+          <button type="button"
+                  class="btn btn-sm btn-success text-white"
+                  data-action="click->inventory-form#addOrder">
+            <i class="bi bi-plus-circle-fill text-white me-1"></i> Add Row
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 25%">Supplier Name</th>
+                <th style="width: 20%">Date of Purchase</th>
+                <th style="width: 20%">Total Quantity</th>
+                <th style="width: 25%">Total Price (RM)</th>
+                <th style="width: 10%" class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody data-inventory-form-target="ordersContainer">
+              <%= form.fields_for :inventory_orders, @recent_orders do |order_form| %>
+                <%= render 'inventory_order_fields', f: order_form %>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <%= button_tag type: :submit, class: "btn btn-success" do %>
+        <i class="bi bi-save-fill text-white me-1"></i> Save
+      <% end %>
     </div>
   <% end %>
-
-  <div class="row g-3">
-
-    <!-- Item Name -->
-    <div class="col-md-6">
-      <%= form.label :name, class: "form-label" %>
-      <%= form.text_field :name, class: "form-control", placeholder: "Enter item name", required: true %>
-    </div>
-
-    <!-- Category -->
-    <div class="col-md-6">
-      <%= form.label :category_id, class: "form-label" %>
-      <%= form.collection_select :category_id, Category.order(:name), :id, :name,
-            { include_blank: "Select category" }, class: "form-select" %>
-    </div>
-
-    <!-- Stock Quantity -->
-    <div class="col-md-6">
-      <%= form.label :stock_quantity, class: "form-label" %>
-      <%= form.number_field :stock_quantity, class: "form-control", min: 0 %>
-    </div>
-
-    <!-- Unit -->
-    <div class="col-md-6">
-      <%= form.label :unit_id, class: "form-label" %>
-      <%= form.collection_select :unit_id, Unit.order(:name), :id, :name,
-            { include_blank: "Select unit" }, class: "form-select" %>
-    </div>
-
-    <!-- Price -->
-    <div class="col-md-6">
-      <%= form.label :price, class: "form-label" %>
-      <%= form.number_field :price, class: "form-control", placeholder: "0.00", step: 0.01, min: 0 %>
-    </div>
-
-    <!-- Supplier -->
-    <div class="col-md-6">
-      <%= form.label :supplier, class: "form-label" %>
-      <%= form.text_field :supplier, class: "form-control" %>
-    </div>
-
-    <!-- Input Date -->
-    <div class="col-md-6">
-      <%= form.label :input_date, class: "form-label" %>
-      <%= form.date_field :input_date, class: "form-control" %>
-    </div>
-
-  </div>
-  
-  <hr/>
-
-  <div class="mt-4 d-flex justify-content-end">
-    <%= button_tag type: :submit, class: "btn btn-success" do %>
-      <i class="bi bi-save-fill text-white me-1"></i> Save
-    <% end %>
-  </div>
-<% end %>
+  <template data-inventory-form-target="orderTemplate">
+    <tr class="inventory-order-row" data-inventory-form-target="orderRow">
+      <td>
+        <input type="text" name="inventory[inventory_orders_attributes][NEW_RECORD][supplier]" class="form-control form-control-sm" placeholder="Supplier name" required="required" />
+      </td>
+      <td>
+        <input type="date" name="inventory[inventory_orders_attributes][NEW_RECORD][purchase_date]" class="form-control form-control-sm" required="required" />
+      </td>
+      <td>
+        <input type="number" name="inventory[inventory_orders_attributes][NEW_RECORD][quantity]" class="form-control form-control-sm" placeholder="0" min="1" required="required" />
+      </td>
+      <td>
+        <input type="number" name="inventory[inventory_orders_attributes][NEW_RECORD][total_price]" class="form-control form-control-sm" placeholder="0.00" step="0.01" min="0.01" required="required" />
+      </td>
+      <td class="text-center">
+        <input type="hidden" name="inventory[inventory_orders_attributes][NEW_RECORD][_destroy]" value="" />
+        <button type="button" class="btn btn-sm btn-danger" data-action="click->inventory-form#removeOrder" title="Remove">
+          <i class="bi bi-trash-fill text-white"></i>
+        </button>
+      </td>
+    </tr>
+  </template>
+</div>

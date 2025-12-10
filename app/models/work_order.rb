@@ -22,6 +22,7 @@ class WorkOrder < ApplicationRecord
   belongs_to :work_order_rate
   # The user responsible for the field (used for scoping/assignment)
   belongs_to :field_conductor, class_name: 'User', optional: true
+  belongs_to :vehicle, optional: true
   has_many :work_order_workers, dependent: :destroy
   has_many :work_order_items, dependent: :destroy
   has_many :work_order_histories, dependent: :destroy
@@ -43,12 +44,15 @@ class WorkOrder < ApplicationRecord
   denormalize :work_order_rate_unit_name, from: :work_order_rate, attribute: :unit, transform: ->(unit) { unit&.name }
   denormalize :work_order_rate_type, from: :work_order_rate, attribute: :work_order_rate_type
   denormalize :field_conductor_name, from: :field_conductor, attribute: :name
+  denormalize :vehicle_number, from: :vehicle, attribute: :vehicle_number
+  denormalize :vehicle_model, from: :vehicle, attribute: :vehicle_model
 
   # Ransack configuration
   def self.ransackable_attributes(_auth_object = nil)
     %w[
       id
       start_date
+      completion_date
       work_order_status
       block_number
       block_hectarage
@@ -57,6 +61,8 @@ class WorkOrder < ApplicationRecord
       work_order_rate_type
       work_order_rate_unit_name
       field_conductor_name
+      vehicle_number
+      vehicle_model
       approved_by
       approved_at
       work_month
@@ -65,11 +71,12 @@ class WorkOrder < ApplicationRecord
       block_id
       work_order_rate_id
       field_conductor_id
+      vehicle_id
     ]
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[block work_order_rate field_conductor work_order_workers work_order_items work_order_histories]
+    %w[block work_order_rate field_conductor vehicle work_order_workers work_order_items work_order_histories]
   end
 
   # Guard method for AASM transitions - delegates to concern

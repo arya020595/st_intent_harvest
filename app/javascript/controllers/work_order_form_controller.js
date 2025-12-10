@@ -17,11 +17,14 @@ export default class extends Controller {
     "resourcesSection",
     "workersSection",
     "rateDetailsSection",
+    "rateFieldSection",
     "unitSection",
+    "vehicleSection",
     "normalFieldsSection",
     "workMonthSection",
     "quantityHeader",
     "quantityCell",
+    "rateCell",
     "amountUsedHeader",
     "amountUsedCell",
   ];
@@ -187,8 +190,14 @@ export default class extends Controller {
     const workMonthSection = this.hasWorkMonthSectionTarget
       ? this.workMonthSectionTarget
       : null;
+    const rateFieldSection = this.hasRateFieldSectionTarget
+      ? this.rateFieldSectionTarget
+      : null;
     const unitSection = this.hasUnitSectionTarget
       ? this.unitSectionTarget
+      : null;
+    const vehicleSection = this.hasVehicleSectionTarget
+      ? this.vehicleSectionTarget
       : null;
     const quantityHeaders = this.hasQuantityHeaderTarget
       ? this.quantityHeaderTargets
@@ -202,12 +211,14 @@ export default class extends Controller {
       workers: !!workersSection,
       normalFields: normalFieldsSection.length,
       workMonth: !!workMonthSection,
+      rateField: !!rateFieldSection,
       unit: !!unitSection,
+      vehicle: !!vehicleSection,
     });
 
     if (this.currentRateType === "resources") {
       console.log(">>> RESOURCES MODE - Hiding workers");
-      // Show: Work Order ID, Work Order, Resources (without amount used)
+      // Show: Work Order ID, Work Order, Vehicle, Resources (without amount used)
       if (resourcesSection) {
         resourcesSection.style.display = "block";
         console.log("Resources section shown");
@@ -218,7 +229,12 @@ export default class extends Controller {
       }
       normalFieldsSection.forEach((el) => (el.style.display = "none"));
       if (workMonthSection) workMonthSection.style.display = "none";
+      if (rateFieldSection) rateFieldSection.style.display = "block";
       if (unitSection) unitSection.style.display = "block";
+      if (vehicleSection) {
+        vehicleSection.style.display = "block";
+        console.log("Vehicle section shown");
+      }
 
       // Hide amount used column in resources
       amountUsedHeaders.forEach((header) => (header.style.display = "none"));
@@ -229,23 +245,27 @@ export default class extends Controller {
       }
     } else if (this.currentRateType === "work_days") {
       // Show: Work Order ID, Work Order, Work Month, Worker Details (Days instead of Quantity)
-      // HIDE Resources & Machineries
+      // HIDE Resources & Machineries and Vehicle
       if (resourcesSection) resourcesSection.style.display = "none";
       if (workersSection) workersSection.style.display = "block";
       normalFieldsSection.forEach((el) => (el.style.display = "none"));
       if (workMonthSection) workMonthSection.style.display = "flex";
+      if (rateFieldSection) rateFieldSection.style.display = "none";
       if (unitSection) unitSection.style.display = "none";
+      if (vehicleSection) vehicleSection.style.display = "none";
 
       // Change header to "Days" and show work_days input
       quantityHeaders.forEach((header) => (header.textContent = "Days"));
       this.toggleWorkerQuantityFields(true); // true = show days
     } else {
-      // Normal: Show all fields
+      // Normal: Show all fields except vehicle
       if (resourcesSection) resourcesSection.style.display = "block";
       if (workersSection) workersSection.style.display = "block";
       normalFieldsSection.forEach((el) => (el.style.display = "flex"));
       if (workMonthSection) workMonthSection.style.display = "none";
+      if (rateFieldSection) rateFieldSection.style.display = "block";
       if (unitSection) unitSection.style.display = "block";
+      if (vehicleSection) vehicleSection.style.display = "none";
 
       // Show amount used in resources
       amountUsedHeaders.forEach(
@@ -283,21 +303,40 @@ export default class extends Controller {
         }
       }
     });
+
+    // Toggle rate field editability for work_days type
+    if (this.hasRateCellTarget) {
+      this.rateCellTargets.forEach((cell) => {
+        const rateInput = cell.querySelector('input[id^="worker_rate_input_"]');
+        const rateDisplay = cell.querySelector(
+          'input[id^="worker_rate_"][id$!="_value"][id$!="_input"]'
+        );
+
+        if (rateInput && rateDisplay) {
+          if (showDays) {
+            // Work days: show editable input, hide disabled display
+            rateInput.style.display = "block";
+            rateDisplay.style.display = "none";
+          } else {
+            // Normal/Resources: hide editable input, show disabled display
+            rateInput.style.display = "none";
+            rateDisplay.style.display = "block";
+          }
+        }
+      });
+    }
   }
 
   updateAllWorkerRates() {
     if (!this.hasWorkersContainerTarget) return;
 
-    // Update rate for all existing worker rows
+    // Update rate for all existing worker rows (regardless of selection)
     const workerRows = this.workersContainerTarget.querySelectorAll(
       "tr[data-worker-index]"
     );
     workerRows.forEach((row) => {
       const index = row.dataset.workerIndex;
-      const workerSelect = row.querySelector("select");
-      if (workerSelect && workerSelect.value) {
-        this.applyWorkerRate(index);
-      }
+      this.applyWorkerRate(index);
     });
   }
 
@@ -322,7 +361,7 @@ export default class extends Controller {
         (inv) =>
           `<option value="${inv.id}" data-category="${this.escapeHTML(
             inv.category?.name || ""
-          )}" data-price="${inv.price || 0}" data-unit="${this.escapeHTML(
+          )}" data-unit="${this.escapeHTML(
             inv.unit?.name || ""
           )}">${this.escapeHTML(inv.name)}</option>`
       )
@@ -343,9 +382,6 @@ export default class extends Controller {
           <input type="text" class="form-control form-control-sm" id="resource_category_${index}" value="Auto Filled" disabled style="background-color: #e9ecef;">
         </td>
         <td>
-          <input type="text" class="form-control form-control-sm" id="resource_price_${index}" value="Auto Filled" disabled style="background-color: #e9ecef;">
-        </td>
-        <td>
           <input type="text" class="form-control form-control-sm" id="resource_unit_${index}" value="Auto Filled" disabled style="background-color: #e9ecef;">
         </td>
         <td data-work-order-form-target="amountUsedCell" style="display: ${hideAmountUsed};">
@@ -354,7 +390,7 @@ export default class extends Controller {
         <input type="hidden" id="resource_destroy_${index}" name="work_order[work_order_items_attributes][${index}][_destroy]" value="0">
         <td class="text-center">
           <button type="button" class="btn btn-danger btn-sm" data-action="click->work-order-form#removeResource" data-resource-index="${index}">
-            <i class="bi bi-trash"></i>
+            <i class="bi bi-trash text-white"></i>
           </button>
         </td>
       </tr>
@@ -370,19 +406,14 @@ export default class extends Controller {
     if (!selectedOption.value) {
       document.getElementById(`resource_category_${index}`).value =
         "Auto Filled";
-      document.getElementById(`resource_price_${index}`).value = "Auto Filled";
       document.getElementById(`resource_unit_${index}`).value = "Auto Filled";
       return;
     }
 
     const category = selectedOption.dataset.category || "N/A";
-    const price = selectedOption.dataset.price || "0";
     const unit = selectedOption.dataset.unit || "N/A";
 
     document.getElementById(`resource_category_${index}`).value = category;
-    document.getElementById(`resource_price_${index}`).value = `RM ${parseFloat(
-      price
-    ).toFixed(2)}`;
     document.getElementById(`resource_unit_${index}`).value = unit;
   }
 
@@ -426,19 +457,27 @@ export default class extends Controller {
           </select>
         </td>
         <td data-work-order-form-target="quantityCell">
-          <input type="number" class="form-control form-control-sm" id="worker_quantity_${index}" name="work_order[work_order_workers_attributes][${index}][work_area_size]" placeholder="0" step="0.01" min="0" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="${index}" style="display: ${
+          <input type="number" class="form-control form-control-sm" id="worker_quantity_${index}" name="work_order[work_order_workers_attributes][${index}][work_area_size]" placeholder="0" step="0.001" min="0" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="${index}" style="display: ${
       isWorkDays ? "none" : "block"
     };">
           <input type="number" class="form-control form-control-sm" id="worker_days_${index}" name="work_order[work_order_workers_attributes][${index}][work_days]" placeholder="0" step="1" min="0" max="31" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="${index}" style="display: ${
       isWorkDays ? "block" : "none"
     };">
         </td>
-        <td>
+        <td data-work-order-form-target="rateCell">
+          <!-- Editable input for work_days type -->
+          <input type="number" class="form-control form-control-sm" id="worker_rate_input_${index}" placeholder="Rate" step="0.01" min="0" data-action="input->work-order-form#handleRateInput" data-worker-index="${index}" style="display: ${
+      isWorkDays ? "block" : "none"
+    };">
+          <!-- Display field for normal/resources type -->
           <input type="text" class="form-control form-control-sm" id="worker_rate_${index}" value="${
       this.currentWorkOrderRate > 0
         ? `RM ${this.currentWorkOrderRate.toFixed(2)}`
         : "Auto Calculate"
-    }" disabled style="background-color: #e9ecef;">
+    }" disabled style="background-color: #e9ecef; display: ${
+      isWorkDays ? "none" : "block"
+    };">
+          <!-- Hidden field for actual value -->
           <input type="hidden" id="worker_rate_value_${index}" name="work_order[work_order_workers_attributes][${index}][rate]" value="${(
       this.currentWorkOrderRate || 0
     ).toFixed(2)}">
@@ -453,7 +492,7 @@ export default class extends Controller {
         <input type="hidden" id="worker_destroy_${index}" name="work_order[work_order_workers_attributes][${index}][_destroy]" value="0">
         <td class="text-center">
           <button type="button" class="btn btn-danger btn-sm" data-action="click->work-order-form#removeWorker" data-worker-index="${index}">
-            <i class="bi bi-trash"></i>
+            <i class="bi bi-trash text-white"></i>
           </button>
         </td>
       </tr>
@@ -492,6 +531,23 @@ export default class extends Controller {
 
   calculateWorkerAmount(event) {
     const index = event.currentTarget.dataset.workerIndex;
+    this.calculateWorkerAmountByIndex(index);
+  }
+
+  handleRateInput(event) {
+    const index = event.currentTarget.dataset.workerIndex;
+    const rateInput = event.currentTarget;
+    const rateValue = parseFloat(rateInput.value) || 0;
+
+    // Update hidden field value
+    const rateValueField = document.getElementById(
+      `worker_rate_value_${index}`
+    );
+    if (rateValueField) {
+      rateValueField.value = rateValue.toFixed(2);
+    }
+
+    // Recalculate amount
     this.calculateWorkerAmountByIndex(index);
   }
 

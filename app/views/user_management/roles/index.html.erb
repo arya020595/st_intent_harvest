@@ -1,81 +1,54 @@
-<div id="flash_messages">
-  <%= render "shared/flash" %>
-</div>
-<div class="container-fluid px-4 py-4 roles-list" data-controller="multi-sort">
+<div id="url-manager"></div>
+<div id="roles" class="container-fluid px-4 py-4 roles-list" data-controller="multi-sort">
   <div class="card shadow-sm">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Roles Management</h5>
-      <%= link_to new_user_management_role_path, data: { turbo_frame: "modal" }, class: "btn btn-light btn-sm" do %>
-        <i class="bi bi-plus-circle"></i> Add Role
-      <% end %>
+    <div class="roles_page">
+      <h1 class="mb-0">User Management - Roles</h1>
+      <div class="d-flex justify-content-end">
+        <% if record_policy(Role.new, UserManagement::RolePolicy).new? %>
+          <%= link_to new_user_management_role_path, class: "add-button btn btn-primary btn-sm", **modal_link_data(size: 'modal-xl') do %>
+            <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Role
+          <% end %>
+        <% else %>
+          <%= link_to new_user_management_role_path, class: "add-button btn btn-primary btn-sm" do %>
+            <i class="bi bi-plus-circle-fill text-white me-1"></i>Add Role
+          <% end %>
+        <% end %>
+      </div>
     </div>
     <div class="card-body">
       <%= search_form_for @q, url: user_management_roles_path, html: { id: 'role-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
-            <thead class="table-primary">
-              <tr>
+            <thead class="header-row">
+              <tr class="header-row">
+                <th></th>
                 <th class="text-center">
                   <%= sort_link(@q, :id, 'ID') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :name, 'Name') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :created_at, 'Created At') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :updated_at, 'Updated At') %>
                 </th>
-                <th class="text-center">Actions</th>
               </tr>
               <tr>
                 <th class="text-center">
-                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1 %>
-                </th>
-                <th>
-                  <%= f.search_field :name_cont, class: 'form-control form-control-sm', placeholder: 'Search Name..' %>
-                </th>
-                <th>
-                  <div class="input-group input-group-sm">
-                    <input type="text" 
-                           class="form-control form-control-sm cursor-pointer" 
-                           placeholder="Select Date Range"
-                           data-controller="flatpickr"
-                           data-flatpickr-mode-value="range"
-                           data-flatpickr-date-format-value="d-m-Y H:i"
-                           data-flatpickr-enable-time-value="true"
-                           data-flatpickr-field-name-value="q[created_at]">
-                    <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
-                      <i class="bi bi-calendar-range"></i>
-                    </span>
+                  <div class="filter-buttons justify-content-center">
+                    <%= link_to 'Reset', user_management_roles_path, class: 'btn reset-btn', style: 'font-weight: normal; width: 120px;' %>
                   </div>
-                  <%= f.hidden_field :created_at_gteq, value: params.dig(:q, :created_at_gteq) %>
-                  <%= f.hidden_field :created_at_lteq, value: params.dig(:q, :created_at_lteq) %>
-                </th>
-                <th>
-                  <div class="input-group input-group-sm">
-                    <input type="text" 
-                           class="form-control form-control-sm cursor-pointer" 
-                           placeholder="Select Date Range"
-                           data-controller="flatpickr"
-                           data-flatpickr-mode-value="range"
-                           data-flatpickr-date-format-value="d-m-Y H:i"
-                           data-flatpickr-enable-time-value="true"
-                           data-flatpickr-field-name-value="q[updated_at]">
-                    <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
-                      <i class="bi bi-calendar-range"></i>
-                    </span>
-                  </div>
-                  <%= f.hidden_field :updated_at_gteq, value: params.dig(:q, :updated_at_gteq) %>
-                  <%= f.hidden_field :updated_at_lteq, value: params.dig(:q, :updated_at_lteq) %>
                 </th>
                 <th class="text-center">
-                  <div class="d-flex gap-1 justify-content-center">
-                    <%= f.submit 'Search', class: 'btn btn-primary btn-sm' %>
-                    <%= link_to 'Reset', user_management_roles_path, class: 'btn btn-secondary btn-sm' %>
-                  </div>
+                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1, data: { action: "input->search-form#autoSubmit" } %>
                 </th>
+                <th>
+                  <%= f.search_field :name_cont, class: 'form-control form-control-sm', placeholder: 'Search Name..', data: { action: "input->search-form#autoSubmit" } %>
+                </th>
+                <th></th>
+                <th></th>
               </tr>
             </thead>
             <tbody id="roles-table-body">
@@ -84,7 +57,12 @@
               <% else %>
                 <tr>
                   <td colspan="5" class="text-center text-muted py-4">
-                    No roles found. <%= link_to 'Add a new role', new_user_management_role_path, class: 'text-decoration-none' %>
+                    No roles found.
+                    <% if record_policy(Role.new, UserManagement::RolePolicy).new? %>
+                      <%= link_to 'Add a new role', new_user_management_role_path, class: 'text-decoration-none', **modal_link_data(size: 'modal-xl') %>
+                    <% else %>
+                      <%= link_to 'Add a new role', new_user_management_role_path, class: 'text-decoration-none' %>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>

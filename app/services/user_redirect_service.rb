@@ -28,8 +28,8 @@ class UserRedirectService
   # Only needed when permission code doesn't match route helper convention
   SPECIAL_CASES = {
     'dashboard.index' => :root_path,
-    'admin.users.index' => :user_management_users_path,
-    'admin.roles.index' => :user_management_roles_path
+    'user_management.users.index' => :user_management_users_path,
+    'user_management.roles.index' => :user_management_roles_path
   }.freeze
 
   # Priority order for permission types (prefer index actions)
@@ -40,7 +40,7 @@ class UserRedirectService
     inventory
     workers
     master_data
-    admin
+    user_management
   ].freeze
 
   def initialize(user)
@@ -114,7 +114,7 @@ class UserRedirectService
     resource_path = resource_path.tr('.', '_')
 
     # Convert to path helper format
-    "#{resource_path}_path".to_sym
+    :"#{resource_path}_path"
   end
 
   # Check if a path helper exists in Rails routes

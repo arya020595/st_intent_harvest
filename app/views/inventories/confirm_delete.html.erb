@@ -1,0 +1,5 @@
+<%= render "shared/confirm_delete",
+           item_name: @inventory.name,
+           item_type: "Inventory",
+           delete_path: inventory_path(@inventory),
+           form_id: "deleteInventoryForm" %>

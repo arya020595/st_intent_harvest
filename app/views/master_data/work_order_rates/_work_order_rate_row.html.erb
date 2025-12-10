@@ -1,29 +1,56 @@
 <tr id="<%= dom_id(work_order_rate) %>">
-<td class="text-center">
-  <div class="action-buttons">
-    <%= link_to master_data_work_order_rate_path(work_order_rate), class: "action-btn info", title: "View Details" do %>
-      <i class="bi bi-info-circle-fill"></i>
-    <% end %>
-    <%= link_to edit_master_data_work_order_rate_path(work_order_rate), class: "action-btn warning", title: "Edit", data: { turbo_frame: 'modal' } do %>
-      <i class="bi bi-pencil-fill"></i>
-    <% end %>
-    <%= link_to master_data_work_order_rate_path(work_order_rate), data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{work_order_rate.work_order_name}?" }, class: "action-btn danger", title: "Delete" do %>
-      <i class="bi bi-trash-fill"></i>
-    <% end %>
-  </div>
-</td>
-  <td><strong><%= work_order_rate.work_order_name %></strong></td>
   <td class="text-center">
-    <%= number_to_currency(work_order_rate.rate, unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %>
-  </span>
-</td>
-<td>
-  <% if work_order_rate.unit %>
-    <%= link_to work_order_rate.unit.name, master_data_unit_path(work_order_rate.unit), class: 'text-decoration-none' %>
-  <% else %>
-    <span class="text-muted">—</span>
-  <% end %>
-</td>
-<td class="text-center text-muted"><%= work_order_rate.created_at.strftime("%b %d, %Y %H:%M") if work_order_rate.created_at %></td>
-<td class="text-center text-muted"><%= work_order_rate.updated_at.strftime("%b %d, %Y %H:%M") if work_order_rate.updated_at %></td>
+    <div class="action-buttons">
+      <% if record_policy(work_order_rate, MasterData::WorkOrderRatePolicy).show? %>
+        <%= link_to master_data_work_order_rate_path(work_order_rate),
+            class: "action-btn info",
+            title: "View Details",
+            **modal_link_data do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to master_data_work_order_rate_path(work_order_rate), class: "action-btn info", title: "View Details" do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
+      <% end %>
+      <% if record_policy(work_order_rate, MasterData::WorkOrderRatePolicy).edit? %>
+        <%= link_to edit_master_data_work_order_rate_path(work_order_rate), class: "action-btn warning", title: "Edit", **modal_link_data do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to edit_master_data_work_order_rate_path(work_order_rate), class: "action-btn warning", title: "Edit" do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
+      <% end %>
+      <% if record_policy(work_order_rate, MasterData::WorkOrderRatePolicy).confirm_delete? %>
+        <%= link_to confirm_delete_master_data_work_order_rate_path(work_order_rate), class: "action-btn danger", title: "Delete", **modal_link_data(size: "modal-md") do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to confirm_delete_master_data_work_order_rate_path(work_order_rate), class: "action-btn danger", title: "Delete" do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
+      <% end %>
+    </div>
+  </td>
+  <td><%= work_order_rate.work_order_name %></td>
+  <td class="text-center">
+    <%= work_order_rate.work_order_rate_type.titleize %>
+  </td>
+  <td class="text-center">
+    <% if work_order_rate.rate %>
+      <%= number_to_currency(work_order_rate.rate, unit: 'RM ', separator: '.', delimiter: ',', precision: 2) %>
+    <% else %>
+      <span>—</span>
+    <% end %>
+  </td>
+  <td>
+    <% if work_order_rate.unit %>
+      <%= work_order_rate.unit.name %>
+    <% else %>
+      <span>—</span>
+    <% end %>
+  </td>
+  <td class="text-center"><%= work_order_rate.created_at.strftime("%b %d, %Y %H:%M") if work_order_rate.created_at %></td>
+  <td class="text-center"><%= work_order_rate.updated_at.strftime("%b %d, %Y %H:%M") if work_order_rate.updated_at %></td>
 </tr>

@@ -1,0 +1,5 @@
+<%= render "shared/confirm_delete",
+           item_name: @vehicle.vehicle_number,
+           item_type: "Vehicle",
+           delete_path: master_data_vehicle_path(@vehicle),
+           form_id: "deleteVehicleForm" %>

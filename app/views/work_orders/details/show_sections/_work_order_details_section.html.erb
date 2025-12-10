@@ -1,0 +1,89 @@
+<!-- Work Order Details Section -->
+<div class="mb-4">
+  <div class="border-bottom pb-2 d-flex justify-content-between">
+    <div class="fw-bold fs-4" style="color: #155e1a">Work Order Details</div>
+    <div class="fw-bold fs-5 d-flex align-items-center justify-content-center">
+      <span class="me-2">Status</span>
+      <% badge_class = case work_order.work_order_status
+                      when 'ongoing' then 'bg-info'
+                      when 'pending' then 'bg-warning'
+                      when 'amendment_required' then 'bg-danger'
+                      when 'completed' then 'bg-success'
+                      else 'bg-secondary'
+                    end %>
+      <span class="badge rounded-pill <%= badge_class %>"><%= work_order.work_order_status&.humanize %></span>
+    </div>
+  </div>
+  <div class="card-body mt-3">
+    <fieldset disabled>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Work Order ID</label>
+          <input type="text" class="form-control" value="<%= work_order.id %>" disabled style="background-color: #e9ecef;">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Work Order</label>
+          <input type="text" class="form-control" value="<%= work_order.work_order_rate.work_order_name %>" disabled style="background-color: #e9ecef;">
+        </div>
+      </div>
+      <%# Show Rate and Unit for normal and resources types %>
+      <% unless work_order.work_order_rate_type == "work_days" %>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Work Order Rate (RM)</label>
+            <input type="text" class="form-control" value="<%= number_to_currency(work_order.work_order_rate.rate, unit: '', separator: '.', delimiter: ',', precision: 2) %>" disabled style="background-color: #e9ecef;">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Unit of Measurement</label>
+            <input type="text" class="form-control" value="<%= work_order.work_order_rate_unit_name || '-' %>" disabled style="background-color: #e9ecef;">
+          </div>
+        </div>
+      <% end %>
+      <%# Show Vehicle for resources type only %>
+      <% if work_order.work_order_rate_type == "resources" && work_order.vehicle.present? %>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Vehicle Number</label>
+            <input type="text" class="form-control" value="<%= work_order.vehicle_number || '-' %>" disabled style="background-color: #e9ecef;">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Vehicle Model</label>
+            <input type="text" class="form-control" value="<%= work_order.vehicle_model || '-' %>" disabled style="background-color: #e9ecef;">
+          </div>
+        </div>
+      <% end %>
+      <%# Show Block and Field Conductor for normal type only %>
+      <% if work_order.work_order_rate_type == "normal" %>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Block No.</label>
+            <input type="text" class="form-control" value="<%= work_order.block_number %>" disabled style="background-color: #e9ecef;">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Field Conductor</label>
+            <input type="text" class="form-control" value="<%= work_order.field_conductor_name || '-' %>" disabled style="background-color: #e9ecef;">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Starting Date</label>
+            <input type="text" class="form-control" value="<%= work_order.start_date&.strftime('%d-%m-%Y') || '-' %>" disabled style="background-color: #e9ecef;">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Completion Date</label>
+            <input type="text" class="form-control" value="<%= work_order.completion_date&.strftime('%d-%m-%Y') || '-' %>" disabled style="background-color: #e9ecef;">
+          </div>
+        </div>
+      <% end %>
+      <%# Show Work Month for work_days type only %>
+      <% if work_order.work_order_rate_type == "work_days" %>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label fw-bold">Work Month</label>
+            <input type="text" class="form-control" value="<%= work_order.work_month&.strftime('%B %Y') || '-' %>" disabled style="background-color: #e9ecef;">
+          </div>
+        </div>
+      <% end %>
+    </fieldset>
+  </div>
+</div>

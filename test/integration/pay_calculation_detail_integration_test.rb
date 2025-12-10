@@ -13,13 +13,24 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
     @effective_date = Date.parse('2025-01-01')
 
     # Create Malaysian statutory deductions
-    @epf = DeductionType.create!(
+    @epf_local = DeductionType.create!(
       code: 'EPF',
-      name: 'Employees Provident Fund',
+      name: 'Employees Provident Fund (Local)',
       employee_contribution: 11.0,
       employer_contribution: 12.0,
       calculation_type: 'percentage',
-      applies_to_nationality: 'all',
+      applies_to_nationality: 'local',
+      is_active: true,
+      effective_from: @effective_date
+    )
+
+    @epf_foreign = DeductionType.create!(
+      code: 'EPF_FOREIGN',
+      name: 'Employees Provident Fund (Foreign)',
+      employee_contribution: 11.0,
+      employer_contribution: 12.0,
+      calculation_type: 'percentage',
+      applies_to_nationality: 'foreigner',
       is_active: true,
       effective_from: @effective_date
     )
@@ -61,14 +72,20 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
 
     @malaysian_worker = Worker.create!(
       name: 'Ahmad bin Abdullah',
-      nationality: 'Local',
+      nationality: 'local',
       worker_type: 'Full - Time'
     )
 
     @foreign_worker = Worker.create!(
       name: 'John Smith',
-      nationality: 'Foreigner',
+      nationality: 'foreigner',
       worker_type: 'Full - Time'
+    )
+
+    @foreign_worker_no_passport = Worker.create!(
+      name: 'Mizuno Yoshiki',
+      nationality: 'foreigner_no_passport',
+      worker_type: 'Part - Time'
     )
   end
 
@@ -145,7 +162,7 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
 
     # Verify breakdown - should NOT include SIP or SOCSO_MALAYSIAN
     assert_equal 2, detail.deduction_breakdown.size
-    assert_includes detail.deduction_breakdown.keys, 'EPF'
+    assert_includes detail.deduction_breakdown.keys, 'EPF_FOREIGN'
     assert_includes detail.deduction_breakdown.keys, 'SOCSO_FOREIGN'
     assert_not_includes detail.deduction_breakdown.keys, 'SIP'
     assert_not_includes detail.deduction_breakdown.keys, 'SOCSO_MALAYSIAN'
@@ -161,6 +178,74 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
     assert_equal 550.0, detail.employee_deductions
     assert_equal 662.5, detail.employer_deductions
     assert_equal 4450.0, detail.net_salary
+  end
+
+  # ============================================================================
+  # FOREIGN WORKER (NO PASSPORT) INTEGRATION TESTS
+  # ============================================================================
+
+  test 'Foreign worker without passport should have ZERO deductions' do
+    detail = PayCalculationDetail.create!(
+      pay_calculation: @pay_calc,
+      worker: @foreign_worker_no_passport,
+      gross_salary: 3000
+    )
+
+    # No deductions for workers without passport
+    assert_equal 0.0, detail.employee_deductions
+    assert_equal 0.0, detail.employer_deductions
+
+    # Net salary equals gross salary (no deductions)
+    assert_equal 3000.0, detail.net_salary
+
+    # Verify empty breakdown
+    assert_equal 0, detail.deduction_breakdown.size
+  end
+
+  test 'Foreign worker without passport with high salary should still have zero deductions' do
+    detail = PayCalculationDetail.create!(
+      pay_calculation: @pay_calc,
+      worker: @foreign_worker_no_passport,
+      gross_salary: 10_000
+    )
+
+    # Even with high salary, no deductions
+    assert_equal 0.0, detail.employee_deductions
+    assert_equal 0.0, detail.employer_deductions
+    assert_equal 10_000.0, detail.net_salary
+    assert_equal 0, detail.deduction_breakdown.size
+  end
+
+  test 'Foreign worker without passport with low salary should have zero deductions' do
+    detail = PayCalculationDetail.create!(
+      pay_calculation: @pay_calc,
+      worker: @foreign_worker_no_passport,
+      gross_salary: 500
+    )
+
+    # Even with low salary, no deductions
+    assert_equal 0.0, detail.employee_deductions
+    assert_equal 0.0, detail.employer_deductions
+    assert_equal 500.0, detail.net_salary
+    assert_equal 0, detail.deduction_breakdown.size
+  end
+
+  test 'Foreign worker without passport deductions should remain zero after salary update' do
+    detail = PayCalculationDetail.create!(
+      pay_calculation: @pay_calc,
+      worker: @foreign_worker_no_passport,
+      gross_salary: 1000
+    )
+
+    assert_equal 0.0, detail.employee_deductions
+
+    # Update salary (simulating correction)
+    detail.update!(gross_salary: 5000)
+    detail.reload
+
+    # Deductions should still be zero (immutable)
+    assert_equal 0.0, detail.employee_deductions
+    assert_equal 5000.0, detail.net_salary
   end
 
   # ============================================================================
@@ -227,12 +312,60 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
     original_breakdown_size = detail.deduction_breakdown.size
 
     # Change worker nationality (simulating data correction)
-    @malaysian_worker.update!(nationality: 'Foreigner')
+    @malaysian_worker.update!(nationality: 'foreigner')
     detail.reload
 
     # Deductions should NOT change
     assert_equal original_deductions, detail.employee_deductions
     assert_equal original_breakdown_size, detail.deduction_breakdown.size
+  end
+
+  # ============================================================================
+  # NATIONALITY COMPARISON TESTS
+  # ============================================================================
+
+  test 'same salary different nationalities should have different deductions' do
+    salary = 3000
+
+    # Create details for all three nationality types
+    local_detail = PayCalculationDetail.create!(
+      pay_calculation: @pay_calc,
+      worker: @malaysian_worker,
+      gross_salary: salary
+    )
+
+    foreign_detail = PayCalculationDetail.create!(
+      pay_calculation: @pay_calc,
+      worker: @foreign_worker,
+      gross_salary: salary
+    )
+
+    no_passport_detail = PayCalculationDetail.create!(
+      pay_calculation: @pay_calc,
+      worker: @foreign_worker_no_passport,
+      gross_salary: salary
+    )
+
+    # Local worker has highest deductions (EPF + SOCSO + SIP)
+    assert_equal 351.0, local_detail.employee_deductions
+    assert_equal 3, local_detail.deduction_breakdown.size
+
+    # Foreign worker has medium deductions (EPF + SOCSO_FOREIGN, no SIP)
+    assert_equal 330.0, foreign_detail.employee_deductions
+    assert_equal 2, foreign_detail.deduction_breakdown.size
+
+    # Foreign worker without passport has NO deductions
+    assert_equal 0.0, no_passport_detail.employee_deductions
+    assert_equal 0, no_passport_detail.deduction_breakdown.size
+
+    # Net salary comparison (same gross)
+    assert_equal 2649.0, local_detail.net_salary # 3000 - 351
+    assert_equal 2670.0, foreign_detail.net_salary     # 3000 - 330
+    assert_equal 3000.0, no_passport_detail.net_salary # 3000 - 0
+
+    # Foreign worker without passport takes home the most
+    assert local_detail.net_salary < foreign_detail.net_salary
+    assert foreign_detail.net_salary < no_passport_detail.net_salary
   end
 
   # ============================================================================
@@ -251,7 +384,7 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
     assert_equal 330.0, jan_epf_worker # 3000 * 11% = 330
 
     # Simulate EPF rate change on Feb 1st
-    @epf.update!(effective_until: Date.parse('2025-01-31'))
+    @epf_local.update!(effective_until: Date.parse('2025-01-31'))
 
     DeductionType.create!(
       code: 'EPF',
@@ -259,7 +392,7 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
       employee_contribution: 9.0, # Reduced to 9%
       employer_contribution: 12.0,
       calculation_type: 'percentage',
-      applies_to_nationality: 'all',
+      applies_to_nationality: 'local',
       is_active: true,
       effective_from: Date.parse('2025-02-01')
     )
@@ -403,7 +536,7 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
       gross_salary: 3000
     )
 
-    epf = detail.deduction_breakdown['EPF']
+    epf = detail.deduction_breakdown['EPF_FOREIGN']
     assert_equal 11.0, epf['employee_rate'].to_f
     assert_equal 12.0, epf['employer_rate'].to_f
 
@@ -449,7 +582,7 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
 
     second_malaysian = Worker.create!(
       name: 'Ali bin Ahmad',
-      nationality: 'Local',
+      nationality: 'local',
       worker_type: 'Full - Time'
     )
     detail_5000 = PayCalculationDetail.create!(

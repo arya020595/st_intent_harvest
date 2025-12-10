@@ -4,7 +4,7 @@ module MasterData
   class WorkOrderRatesController < ApplicationController
     include RansackMultiSort
 
-    before_action :set_work_order_rate, only: %i[show edit update destroy]
+    before_action :set_work_order_rate, only: %i[show edit update destroy confirm_delete]
 
     def index
       authorize WorkOrderRate, policy_class: MasterData::WorkOrderRatePolicy
@@ -35,15 +35,15 @@ module MasterData
 
       respond_to do |format|
         if @work_order_rate.save
-          format.turbo_stream do
-            flash.now[:notice] = 'Work order rate was successfully created.'
-          end
-          format.html do
-            redirect_to master_data_work_order_rates_path, notice: 'Work order rate was successfully created.'
-          end
+          format.turbo_stream { flash.now[:notice] = 'Work order rate was successfully created.' }
+          format.html { redirect_to master_data_work_order_rates_path, notice: 'Work order rate was successfully created.' }
         else
           format.turbo_stream do
-            render turbo_stream: turbo_stream.replace('modal', partial: 'master_data/work_order_rates/form', locals: { work_order_rate: @work_order_rate }),
+            render turbo_stream: turbo_stream.replace(
+              'modal',
+              partial: 'master_data/work_order_rates/form',
+              locals: { work_order_rate: @work_order_rate }
+            ),
                    status: :unprocessable_entity
           end
           format.html { render :new, status: :unprocessable_entity }
@@ -66,19 +66,38 @@ module MasterData
 
       respond_to do |format|
         if @work_order_rate.update(work_order_rate_params)
-          format.turbo_stream do
-            flash.now[:notice] = 'Work order rate was successfully updated.'
-          end
-          format.html do
-            redirect_to master_data_work_order_rates_path, notice: 'Work order rate was successfully updated.'
-          end
+          format.turbo_stream { flash.now[:notice] = 'Work order rate was successfully updated.' }
+          format.html { redirect_to master_data_work_order_rates_path, notice: 'Work order rate was successfully updated.' }
         else
           format.turbo_stream do
-            render turbo_stream: turbo_stream.replace('modal', partial: 'master_data/work_order_rates/form', locals: { work_order_rate: @work_order_rate }),
+            render turbo_stream: turbo_stream.replace(
+              'modal',
+              partial: 'master_data/work_order_rates/form',
+              locals: { work_order_rate: @work_order_rate }
+            ),
                    status: :unprocessable_entity
           end
           format.html { render :edit, status: :unprocessable_entity }
         end
+      end
+    end
+
+    def confirm_delete
+      if @work_order_rate.nil?
+        if turbo_frame_request?
+          render turbo_stream: turbo_stream.replace("modal", ""), status: :ok
+        else
+          redirect_to master_data_work_order_rates_path
+        end
+        return
+      end
+
+      authorize @work_order_rate, policy_class: MasterData::WorkOrderRatePolicy
+
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to master_data_work_order_rates_path
       end
     end
 
@@ -87,12 +106,8 @@ module MasterData
 
       respond_to do |format|
         if @work_order_rate.destroy
-          format.turbo_stream do
-            flash.now[:notice] = 'Work order rate was successfully deleted.'
-          end
-          format.html do
-            redirect_to master_data_work_order_rates_url, notice: 'Work order rate was successfully deleted.'
-          end
+          format.turbo_stream { flash.now[:notice] = 'Work order rate was successfully deleted.' }
+          format.html { redirect_to master_data_work_order_rates_url, notice: 'Work order rate was successfully deleted.' }
         else
           format.turbo_stream do
             flash.now[:alert] = "Unable to delete work order rate: #{@work_order_rate.errors.full_messages.join(', ')}"
@@ -109,7 +124,16 @@ module MasterData
     private
 
     def set_work_order_rate
-      @work_order_rate = WorkOrderRate.find(params[:id])
+      @work_order_rate = WorkOrderRate.find_by(id: params[:id])
+      return if @work_order_rate.present?
+
+      if turbo_frame_request?
+        # For missing record in Turbo modal → clear the modal
+        render turbo_stream: turbo_stream.replace("modal", ""), status: :ok
+      else
+        # Normal HTML request → redirect to index safely
+        redirect_to master_data_work_order_rates_path
+      end
     end
 
     def work_order_rate_params

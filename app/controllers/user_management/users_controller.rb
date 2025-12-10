@@ -4,7 +4,7 @@ module UserManagement
   class UsersController < ApplicationController
     include RansackMultiSort
 
-    before_action :set_user, only: %i[show edit update destroy]
+    before_action :set_user, only: %i[show edit update destroy confirm_delete]
 
     def index
       authorize User, policy_class: UserManagement::UserPolicy
@@ -45,7 +45,14 @@ module UserManagement
     def update
       authorize @user, policy_class: UserManagement::UserPolicy
 
-      if @user.update(user_params)
+      # Allow updating other attributes without forcing a password change.
+      # If both password fields are blank, drop them so model validations don't trigger.
+      update_attrs = user_params
+      if update_attrs[:password].blank? && update_attrs[:password_confirmation].blank?
+        update_attrs = update_attrs.except(:password, :password_confirmation)
+      end
+
+      if @user.update(update_attrs)
         respond_to do |format|
           format.turbo_stream do
             flash.now[:notice] = 'User updated successfully.'
@@ -54,6 +61,17 @@ module UserManagement
         end
       else
         render :edit, status: :unprocessable_entity
+      end
+    end
+
+    def confirm_delete
+      authorize @user, policy_class: UserPolicy
+
+      # Only show the modal
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to user_management_users_path
       end
     end
 
@@ -84,7 +102,8 @@ module UserManagement
         :password,
         :password_confirmation,
         :name,
-        :role_id
+        :role_id,
+        :is_active
       )
     end
   end

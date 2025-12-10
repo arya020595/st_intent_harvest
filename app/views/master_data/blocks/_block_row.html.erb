@@ -1,39 +1,54 @@
 <tr id="<%= dom_id(block) %>">
   <td class="text-center">
     <div class="action-buttons">
-
-      <%= link_to master_data_block_path(block),
-                  class: "action-btn info",
-                  title: "View Details" do %>
-        <i class="bi bi-info-circle-fill"></i>
+      <% if record_policy(block, MasterData::BlockPolicy).show? %>
+        <%= link_to master_data_block_path(block),
+              class: "action-btn info",
+              title: "View Details",
+              **modal_link_data do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to master_data_block_path(block),
+              class: "action-btn info",
+              title: "View Details" do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
       <% end %>
-
-      <%= link_to edit_master_data_block_path(block),
-                  class: "action-btn warning",
-                  title: "Edit",
-                  data: { turbo_frame: 'modal' } do %>
-        <i class="bi bi-pencil-fill"></i>
+      <% if record_policy(block, MasterData::BlockPolicy).edit? %>
+        <%= link_to edit_master_data_block_path(block),
+                    class: "action-btn warning",
+                    title: "Edit",
+                    **modal_link_data do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to edit_master_data_block_path(block),
+                    class: "action-btn warning",
+                    title: "Edit" do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
       <% end %>
-
-      <%= link_to master_data_block_path(block),
-                  class: "action-btn danger",
-                  data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{block.block_number}?" },
-                  title: "Delete" do %>
-        <i class="bi bi-trash-fill"></i>
+      <% if record_policy(block, MasterData::BlockPolicy).confirm_delete? %>
+        <%= link_to confirm_delete_master_data_block_path(block),
+                    class: "action-btn danger",
+                    title: "Delete",
+                    **modal_link_data(size: "modal-md") do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to confirm_delete_master_data_block_path(block),
+                    class: "action-btn danger",
+                    title: "Delete" do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
       <% end %>
-
     </div>
   </td>
-
-
-
   <td><%= block.block_number %></td>
-
   <td class="text-center">
     <%= number_with_precision(block.hectarage, precision: 2) if block.hectarage %>
   </td>
-
-<td class="text-center text-muted"><%= block.created_at.strftime("%b %d, %Y %H:%M") if block.created_at %></td>
-<td class="text-center text-muted"><%= block.updated_at.strftime("%b %d, %Y %H:%M") if block.updated_at %></td>
-
+  <td class="text-center"><%= block.created_at.strftime("%b %d, %Y %H:%M") if block.created_at %></td>
+  <td class="text-center"><%= block.updated_at.strftime("%b %d, %Y %H:%M") if block.updated_at %></td>
 </tr>

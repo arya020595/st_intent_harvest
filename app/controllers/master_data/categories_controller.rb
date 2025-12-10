@@ -4,7 +4,7 @@ module MasterData
   class CategoriesController < ApplicationController
     include RansackMultiSort
 
-    before_action :set_category, only: %i[show edit update destroy]
+    before_action :set_category, only: %i[show edit update destroy confirm_delete]
 
     def index
       authorize Category, policy_class: MasterData::CategoryPolicy
@@ -78,6 +78,24 @@ module MasterData
       end
     end
 
+
+    def confirm_delete
+      @category = Category.find_by(id: params[:id])
+      unless @category
+        redirect_to master_data_categories_path, alert: "Category not found" and return
+      end
+
+      authorize @category, policy_class: MasterData::CategoryPolicy
+
+      # Only show the modal
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to master_data_categories_path
+      end
+    end
+
+
     def destroy
       authorize @category, policy_class: MasterData::CategoryPolicy
 
@@ -103,7 +121,14 @@ module MasterData
     private
 
     def set_category
-      @category = Category.find(params[:id])
+      @category = Category.find_by(id: params[:id])
+      return if @category.present?
+
+      if turbo_frame_request?
+        render turbo_stream: turbo_stream.replace("modal", ""), status: :ok
+      else
+        redirect_to master_data_categories_path
+      end
     end
 
     def category_params

@@ -1,95 +1,45 @@
-<h5 class="text-success mb-3">Work Order Details (<%= (Date.strptime(pay_calculation.month_year, '%Y-%m').strftime('%B') rescue pay_calculation.month_year) %>)</h5>
-<div class="card shadow-sm mb-4">
+<div class="border-bottom mt-5 pb-2">
+  <div class="fw-bold fs-4" style="color: #155e1a">Work Order Details (<%= (Date.strptime(pay_calculation.month_year, '%Y-%m').strftime('%B') rescue pay_calculation.month_year) %>)</div>
+</div>
+<div id="work_orders_pay_calculations" class="card shadow-sm mb-4">
   <div class="card-body">
-    <%= search_form_for q, url: worker_detail_work_orders_pay_calculation_path(pay_calculation, worker_id: worker.id), method: :get, html: { id: 'work-order-details-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
-      <div class="table-responsive">
-        <table class="table table-hover table-sm mb-0">
-          <thead class="table-success">
-            <tr>
-              <th><%= sort_link(q, :work_order_created_at, 'Date') %></th>
-              <th><%= sort_link(q, :work_order_id, 'Work Order ID') %></th>
-              <th><%= sort_link(q, :work_order_work_order_rate_work_order_name, 'Work Order Name') %></th>
-              <th class="text-end"><%= sort_link(q, :rate, 'Rate (RM)') %></th>
-              <th class="text-end"><%= sort_link(q, :amount, 'Overall Total (RM)') %></th>
-              <th class="text-center">Actions</th>
-            </tr>
-            <tr>
-              <th>
-                <div class="input-group input-group-sm">
-                  <input type="text"
-                         class="form-control form-control-sm cursor-pointer"
-                         placeholder="Select Date Range"
-                         data-controller="flatpickr"
-                         data-flatpickr-mode-value="range"
-                         data-flatpickr-date-format-value="d-m-Y"
-                         data-flatpickr-field-name-value="q[work_order_created_at]">
-                  <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
-                    <i class="bi bi-calendar-range"></i>
-                  </span>
-                </div>
-                <%= f.hidden_field :work_order_created_at_gteq, value: params.dig(:q, :work_order_created_at_gteq) %>
-                <%= f.hidden_field :work_order_created_at_lteq, value: params.dig(:q, :work_order_created_at_lteq) %>
-              </th>
-              <th>
-                <%= f.number_field :work_order_id_eq, class: 'form-control form-control-sm', placeholder: 'Search Work Order...', min: 1 %>
-              </th>
-              <th>
-                <%= f.search_field :work_order_work_order_rate_work_order_name_cont, class: 'form-control form-control-sm', placeholder: 'Search Work Order Name...' %>
-              </th>
-              <th class="text-end">
-              </th>
-              <th class="text-end">
-              </th>
-              <th class="text-center">
-                <div class="d-flex gap-1 justify-content-center">
-                  <%= f.submit 'Search', class: 'btn btn-success btn-sm' %>
-                  <%= link_to 'Reset', worker_detail_work_orders_pay_calculation_path(pay_calculation, worker_id: worker.id), class: 'btn btn-secondary btn-sm' %>
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if work_order_workers.any? %>
-              <% work_order_workers.each do |work_order_worker| %>
-                <tr>
-                  <td><%= work_order_worker.work_order.created_at&.strftime('%d-%m-%Y') || 'N/A' %></td>
-                  <td><%= work_order_worker.work_order.id %></td>
-                  <td><%= work_order_worker.work_order.work_order_rate&.work_order_name || 'N/A' %></td>
-                  <td class="text-end"><%= number_to_currency(work_order_worker.rate, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
-                  <td class="text-end"><%= number_to_currency(work_order_worker.amount, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
-                  <td class="text-center"></td>
-                </tr>
-              <% end %>
-              <tr class="table-secondary">
-                <td colspan="4" class="text-end"><strong>Total Gross Salary (RM)</strong></td>
-                <td class="text-end"><strong><%= number_to_currency(pay_calculation_detail.gross_salary, unit: '', separator: '.', delimiter: ',', precision: 2) %></strong></td>
-                <td></td>
-              </tr>
-            <% else %>
+    <div class="table-responsive">
+      <table class="table table-hover table-sm mb-0">
+        <thead class="header-row">
+          <tr class="header-row">
+            <th class="text-center"></th>
+            <th class="text-center">Date</th>
+            <th class="text-center">Work Order ID</th>
+            <th class="text-center">Work Order Name</th>
+            <th class="text-end">Rate (RM)</th>
+            <th class="text-end">Overall Total (RM)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if work_order_workers.any? %>
+            <% work_order_workers.each do |work_order_worker| %>
               <tr>
-                <td colspan="6" class="text-center text-muted py-4">
-                  No work orders found for this worker in <%= pay_calculation.month_year %>.
-                </td>
+                <td></td>
+                <td class="text-center"><%= work_order_worker.work_order.created_at&.strftime('%d-%m-%Y') || 'N/A' %></td>
+                <td class="text-center"><%= work_order_worker.work_order.id %></td>
+                <td class="text-center"><%= work_order_worker.work_order.work_order_rate&.work_order_name || 'N/A' %></td>
+                <td class="text-end"><%= number_to_currency(work_order_worker.rate, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+                <td class="text-end"><%= number_to_currency(work_order_worker.amount, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
               </tr>
             <% end %>
-          </tbody>
-        </table>
-      </div>
-    <% end %>
-    <!-- Pagination -->
-    <% if work_order_workers.any? %>
-      <div class="d-flex justify-content-between align-items-center mt-3">
-        <div class="d-flex align-items-center gap-2">
-          <span class="text-muted small">Show</span>
-          <%= per_page_selector %>
-          <span class="text-muted small">
-            <%== pagy.info_tag(item_name: 'Work Orders') %>
-          </span>
-        </div>
-        <div>
-          <%== pagy_bootstrap_nav(pagy) if pagy.pages > 1 %>
-        </div>
-      </div>
-    <% end %>
+            <tr class="table-secondary">
+              <td colspan="5" class="text-end"><strong>Total Gross Salary (RM)</strong></td>
+              <td class="text-end"><strong><%= number_to_currency(pay_calculation_detail.gross_salary, unit: '', separator: '.', delimiter: ',', precision: 2) %></strong></td>
+            </tr>
+          <% else %>
+            <tr>
+              <td colspan="6" class="text-center text-muted py-4">
+                No work orders found for this worker in <%= pay_calculation.month_year %>.
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

@@ -1,0 +1,5 @@
+<%= render "shared/confirm_delete",
+           item_name: "##{@work_order.id}",
+           item_type: "Work Order",
+           delete_path: work_orders_detail_path(@work_order),
+           form_id: "deleteWorkOrderForm" %>

@@ -43,8 +43,16 @@ role_configs = [
   },
   {
     name: 'Clerk',
-    description: 'Can manage administrative tasks, calculations, and master data',
+    description: 'Can manage administrative tasks, apply work orders, calculations, and master data',
     permission_codes: [
+      'work_orders.details.index',
+      'work_orders.details.show',
+      'work_orders.details.new',
+      'work_orders.details.create',
+      'work_orders.details.edit',
+      'work_orders.details.update',
+      'work_orders.details.destroy',
+      'work_orders.details.mark_complete',
       'work_orders.pay_calculations.index',
       'work_orders.pay_calculations.show',
       'work_orders.pay_calculations.new',

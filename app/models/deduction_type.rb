@@ -2,7 +2,7 @@
 
 class DeductionType < ApplicationRecord
   CALCULATION_TYPES = %w[percentage fixed].freeze
-  NATIONALITY_TYPES = %w[all local foreigner].freeze
+  NATIONALITY_TYPES = %w[all local foreigner foreigner_no_passport].freeze
 
   validates :name, presence: true
   validates :code, presence: true

@@ -1,0 +1,43 @@
+<!-- Resources & Machineries Section -->
+<%# Hide for work_days type %>
+<% unless work_order.work_order_rate_type == "work_days" %>
+  <div class="mb-5">
+    <div class="border-bottom pb-2">
+      <div class="fw-bold fs-4" style="color: #155e1a">Resources & Machineries</div>
+    </div>
+    <div class="card-body mt-3">
+      <div class="table-responsive">
+        <table class="table table-hover table-sm mb-0">
+          <thead class="table-success">
+            <tr>
+              <th style="width: 35%">Resources Name</th>
+              <th style="width: 30%">Resource Category</th>
+              <th style="width: 20%">Unit</th>
+              <% if work_order.work_order_rate_type == "normal" %>
+                <th style="width: 15%">Amount Used</th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <% if work_order.work_order_items.any? %>
+              <% work_order.work_order_items.each do |item| %>
+                <tr>
+                  <td><%= item.item_name %></td>
+                  <td><%= item.category_name || '-' %></td>
+                  <td><%= item.unit_name || '-' %></td>
+                  <% if work_order.work_order_rate_type == "normal" %>
+                    <td><%= item.amount_used %></td>
+                  <% end %>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="<%= work_order.work_order_rate_type == "normal" ? 4 : 3 %>" class="text-center text-muted">No resources used</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,14 @@
+<%# Work Orders Modal - Uses Shared Modal Component %>
+<%#
+  This modal uses the shared modal component for maintainability.
+  The default size is modal-lg, but can be overridden by links using data-modal-size attribute.
+
+  Example usage in views:
+    link_to "Edit", edit_path(record), **modal_link_data(size: "modal-xl")
+    link_to "Delete", delete_path(record), **modal_link_data(size: "modal-sm")
+%>
+<%= render "shared/modal", **modal_config(
+      id: "workOrderModal",
+      default_size: "modal-lg",
+      centered: true
+    ) %>

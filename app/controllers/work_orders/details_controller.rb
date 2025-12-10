@@ -5,7 +5,7 @@ module WorkOrders
     include RansackMultiSort
     include ResponseHandling
 
-    before_action :set_work_order, only: %i[show edit update destroy mark_complete]
+    before_action :set_work_order, only: %i[show edit update destroy mark_complete confirm_delete]
 
     def index
       authorize WorkOrder, policy_class: WorkOrders::DetailPolicy
@@ -36,6 +36,8 @@ module WorkOrders
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
+      @vehicles = Vehicle.all
+      @is_field_conductor = current_user.field_conductor?
     end
 
     def create
@@ -44,6 +46,7 @@ module WorkOrders
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
+      @vehicles = Vehicle.all
 
       draft = params[:draft].present?
       result = service.call(draft: draft)
@@ -59,12 +62,15 @@ module WorkOrders
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
+      @vehicles = Vehicle.all
+      @is_field_conductor = current_user.field_conductor?
     end
 
     def update
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
       @workers = Worker.active
       @inventories = Inventory.includes(:category, :unit).all
+      @vehicles = Vehicle.all
 
       service = WorkOrderServices::UpdateService.new(@work_order, work_order_params)
       submit = params[:submit].present?
@@ -81,9 +87,25 @@ module WorkOrders
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
 
       if @work_order.destroy
-        redirect_to work_orders_details_path, notice: 'Work order was successfully deleted.'
+        respond_to do |format|
+          format.turbo_stream do
+            flash.now[:notice] = 'Work order was successfully deleted.'
+          end
+          format.html do
+            redirect_to work_orders_details_path, notice: 'Work order was successfully deleted.', status: :see_other
+          end
+        end
       else
-        redirect_to work_orders_detail_path(@work_order), alert: 'There was an error deleting the work order.'
+        respond_to do |format|
+          format.turbo_stream do
+            flash.now[:alert] = 'There was an error deleting the work order.'
+            render turbo_stream: turbo_stream.update('flash_messages', partial: 'shared/flash')
+          end
+          format.html do
+            redirect_to work_orders_detail_path(@work_order), alert: 'There was an error deleting the work order.',
+                                                              status: :see_other
+          end
+        end
       end
     end
 
@@ -100,6 +122,17 @@ module WorkOrders
       )
     end
 
+    def confirm_delete
+      authorize @work_order, policy_class: WorkOrders::DetailPolicy
+
+      # Only show the modal
+      if turbo_frame_request?
+        render layout: false
+      else
+        redirect_to work_orders_details_path
+      end
+    end
+
     private
 
     def set_work_order
@@ -111,8 +144,10 @@ module WorkOrders
         :block_id,
         :work_order_rate_id,
         :start_date,
+        :completion_date,
         :work_month,
         :field_conductor_id,
+        :vehicle_id,
         work_order_workers_attributes: %i[
           id
           worker_id

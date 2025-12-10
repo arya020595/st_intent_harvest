@@ -1,0 +1,20 @@
+<!-- Action Buttons -->
+<div class="d-flex justify-content-end gap-2 mb-5">
+  <% if work_order.persisted? %>
+    <!-- For edit form -->
+    <%= button_tag type: "submit", name: "draft", value: "true", class: "btn btn-warning fs-6 fw-bold text-dark p-2" do %>
+      <i class="bi bi-save text-dark me-1"></i> Save Changes
+    <% end %>
+    <%= button_tag type: "submit", name: "submit", value: "true", class: "btn fs-6 fw-bold text-center text-white", style: "background-color: #155e1a" do %>
+      <i class="bi bi-send me-1 text-white"></i> Submit Work Order
+    <% end %>
+  <% else %>
+    <!-- For new form -->
+    <%= button_tag type: "submit", name: "draft", value: "true", class: "btn btn-warning fs-6 fw-bold text-dark p-2" do %>
+      <i class="bi bi-save text-dark me-1"></i> Save as Draft
+    <% end %>
+    <%= button_tag type: "submit", class: "btn fs-6 fw-bold text-white", style: "background-color: #155e1a" do %>
+      <i class="bi bi-send me-1 text-white"></i> Submit Work Order
+    <% end %>
+  <% end %>
+</div>

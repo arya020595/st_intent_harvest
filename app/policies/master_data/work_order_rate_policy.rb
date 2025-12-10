@@ -11,6 +11,19 @@ module MasterData
     # - master_data.work_order_rates.update
     # - master_data.work_order_rates.destroy
 
+    # Define who can see the delete confirmation
+    def confirm_delete?
+      destroy?
+    end
+
+    def new?
+      create?
+    end
+
+    def edit?
+      update?
+    end
+
     private
 
     def permission_resource

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_22_200000) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_08_122842) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -76,16 +76,24 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_22_200000) do
   create_table "inventories", force: :cascade do |t|
     t.bigint "category_id"
     t.datetime "created_at", null: false
-    t.string "currency", default: "RM"
-    t.date "input_date"
     t.string "name", null: false
-    t.decimal "price", precision: 10, scale: 2
-    t.integer "stock_quantity", default: 0
-    t.string "supplier"
     t.bigint "unit_id"
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_inventories_on_category_id"
     t.index ["unit_id"], name: "index_inventories_on_unit_id"
+  end
+
+  create_table "inventory_orders", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "inventory_id", null: false
+    t.date "purchase_date", null: false
+    t.integer "quantity", null: false
+    t.string "supplier", null: false
+    t.decimal "total_price", precision: 10, scale: 2, null: false
+    t.decimal "unit_price", precision: 10, scale: 2
+    t.datetime "updated_at", null: false
+    t.index ["inventory_id"], name: "index_inventory_orders_on_inventory_id"
+    t.index ["purchase_date"], name: "index_inventory_orders_on_purchase_date"
   end
 
   create_table "pay_calculation_details", force: :cascade do |t|
@@ -118,6 +126,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_22_200000) do
     t.datetime "created_at", null: false
     t.string "name", null: false
     t.string "resource", null: false
+    t.string "section"
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_permissions_on_code", unique: true
     t.index ["resource"], name: "index_permissions_on_resource"
@@ -222,7 +231,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_22_200000) do
     t.decimal "rate", precision: 10, scale: 2
     t.text "remarks"
     t.datetime "updated_at", null: false
-    t.integer "work_area_size"
+    t.decimal "work_area_size", precision: 10, scale: 3
     t.integer "work_days", comment: "How many days worker works in given month"
     t.bigint "work_order_id", null: false
     t.bigint "worker_id", null: false
@@ -237,11 +246,15 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_22_200000) do
     t.string "block_hectarage"
     t.bigint "block_id"
     t.string "block_number"
+    t.date "completion_date"
     t.datetime "created_at", null: false
     t.bigint "field_conductor_id"
     t.string "field_conductor_name"
     t.date "start_date"
     t.datetime "updated_at", null: false
+    t.bigint "vehicle_id"
+    t.string "vehicle_model"
+    t.string "vehicle_number"
     t.date "work_month", comment: "First day of the month for Mandays calculation"
     t.bigint "work_order_rate_id"
     t.string "work_order_rate_name"
@@ -252,6 +265,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_22_200000) do
     t.index ["block_id", "work_order_rate_id"], name: "index_work_orders_on_block_and_rate"
     t.index ["block_id"], name: "index_work_orders_on_block_id"
     t.index ["field_conductor_id"], name: "index_work_orders_on_field_conductor_id"
+    t.index ["vehicle_id"], name: "index_work_orders_on_vehicle_id"
     t.index ["work_order_rate_id"], name: "index_work_orders_on_work_order_rate_id"
     t.index ["work_order_rate_type"], name: "index_work_orders_on_work_order_rate_type"
     t.index ["work_order_rate_unit_name"], name: "index_work_orders_on_work_order_rate_unit_name"
@@ -271,6 +285,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_22_200000) do
 
   add_foreign_key "inventories", "categories"
   add_foreign_key "inventories", "units"
+  add_foreign_key "inventory_orders", "inventories"
   add_foreign_key "pay_calculation_details", "pay_calculations"
   add_foreign_key "pay_calculation_details", "workers"
   add_foreign_key "roles_permissions", "permissions"
@@ -285,5 +300,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_22_200000) do
   add_foreign_key "work_order_workers", "workers"
   add_foreign_key "work_orders", "blocks"
   add_foreign_key "work_orders", "users", column: "field_conductor_id"
+  add_foreign_key "work_orders", "vehicles", validate: false
   add_foreign_key "work_orders", "work_order_rates"
 end

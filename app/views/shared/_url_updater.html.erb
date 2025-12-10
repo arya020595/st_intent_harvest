@@ -1,0 +1,25 @@
+<%#
+  Shared URL Updater Component
+  =============================
+  A helper partial for updating browser URL via Stimulus
+  Used in turbo_stream responses to update URL after operations like deletion
+
+  BEST PRACTICE: This is more secure and maintainable than eval() or inline JS
+
+  Required local variable:
+    url: [String] The URL to update the browser to
+
+  Optional local variables:
+    method: [String] "replaceState" (default) or "pushState"
+
+  Usage in destroy.turbo_stream.erb:
+    <%= turbo_stream.update "url-manager",
+        partial: "shared/url_updater",
+        locals: { url: some_index_path } %>
+<%
+  method ||= "replaceState"
+%>
+<div data-controller="history"
+     data-history-url-value="<%= url %>"
+     data-history-method-value="<%= method %>">
+</div>

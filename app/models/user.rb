@@ -10,6 +10,14 @@ class User < ApplicationRecord
 
   validates :name, presence: true
 
+  # Scope to get field conductors (users who only have work_orders.details permissions)
+  scope :field_conductors, lambda {
+    joins(role: :permissions)
+      .group('users.id')
+      .having("COUNT(DISTINCT permissions.code) > 0 AND COUNT(DISTINCT CASE WHEN permissions.code NOT LIKE 'work_orders.details%' THEN 1 END) = 0")
+      .select('users.*')
+  }
+
   # Check if user has a specific permission code
   # Superadmin role bypasses all permission checks
   # Example: user.has_permission?("admin.users.index")
@@ -34,6 +42,19 @@ class User < ApplicationRecord
   # Check if user is superadmin (bypasses all permission checks)
   def superadmin?
     role&.name&.casecmp('superadmin')&.zero?
+  end
+
+  # Check if user is a field conductor
+  # Field conductor only has work_orders.details.* permissions and nothing else
+  def field_conductor?
+    return false unless role&.permissions&.any?
+
+    # Use cached permission codes to avoid redundant queries
+    @permission_codes ||= role.permissions.pluck(:code)
+
+    # Field conductor only has work_orders.details permissions
+    # If there's any permission that doesn't start with 'work_orders.details', user is NOT a field conductor
+    @permission_codes.all? { |code| code.start_with?('work_orders.details') }
   end
 
   # Clear cached permissions (call after role change)

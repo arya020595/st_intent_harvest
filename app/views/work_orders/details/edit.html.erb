@@ -4,10 +4,14 @@
     ['Work Order Details', work_orders_details_path],
     ['Edit Work Order', nil]
   ] %>
-  <div class="card shadow-sm">
-    <div class="card-header bg-success text-white">
-      <h5 class="mb-0">Edit Work Order</h5>
-    </div>
+  <!-- Back to Work Order Details Link -->
+  <div class="mb-3">
+    <%= link_to work_orders_details_path, class: "text-decoration-none text-dark d-inline-flex align-items-center fs-5 fw-bold" do %>
+      <i class="bi bi-arrow-left me-2"></i> Back to Work Order Details
+    <% end %>
+  </div>
+  <hr>
+  <div class="mt-5">
     <div class="card-body">
       <%= render "form", work_order: @work_order %>
     </div>

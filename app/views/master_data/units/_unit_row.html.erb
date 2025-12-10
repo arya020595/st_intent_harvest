@@ -1,20 +1,38 @@
 <tr id="<%= dom_id(unit) %>">
   <td class="text-center">
     <div class="action-buttons">
-      <%= link_to master_data_unit_path(unit), class: "action-btn info", title: "View Details" do %>
-        <i class="bi bi-info-circle-fill"></i>
+      <% if record_policy(unit, MasterData::UnitPolicy).show? %>
+        <%= link_to master_data_unit_path(unit), class: "action-btn info", title: "View Details", **modal_link_data do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to master_data_unit_path(unit), class: "action-btn info", title: "View Details" do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
       <% end %>
-      <%= link_to edit_master_data_unit_path(unit), class: "action-btn warning", title: "Edit", data: { turbo_frame: 'modal' } do %>
-        <i class="bi bi-pencil-fill"></i>
+      <% if record_policy(unit, MasterData::UnitPolicy).edit? %>
+        <%= link_to edit_master_data_unit_path(unit), class: "action-btn warning", title: "Edit", **modal_link_data do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to edit_master_data_unit_path(unit), class: "action-btn warning", title: "Edit" do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
       <% end %>
-      <%= link_to master_data_unit_path(unit), class: "action-btn danger", data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete #{unit.name}?" },  title: "Delete" do %>
-        <i class="bi bi-trash-fill"></i>
+      <% if record_policy(unit, MasterData::UnitPolicy).confirm_delete? %>
+        <%= link_to confirm_delete_master_data_unit_path(unit), class: "action-btn danger", title: "Delete", **modal_link_data(size: "modal-md") do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to confirm_delete_master_data_unit_path(unit), class: "action-btn danger", title: "Delete" do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
       <% end %>
     </div>
   </td>
   <td class="text-center"><%= unit.id %></td>
-  <td><strong><%= unit.name %></strong></td>
-  <td><strong><%= unit.unit_type %></strong></td>
-<td class="text-center text-muted"><%= unit.created_at.strftime("%b %d, %Y %H:%M") if unit.created_at %></td>
-<td class="text-center text-muted"><%= unit.updated_at.strftime("%b %d, %Y %H:%M") if unit.updated_at %></td>
+  <td><%= unit.name %></td>
+  <td><%= unit.unit_type %></td>
+  <td class="text-center"><%= unit.created_at.strftime("%b %d, %Y %H:%M") if unit.created_at %></td>
+  <td class="text-center"><%= unit.updated_at.strftime("%b %d, %Y %H:%M") if unit.updated_at %></td>
 </tr>

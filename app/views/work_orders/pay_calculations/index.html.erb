@@ -1,49 +1,44 @@
-<div class="container-fluid px-4 py-4 pay-calculations" data-controller="multi-sort">
+<div id="work_orders_pay_calculations" class="container-fluid px-4 py-4 pay-calculations" data-controller="multi-sort">
   <div class="card shadow-sm">
-    <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Pay Calculations</h5>
-      <%= link_to new_work_orders_pay_calculation_path, class: "btn btn-light btn-sm" do %>
-        <i class="bi bi-plus-circle"></i> New Pay Calculation
-      <% end %>
+    <div class="work_orders_page">
+      <h1 class="mb-0">Pay Calculations</h1>
     </div>
     <div class="card-body">
       <%= search_form_for @q, url: work_orders_pay_calculations_path, html: { id: 'pay-calculation-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
-            <thead class="table-info">
-              <tr>
+            <thead class="header-row">
+              <tr class="header-row">
+                <th class="text-center"></th>
                 <th class="text-center">
                   <%= sort_link(@q, :id, 'ID') %>
                 </th>
-                <th>
+                <th class="text-center">
                   <%= sort_link(@q, :month_year, 'Month/Year') %>
                 </th>
-                <th class="text-end">
+                <th class="text-center">
                   <%= sort_link(@q, :total_net_salary, 'Overall Total') %>
                 </th>
                 <th class="text-center">
                   <%= sort_link(@q, :updated_at, 'Updated At') %>
                 </th>
-                <th class="text-center">Actions</th>
               </tr>
               <tr>
                 <th class="text-center">
-                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1 %>
+                  <div class="d-flex gap-1 justify-content-center">
+                    <%= link_to 'Reset', work_orders_pay_calculations_path, class: 'btn btn reset-btn', style: "width: 120px;" %>
+                  </div>
+                </th>
+                <th class="text-center">
+                  <%= f.number_field :id_eq, class: 'form-control form-control-sm', placeholder: 'ID', min: 1, data: { action: "input->search-form#autoSubmit" } %>
                 </th>
                 <th>
-                  <%= f.search_field :month_year_cont, class: 'form-control form-control-sm', placeholder: 'Search Month/Year..' %>
-                </th>
-                <th class="text-end">
-                  <%= f.number_field :total_net_salary_eq, class: 'form-control form-control-sm', placeholder: 'Total', step: '0.01' %>
+                  <%= f.search_field :month_year_cont, class: 'form-control form-control-sm', placeholder: 'Search Month/Year..', data: { action: "input->search-form#autoSubmit" } %>
                 </th>
                 <th class="text-center">
-                  <%= f.date_field :updated_at_eq, class: 'form-control form-control-sm', placeholder: 'Date' %>
+                  <%= f.number_field :total_net_salary_eq, class: 'form-control form-control-sm', placeholder: 'Total', step: '0.01', data: { action: "input->search-form#autoSubmit" } %>
                 </th>
                 <th class="text-center">
-                  <div class="d-flex gap-1 justify-content-center">
-                    <%= f.submit 'Search', class: 'btn btn-info btn-sm' %>
-                    <%= link_to 'Reset', work_orders_pay_calculations_path, class: 'btn btn-secondary btn-sm' %>
-                  </div>
                 </th>
               </tr>
             </thead>

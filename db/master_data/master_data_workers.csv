@@ -1,0 +1,95 @@
+name,nationality,gender,identity_number,worker_type,is_active
+AMAT BIN SALAM,Local,Male,830310126331,Full - Time,TRUE
+AIDE BIN ANTHONY,Local,Male,841222125463,Full - Time,TRUE
+BARTOH KOLONG,Local,Male,920115126263,Full - Time,TRUE
+DANIEL VALENTINO DE SOUZA,Local,Male,790822125099,Full - Time,TRUE
+DISEMOUND BIN MISIN,Local,Male,861221495487,Full - Time,TRUE
+FRENANDEZ BIN ANASIUS,Local,Male,921110121992,Full - Time,TRUE
+JALVIN BIN ELAP,Local,Male,940404126997,Full - Time,TRUE
+JAUNAS AMIT,Local,Male,850920495087,Full - Time,TRUE
+JAINUS BIN TONY,Local,Male,901107126067,Full - Time,TRUE
+JUIL BIN AMPATING,Local,Male,730119125607,Full - Time,TRUE
+JUSTIN BIN ELANG,Local,Male,720115125301,Full - Time,TRUE
+LADIUS BIN BALUA,Local,Male,860702495803,Full - Time,TRUE
+LORINE BIN EPUN,Local,Male,730826125729,Full - Time,TRUE
+MARACUS BIN LASIR @ BASIR,Local,Male,741127126099,Full - Time,TRUE
+JONAINI JOHN @ ANDUAN,Local,Female,840715126152,Full - Time,TRUE
+ACHMADI NUGROHO,Foreigner,Male,X5490686,Full - Time,TRUE
+AHMAD IRFANGI DAROZAT,Foreigner,Male,AU310384,Full - Time,TRUE
+AKHMAD SUDIBYO,Foreigner,Male,X5491189,Full - Time,TRUE
+ARMANSYAH,Foreigner,Male,E9379000,Full - Time,TRUE
+CANDRA PERDIANTO SITORUS,Foreigner,Male,E9378999,Full - Time,TRUE
+DERI SYAHPUTRA,Foreigner,Male,E9378782,Full - Time,TRUE
+FALWENDI,Foreigner,Male,AT992326,Full - Time,TRUE
+IBNU ROHADI,Foreigner,Male,AU494935,Full - Time,TRUE
+JONER MANURUNG,Foreigner,Male,E9379006,Full - Time,TRUE
+KASMONO,Foreigner,Male,E5289997,Full - Time,TRUE
+LUTFI HIDAYAT,Foreigner,Male,E9405459,Full - Time,TRUE
+M AFFANDI,Foreigner,Male,E9379010,Full - Time,TRUE
+MARINO,Foreigner,Male,E6312275,Full - Time,TRUE
+MIKAEL TARANG MARE,Foreigner,Male,C8046546,Full - Time,TRUE
+MUHAMAD ABDUL KHALIM,Foreigner,Male,E6795582,Full - Time,TRUE
+MUHAMAD FAIZIN,Foreigner,Male,AU610800,Full - Time,TRUE
+MUNAWAR,Foreigner,Male,E7217928,Full - Time,TRUE
+RATNO SETIAWAN,Foreigner,Male,AU610804,Full - Time,TRUE
+REGI WIDODO,Foreigner,Male,AU610403,Full - Time,TRUE
+RENO DANIKA APRIADI,Foreigner,Male,E9405476,Full - Time,TRUE
+ROY TORRES ENTRINA,Foreigner,Male,P3624924C,Full - Time,TRUE
+SLAMET,Foreigner,Male,AU405019,Full - Time,TRUE
+SUKRON FADOLI,Foreigner,Male,E6965492,Full - Time,TRUE
+SURIONO,Foreigner,Male,E937879,Full - Time,TRUE
+SYARIF HIDAYATULLOH,Foreigner,Male,X5014016,Full - Time,TRUE
+TAUFIK HIDAYAT,Foreigner,Male,E6967250,Full - Time,TRUE
+TOFAN NUR RIFAI,Foreigner,Male,E6966460,Full - Time,TRUE
+ZAMRONI,Foreigner,Male,E6966460,Full - Time,TRUE
+A. IRAWATI,Foreigner (No Passport),Female,SMART SABAH,Full - Time,TRUE
+AGUSTINA HUTRI,Foreigner (No Passport),Female,SMART SABAH,Full - Time,TRUE
+ALEXZANDER MATEUS,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+ALOYSIA KEYN,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+ANDI,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+ANDREAS ARA,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+ANWAR,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+ASMA,Foreigner (No Passport),Female,SMART SABAH,Full - Time,TRUE
+ASRAF BAKRI,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+BAHRI BAKRI,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+BAKRI BIN UMAR,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+BARLIN NGOJO,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+DAMASUS JEHEDOT,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+EDISON TALLO,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+ENDANG BIN TAHIR,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+ERFAN LABAH,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+FERA ALOYSIUS,Foreigner (No Passport),Female,SMART SABAH,Full - Time,TRUE
+FRANSISKUS,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+HAFIZ,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+HABSUR,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+HAWA BINTI PARO,Foreigner (No Passport),Female,SMART SABAH,Full - Time,TRUE
+HERMIA,Foreigner (No Passport),Female,SMART SABAH,Full - Time,TRUE
+ISWANDY,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+JUHARTI,Foreigner (No Passport),Female,SMART SABAH,Full - Time,TRUE
+JUSRI SAPPE,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+JUSRIADI,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+LARAS NASIR,Foreigner (No Passport),Female,SMART SABAH,Full - Time,TRUE
+LAURENSIUS BHEGA,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+MARIANUS WARE,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+NISMAYANTI,Foreigner (No Passport),Female,SMART SABAH,Full - Time,TRUE
+NUR AFIANI,Foreigner (No Passport),Female,SMART SABAH,Full - Time,TRUE
+PEDRITO JR OCANA DELA PENA,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+RAKMAN JOHAN,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+RESKI FAHRI ZAMAN,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+RISAL,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+RISAL BANJI,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+ROSWITA SUSUR,Foreigner (No Passport),Female,SMART SABAH,Full - Time,TRUE
+SAM KOMBI,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+SAPRIL BAKRI,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+SODIKIN,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+SYARULLAH,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+TAKDIR,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+ULE,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+WINDA FIRDAUS,Foreigner (No Passport),Female,SMART SABAH,Full - Time,TRUE
+YAYA,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+YOSEPI BHASO,Foreigner (No Passport),Male,SMART SABAH,Full - Time,TRUE
+YULIANA BINTI ANTO,Foreigner (No Passport),Female,SMART SABAH,Full - Time,TRUE
+SAPA BIN ANTO,Foreigner (No Passport),Male,-,Full - Time,TRUE
+MARKUS LELA MARE,Foreigner (No Passport),Male,-,Full - Time,TRUE
+OLFAS DEPANTO,Foreigner (No Passport),Male,-,Full - Time,TRUE
+ARNOLOUS SAM TANCO HARUM,Foreigner (No Passport),Male,-,Full - Time,TRUE

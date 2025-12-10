@@ -103,8 +103,8 @@ REDIRECT_PATHS = {
 # Only 3 special cases needed
 SPECIAL_CASES = {
   'dashboard.index' => :root_path,
-  'admin.users.index' => :user_management_users_path,
-  'admin.roles.index' => :user_management_roles_path
+  'user_management.users.index' => :user_management_users_path,
+  'user_management.roles.index' => :user_management_roles_path
 }
 # Everything else: automatic!
 ```
@@ -456,6 +456,6 @@ When adding documentation:
 
 ---
 
-**Version:** 1.0  
-**Last Updated:** November 20, 2024  
+**Version:** 1.0
+**Last Updated:** November 20, 2024
 **Rails Version:** 8.1+

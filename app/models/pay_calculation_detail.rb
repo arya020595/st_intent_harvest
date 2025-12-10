@@ -27,11 +27,14 @@ class PayCalculationDetail < ApplicationRecord
   # Manually recalculate deductions - only for admin corrections
   # This bypasses the immutability constraint
   def recalculate_deductions!
-    # Worker nationality: 'Local' -> 'local', 'Foreigner' -> 'foreigner'
+    # Worker nationality values: 'local', 'foreigner', 'foreigner_no_passport'
+    # - local: Has local deductions (EPF, SOCSO, etc.)
+    # - foreigner: Has foreigner deductions
+    # - foreigner_no_passport: No deductions
     result = PayCalculationServices::DeductionCalculator.calculate(
       pay_calculation.month_year,
       gross_salary: gross_salary || 0,
-      nationality: worker.nationality&.downcase || 'local'
+      nationality: worker.nationality || 'local'
     )
 
     update_columns(
@@ -49,11 +52,14 @@ class PayCalculationDetail < ApplicationRecord
   def apply_deductions
     # Calculate deductions based on the pay calculation's month
     # This ensures we use the deduction types that were active during that month
-    # Worker nationality: 'Local' -> 'local', 'Foreigner' -> 'foreigner'
+    # Worker nationality values: 'local', 'foreigner', 'foreigner_no_passport'
+    # - local: Has local deductions (EPF, SOCSO, etc.)
+    # - foreigner: Has foreigner deductions
+    # - foreigner_no_passport: No deductions
     result = PayCalculationServices::DeductionCalculator.calculate(
       pay_calculation.month_year,
       gross_salary: gross_salary || 0,
-      nationality: worker.nationality&.downcase || 'local'
+      nationality: worker.nationality || 'local'
     )
 
     self.employee_deductions = result.employee_deduction

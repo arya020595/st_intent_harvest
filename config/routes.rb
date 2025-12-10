@@ -29,6 +29,7 @@ Rails.application.routes.draw do
     resources :details do
       member do
         patch :mark_complete
+        get :confirm_delete
       end
     end
     resources :approvals, only: %i[index show update] do
@@ -52,23 +53,64 @@ Rails.application.routes.draw do
   end
 
   # Inventory
-  resources :inventories
+  resources :inventories do
+    member do
+      get :confirm_delete
+    end
+  end
 
   # Workers
-  resources :workers
+  resources :workers do
+    member do
+      get :confirm_delete
+    end
+  end
 
   # Master Data Namespace
   namespace :master_data do
-    resources :vehicles
-    resources :work_order_rates
-    resources :blocks
-    resources :units
-    resources :categories
+    resources :vehicles do
+      member do
+        get :confirm_delete
+      end
+    end
+
+    resources :work_order_rates do
+      member do
+        get :confirm_delete
+      end
+    end
+
+    resources :blocks do
+      member do
+        get :confirm_delete
+      end
+    end
+
+    resources :units do
+      member do
+        get :confirm_delete
+      end
+    end
+
+    resources :categories do
+      member do
+        get :confirm_delete
+      end
+    end
   end
 
   # User Management Namespace
   namespace :user_management do
-    resources :roles
-    resources :users
+    resources :roles do
+      member do
+        get :confirm_delete
+      end
+    end
+
+    resources :users do
+      member do
+        get :confirm_delete
+      end
+    end
   end
 end

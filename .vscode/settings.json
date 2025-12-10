@@ -1,42 +1,28 @@
 {
-  // =======================================================
-  // TEAM-WIDE SETTINGS - Committed to Git
-  // These settings will apply to all team members
-  // =======================================================
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
 
-  // RuboCop auto-formatting on save
   "[ruby]": {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "rubocop.vscode-rubocop",
-    "editor.formatOnType": false,
+    "editor.defaultFormatter": "misogi.ruby-rubocop",
     "editor.codeActionsOnSave": {
       "source.fixAll.rubocop": "explicit"
     }
   },
 
-  // RuboCop extension settings
-  "rubocop.enable": true,
-  "rubocop.onSave": true,
-  "rubocop.autocorrect": true,
-  "rubocop.autocorrectOnSave": true,
-  "rubocop.useServer": true,
-  "rubocop.mode": "enableUnconditionally",
-  "rubocop.safeAutocorrect": false,
-
-  // Enable formatting on save in the workspace (fallback/global)
-  "editor.formatOnSave": true,
-
-  // Additional Ruby settings
-  "ruby.lint": {
-    "rubocop": true
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "ruby.format": "rubocop",
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
 
-  // Editor settings for consistency across team
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
-
-  // Git settings
   "files.eol": "\n"
 }

@@ -28,14 +28,14 @@
                         required: true,
                         data: {
                           work_order_rate_form_target: "rateType",
-                          action: "change->work-order-rate-form#toggleUnit"
+                          action: "change->work-order-rate-form#toggleUnitAndRate"
                         } %>
       </div>
       <div class="mb-3" data-work-order-rate-form-target="unitField">
         <%= form.label :unit_id, "Unit of Measurement", class: "form-label" %>
         <%= form.collection_select :unit_id, Unit.all, :id, :name, { include_blank: "Select Unit" }, class: "form-select" %>
       </div>
-      <div class="mb-3">
+      <div class="mb-3" data-work-order-rate-form-target="rateField">
         <%= form.label :rate, "Rate (RM)", class: "form-label" %>
         <%= form.number_field :rate, placeholder:"Enter Rate(RM)", step: 0.01, class: "form-control", required: true %>
       </div>
