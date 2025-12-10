@@ -9,7 +9,7 @@ class InventoryOrder < ApplicationRecord
   before_save :calculate_unit_price
 
   def self.ransackable_attributes(_auth_object = nil)
-    %w[id inventory_id quantity unit_price total_price supplier purchase_date created_at updated_at]
+    %w[id inventory_id quantity unit_price total_price supplier purchase_date date_of_arrival created_at updated_at]
   end
 
   def self.ransackable_associations(_auth_object = nil)
@@ -29,15 +29,16 @@ end
 #
 # Table name: inventory_orders
 #
-#  id            :integer          not null, primary key
-#  inventory_id  :integer          not null
-#  quantity      :integer          not null
-#  unit_price    :decimal(10, 2)
-#  total_price   :decimal(10, 2)   not null
-#  supplier      :string           not null
-#  purchase_date :date             not null
-#  created_at    :datetime         not null
-#  updated_at    :datetime         not null
+#  id              :integer          not null, primary key
+#  inventory_id    :integer          not null
+#  quantity        :integer          not null
+#  unit_price      :decimal(10, 2)
+#  total_price     :decimal(10, 2)   not null
+#  supplier        :string           not null
+#  purchase_date   :date             not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  date_of_arrival :date
 #
 # Indexes
 #

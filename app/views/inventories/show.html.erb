@@ -28,6 +28,7 @@
               <tr>
                 <th>Supplier</th>
                 <th>Purchase Date</th>
+                <th>Date of Arrival</th>
                 <th class="text-end">Quantity</th>
                 <th class="text-end">Unit Price</th>
                 <th class="text-end">Total Price</th>
@@ -38,6 +39,7 @@
                 <tr>
                   <td><%= order.supplier %></td>
                   <td><%= order.purchase_date.strftime("%d-%m-%Y") %></td>
+                  <td><%= order.date_of_arrival&.strftime("%d-%m-%Y") || "-" %></td>
                   <td class="text-end"><%= order.quantity %></td>
                   <td class="text-end">
                     <%= number_to_currency(order.unit_price, unit: 'RM ', precision: 2) %>

@@ -277,10 +277,8 @@ export default class extends Controller {
         );
       }
 
-      // Show Quantity(Ha) for workers
-      quantityHeaders.forEach(
-        (header) => (header.textContent = "Quantity(Ha)")
-      );
+      // Show Quantity for workers
+      quantityHeaders.forEach((header) => (header.textContent = "Quantity"));
       this.toggleWorkerQuantityFields(false); // false = show work_area_size
     }
   }
