@@ -218,7 +218,7 @@ export default class extends Controller {
 
     if (this.currentRateType === "resources") {
       console.log(">>> RESOURCES MODE - Hiding workers");
-      // Show: Work Order ID, Work Order, Vehicle, Resources (without amount used)
+      // Show: Work Order ID, Work Order, Vehicle, Resources (with amount used)
       if (resourcesSection) {
         resourcesSection.style.display = "block";
         console.log("Resources section shown");
@@ -232,15 +232,17 @@ export default class extends Controller {
       if (rateFieldSection) rateFieldSection.style.display = "block";
       if (unitSection) unitSection.style.display = "block";
       if (vehicleSection) {
-        vehicleSection.style.display = "block";
+        vehicleSection.style.display = "";
         console.log("Vehicle section shown");
       }
 
-      // Hide amount used column in resources
-      amountUsedHeaders.forEach((header) => (header.style.display = "none"));
+      // Show amount used column in resources
+      amountUsedHeaders.forEach(
+        (header) => (header.style.display = "table-cell")
+      );
       if (this.hasAmountUsedCellTarget) {
         this.amountUsedCellTargets.forEach(
-          (cell) => (cell.style.display = "none")
+          (cell) => (cell.style.display = "table-cell")
         );
       }
     } else if (this.currentRateType === "work_days") {
@@ -365,9 +367,6 @@ export default class extends Controller {
       )
       .join("");
 
-    const hideAmountUsed =
-      this.currentRateType === "resources" ? "none" : "table-cell";
-
     return `
       <tr data-resource-index="${index}">
         <td>
@@ -382,7 +381,7 @@ export default class extends Controller {
         <td>
           <input type="text" class="form-control form-control-sm" id="resource_unit_${index}" value="Auto Filled" disabled style="background-color: #e9ecef;">
         </td>
-        <td data-work-order-form-target="amountUsedCell" style="display: ${hideAmountUsed};">
+        <td data-work-order-form-target="amountUsedCell">
           <input type="number" class="form-control form-control-sm" name="work_order[work_order_items_attributes][${index}][amount_used]" placeholder="0" step="0.01" min="0">
         </td>
         <input type="hidden" id="resource_destroy_${index}" name="work_order[work_order_items_attributes][${index}][_destroy]" value="0">

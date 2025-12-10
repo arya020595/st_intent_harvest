@@ -66,6 +66,7 @@ class WorkOrder < ApplicationRecord
       approved_by
       approved_at
       work_month
+      date_of_usage
       created_at
       updated_at
       block_id

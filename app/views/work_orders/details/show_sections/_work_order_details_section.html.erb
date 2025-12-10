@@ -44,11 +44,11 @@
         <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-label fw-bold">Vehicle Number</label>
-            <input type="text" class="form-control" value="<%= work_order.vehicle_number || '-' %>" disabled style="background-color: #e9ecef;">
+            <input type="text" class="form-control" value="<%= work_order.vehicle_number || '-' %> - <%= work_order.vehicle_model %>" disabled style="background-color: #e9ecef;">
           </div>
           <div class="col-md-6 mb-3">
-            <label class="form-label fw-bold">Vehicle Model</label>
-            <input type="text" class="form-control" value="<%= work_order.vehicle_model || '-' %>" disabled style="background-color: #e9ecef;">
+            <label class="form-label fw-bold">Date of Usage</label>
+            <input type="text" class="form-control" value="<%= work_order.date_of_usage&.strftime('%d-%m-%Y') || '-' %>" disabled style="background-color: #e9ecef;">
           </div>
         </div>
       <% end %>

@@ -146,6 +146,7 @@ module WorkOrders
         :start_date,
         :completion_date,
         :work_month,
+        :date_of_usage,
         :field_conductor_id,
         :vehicle_id,
         work_order_workers_attributes: %i[
