@@ -72,7 +72,11 @@
                     </span>
                   </td>
                   <td>
-                    <%= link_to "View", work_orders_detail_path(work_order), class: "btn btn-sm btn-primary" %>
+                    <% if current_user.superadmin? %>
+                      <%= link_to "View", work_orders_detail_path(work_order), class: "btn btn-sm btn-primary" %>
+                    <% else %>
+                      <%= link_to "View", work_orders_approval_path(work_order), class: "btn btn-sm btn-primary" %>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>
