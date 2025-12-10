@@ -1,0 +1,94 @@
+<%= turbo_frame_tag "modal" do %>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <%= form_with(model: [inventory, inventory_order], class: "needs-validation", local: false) do |form| %>
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <%= inventory_order.new_record? ? "New Purchase Order" : "Edit Purchase Order" %>
+            <small class="text-muted d-block mt-1"><%= inventory.name %></small>
+          </h5>
+          <%= link_to inventory_inventory_orders_path(inventory), data: { turbo_frame: "_top" }, class: "btn-close" do %>
+          <% end %>
+        </div>
+        <div class="modal-body">
+          <% if inventory_order.errors.any? %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <h6 class="alert-heading mb-2">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <%= pluralize(inventory_order.errors.count, "error") %> prohibited this order from being saved:
+              </h6>
+              <ul class="mb-0">
+                <% inventory_order.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          <% end %>
+          <div class="row g-3">
+            <!-- Supplier -->
+            <div class="col-12">
+              <%= form.label :supplier, class: "form-label" %>
+              <%= form.text_field :supplier, class: "form-control #{'is-invalid' if inventory_order.errors[:supplier].any?}", placeholder: "Enter supplier name", required: true %>
+              <% if inventory_order.errors[:supplier].any? %>
+                <div class="invalid-feedback d-block">
+                  <%= inventory_order.errors[:supplier].first %>
+                </div>
+              <% end %>
+            </div>
+            <!-- Purchase Date -->
+            <div class="col-12">
+              <%= form.label :purchase_date, class: "form-label" %>
+              <%= form.date_field :purchase_date, class: "form-control #{'is-invalid' if inventory_order.errors[:purchase_date].any?}", value: inventory_order.purchase_date || Date.current, required: true %>
+              <% if inventory_order.errors[:purchase_date].any? %>
+                <div class="invalid-feedback d-block">
+                  <%= inventory_order.errors[:purchase_date].first %>
+                </div>
+              <% end %>
+            </div>
+            <!-- Quantity -->
+            <div class="col-md-6">
+              <%= form.label :quantity, class: "form-label" %>
+              <div class="input-group">
+                <%= form.number_field :quantity, class: "form-control #{'is-invalid' if inventory_order.errors[:quantity].any?}", placeholder: "0", min: 1, step: 1, required: true %>
+                <span class="input-group-text"><%= inventory.unit&.name || "units" %></span>
+                <% if inventory_order.errors[:quantity].any? %>
+                  <div class="invalid-feedback d-block">
+                    <%= inventory_order.errors[:quantity].first %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+            <!-- Total Price -->
+            <div class="col-md-6">
+              <%= form.label :total_price, class: "form-label" %>
+              <div class="input-group">
+                <span class="input-group-text">RM</span>
+                <%= form.number_field :total_price, class: "form-control #{'is-invalid' if inventory_order.errors[:total_price].any?}", placeholder: "0.00", min: 0.01, step: 0.01, required: true %>
+                <% if inventory_order.errors[:total_price].any? %>
+                  <div class="invalid-feedback d-block">
+                    <%= inventory_order.errors[:total_price].first %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+            <!-- Unit Price Info (calculated automatically) -->
+            <% if inventory_order.persisted? && inventory_order.unit_price.present? %>
+              <div class="col-12">
+                <div class="alert alert-info mb-0">
+                  <i class="bi bi-info-circle"></i>
+                  <strong>Unit Price:</strong> RM <%= number_with_precision(inventory_order.unit_price, precision: 2) %> per <%= inventory.unit&.name || "unit" %>
+                  <small class="d-block mt-1 text-muted">Calculated automatically from total price ÷ quantity</small>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <%= link_to "Cancel", inventory_inventory_orders_path(inventory), class: "btn btn-secondary", data: { turbo_frame: "_top" } %>
+          <%= form.submit inventory_order.new_record? ? "Create Order" : "Update Order", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

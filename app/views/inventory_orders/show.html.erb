@@ -1,0 +1,67 @@
+<%= turbo_frame_tag "modal" do %>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Purchase Order Details</h5>
+        <%= link_to inventory_inventory_orders_path(@inventory), data: { turbo_frame: "_top" }, class: "btn-close" do %>
+        <% end %>
+      </div>
+
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-12">
+            <h6 class="text-muted mb-0">Inventory</h6>
+            <p class="fs-5 mb-0"><%= @inventory.name %></p>
+          </div>
+
+          <div class="col-md-6">
+            <h6 class="text-muted mb-0">Supplier</h6>
+            <p class="mb-0"><%= @inventory_order.supplier %></p>
+          </div>
+
+          <div class="col-md-6">
+            <h6 class="text-muted mb-0">Purchase Date</h6>
+            <p class="mb-0"><%= @inventory_order.purchase_date.strftime("%d %B %Y") %></p>
+          </div>
+
+          <div class="col-md-4">
+            <h6 class="text-muted mb-0">Quantity</h6>
+            <p class="mb-0"><%= number_with_delimiter(@inventory_order.quantity) %> <%= @inventory.unit&.name %></p>
+          </div>
+
+          <div class="col-md-4">
+            <h6 class="text-muted mb-0">Unit Price</h6>
+            <p class="mb-0">RM <%= number_with_precision(@inventory_order.unit_price, precision: 2) %></p>
+          </div>
+
+          <div class="col-md-4">
+            <h6 class="text-muted mb-0">Total Price</h6>
+            <p class="fs-5 mb-0 text-primary"><strong>RM <%= number_with_precision(@inventory_order.total_price, precision: 2) %></strong></p>
+          </div>
+
+          <div class="col-12">
+            <hr>
+            <small class="text-muted">
+              <i class="bi bi-clock"></i> Created: <%= @inventory_order.created_at.strftime("%d %b %Y at %I:%M %p") %>
+              <% if @inventory_order.updated_at != @inventory_order.created_at %>
+                <br>
+                <i class="bi bi-pencil"></i> Last updated: <%= @inventory_order.updated_at.strftime("%d %b %Y at %I:%M %p") %>
+              <% end %>
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <%= link_to inventory_inventory_orders_path(@inventory), class: "btn btn-secondary", data: { turbo_frame: "_top" } do %>
+          Close
+        <% end %>
+        <%= link_to edit_inventory_inventory_order_path(@inventory, @inventory_order),
+            data: { turbo_frame: "modal" },
+            class: "btn btn-primary" do %>
+          <i class="bi bi-pencil"></i> Edit
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
