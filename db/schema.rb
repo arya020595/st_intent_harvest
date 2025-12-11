@@ -97,6 +97,22 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_11_025719) do
     t.index ["purchase_date"], name: "index_inventory_orders_on_purchase_date"
   end
 
+  create_table "mandays", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "work_month"
+  end
+
+  create_table "mandays_workers", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "days"
+    t.bigint "manday_id", null: false
+    t.text "remarks"
+    t.datetime "updated_at", null: false
+    t.string "worker_name"
+    t.index ["manday_id"], name: "index_mandays_workers_on_manday_id"
+  end
+
   create_table "pay_calculation_details", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "currency", default: "RM"
@@ -289,6 +305,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_11_025719) do
   add_foreign_key "inventories", "categories"
   add_foreign_key "inventories", "units"
   add_foreign_key "inventory_orders", "inventories"
+  add_foreign_key "mandays_workers", "mandays"
   add_foreign_key "pay_calculation_details", "pay_calculations"
   add_foreign_key "pay_calculation_details", "workers"
   add_foreign_key "roles_permissions", "permissions"

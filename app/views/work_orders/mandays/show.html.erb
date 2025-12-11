@@ -1,0 +1,39 @@
+<%= render 'shared/breadcrumb', breadcrumbs: [
+  ['Mandays', work_orders_mandays_path],
+  ["Details for #{@manday.work_month.strftime("%B %Y")}", nil]
+] %>
+
+<div class="mb-3">
+  <%= link_to work_orders_mandays_path, class: "text-decoration-none text-dark d-inline-flex align-items-center fs-5 fw-bold" do %>
+    <i class="bi bi-arrow-left me-2"></i> Back to Mandays List
+  <% end %>
+</div>
+
+<hr>
+
+<p style="font-size: 18px"><strong>Work Month:</strong>  <%= @manday.work_month.strftime("%B %Y") %></p>
+
+<table class="table table-sm">
+  <thead>
+    <tr>
+      <th style="background: #155e1a; color: #fff; border-bottom: 1px solid #dee2e6; padding: 10px;">Worker Name</th>
+      <th style="background: #155e1a; color: #fff; border-bottom: 1px solid #dee2e6; padding: 10px;" class="text-center">Days</th>
+      <th style="background: #155e1a; color: #fff; border-bottom: 1px solid #dee2e6; padding: 10px;">Remarks</th>
+    </tr>
+  </thead>
+    <tbody>
+      <% @manday.mandays_workers.each do |mw| %>
+        <tr>
+          <td style="border-bottom: 1px solid #dee2e6; padding: 10px;">
+            <%= mw.worker_name.presence || '-' %>
+          </td>
+          <td style="border-bottom: 1px solid #dee2e6; padding: 10px;" class="text-center">
+            <%= mw.days.presence || '-' %>
+          </td>
+          <td style="border-bottom: 1px solid #dee2e6; padding: 10px;">
+            <%= mw.remarks.presence || '-' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+</table>
