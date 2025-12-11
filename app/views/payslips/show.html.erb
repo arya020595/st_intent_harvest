@@ -36,6 +36,10 @@
     <td><strong>Hired Date:</strong> <%= @worker&.hired_date ? @worker.hired_date.strftime('%d-%m-%Y') : "N/A" %></td>
     <td><strong>Worker Type:</strong> <%= @worker&.worker_type || "N/A" %></td>
   </tr>
+  <tr>
+    <td><strong>Position:</strong> <%= @worker&.position || "N/A" %></td>
+    <td></td>
+  </tr>
 </table>
 <!-- Earnings Table -->
 <table border="1" cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
