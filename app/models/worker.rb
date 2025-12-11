@@ -4,6 +4,7 @@ class Worker < ApplicationRecord
   # Constants for form options
   WORKER_TYPES = ['Part - Time', 'Full - Time'].freeze
   GENDERS = %w[Male Female].freeze
+  POSITIONS = %w[Harvester General Driver Maintenance Mechanic Security Mandour Loaders].freeze
   # Nationality values - stored as business logic values (lowercase, underscored)
   # These are used directly in deduction calculations without transformation
   NATIONALITIES = %w[local foreigner foreigner_no_passport].freeze
@@ -23,6 +24,7 @@ class Worker < ApplicationRecord
   validates :name, presence: true
   validates :worker_type, presence: true, inclusion: { in: WORKER_TYPES }
   validates :gender, inclusion: { in: GENDERS, allow_nil: true }
+  validates :position, inclusion: { in: POSITIONS, allow_nil: true }
   validates :nationality, inclusion: { in: NATIONALITIES, allow_nil: true }
 
   scope :active, -> { where(is_active: true) }
@@ -42,7 +44,7 @@ class Worker < ApplicationRecord
 
   # Ransack configuration
   def self.ransackable_attributes(_auth_object = nil)
-    %w[id name worker_type gender is_active hired_date nationality identity_number created_at updated_at]
+    %w[id name worker_type gender is_active hired_date nationality identity_number position created_at updated_at]
   end
 
   def self.ransackable_associations(_auth_object = nil)
@@ -55,13 +57,14 @@ end
 # Table name: workers
 #
 #  id              :integer          not null, primary key
-#  name            :string
-#  worker_type     :string
-#  gender          :string
-#  is_active       :boolean
-#  hired_date      :date
-#  nationality     :string
-#  identity_number :string
 #  created_at      :datetime         not null
+#  gender          :string
+#  hired_date      :date
+#  identity_number :string
+#  is_active       :boolean
+#  name            :string
+#  nationality     :string
 #  updated_at      :datetime         not null
+#  worker_type     :string
+#  position        :string
 #

@@ -31,6 +31,9 @@
                 <th>
                   <%= sort_link(@q, :worker_type, 'Worker Type') %>
                 </th>
+                <th>
+                  <%= sort_link(@q, :position, 'Position') %>
+                </th>
                 <th class="text-center">
                   <%= sort_link(@q, :is_active, 'Status') %>
                 </th>
@@ -54,6 +57,14 @@
                   <%= f.select :worker_type_eq,
                       options_for_select(Worker::WORKER_TYPES.map { |t| [t, t] }, f.object.worker_type_eq),
                       { include_blank: 'Select Type..' },
+                      { class: 'form-select form-select-sm',
+                      data: { action: "input->search-form#instantSubmit" }
+                       } %>
+                </th>
+                <th>
+                  <%= f.select :position_eq,
+                      options_for_select(Worker::POSITIONS.map { |p| [p, p] }, f.object.position_eq),
+                      { include_blank: 'Select Position..' },
                       { class: 'form-select form-select-sm',
                       data: { action: "input->search-form#instantSubmit" }
                        } %>
@@ -92,7 +103,7 @@
                 <%= render partial: 'worker_row', collection: @workers, as: :worker %>
               <% else %>
                 <tr>
-                  <td colspan="6" class="text-center text-muted py-4">
+                  <td colspan="7" class="text-center text-muted py-4">
                     No workers found.
                     <% if record_policy(Worker.new, WorkerPolicy).new? %>
                       <%= link_to 'Add a new worker', new_worker_path, **modal_link_data(size: 'modal-lg'), class: 'text-decoration-none' %>
