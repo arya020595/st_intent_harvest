@@ -1,0 +1,92 @@
+<%= render 'shared/breadcrumb', breadcrumbs: [
+  ['Mandays', work_orders_mandays_path],
+  ['Add New Manday', nil]
+] %>
+
+<% if @manday.errors.any? %>
+  <div class="alert alert-danger">
+    <h4>Could not save Manday:</h4>
+    <ul>
+      <% @manday.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div class="mb-3">
+  <%= link_to work_orders_mandays_path, class: "text-decoration-none text-dark d-inline-flex align-items-center fs-5 fw-bold" do %>
+    <i class="bi bi-arrow-left me-2"></i> Back to Mandays List
+  <% end %>
+</div>
+
+<hr>
+
+<%= form_with model: @manday, url: work_orders_mandays_path, local: true do |f| %>
+  <!-- Month-Year Field -->
+  <div class="mb-3">
+    <%= f.label :work_month, "Month - Year" %>
+    <%= f.month_field :work_month,
+          class: "form-control form-control-sm #{'is-invalid' if @manday.errors[:work_month].any?}",
+          value: @manday.work_month&.strftime("%Y-%m"),
+          style: "width: 400px",
+          required: true %>
+
+    <% if @manday.errors[:work_month].any? %>
+      <div class="invalid-feedback">
+        <%= @manday.errors[:work_month].first %>
+      </div>
+    <% end %>
+  </div>
+
+  <hr/>
+
+  <!-- Workers Table -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-sm">
+      <thead class="table-success">
+        <tr>
+          <th>Worker Name</th>
+          <th class="text-center">Days</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= f.fields_for :mandays_workers do |mw| %>
+          <tr>
+            <!-- Worker Name -->
+            <td class="text-center" style="width: 30%;">
+              <%= mw.text_field :worker_name,
+                    readonly: true,
+                    class: "form-control-plaintext form-control-sm" %>
+            </td>
+
+            <!-- Days Column + Input same width -->
+            <td class="text-center" style="width: 80px;">
+              <%= mw.number_field :days,
+                    min: 0,
+                    class: "form-control form-control-sm text-center",
+                    style: "width: 80px;" %>
+            </td>
+
+            <!-- Remarks -->
+            <td class="text-center">
+              <%= mw.text_field :remarks,
+                    class: "form-control form-control-sm" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <hr/>
+
+  <!-- Save Button Right-Aligned with Icon -->
+  <div class="text-end mt-3">
+    <button type="submit" class="btn btn-success btn-sm fw-bold" style="font-size: 16px; padding: 10px;">
+      <i class="bi bi-save-fill text-white me-1"></i>
+      Save Data
+    </button>
+  </div>
+<% end %>
