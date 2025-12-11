@@ -82,7 +82,7 @@ end
 #
 # Table name: deduction_types
 #
-#  id                     :integer , not null
+#  id                     :integer , not null, primary key
 #  applies_to_nationality :string  , comment: "Nationality filter: all, malaysian, foreign"
 #  calculation_type       :string  , default("percentage"), not null, comment: "Type of calculation: percentage (multiply by gross_salary) or fixed (use amount as-is)"
 #  code                   :string  , not null
