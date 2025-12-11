@@ -239,7 +239,7 @@ before_save :populate_inventory_details
 
 ### ✅ Worker Quantity Input
 
-- **Triggers:** When user types in Quantity(Ha) field
+- **Triggers:** When user types in Quantity field
 - **Auto-calculates:**
   - Amount (RM) = Rate × Quantity
   - Updates in real-time as user types

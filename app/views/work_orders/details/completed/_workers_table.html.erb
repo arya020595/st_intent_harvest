@@ -7,7 +7,7 @@
           <tr class="header-row">
             <th class="text-center">No</th>
             <th>Worker Name</th>
-            <th class="text-center"><%= work_order.work_order_rate_unit_name.presence || (work_order.work_days_type? ? 'Days' : 'Quantity(Ha)') %></th>
+            <th class="text-center"><%= work_order.work_order_rate_unit_name.presence || (work_order.work_days_type? ? 'Days' : 'Quantity') %></th>
             <th class="text-center">Rate (RM)</th>
             <th class="text-center">Amount (RM)</th>
             <th>Remarks</th>

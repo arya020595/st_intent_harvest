@@ -77,3 +77,32 @@ class DeductionType < ApplicationRecord
     errors.add(:code, 'already has an active record with no end date. End the current record first.')
   end
 end
+
+# == Schema Information
+#
+# Table name: deduction_types
+#
+#  id                     :integer , not null, primary key
+#  applies_to_nationality :string  , comment: "Nationality filter: all, malaysian, foreign"
+#  calculation_type       :string  , default("percentage"), not null, comment: "Type of calculation: percentage (multiply by gross_salary) or fixed (use amount as-is)"
+#  code                   :string  , not null
+#  created_at             :datetime, not null
+#  description            :text
+#  effective_from         :date
+#  effective_until        :date
+#  employee_contribution  :decimal , precision: 10, scale: 2, default(0.0), not null, comment: "Employee's contribution rate (percentage) or fixed amount (RM)"
+#  employer_contribution  :decimal , precision: 10, scale: 2, default(0.0), not null, comment: "Employer's contribution rate (percentage) or fixed amount (RM)"
+#  is_active              :boolean , default(true), not null
+#  name                   :string  , not null
+#  updated_at             :datetime, not null
+#
+# Indexes
+#
+#  index_deduction_types_on_applies_to_nationality    (applies_to_nationality)
+#  index_deduction_types_on_calculation_type          (calculation_type)
+#  index_deduction_types_on_code                      (code)
+#  index_deduction_types_on_code_and_effective_until  (code, effective_until)
+#  index_deduction_types_on_effective_from            (effective_from)
+#  index_deduction_types_on_effective_until           (effective_until)
+#  index_deduction_types_on_is_active                 (is_active)
+#

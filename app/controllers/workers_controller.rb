@@ -93,23 +93,19 @@ class WorkersController < ApplicationController
     end
   end
 
+  def confirm_delete
+    @worker = Worker.find_by(id: params[:id])
+    redirect_to workers_path, alert: 'Worker not found' and return unless @worker
 
-      def confirm_delete
-      @worker = Worker.find_by(id: params[:id])
-      unless @worker
-        redirect_to workers_path, alert: "Worker not found" and return
-      end
+    authorize @worker, policy_class: WorkerPolicy
 
-      authorize @worker, policy_class: WorkerPolicy
-
-      # Only show the modal
-      if turbo_frame_request?
-        render layout: false
-      else
-        redirect_to workers_path
-      end
+    # Only show the modal
+    if turbo_frame_request?
+      render layout: false
+    else
+      redirect_to workers_path
     end
-
+  end
 
   def destroy
     authorize @worker
@@ -142,6 +138,7 @@ class WorkersController < ApplicationController
     params.require(:worker).permit(
       :name,
       :worker_type,
+      :position,
       :gender,
       :is_active,
       :hired_date,
