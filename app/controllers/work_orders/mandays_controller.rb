@@ -6,6 +6,7 @@ module WorkOrders
 
     # GET /work_orders/mandays
     def index
+      authorize Manday, policy_class: WorkOrders::MandayPolicy
       @q = Manday.ransack(params[:q])
       mandays_scope = @q.result.order(work_month: :desc)
       @pagy, @mandays = pagy(mandays_scope)
@@ -13,18 +14,21 @@ module WorkOrders
 
     # GET /work_orders/mandays/new
     def new
+      authorize Manday, policy_class: WorkOrders::MandayPolicy
       @manday = Manday.new
       build_worker_rows
     end
 
     # GET /work_orders/mandays/:id/edit
     def edit
+      authorize Manday, policy_class: WorkOrders::MandayPolicy
       set_manday
       build_worker_rows
     end
 
     # POST /work_orders/mandays
     def create
+      authorize Manday, policy_class: WorkOrders::MandayPolicy
       @manday = Manday.new(manday_params_with_date)
 
       if @manday.save
@@ -38,6 +42,7 @@ module WorkOrders
 
     # PATCH /work_orders/mandays/:id
     def update
+      authorize Manday, policy_class: WorkOrders::MandayPolicy
       if @manday.update(manday_params_with_date)
         redirect_to work_orders_mandays_path, notice: "Manday was successfully updated."
       else
@@ -49,6 +54,7 @@ module WorkOrders
 
     # DELETE /work_orders/mandays/:id
     def destroy
+      authorize Manday, policy_class: WorkOrders::MandayPolicy
       @manday.destroy
       redirect_to work_orders_mandays_path, notice: "Manday was successfully deleted."
     end
