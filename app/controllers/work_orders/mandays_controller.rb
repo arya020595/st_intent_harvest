@@ -77,6 +77,7 @@ module WorkOrders
 
     # Prepares the manday form by building rows for workers not yet added
     # This creates a spreadsheet-like form with all active workers listed
+    # Also creates a lookup hash for efficient worker name display
     def prepare_manday_form
       existing_worker_ids = @manday.mandays_workers.map(&:worker_id).compact
       missing_worker_ids = @workers.pluck(:id) - existing_worker_ids
@@ -84,6 +85,9 @@ module WorkOrders
       missing_worker_ids.each do |worker_id|
         @manday.mandays_workers.build(worker_id: worker_id)
       end
+
+      # Create a hash for O(1) worker lookup in views
+      @workers_by_id = @workers.index_by(&:id)
     end
 
     def manday_params
