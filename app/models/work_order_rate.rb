@@ -5,11 +5,9 @@ class WorkOrderRate < ApplicationRecord
 
   # Define enum for work_order_rate_type
   enum :work_order_rate_type, {
-    normal: 'normal', # Show all fields (workers + resources + work days)
-    resources: 'resources' # Show only resource fields
-
-    # Since work_days not used anymore, hide option work_days from enum list
-    # work_days: 'work_days' # Show only worker details
+    normal: 'normal',         # Show all fields (workers + resources + work days)
+    resources: 'resources',   # Show only resource fields
+    work_days: 'work_days'    # Show only worker details
   }
 
   # Remove unit_id when work_order_rate_type is work_days
