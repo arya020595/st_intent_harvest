@@ -1,0 +1,6 @@
+code,name,calculation_type,employee_contribution,employer_contribution,nationality,effective_from,effective_until,is_active,description
+EPF_LOCAL,EPF Local,wage_range,0,0,local,2025-01-01,,true,EPF contribution for local employees using wage ranges
+EPF_FOREIGN,EPF Foreign,percentage,11,12,foreigner,2025-01-01,,true,EPF contribution for foreign employees at 11% employee and 12% employer
+SOCSO,SOCSO,wage_range,0,0,all,2025-01-01,,true,SOCSO contribution for all employees (local and foreign) using wage ranges
+EIS_LOCAL,EIS Local,wage_range,0,0,local,2025-01-01,,true,EIS contribution for local employees using wage ranges
+SIP,SIP,percentage,0.2,0.2,all,2025-01-01,,true,SIP contribution at 0.2% for both employee and employer
