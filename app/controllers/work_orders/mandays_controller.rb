@@ -2,99 +2,99 @@
 
 module WorkOrders
   class MandaysController < ApplicationController
-    before_action :set_manday, only: %i[show edit update destroy]
+    include RansackMultiSort
 
-    # GET /work_orders/mandays
+    before_action :set_manday, only: %i[show edit update destroy]
+    before_action :load_workers, only: %i[new edit]
+
     def index
       authorize Manday, policy_class: WorkOrders::MandayPolicy
-      @q = Manday.ransack(params[:q])
-      mandays_scope = @q.result.order(work_month: :desc)
-      @pagy, @mandays = pagy(mandays_scope)
+
+      apply_ransack_search(policy_scope(Manday,
+                                        policy_scope_class: WorkOrders::MandayPolicy::Scope).order(work_month: :desc))
+      @pagy, @mandays = paginate_results(@q.result)
     end
 
-    # GET /work_orders/mandays/new
+    def show
+      authorize @manday, policy_class: WorkOrders::MandayPolicy
+    end
+
     def new
-      authorize Manday, policy_class: WorkOrders::MandayPolicy
       @manday = Manday.new
-      build_worker_rows
+      authorize @manday, policy_class: WorkOrders::MandayPolicy
+      prepare_manday_form
     end
 
-    # GET /work_orders/mandays/:id/edit
-    def edit
-      authorize Manday, policy_class: WorkOrders::MandayPolicy
-      set_manday
-      build_worker_rows
-    end
-
-    # POST /work_orders/mandays
     def create
-      authorize Manday, policy_class: WorkOrders::MandayPolicy
-      @manday = Manday.new(manday_params_with_date)
+      @manday = Manday.new(normalized_manday_params)
+      authorize @manday, policy_class: WorkOrders::MandayPolicy
 
       if @manday.save
-        redirect_to work_orders_mandays_path, notice: "Manday was successfully created."
+        redirect_to work_orders_mandays_path, notice: 'Manday was successfully created.'
       else
-        flash.now[:alert] = "Error creating manday."
-        build_worker_rows
+        load_workers
+        prepare_manday_form
         render :new, status: :unprocessable_entity
       end
     end
 
-    # PATCH /work_orders/mandays/:id
+    def edit
+      authorize @manday, policy_class: WorkOrders::MandayPolicy
+      prepare_manday_form
+    end
+
     def update
-      authorize Manday, policy_class: WorkOrders::MandayPolicy
-      if @manday.update(manday_params_with_date)
-        redirect_to work_orders_mandays_path, notice: "Manday was successfully updated."
+      authorize @manday, policy_class: WorkOrders::MandayPolicy
+
+      if @manday.update(normalized_manday_params)
+        redirect_to work_orders_mandays_path, notice: 'Manday was successfully updated.'
       else
-        flash.now[:alert] = "Error updating manday."
-        build_worker_rows
+        load_workers
+        prepare_manday_form
         render :edit, status: :unprocessable_entity
       end
     end
 
-    # DELETE /work_orders/mandays/:id
     def destroy
-      authorize Manday, policy_class: WorkOrders::MandayPolicy
-      @manday.destroy
-      redirect_to work_orders_mandays_path, notice: "Manday was successfully deleted."
+      authorize @manday, policy_class: WorkOrders::MandayPolicy
+
+      if @manday.destroy
+        redirect_to work_orders_mandays_path, notice: 'Manday was successfully deleted.', status: :see_other
+      else
+        redirect_to work_orders_mandays_path, alert: 'There was an error deleting the manday.', status: :see_other
+      end
     end
 
     private
 
     def set_manday
-      @manday = Manday.find(params[:id])
+      @manday = Manday.includes(mandays_workers: :worker).find(params[:id])
     end
 
-    # Build missing worker rows for form
-    def build_worker_rows
-      @workers = Worker.active
-      existing_names = @manday.mandays_workers.map(&:worker_name)
-      (@workers.pluck(:name) - existing_names).each do |name|
-        @manday.mandays_workers.build(worker_name: name)
+    def load_workers
+      @workers = Worker.active.order(:name)
+    end
+
+    # Prepares the manday form by building rows for workers not yet added
+    # This creates a spreadsheet-like form with all active workers listed
+    def prepare_manday_form
+      existing_worker_ids = @manday.mandays_workers.map(&:worker_id).compact
+      missing_worker_ids = @workers.pluck(:id) - existing_worker_ids
+
+      missing_worker_ids.each do |worker_id|
+        @manday.mandays_workers.build(worker_id: worker_id)
       end
     end
 
-
-    # Strong params + convert work_month string to Date
-    def manday_params_with_date
-      mp = params.require(:manday).permit(
+    def manday_params
+      params.require(:manday).permit(
         :work_month,
-        mandays_workers_attributes: %i[id worker_name days remarks _destroy]
+        mandays_workers_attributes: %i[id worker_id days remarks _destroy]
       )
+    end
 
-      if mp[:work_month].present?
-        year, month = mp[:work_month].split('-').map(&:to_i)
-        mp[:work_month] = Date.new(year, month, 1) rescue nil
-      end
-
-      # Remove workers with 0 or blank days
-      if mp[:mandays_workers_attributes]
-        mp[:mandays_workers_attributes].delete_if do |_k, w|
-          w["days"].blank? || w["days"].to_i <= 0
-        end
-      end
-
-      mp
+    def normalized_manday_params
+      WorkOrderServices::ParamsNormalizer.call(manday_params)
     end
   end
 end

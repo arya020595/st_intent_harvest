@@ -9,7 +9,6 @@
           <i class="bi bi-plus-circle-fill text-white me-1"></i> Add New
         <% end %>
       </div>
-
       <%= search_form_for @q, url: work_orders_mandays_path, html: { id: 'manday-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
         <div class="table-responsive">
           <table class="table table-hover table-sm mb-0">
@@ -31,13 +30,12 @@
                   class: 'form-control form-control-sm',
                   placeholder: 'Search Month..',
                   data: { action: "input->search-form#autoSubmit" } %>
-
                 </th>
                 <th></th>
                 <th></th>
               </tr>
             </thead>
-            <tbody id="manday_rows">
+            <tbody id="mandays_rows">
               <% if @mandays.any? %>
                 <% @mandays.each do |manday| %>
                   <tr>
@@ -46,7 +44,6 @@
                                   class: "action-btn info btn btn-sm me-1" do %>
                         <i class="bi bi-info-circle-fill"></i>
                       <% end %>
-
                       <%= link_to edit_work_orders_manday_path(manday),
                                   class: "action-btn warning btn btn-sm" do %>
                         <i class="bi bi-pencil-fill"></i>
@@ -69,7 +66,6 @@
           </table>
         </div>
       <% end %>
-
       <div class="d-flex justify-content-between align-items-center mt-3">
         <div class="d-flex align-items-center gap-2">
           <span class="text-muted small">Show</span>
