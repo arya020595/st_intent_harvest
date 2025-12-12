@@ -1,24 +1,46 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-epf:
-  name: "EPF"
-  code: "EPF"
-  description: "Employee Provident Fund"
+epf_local:
+  name: "EPF Local"
+  code: "EPF_LOCAL"
+  description: "Employee Provident Fund for Local Workers"
+  is_active: true
+  employee_contribution: null
+  employer_contribution: null
+  calculation_type: "wage_range"
+  applies_to_nationality: "local"
+  effective_from: <%= Date.parse('2025-01-01') %>
+
+epf_foreign:
+  name: "EPF Foreign"
+  code: "EPF_FOREIGN"
+  description: "Employee Provident Fund for Foreign Workers"
   is_active: true
   employee_contribution: 11.0
   employer_contribution: 12.0
   calculation_type: "percentage"
-  applies_to_nationality: "all"
+  applies_to_nationality: "foreigner"
   effective_from: <%= Date.parse('2025-01-01') %>
 
 socso:
-  name: "SOCSO_MALAYSIAN"
-  code: "SOCSO_MALAYSIAN"
-  description: "Social Security Organization for Malaysian employees"
+  name: "SOCSO"
+  code: "SOCSO"
+  description: "Social Security Organization (applies to all workers)"
   is_active: true
-  employee_contribution: 0.5
-  employer_contribution: 1.75
-  calculation_type: "percentage"
+  employee_contribution: null
+  employer_contribution: null
+  calculation_type: "wage_range"
+  applies_to_nationality: "all"
+  effective_from: <%= Date.parse('2025-01-01') %>
+
+eis_local:
+  name: "EIS Local"
+  code: "EIS_LOCAL"
+  description: "Employment Insurance System for Local Workers"
+  is_active: true
+  employee_contribution: null
+  employer_contribution: null
+  calculation_type: "wage_range"
   applies_to_nationality: "local"
   effective_from: <%= Date.parse('2025-01-01') %>
 
@@ -30,16 +52,5 @@ sip:
   employee_contribution: 0.2
   employer_contribution: 0.2
   calculation_type: "percentage"
-  applies_to_nationality: "local"
-  effective_from: <%= Date.parse('2025-01-01') %>
-
-socso_foreign:
-  name: "SOCSO_FOREIGN"
-  code: "SOCSO_FOREIGN"
-  description: "Social Security Organization for Foreign employees"
-  is_active: true
-  employee_contribution: 0.0
-  employer_contribution: 1.25
-  calculation_type: "percentage"
-  applies_to_nationality: "foreigner"
+  applies_to_nationality: "all"
   effective_from: <%= Date.parse('2025-01-01') %>

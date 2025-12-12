@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
 class DeductionType < ApplicationRecord
-  CALCULATION_TYPES = %w[percentage fixed].freeze
+  CALCULATION_TYPES = %w[percentage fixed wage_range].freeze
   NATIONALITY_TYPES = %w[all local foreigner foreigner_no_passport].freeze
+
+  # Associations
+  has_many :deduction_wage_ranges, dependent: :destroy
 
   validates :name, presence: true
   validates :code, presence: true
   validates :is_active, inclusion: { in: [true, false] }
-  validates :employee_contribution, numericality: { greater_than_or_equal_to: 0 }
-  validates :employer_contribution, numericality: { greater_than_or_equal_to: 0 }
+  validates :employee_contribution, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
+  validates :employer_contribution, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
   validates :effective_from, presence: true
   validates :calculation_type, presence: true, inclusion: { in: CALCULATION_TYPES }
   validates :applies_to_nationality, inclusion: { in: NATIONALITY_TYPES }, allow_nil: true
@@ -37,21 +40,13 @@ class DeductionType < ApplicationRecord
   }
 
   # Calculate actual deduction amount based on gross salary
+  # Delegates to appropriate calculator strategy (Strategy Pattern)
+  #
   # @param gross_salary [BigDecimal] The worker's gross salary
   # @param field [Symbol] :employee_contribution or :employer_contribution
   # @return [BigDecimal] The calculated deduction amount
   def calculate_amount(gross_salary, field: :employee_contribution)
-    rate = send(field)
-    return 0 if rate.nil? || rate.zero?
-
-    case calculation_type
-    when 'percentage'
-      (gross_salary * rate / 100).round(2)
-    when 'fixed'
-      rate
-    else
-      0
-    end
+    calculator.calculate(gross_salary, field: field)
   end
 
   # Ransack configuration
@@ -61,10 +56,17 @@ class DeductionType < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    []
+    %w[deduction_wage_ranges]
   end
 
   private
+
+  # Factory method - creates appropriate calculator strategy
+  # Memoized to avoid recreating calculator on each call
+  # @return [DeductionCalculators::Base] Calculator instance
+  def calculator
+    @calculator ||= DeductionCalculators::Factory.for(self)
+  end
 
   def only_one_current_per_code
     return unless effective_until.nil? # Only validate if this is current (no end date)

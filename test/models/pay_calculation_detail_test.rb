@@ -82,13 +82,13 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
     detail = PayCalculationDetail.create!(
       pay_calculation: february_calc,
       worker: @worker,
-      gross_salary: 5000.00
+      gross_salary: 3000.00
     )
 
-    # Should have EPF (11% = 550) + SOCSO (0.5% = 25) + SIP (0.2% = 10) = 585
-    assert_equal 585.0, detail.employee_deductions
-    # Should have EPF (12% = 600) + SOCSO (1.75% = 87.5) + SIP (0.2% = 10) = 697.5
-    assert_equal 697.5, detail.employer_deductions
+    # EPF_LOCAL (330) + SOCSO (14.75) + EIS_LOCAL (5.90) + SIP 0.2% (6) = 356.65
+    assert_equal 356.65, detail.employee_deductions
+    # EPF_LOCAL (360) + SOCSO (51.65) + EIS_LOCAL (5.90) + SIP 0.2% (6) = 423.55
+    assert_equal 423.55, detail.employer_deductions
   end
 
   test 'should have zero deductions when no active deductions' do
@@ -113,27 +113,28 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
     detail = PayCalculationDetail.create!(
       pay_calculation: april_calc,
       worker: @worker,
-      gross_salary: 5000.00
+      gross_salary: 3000.00
     )
 
     assert_not_nil detail.deduction_breakdown
-    # We have EPF, SOCSO_MALAYSIAN, and SIP active by default
-    assert_includes detail.deduction_breakdown.keys, 'EPF'
-    assert_includes detail.deduction_breakdown.keys, 'SOCSO_MALAYSIAN'
+    # We have EPF_LOCAL, SOCSO, EIS_LOCAL, and SIP active by default for local workers
+    assert_includes detail.deduction_breakdown.keys, 'EPF_LOCAL'
+    assert_includes detail.deduction_breakdown.keys, 'SOCSO'
+    assert_includes detail.deduction_breakdown.keys, 'EIS_LOCAL'
     assert_includes detail.deduction_breakdown.keys, 'SIP'
   end
 
   test 'should recalculate deductions when updated' do
-    @detail.update!(gross_salary: 6000.00)
+    @detail.update!(gross_salary: 3500.00)
 
     # Manually recalculate deductions (using frozen snapshot rates)
     @detail.recalculate_deductions!
 
     # Deductions should be recalculated based on snapshot rates
-    # EPF: 11% = 660, SOCSO: 0.5% = 30, SIP: 0.2% = 12 = 702 total
-    assert_equal 702.0, @detail.employee_deductions
-    # EPF: 12% = 720, SOCSO: 1.75% = 105, SIP: 0.2% = 12 = 837 total
-    assert_equal 837.0, @detail.employer_deductions
+    # EPF_LOCAL (385) + SOCSO (17.75) + EIS_LOCAL (7.90) + SIP 0.2% (7) = 417.65
+    assert_equal 417.65, @detail.employee_deductions
+    # EPF_LOCAL (420) + SOCSO (62.15) + EIS_LOCAL (7.90) + SIP 0.2% (7) = 497.05
+    assert_equal 497.05, @detail.employer_deductions
   end
 
   test 'should handle multiple active deductions' do
@@ -141,15 +142,16 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
     detail = PayCalculationDetail.create!(
       pay_calculation: may_calc,
       worker: @worker,
-      gross_salary: 5000.00
+      gross_salary: 3000.00
     )
 
-    # Should have EPF (11% = 550) + SOCSO (0.5% = 25) + SIP (0.2% = 10) = 585
-    assert_equal 585.0, detail.employee_deductions
-    # Should have EPF (12% = 600) + SOCSO (1.75% = 87.5) + SIP (0.2% = 10) = 697.5
-    assert_equal 697.5, detail.employer_deductions
-    assert_includes detail.deduction_breakdown.keys, 'SOCSO_MALAYSIAN'
-    assert_includes detail.deduction_breakdown.keys, 'EPF'
+    # EPF_LOCAL (330) + SOCSO (14.75) + EIS_LOCAL (5.90) + SIP 0.2% (6) = 356.65
+    assert_equal 356.65, detail.employee_deductions
+    # EPF_LOCAL (360) + SOCSO (51.65) + EIS_LOCAL (5.90) + SIP 0.2% (6) = 423.55
+    assert_equal 423.55, detail.employer_deductions
+    assert_includes detail.deduction_breakdown.keys, 'SOCSO'
+    assert_includes detail.deduction_breakdown.keys, 'EPF_LOCAL'
+    assert_includes detail.deduction_breakdown.keys, 'EIS_LOCAL'
     assert_includes detail.deduction_breakdown.keys, 'SIP'
   end
 
@@ -166,10 +168,10 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
     detail = PayCalculationDetail.create!(
       pay_calculation: june_calc,
       worker: @worker,
-      gross_salary: 5000.00
+      gross_salary: 3000.00
     )
 
-    assert_equal 5000.00, detail.net_salary
+    assert_equal 3000.00, detail.net_salary
 
     # Reset
     DeductionType.update_all(is_active: true)
@@ -180,12 +182,12 @@ class PayCalculationDetailTest < ActiveSupport::TestCase
     detail = PayCalculationDetail.create!(
       pay_calculation: july_calc,
       worker: @worker,
-      gross_salary: 5000.00
+      gross_salary: 3000.00
     )
 
-    # EPF: 11% = 550, SOCSO: 0.5% = 25, SIP: 0.2% = 10 = 585 total employee deductions
-    expected_employee_deductions = 585.0
-    expected_net = 5000.00 - expected_employee_deductions
+    # EPF_LOCAL (330) + SOCSO (14.75) + EIS_LOCAL (5.90) + SIP 0.2% (6) = 356.65
+    expected_employee_deductions = 356.65
+    expected_net = 3000.00 - expected_employee_deductions
 
     assert_equal expected_employee_deductions, detail.employee_deductions
     assert_equal expected_net, detail.net_salary
