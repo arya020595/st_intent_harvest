@@ -43,6 +43,7 @@ Rails.application.routes.draw do
         get :worker_detail
       end
     end
+    resources :mandays
   end
 
   # Payslips
