@@ -51,7 +51,8 @@
               <!-- Worker Name -->
               <td class="text-center" style="width: 30%;">
                 <%= mw.hidden_field :worker_id %>
-                <%= text_field_tag nil, mw.object.worker&.name || @workers.find { |w| w.id == mw.object.worker_id }&.name,
+                <% worker = mw.object.worker || @workers_by_id[mw.object.worker_id] %>
+                <%= text_field_tag nil, worker&.name,
                     readonly: true,
                     class: "form-control-plaintext form-control-sm" %>
               </td>
