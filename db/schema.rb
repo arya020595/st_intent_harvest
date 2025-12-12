@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_11_025719) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_12_021242) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -59,8 +59,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_11_025719) do
     t.text "description"
     t.date "effective_from"
     t.date "effective_until"
-    t.decimal "employee_contribution", precision: 10, scale: 2, default: "0.0", null: false, comment: "Employee's contribution rate (percentage) or fixed amount (RM)"
-    t.decimal "employer_contribution", precision: 10, scale: 2, default: "0.0", null: false, comment: "Employer's contribution rate (percentage) or fixed amount (RM)"
+    t.decimal "employee_contribution", precision: 10, scale: 2, default: "0.0", comment: "Employee's contribution rate (percentage) or fixed amount (RM)"
+    t.decimal "employer_contribution", precision: 10, scale: 2, default: "0.0", comment: "Employer's contribution rate (percentage) or fixed amount (RM)"
     t.boolean "is_active", default: true, null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
@@ -71,6 +71,24 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_11_025719) do
     t.index ["effective_from"], name: "index_deduction_types_on_effective_from"
     t.index ["effective_until"], name: "index_deduction_types_on_effective_until"
     t.index ["is_active"], name: "index_deduction_types_on_is_active"
+  end
+
+  create_table "deduction_wage_ranges", force: :cascade do |t|
+    t.string "calculation_method", default: "fixed", null: false
+    t.datetime "created_at", null: false
+    t.bigint "deduction_type_id", null: false
+    t.decimal "employee_amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "employee_percentage", precision: 5, scale: 2, default: "0.0", null: false
+    t.decimal "employer_amount", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "employer_percentage", precision: 5, scale: 2, default: "0.0", null: false
+    t.decimal "max_wage", precision: 10, scale: 2
+    t.decimal "min_wage", precision: 10, scale: 2, null: false
+    t.datetime "updated_at", null: false
+    t.index "deduction_type_id, min_wage, COALESCE(max_wage, (999999999)::numeric)", name: "idx_wage_ranges_unique", unique: true
+    t.index ["deduction_type_id", "min_wage", "max_wage"], name: "idx_wage_ranges_salary_lookup"
+    t.index ["deduction_type_id"], name: "index_deduction_wage_ranges_on_deduction_type_id"
+    t.check_constraint "calculation_method::text = ANY (ARRAY['fixed'::character varying, 'percentage'::character varying]::text[])", name: "calculation_method_check"
+    t.check_constraint "max_wage IS NULL OR max_wage >= min_wage", name: "max_wage_check"
   end
 
   create_table "inventories", force: :cascade do |t|
@@ -100,7 +118,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_11_025719) do
   create_table "mandays", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.date "work_month"
+    t.date "work_month", null: false
+    t.index ["work_month"], name: "index_mandays_on_work_month", unique: true, comment: "Ensure one manday entry per month"
   end
 
   create_table "mandays_workers", force: :cascade do |t|
@@ -109,8 +128,10 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_11_025719) do
     t.bigint "manday_id", null: false
     t.text "remarks"
     t.datetime "updated_at", null: false
-    t.string "worker_name"
+    t.bigint "worker_id", null: false
+    t.index ["manday_id", "worker_id"], name: "index_mandays_workers_on_manday_id_and_worker_id", unique: true, comment: "Ensure one entry per worker per month"
     t.index ["manday_id"], name: "index_mandays_workers_on_manday_id"
+    t.index ["worker_id"], name: "index_mandays_workers_on_worker_id"
   end
 
   create_table "pay_calculation_details", force: :cascade do |t|
@@ -302,10 +323,12 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_11_025719) do
     t.string "worker_type"
   end
 
+  add_foreign_key "deduction_wage_ranges", "deduction_types", on_delete: :cascade
   add_foreign_key "inventories", "categories"
   add_foreign_key "inventories", "units"
   add_foreign_key "inventory_orders", "inventories"
   add_foreign_key "mandays_workers", "mandays"
+  add_foreign_key "mandays_workers", "workers"
   add_foreign_key "pay_calculation_details", "pay_calculations"
   add_foreign_key "pay_calculation_details", "workers"
   add_foreign_key "roles_permissions", "permissions"
