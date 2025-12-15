@@ -31,12 +31,19 @@ class DeductionType < ApplicationRecord
   }
 
   # Filter by nationality
+  # Special handling: foreigner_no_passport workers get NO deductions
+  # 'all' means local + foreigner (with passport), NOT foreigner_no_passport
   scope :for_nationality, lambda { |nationality|
-    where(
-      'applies_to_nationality IS NULL OR applies_to_nationality = ? OR applies_to_nationality = ?',
-      'all',
-      nationality
-    )
+    if nationality == 'foreigner_no_passport'
+      # No deductions for workers without passport
+      none
+    else
+      where(
+        'applies_to_nationality IS NULL OR applies_to_nationality = ? OR applies_to_nationality = ?',
+        'all',
+        nationality
+      )
+    end
   }
 
   # Calculate actual deduction amount based on gross salary
