@@ -272,7 +272,7 @@ class DeductionWageRangeTest < ActiveSupport::TestCase
     assert_equal BigDecimal('41.67'), amount
   end
 
-  test 'calculate_for_should_return_zero_for_unknown_calculation_method' do
+  test 'calculate_for should return zero for unknown calculation method' do
     # Test with valid method but zero amounts (simulates unknown method behavior)
     range = DeductionWageRange.create!(
       deduction_type: @deduction_type,
