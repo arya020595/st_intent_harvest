@@ -6,8 +6,7 @@ This directory contains CSV files for managing statutory deductions (EPF, SOCSO,
 
 - **deduction_types.csv** - Master list of all deduction types
 - **epf_local_wage_ranges.csv** - EPF Local wage range table (100 ranges, RM 0 - RM 5000+)
-- **socso_local_wage_ranges.csv** - SOCSO Malaysian wage range table (45 ranges, RM 0 - RM 4000+)
-- **socso_foreign_wage_ranges.csv** - SOCSO Foreign wage range table (45 ranges, RM 0 - RM 4000+)
+- **socso_wage_ranges.csv** - SOCSO wage range table for all workers (45 ranges, RM 0 - RM 4000+)
 - **eis_local_wage_ranges.csv** - EIS Local wage range table (4 ranges, RM 0 - RM 4000+)
 
 ## Import Commands
