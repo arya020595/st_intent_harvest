@@ -10,7 +10,7 @@
           </tr>
         </thead>
         <tbody>
-          <% pay_calculation_detail.deduction_breakdown.each_with_index do |(deduction_code, data), index| %>
+          <% sorted_deductions(pay_calculation_detail.deduction_breakdown).each_with_index do |(deduction_code, data), index| %>
             <tr>
               <td class="text-center"><%= data['name'] %></td>
               <td class="text-center"><%= data['employee_amount'] == 0 ? '-' : number_to_currency(data['employee_amount'], unit: '', separator: '.', delimiter: ',', precision: 2) %></td>

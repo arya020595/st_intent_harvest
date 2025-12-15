@@ -1,0 +1,104 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+# EPF Local wage ranges (sample ranges for testing)
+epf_local_range_1:
+  deduction_type: epf_local
+  min_wage: 2000.00
+  max_wage: 2500.00
+  employee_amount: 220.00
+  employer_amount: 240.00
+  employee_percentage: 0.0
+  employer_percentage: 0.0
+  calculation_method: "fixed"
+
+epf_local_range_2:
+  deduction_type: epf_local
+  min_wage: 2500.01
+  max_wage: 3000.00
+  employee_amount: 330.00
+  employer_amount: 360.00
+  employee_percentage: 0.0
+  employer_percentage: 0.0
+  calculation_method: "fixed"
+
+epf_local_range_3:
+  deduction_type: epf_local
+  min_wage: 3000.01
+  max_wage: 3500.00
+  employee_amount: 385.00
+  employer_amount: 420.00
+  employee_percentage: 0.0
+  employer_percentage: 0.0
+  calculation_method: "fixed"
+
+# SOCSO wage ranges (applies to all workers)
+socso_range_1:
+  deduction_type: socso
+  min_wage: 2000.00
+  max_wage: 2500.00
+  employee_amount: 11.75
+  employer_amount: 41.15
+  employee_percentage: 0.0
+  employer_percentage: 0.0
+  calculation_method: "fixed"
+
+socso_range_2:
+  deduction_type: socso
+  min_wage: 2500.01
+  max_wage: 3000.00
+  employee_amount: 14.75
+  employer_amount: 51.65
+  employee_percentage: 0.0
+  employer_percentage: 0.0
+  calculation_method: "fixed"
+
+socso_range_3:
+  deduction_type: socso
+  min_wage: 3000.01
+  max_wage: 4000.00
+  employee_amount: 17.75
+  employer_amount: 62.15
+  employee_percentage: 0.0
+  employer_percentage: 0.0
+  calculation_method: "fixed"
+
+socso_range_open:
+  deduction_type: socso
+  min_wage: 6000.01
+  max_wage: null
+  employee_amount: 29.75
+  employer_amount: 104.15
+  employee_percentage: 0.0
+  employer_percentage: 0.0
+  calculation_method: "fixed"
+
+# EIS Local wage ranges
+eis_local_range_1:
+  deduction_type: eis_local
+  min_wage: 2000.00
+  max_wage: 2500.00
+  employee_amount: 4.90
+  employer_amount: 4.90
+  employee_percentage: 0.0
+  employer_percentage: 0.0
+  calculation_method: "fixed"
+
+eis_local_range_2:
+  deduction_type: eis_local
+  min_wage: 2500.01
+  max_wage: 3000.00
+  employee_amount: 5.90
+  employer_amount: 5.90
+  employee_percentage: 0.0
+  employer_percentage: 0.0
+  calculation_method: "fixed"
+
+eis_local_range_3:
+  deduction_type: eis_local
+  min_wage: 3000.01
+  max_wage: 4000.00
+  employee_amount: 7.90
+  employer_amount: 7.90
+  employee_percentage: 0.0
+  employer_percentage: 0.0
+  calculation_method: "fixed"

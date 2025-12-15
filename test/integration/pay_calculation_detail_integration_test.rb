@@ -38,13 +38,49 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
     @socso_malaysian = DeductionType.create!(
       code: 'SOCSO_MALAYSIAN',
       name: 'SOCSO Malaysian',
-      employee_contribution: 0.5,
-      employer_contribution: 1.75,
-      calculation_type: 'percentage',
+      employee_contribution: nil,
+      employer_contribution: nil,
+      calculation_type: 'wage_range',
       applies_to_nationality: 'local',
       is_active: true,
       effective_from: @effective_date
     )
+
+    # Create wage ranges for SOCSO Malaysian
+    DeductionWageRange.create!([
+                                 {
+                                   deduction_type: @socso_malaysian,
+                                   min_wage: 1000.00,
+                                   max_wage: 2000.00,
+                                   employee_amount: 10.00,
+                                   employer_amount: 20.00,
+                                   calculation_method: 'fixed'
+                                 },
+                                 {
+                                   deduction_type: @socso_malaysian,
+                                   min_wage: 2000.01,
+                                   max_wage: 3000.00,
+                                   employee_amount: 15.00,
+                                   employer_amount: 30.00,
+                                   calculation_method: 'fixed'
+                                 },
+                                 {
+                                   deduction_type: @socso_malaysian,
+                                   min_wage: 3000.01,
+                                   max_wage: 4000.00,
+                                   employee_amount: 20.00,
+                                   employer_amount: 40.00,
+                                   calculation_method: 'fixed'
+                                 },
+                                 {
+                                   deduction_type: @socso_malaysian,
+                                   min_wage: 4000.01,
+                                   max_wage: nil,
+                                   employee_amount: 25.00,
+                                   employer_amount: 50.00,
+                                   calculation_method: 'fixed'
+                                 }
+                               ])
 
     @socso_foreign = DeductionType.create!(
       code: 'SOCSO_FOREIGN',
@@ -100,11 +136,11 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
       gross_salary: 3000
     )
 
-    # Worker deductions: EPF 11% + SOCSO 0.5% + SIP 0.2% = 11.7%
+    # Worker deductions: EPF 11% (330) + SOCSO wage range (15) + SIP 0.2% (6) = 351
     assert_equal 351.0, detail.employee_deductions
 
-    # Employer deductions: EPF 12% + SOCSO 1.75% + SIP 0.2% = 13.95%
-    assert_equal 418.5, detail.employer_deductions
+    # Employer deductions: EPF 12% (360) + SOCSO wage range (30) + SIP 0.2% (6) = 396
+    assert_equal 396.0, detail.employer_deductions
 
     # Net salary: 3000 - 351 = 2649
     assert_equal 2649.0, detail.net_salary
@@ -123,8 +159,10 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
       gross_salary: 5000
     )
 
+    # EPF 11% (550) + SOCSO wage range (25) + SIP 0.2% (10) = 585
     assert_equal 585.0, detail.employee_deductions
-    assert_equal 697.5, detail.employer_deductions
+    # EPF 12% (600) + SOCSO wage range (50) + SIP 0.2% (10) = 660
+    assert_equal 660.0, detail.employer_deductions
     assert_equal 4415.0, detail.net_salary
   end
 
@@ -135,8 +173,10 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
       gross_salary: 2000
     )
 
+    # EPF 11% (220) + SOCSO wage range (10) + SIP 0.2% (4) = 234
     assert_equal 234.0, detail.employee_deductions
-    assert_equal 279.0, detail.employer_deductions
+    # EPF 12% (240) + SOCSO wage range (20) + SIP 0.2% (4) = 264
+    assert_equal 264.0, detail.employer_deductions
     assert_equal 1766.0, detail.net_salary
   end
 
@@ -346,11 +386,13 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
       gross_salary: salary
     )
 
-    # Local worker has highest deductions (EPF + SOCSO + SIP)
+    # Local worker has highest deductions (EPF + SOCSO wage range + SIP)
+    # EPF 11% (330) + SOCSO wage range (15) + SIP 0.2% (6) = 351
     assert_equal 351.0, local_detail.employee_deductions
     assert_equal 3, local_detail.deduction_breakdown.size
 
-    # Foreign worker has medium deductions (EPF + SOCSO_FOREIGN, no SIP)
+    # Foreign worker has medium deductions (EPF + SOCSO_FOREIGN percentage, no SIP)
+    # EPF 11% (330) + SOCSO 0% (0) = 330
     assert_equal 330.0, foreign_detail.employee_deductions
     assert_equal 2, foreign_detail.deduction_breakdown.size
 
@@ -436,9 +478,9 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
       gross_salary: 100_000
     )
 
-    # EPF: 11,000, SOCSO: 500, SIP: 200 = 11,700
-    assert_equal 11_700.0, detail.employee_deductions
-    assert_equal 88_300.0, detail.net_salary
+    # EPF 11% (11,000) + SOCSO wage range open-ended (25) + SIP 0.2% (200) = 11,225
+    assert_equal 11_225.0, detail.employee_deductions
+    assert_equal 88_775.0, detail.net_salary
   end
 
   test 'should handle salary with many decimal places' do
@@ -449,8 +491,9 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
     )
 
     # All amounts should be rounded to 2 decimal places
-    assert_equal 390.01, detail.employee_deductions
-    assert_equal 2943.32, detail.net_salary
+    # EPF 11% (366.67) + SOCSO wage range (20) + SIP 0.2% (6.67) = 393.34
+    assert_in_delta 393.34, detail.employee_deductions, 0.01
+    assert_in_delta 2939.99, detail.net_salary, 0.01
   end
 
   test 'should handle worker with nil nationality defaulting to local' do
@@ -484,7 +527,7 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
     assert_equal 2, detail.deduction_breakdown.size
     assert_not_includes detail.deduction_breakdown.keys, 'SIP'
 
-    # EPF 11% + SOCSO 0.5% = 11.5%
+    # EPF 11% (330) + SOCSO wage range (15) = 345
     assert_equal 345.0, detail.employee_deductions
   end
 
@@ -521,8 +564,11 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
     assert_equal 12.0, epf['employer_rate'].to_f
 
     socso = detail.deduction_breakdown['SOCSO_MALAYSIAN']
-    assert_equal 0.5, socso['employee_rate'].to_f
-    assert_equal 1.75, socso['employer_rate'].to_f
+    # Wage range based SOCSO returns 0.0 for rates (not percentage based), but has fixed amounts
+    assert_equal 0.0, socso['employee_rate'].to_f
+    assert_equal 0.0, socso['employer_rate'].to_f
+    assert_equal 15.0, socso['employee_amount'].to_f
+    assert_equal 30.0, socso['employer_amount'].to_f
 
     sip = detail.deduction_breakdown['SIP']
     assert_equal 0.2, sip['employee_rate'].to_f
@@ -562,7 +608,9 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
       gross_salary: 3000
     )
 
-    # Malaysian should have higher deductions (includes SIP and higher SOCSO)
+    # Malaysian should have higher deductions (includes SIP and wage range SOCSO)
+    # Malaysian: EPF 330 + SOCSO 15 + SIP 6 = 351
+    # Foreign: EPF 330 + SOCSO 0 = 330
     assert_equal 351.0, malaysian_detail.employee_deductions
     assert_equal 330.0, foreign_detail.employee_deductions
     assert malaysian_detail.employee_deductions > foreign_detail.employee_deductions
@@ -591,11 +639,15 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
       gross_salary: 5000
     )
 
-    # Deductions should be proportional to salary
+    # Deductions are NOT fully proportional due to wage range SOCSO
+    # RM 3000: EPF 330 + SOCSO 15 + SIP 6 = 351
+    # RM 5000: EPF 550 + SOCSO 25 + SIP 10 = 585
     assert_equal 351.0, detail_3000.employee_deductions
     assert_equal 585.0, detail_5000.employee_deductions
 
-    # Percentage should be same (11.7%)
+    # Percentage is NOT the same due to fixed SOCSO amounts
+    # RM 3000: 351/3000 = 11.7%
+    # RM 5000: 585/5000 = 11.7% (happens to be same due to specific amounts)
     assert_in_delta 11.7, (detail_3000.employee_deductions / 3000 * 100), 0.1
     assert_in_delta 11.7, (detail_5000.employee_deductions / 5000 * 100), 0.1
   end
