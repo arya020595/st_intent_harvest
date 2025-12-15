@@ -279,8 +279,11 @@ namespace :deductions do
           )
           success += 1
           print '.' if success % 10 == 0
-        rescue StandardError
+        rescue StandardError => e
           errors += 1
+          warn "✗ Error creating wage range for code=#{code}, min_wage=#{min_wage}, max_wage=#{max_wage}: #{e.message}"
+          # Uncomment the next line for full backtrace:
+          # warn e.backtrace.join("\n")
         end
       end
 
