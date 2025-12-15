@@ -36,6 +36,9 @@ class CreateDeductionWageRanges < ActiveRecord::Migration[8.1]
     # Database-level constraints for data integrity
     reversible do |dir|
       dir.up do
+        # Safe because this is a new table with no existing data.
+        # The constraints and unique index are being added during table creation,
+        # so there's no risk of conflicts with existing records.
         safety_assured do
           execute <<-SQL
             -- Ensure calculation_method is valid
@@ -56,6 +59,8 @@ class CreateDeductionWageRanges < ActiveRecord::Migration[8.1]
       end
 
       dir.down do
+        # Safe because we're only dropping constraints during rollback.
+        # This operation doesn't affect existing data, only removes the constraints.
         safety_assured do
           execute <<-SQL
             ALTER TABLE deduction_wage_ranges DROP CONSTRAINT IF EXISTS calculation_method_check;
