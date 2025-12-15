@@ -244,6 +244,10 @@ class DeductionTypeTest < ActiveSupport::TestCase
     assert_includes foreign_deductions, @socso_foreign
     assert_not_includes foreign_deductions, @socso_malaysian
     assert_not_includes foreign_deductions, @sip
+
+    # Special case: foreigner_no_passport workers get NO deductions
+    foreigner_no_passport_deductions = DeductionType.for_nationality('foreigner_no_passport')
+    assert_empty foreigner_no_passport_deductions
   end
 
   # ============================================================================
