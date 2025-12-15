@@ -28,6 +28,16 @@ rake deductions:import_all_wage_ranges[true]
 
 ### When Editing deduction_types.csv
 
+#### Understanding calculation_type Field
+
+The `calculation_type` field in the CSV must match one of the values defined in the `DeductionType` model's `CALCULATION_TYPES` constant:
+
+- **`percentage`** - Deduction calculated as a percentage of gross salary (e.g., EPF_FOREIGN at 11% employee, 12% employer)
+- **`fixed`** - Deduction uses a fixed amount regardless of salary
+- **`wage_range`** - Deduction amount is determined by looking up the salary in a wage range table (e.g., EPF_LOCAL, SOCSO, EIS_LOCAL)
+
+**Important:** These values are validated by the model. Using any other value will cause import failures. See `app/models/deduction_type.rb` for the current list of valid calculation types.
+
 **Safe to change:**
 
 - name (display name)
