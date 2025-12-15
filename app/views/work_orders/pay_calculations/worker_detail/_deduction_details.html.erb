@@ -10,18 +10,7 @@
           </tr>
         </thead>
         <tbody>
-          <%
-            # Sort deductions: EPF first, then SOCSO, then EIS, then others alphabetically
-            sorted_deductions = pay_calculation_detail.deduction_breakdown.sort_by do |deduction_code, data|
-              case deduction_code
-              when /^EPF/ then [0, deduction_code]
-              when 'SOCSO' then [1, deduction_code]
-              when /^EIS/ then [2, deduction_code]
-              else [3, deduction_code]
-              end
-            end
-          %>
-          <% sorted_deductions.each_with_index do |(deduction_code, data), index| %>
+          <% sorted_deductions(pay_calculation_detail.deduction_breakdown).each_with_index do |(deduction_code, data), index| %>
             <tr>
               <td class="text-center"><%= data['name'] %></td>
               <td class="text-center"><%= data['employee_amount'] == 0 ? '-' : number_to_currency(data['employee_amount'], unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
