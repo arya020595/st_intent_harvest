@@ -1,0 +1,33 @@
+<div id="mandays">
+  <%= render 'shared/breadcrumb', breadcrumbs: [
+    ['Mandays', work_orders_mandays_path],
+    ["Details for #{@manday.work_month.strftime("%B %Y")}", nil]
+  ] %>
+  <div class="mb-3">
+    <%= link_to work_orders_mandays_path, class: "text-decoration-none text-dark d-inline-flex align-items-center fs-5 fw-bold" do %>
+      <i class="bi bi-arrow-left me-2"></i> Back to Mandays List
+    <% end %>
+  </div>
+  <hr>
+  <p style="font-size: 18px"><strong>Work Month:</strong> <%= @manday.work_month.strftime("%B %Y") %></p>
+  <div class="table-responsive">
+    <table class="table table-bordered table-sm">
+      <thead class="table-success">
+        <tr>
+          <th>Worker Name</th>
+          <th class="text-center">Days</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @manday.mandays_workers.each do |mw| %>
+          <tr>
+            <td><%= mw.worker&.name || '-' %></td>
+            <td class="text-center"><%= mw.days.presence || '-' %></td>
+            <td><%= mw.remarks.presence || '-' %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

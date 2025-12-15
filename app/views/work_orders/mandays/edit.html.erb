@@ -1,0 +1,59 @@
+<div id="mandays">
+  <%= render 'shared/breadcrumb', breadcrumbs: [
+    ['Mandays', work_orders_mandays_path],
+    ['Edit Manday Details', nil]
+  ] %>
+  <div class="mb-3">
+    <%= link_to work_orders_mandays_path, class: "text-decoration-none text-dark d-inline-flex align-items-center fs-5 fw-bold" do %>
+      <i class="bi bi-arrow-left me-2"></i> Back to Mandays List
+    <% end %>
+  </div>
+  <hr>
+  <%= form_with model: @manday, url: work_orders_manday_path(@manday), method: :patch, local: true do |f| %>
+    <p style="font-size: 18px"><strong>Work Month:</strong>  <%= @manday.work_month.strftime("%B %Y") %></p>
+    <hr/>
+    <!-- Workers Table -->
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm">
+        <thead class="table-success">
+          <tr>
+            <th>Worker Name</th>
+            <th class="text-center">Days</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%= f.fields_for :mandays_workers do |mw| %>
+            <tr>
+              <!-- Worker Name (readonly) -->
+              <td>
+                <%= mw.hidden_field :worker_id %>
+                <%= text_field_tag nil, mw.object.worker&.name,
+                    readonly: true,
+                    class: "form-control-plaintext form-control-sm" %>
+              </td>
+              <!-- Days -->
+              <td class="text-center" style="width: 80px;">
+                <%= mw.number_field :days,
+                    min: 0,
+                    class: "form-control form-control-sm text-center",
+                    style: "width: 80px;" %>
+              </td>
+              <!-- Remarks -->
+              <td>
+                <%= mw.text_field :remarks,
+                    class: "form-control form-control-sm" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+    <hr/>
+    <div class="text-end mt-3">
+      <button type="submit" class="btn btn-success btn-sm fw-bold" style="font-size: 16px; padding: 10px;">
+        <i class="bi bi-save-fill text-white me-1"></i> Update Changes
+      </button>
+    </div>
+  <% end %>
+</div>
