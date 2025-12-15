@@ -61,9 +61,14 @@ namespace :deductions do
       end
 
       begin
-        # Parse contributions (must be 0 for fixed type wage ranges, not nil)
-        employee_contribution = row['employee_contribution'].present? ? row['employee_contribution'].to_f : 0
-        employer_contribution = row['employer_contribution'].present? ? row['employer_contribution'].to_f : 0
+        # Parse contributions (must be 0 for fixed type wage ranges, nil for wage_range types)
+        if row['calculation_type'] == 'wage_range'
+          employee_contribution = row['employee_contribution'].present? ? row['employee_contribution'].to_f : nil
+          employer_contribution = row['employer_contribution'].present? ? row['employer_contribution'].to_f : nil
+        else
+          employee_contribution = row['employee_contribution'].present? ? row['employee_contribution'].to_f : 0
+          employer_contribution = row['employer_contribution'].present? ? row['employer_contribution'].to_f : 0
+        end
 
         effective_from = row['effective_from'].present? ? Date.parse(row['effective_from']) : Date.current
         effective_until = row['effective_until'].present? ? Date.parse(row['effective_until']) : nil
