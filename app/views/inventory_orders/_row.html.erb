@@ -24,6 +24,12 @@
   <td class="text-center"><%= order.purchase_date.strftime("%d %b %Y") %></td>
   <td class="text-center"><%= order.supplier %></td>
   <td class="text-center"><%= number_with_delimiter(order.quantity) %> <%= order.inventory.unit&.name %></td>
-  <td class="text-center">RM <%= number_with_precision(order.unit_price, precision: 2) %></td>
+  <td class="text-center">
+    <% if order.unit_price.present? %>
+      RM <%= number_with_precision(order.unit_price, precision: 2) %>
+    <% else %>
+      -
+    <% end %>
+  </td>
   <td class="text-center"><strong>RM <%= number_with_precision(order.total_price, precision: 2) %></strong></td>
 </tr>
