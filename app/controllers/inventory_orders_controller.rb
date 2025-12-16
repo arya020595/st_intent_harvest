@@ -100,7 +100,6 @@ class InventoryOrdersController < ApplicationController
     end
   end
 
-
   # DELETE /inventories/:inventory_id/inventory_orders/:id
   def destroy
     authorize @inventory_order
