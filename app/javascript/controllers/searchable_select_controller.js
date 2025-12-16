@@ -6,10 +6,20 @@ import { Controller } from "@hotwired/stimulus";
  * A pure JavaScript searchable dropdown implementation for Stimulus.
  * No external dependencies required.
  *
+ * Features:
+ * - Live search filtering
+ * - Keyboard navigation
+ * - Optional clear button
+ * - Automatic detection of option additions/removals (via MutationObserver)
+ *
  * Usage:
  *   <select data-controller="searchable-select"
  *           data-searchable-select-placeholder-value="Select..."
  *           data-searchable-select-allow-clear-value="true">
+ *
+ * The controller automatically detects when options are added or removed in the
+ * underlying select element. If you need to manually trigger a refresh, you can
+ * call the `refresh()` method on the controller instance.
  *
  * Styles: app/assets/stylesheets/searchable_select.scss
  */
@@ -18,6 +28,10 @@ export default class extends Controller {
     placeholder: { type: String, default: "Select an option..." },
     allowClear: { type: Boolean, default: true },
   };
+
+  // Debounce delay for batching rapid option changes (in milliseconds)
+  // Can be increased (e.g., 50ms) if dealing with very frequent DOM updates
+  static DEBOUNCE_DELAY = 10;
 
   connect() {
     this.initialize();
@@ -40,6 +54,7 @@ export default class extends Controller {
     this.assembleElements();
     this.bindEvents();
     this.updateClearButton();
+    this.observeSelectChanges();
   }
 
   // === Element Creation ===
@@ -288,9 +303,58 @@ export default class extends Controller {
     this.updateClearButton();
   }
 
+  // === MutationObserver ===
+
+  hasMutatedOptions(mutations) {
+    // Check if any mutations involve option elements
+    return mutations.some((mutation) => {
+      // Check if added or removed nodes include option elements
+      const hasAddedOptions = Array.from(mutation.addedNodes).some(
+        (node) =>
+          node.nodeType === Node.ELEMENT_NODE && node.nodeName === "OPTION"
+      );
+      const hasRemovedOptions = Array.from(mutation.removedNodes).some(
+        (node) =>
+          node.nodeType === Node.ELEMENT_NODE && node.nodeName === "OPTION"
+      );
+      return hasAddedOptions || hasRemovedOptions;
+    });
+  }
+
+  observeSelectChanges() {
+    // Watch for changes to the select element's children (options)
+    this.selectObserver = new MutationObserver((mutations) => {
+      if (this.hasMutatedOptions(mutations)) {
+        // Clear any pending refresh to debounce multiple rapid changes
+        if (this.refreshTimeout) {
+          clearTimeout(this.refreshTimeout);
+        }
+
+        // Schedule refresh with a small delay to batch multiple changes
+        this.refreshTimeout = setTimeout(() => {
+          this.refresh();
+          this.refreshTimeout = null;
+        }, this.constructor.DEBOUNCE_DELAY);
+      }
+    });
+
+    // Observe the select element for direct children changes only
+    this.selectObserver.observe(this.element, {
+      childList: true, // Watch for added/removed options
+    });
+  }
+
   // === Cleanup ===
 
   destroy() {
+    if (this.refreshTimeout) {
+      clearTimeout(this.refreshTimeout);
+      this.refreshTimeout = null;
+    }
+    if (this.selectObserver) {
+      this.selectObserver.disconnect();
+      this.selectObserver = null;
+    }
     if (this.outsideClickHandler) {
       document.removeEventListener("click", this.outsideClickHandler);
     }
