@@ -1,4 +1,4 @@
-<turbo-stream action="replace" target="order_<%= @inventory_order.id %>">
+<turbo-stream action="replace" target="<%= dom_id(@inventory_order) %>">
   <template>
     <%= render partial: "inventory_orders/row",
                formats: [:html],
