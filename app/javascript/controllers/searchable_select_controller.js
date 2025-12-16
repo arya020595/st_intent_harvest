@@ -72,6 +72,16 @@ export default class extends Controller {
         this.clearSelection();
       }
     });
+    this.clearBtn.setAttribute("role", "button");
+    this.clearBtn.setAttribute("aria-label", "Clear selection");
+    this.clearBtn.tabIndex = 0;
+    // Keyboard accessibility: trigger clear on Enter/Space
+    this.clearBtn.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " " || e.keyCode === 13 || e.keyCode === 32) {
+        e.preventDefault();
+        this.clearSelection();
+      }
+    });
   }
 
   createDropdown() {
