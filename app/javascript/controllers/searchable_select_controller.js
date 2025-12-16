@@ -283,23 +283,36 @@ export default class extends Controller {
 
   observeSelectChanges() {
     // Watch for changes to the select element's children (options)
-    this.selectObserver = new MutationObserver(() => {
-      // Clear any pending refresh to debounce multiple rapid changes
-      if (this.refreshTimeout) {
-        clearTimeout(this.refreshTimeout);
+    this.selectObserver = new MutationObserver((mutations) => {
+      // Check if any mutations involve option elements
+      const hasOptionChanges = mutations.some((mutation) => {
+        // Check if added or removed nodes include option elements
+        const hasAddedOptions = Array.from(mutation.addedNodes).some(
+          (node) => node.nodeName === "OPTION"
+        );
+        const hasRemovedOptions = Array.from(mutation.removedNodes).some(
+          (node) => node.nodeName === "OPTION"
+        );
+        return hasAddedOptions || hasRemovedOptions;
+      });
+
+      if (hasOptionChanges) {
+        // Clear any pending refresh to debounce multiple rapid changes
+        if (this.refreshTimeout) {
+          clearTimeout(this.refreshTimeout);
+        }
+
+        // Schedule refresh with a small delay to batch multiple changes
+        this.refreshTimeout = setTimeout(() => {
+          this.refresh();
+          this.refreshTimeout = null;
+        }, 10);
       }
-      
-      // Schedule refresh with a small delay to batch multiple changes
-      this.refreshTimeout = setTimeout(() => {
-        this.refresh();
-        this.refreshTimeout = null;
-      }, 10);
     });
 
-    // Observe the select element for changes to its children
+    // Observe the select element for direct children changes only
     this.selectObserver.observe(this.element, {
       childList: true, // Watch for added/removed options
-      subtree: true, // Watch changes in all descendants
     });
   }
 
