@@ -114,8 +114,7 @@ class InventoryOrdersController < ApplicationController
           # Turbo Stream flash message
           flash.now[:notice] = 'Inventory order deleted successfully.'
 
-          # Reload remaining orders for table update
-          @inventory_orders = @inventory.inventory_orders.order(purchase_date: :desc)
+          # (No need to reload all orders; Turbo Stream will remove the row)
         end
         format.html do
           redirect_to inventory_inventory_orders_path(@inventory), notice: 'Inventory order deleted successfully.'
