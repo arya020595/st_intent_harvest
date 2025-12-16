@@ -123,6 +123,7 @@ class InventoryOrdersController < ApplicationController
 
   def set_inventory
     @inventory = Inventory.find(params[:inventory_id])
+    authorize @inventory
   end
 
   def set_inventory_order
