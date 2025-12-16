@@ -51,7 +51,7 @@ export default class extends Controller {
     // Generate unique IDs for ARIA relationships
     this.uniqueId = `searchable-select-${Math.random()
       .toString(36)
-      .substr(2, 9)}`;
+      .slice(2, 11)}`;
 
     this.createWrapper();
     this.createDisplay();
