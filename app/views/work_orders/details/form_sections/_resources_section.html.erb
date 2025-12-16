@@ -24,7 +24,7 @@
           <% work_order.work_order_items.each_with_index do |item, index| %>
             <tr data-resource-index="<%= index %>">
               <td>
-                <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][<%= index %>][inventory_id]" data-action="change->work-order-form#updateResourceDetails" data-resource-index="<%= index %>">
+                <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][<%= index %>][inventory_id]" data-controller="searchable-select" data-searchable-select-placeholder-value="Select Resource" data-searchable-select-allow-clear-value="true" data-action="change->work-order-form#updateResourceDetails" data-resource-index="<%= index %>">
                   <option value="">Select Resource</option>
                   <% @inventories.each do |inv| %>
                     <option value="<%= inv.id %>" data-category="<%= inv.category&.name %>" data-unit="<%= inv.unit&.name %>" <%= 'selected' if inv.id == item.inventory_id %>><%= inv.name %></option>
