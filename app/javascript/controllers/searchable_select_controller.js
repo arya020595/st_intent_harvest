@@ -118,7 +118,6 @@ export default class extends Controller {
   createDropdown() {
     this.dropdown = document.createElement("div");
     this.dropdown.className = "searchable-select-dropdown";
-    this.dropdown.setAttribute("role", "dialog");
     this.dropdown.setAttribute("aria-label", "Search options");
 
     this.searchInput = document.createElement("input");
