@@ -1,8 +1,18 @@
 import { Controller } from "@hotwired/stimulus";
 
-// Connects to data-controller="searchable-select"
-// Pure JavaScript searchable select implementation (no external dependencies)
-// Styles are in app/assets/stylesheets/searchable_select.scss
+/**
+ * Searchable Select Controller
+ *
+ * A pure JavaScript searchable dropdown implementation for Stimulus.
+ * No external dependencies required.
+ *
+ * Usage:
+ *   <select data-controller="searchable-select"
+ *           data-searchable-select-placeholder-value="Select..."
+ *           data-searchable-select-allow-clear-value="true">
+ *
+ * Styles: app/assets/stylesheets/searchable_select.scss
+ */
 export default class extends Controller {
   static values = {
     placeholder: { type: String, default: "Select an option..." },
@@ -10,115 +20,96 @@ export default class extends Controller {
   };
 
   connect() {
-    this.initializeSearchableSelect();
+    this.initialize();
   }
 
   disconnect() {
     this.destroy();
   }
 
-  initializeSearchableSelect() {
-    // Don't reinitialize if already initialized
-    if (this.wrapper) {
-      return;
-    }
+  initialize() {
+    if (this.wrapper) return;
 
-    // Hide original select
     this.element.style.display = "none";
-
-    // Build options from original select
     this.options = this.buildOptions();
 
-    // Create wrapper
+    this.createWrapper();
+    this.createDisplay();
+    this.createClearButton();
+    this.createDropdown();
+    this.assembleElements();
+    this.bindEvents();
+    this.updateClearButton();
+  }
+
+  // === Element Creation ===
+
+  createWrapper() {
     this.wrapper = document.createElement("div");
     this.wrapper.className = "searchable-select-wrapper";
+  }
 
-    // Create the custom select display
+  createDisplay() {
     this.display = document.createElement("div");
     this.display.className = "form-select searchable-select-display";
     this.display.tabIndex = 0;
     this.updateDisplayText();
+  }
 
-    // Create clear button
-    if (this.allowClearValue) {
-      this.clearBtn = document.createElement("span");
-      this.clearBtn.className = "searchable-select-clear";
-      this.clearBtn.innerHTML = "&times;";
-      this.clearBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this.clearSelection();
-      });
-    }
+  createClearButton() {
+    if (!this.allowClearValue) return;
 
-    // Create dropdown
+    this.clearBtn = document.createElement("span");
+    this.clearBtn.className = "searchable-select-clear";
+    this.clearBtn.innerHTML = "&times;";
+  }
+
+  createDropdown() {
     this.dropdown = document.createElement("div");
     this.dropdown.className = "searchable-select-dropdown";
 
-    // Create search input
     this.searchInput = document.createElement("input");
     this.searchInput.type = "text";
     this.searchInput.className = "form-control searchable-select-search";
     this.searchInput.placeholder = "Type to search...";
 
-    // Create options container
     this.optionsContainer = document.createElement("div");
     this.optionsContainer.className = "searchable-select-options";
 
-    // Assemble dropdown
     this.dropdown.appendChild(this.searchInput);
     this.dropdown.appendChild(this.optionsContainer);
+  }
 
-    // Assemble wrapper
+  assembleElements() {
     this.wrapper.appendChild(this.display);
-    if (this.allowClearValue) {
+    if (this.clearBtn) {
       this.wrapper.appendChild(this.clearBtn);
     }
-
-    // Insert after original select
     this.element.parentNode.insertBefore(
       this.wrapper,
       this.element.nextSibling
     );
-
-    // Append dropdown to body to avoid overflow issues with table containers
     document.body.appendChild(this.dropdown);
-
-    // Render options
     this.renderOptions();
-
-    // Bind events
-    this.bindEvents();
-
-    // Update clear button visibility
-    this.updateClearButton();
   }
 
+  // === Options ===
+
   buildOptions() {
-    const options = [];
-    Array.from(this.element.options).forEach((opt) => {
-      options.push({
-        value: opt.value,
-        text: opt.text,
-        selected: opt.selected,
-        disabled: opt.disabled,
-      });
-    });
-    return options;
+    return Array.from(this.element.options).map((opt) => ({
+      value: opt.value,
+      text: opt.text,
+    }));
   }
 
   renderOptions(filter = "") {
     this.optionsContainer.innerHTML = "";
     const lowerFilter = filter.toLowerCase();
-
     let hasResults = false;
-    this.options.forEach((opt) => {
-      // Skip empty value (placeholder) option if there's a filter
-      if (filter && opt.value === "") return;
 
-      // Filter by search text
-      if (lowerFilter && !opt.text.toLowerCase().includes(lowerFilter)) {
-        return;
-      }
+    this.options.forEach((opt) => {
+      if (filter && opt.value === "") return;
+      if (lowerFilter && !opt.text.toLowerCase().includes(lowerFilter)) return;
 
       hasResults = true;
       const optionEl = document.createElement("div");
@@ -130,14 +121,10 @@ export default class extends Controller {
         optionEl.classList.add("selected");
       }
 
-      optionEl.addEventListener("click", () => {
-        this.selectOption(opt.value, opt.text);
-      });
-
+      optionEl.addEventListener("click", () => this.selectOption(opt.value));
       this.optionsContainer.appendChild(optionEl);
     });
 
-    // Show "no results" message
     if (!hasResults && filter) {
       const noResults = document.createElement("div");
       noResults.className = "searchable-select-no-results";
@@ -146,13 +133,11 @@ export default class extends Controller {
     }
   }
 
-  bindEvents() {
-    // Toggle dropdown on display click
-    this.display.addEventListener("click", () => {
-      this.toggleDropdown();
-    });
+  // === Events ===
 
-    // Keyboard navigation on display
+  bindEvents() {
+    this.display.addEventListener("click", () => this.toggleDropdown());
+
     this.display.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
@@ -162,17 +147,12 @@ export default class extends Controller {
       }
     });
 
-    // Search input filtering
     this.searchInput.addEventListener("input", () => {
       this.renderOptions(this.searchInput.value);
     });
 
-    // Prevent dropdown close when clicking search input
-    this.searchInput.addEventListener("click", (e) => {
-      e.stopPropagation();
-    });
+    this.searchInput.addEventListener("click", (e) => e.stopPropagation());
 
-    // Keyboard navigation in search input
     this.searchInput.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         this.closeDropdown();
@@ -180,13 +160,17 @@ export default class extends Controller {
         const firstOption = this.optionsContainer.querySelector(
           ".searchable-select-option:not(.selected)"
         );
-        if (firstOption) {
-          firstOption.click();
-        }
+        if (firstOption) firstOption.click();
       }
     });
 
-    // Close dropdown when clicking outside
+    if (this.clearBtn) {
+      this.clearBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.clearSelection();
+      });
+    }
+
     this.outsideClickHandler = (e) => {
       if (
         !this.wrapper.contains(e.target) &&
@@ -197,41 +181,21 @@ export default class extends Controller {
     };
     document.addEventListener("click", this.outsideClickHandler);
 
-    // Reposition dropdown on scroll/resize
     this.repositionHandler = () => {
-      if (this.dropdown.style.display === "block") {
-        this.positionDropdown();
-      }
+      if (this.isOpen()) this.positionDropdown();
     };
     window.addEventListener("scroll", this.repositionHandler, true);
     window.addEventListener("resize", this.repositionHandler);
   }
 
-  toggleDropdown() {
-    if (this.dropdown.style.display === "none") {
-      this.openDropdown();
-    } else {
-      this.closeDropdown();
-    }
+  // === Dropdown Control ===
+
+  isOpen() {
+    return getComputedStyle(this.dropdown).display !== "none";
   }
 
-  positionDropdown() {
-    const rect = this.display.getBoundingClientRect();
-    const dropdownHeight = 250; // max-height of dropdown
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const spaceAbove = rect.top;
-
-    // Position dropdown below or above based on available space
-    if (spaceBelow >= dropdownHeight || spaceBelow >= spaceAbove) {
-      this.dropdown.style.top = `${rect.bottom}px`;
-    } else {
-      this.dropdown.style.top = `${
-        rect.top - Math.min(dropdownHeight, spaceAbove)
-      }px`;
-    }
-
-    this.dropdown.style.left = `${rect.left}px`;
-    this.dropdown.style.width = `${rect.width}px`;
+  toggleDropdown() {
+    this.isOpen() ? this.closeDropdown() : this.openDropdown();
   }
 
   openDropdown() {
@@ -246,45 +210,42 @@ export default class extends Controller {
     this.dropdown.style.display = "none";
   }
 
-  selectOption(value, text) {
-    // Update original select
+  positionDropdown() {
+    const rect = this.display.getBoundingClientRect();
+    const dropdownHeight = 250;
+    const spaceBelow = window.innerHeight - rect.bottom;
+
+    this.dropdown.style.top =
+      spaceBelow >= dropdownHeight || spaceBelow >= rect.top
+        ? `${rect.bottom}px`
+        : `${rect.top - Math.min(dropdownHeight, rect.top)}px`;
+
+    this.dropdown.style.left = `${rect.left}px`;
+    this.dropdown.style.width = `${rect.width}px`;
+  }
+
+  // === Selection ===
+
+  selectOption(value) {
     this.element.value = value;
-
-    // Trigger change event
     this.element.dispatchEvent(new Event("change", { bubbles: true }));
-
-    // Update display
     this.updateDisplayText();
-
-    // Update clear button visibility
     this.updateClearButton();
-
-    // Close dropdown
     this.closeDropdown();
-
-    // Re-render to update selected styling
     this.renderOptions();
   }
 
   clearSelection() {
-    // Find the blank/placeholder option
     const blankOption = this.options.find((opt) => opt.value === "");
-    if (blankOption) {
-      this.selectOption(blankOption.value, blankOption.text);
-    } else {
-      this.element.value = "";
-      this.element.dispatchEvent(new Event("change", { bubbles: true }));
-      this.updateDisplayText();
-      this.updateClearButton();
-    }
+    this.selectOption(blankOption ? blankOption.value : "");
   }
 
   updateDisplayText() {
-    const selectedOption = this.options.find(
+    const selected = this.options.find(
       (opt) => opt.value === this.element.value
     );
-    if (selectedOption && selectedOption.value !== "") {
-      this.display.textContent = selectedOption.text;
+    if (selected && selected.value !== "") {
+      this.display.textContent = selected.text;
       this.display.classList.remove("placeholder");
     } else {
       this.display.textContent = this.placeholderValue;
@@ -293,22 +254,21 @@ export default class extends Controller {
   }
 
   updateClearButton() {
-    if (this.clearBtn) {
-      if (this.element.value && this.element.value !== "") {
-        this.clearBtn.style.display = "block";
-      } else {
-        this.clearBtn.style.display = "none";
-      }
-    }
+    if (!this.clearBtn) return;
+    this.clearBtn.style.display =
+      this.element.value && this.element.value !== "" ? "block" : "none";
   }
 
-  // Public method to refresh options (e.g., when options change dynamically)
+  // === Public API ===
+
   refresh() {
     this.options = this.buildOptions();
     this.renderOptions();
     this.updateDisplayText();
     this.updateClearButton();
   }
+
+  // === Cleanup ===
 
   destroy() {
     if (this.outsideClickHandler) {
@@ -318,12 +278,8 @@ export default class extends Controller {
       window.removeEventListener("scroll", this.repositionHandler, true);
       window.removeEventListener("resize", this.repositionHandler);
     }
-    if (this.dropdown && this.dropdown.parentNode) {
-      this.dropdown.remove();
-    }
-    if (this.wrapper) {
-      this.wrapper.remove();
-    }
+    this.dropdown?.remove();
+    this.wrapper?.remove();
     if (this.element) {
       this.element.style.display = "";
     }
