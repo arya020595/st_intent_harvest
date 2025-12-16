@@ -67,7 +67,6 @@ class InventoryOrdersController < ApplicationController
     respond_to do |format|
       if @inventory_order.save
         # Reload all orders so table is consistent
-        @inventory_orders = @inventory.inventory_orders.order(purchase_date: :desc)
 
         # Turbo Stream flash message
         flash.now[:notice] = "Inventory order was successfully created."
