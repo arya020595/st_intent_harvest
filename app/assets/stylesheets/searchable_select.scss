@@ -1,0 +1,100 @@
+// Searchable Select Component Styles
+// Used with searchable-select Stimulus controller
+
+.searchable-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.searchable-select-display {
+  cursor: pointer;
+  padding-right: 2.5rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  background-color: #fff;
+
+  &.placeholder {
+    color: #6c757d;
+  }
+}
+
+.searchable-select-clear {
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.25rem;
+  display: none;
+  z-index: 5;
+
+  &:hover {
+    color: #dc3545;
+  }
+}
+
+.searchable-select-dropdown {
+  display: none;
+  position: fixed;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  max-height: 250px;
+  overflow: hidden;
+}
+
+.searchable-select-search {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid #ced4da;
+  border-radius: 0.375rem 0.375rem 0 0;
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  background-color: #fff;
+
+  &:focus {
+    box-shadow: none;
+    border-color: #ced4da;
+    background-color: #fff;
+  }
+}
+
+.searchable-select-options {
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #fff;
+}
+
+.searchable-select-option {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  background-color: #fff;
+
+  &:hover {
+    background-color: #e9ecef;
+  }
+
+  &.selected {
+    background-color: #0d6efd;
+    color: #fff;
+
+    &:hover {
+      background-color: #0b5ed7;
+    }
+  }
+}
+
+.searchable-select-no-results {
+  padding: 0.75rem;
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  background-color: #fff;
+}

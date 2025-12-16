@@ -19,6 +19,9 @@
             {
               class: "form-select",
               data: {
+                controller: "searchable-select",
+                searchable_select_placeholder_value: "Select Work Order",
+                searchable_select_allow_clear_value: true,
                 action: "change->work-order-form#updateWorkOrderRate",
                 work_order_rates: WorkOrderRate.includes(:unit).all.to_json(include: :unit, methods: :work_order_rate_type).html_safe
               }
@@ -43,7 +46,14 @@
             :id,
             :display_name,
             { include_blank: "Select Vehicle" },
-            { class: "form-select" } %>
+            {
+              class: "form-select",
+              data: {
+                controller: "searchable-select",
+                searchable_select_placeholder_value: "Select Vehicle",
+                searchable_select_allow_clear_value: true
+              }
+            } %>
       </div>
       <div class="col-md-6 mb-3">
         <%= form.label :date_of_usage, "Date of Usage", class: "form-label fw-bold" %>
@@ -58,7 +68,14 @@
             :id,
             :block_number,
             { include_blank: "Select Block No." },
-            { class: "form-select" } %>
+            {
+              class: "form-select",
+              data: {
+                controller: "searchable-select",
+                searchable_select_placeholder_value: "Select Block No.",
+                searchable_select_allow_clear_value: true
+              }
+            } %>
       </div>
       <% if @is_field_conductor %>
         <!-- Display Field Conductor Name -->
@@ -81,7 +98,14 @@
               :id,
               :name,
               { include_blank: "Select Field Conductor" },
-              { class: "form-select" } %>
+              {
+                class: "form-select",
+                data: {
+                  controller: "searchable-select",
+                  searchable_select_placeholder_value: "Select Field Conductor",
+                  searchable_select_allow_clear_value: true
+                }
+              } %>
         </div>
       <% end %>
     </div>

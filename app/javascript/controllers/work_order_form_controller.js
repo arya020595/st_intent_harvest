@@ -370,7 +370,7 @@ export default class extends Controller {
     return `
       <tr data-resource-index="${index}">
         <td>
-          <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][${index}][inventory_id]" data-action="change->work-order-form#updateResourceDetails" data-resource-index="${index}">
+          <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][${index}][inventory_id]" data-controller="searchable-select" data-searchable-select-placeholder-value="Select Resource" data-searchable-select-allow-clear-value="true" data-action="change->work-order-form#updateResourceDetails" data-resource-index="${index}">
             <option value="">Select Resource</option>
             ${inventoryOptions}
           </select>
@@ -449,7 +449,7 @@ export default class extends Controller {
     return `
       <tr data-worker-index="${index}">
         <td>
-          <select class="form-select form-select-sm" name="work_order[work_order_workers_attributes][${index}][worker_id]" data-action="change->work-order-form#updateWorkerDetails" data-worker-index="${index}">
+          <select class="form-select form-select-sm" name="work_order[work_order_workers_attributes][${index}][worker_id]" data-controller="searchable-select" data-searchable-select-placeholder-value="Select Worker" data-searchable-select-allow-clear-value="true" data-action="change->work-order-form#updateWorkerDetails" data-worker-index="${index}">
             ${workerOptions}
           </select>
         </td>
