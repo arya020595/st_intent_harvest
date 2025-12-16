@@ -158,7 +158,7 @@ export default class extends Controller {
         this.closeDropdown();
       } else if (e.key === "Enter") {
         const firstOption = this.optionsContainer.querySelector(
-          ".searchable-select-option:not(.selected)"
+          ".searchable-select-option"
         );
         if (firstOption) firstOption.click();
       }
