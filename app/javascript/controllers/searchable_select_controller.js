@@ -53,6 +53,10 @@ export default class extends Controller {
     this.display = document.createElement("div");
     this.display.className = "form-select searchable-select-display";
     this.display.tabIndex = 0;
+    this.display.setAttribute("role", "combobox");
+    this.display.setAttribute("aria-expanded", "false");
+    this.display.setAttribute("aria-haspopup", "listbox");
+    this.display.setAttribute("aria-label", this.placeholderValue);
     this.updateDisplayText();
   }
 
@@ -72,9 +76,13 @@ export default class extends Controller {
     this.searchInput.type = "text";
     this.searchInput.className = "form-control searchable-select-search";
     this.searchInput.placeholder = "Type to search...";
+    this.searchInput.setAttribute("role", "searchbox");
+    this.searchInput.setAttribute("aria-label", "Search options");
 
     this.optionsContainer = document.createElement("div");
     this.optionsContainer.className = "searchable-select-options";
+    this.optionsContainer.setAttribute("role", "listbox");
+    this.optionsContainer.setAttribute("aria-label", "Available options");
 
     this.dropdown.appendChild(this.searchInput);
     this.dropdown.appendChild(this.optionsContainer);
@@ -106,29 +114,46 @@ export default class extends Controller {
     this.optionsContainer.innerHTML = "";
     const lowerFilter = filter.toLowerCase();
     let hasResults = false;
+    let selectedOptionId = null;
 
-    this.options.forEach((opt) => {
+    this.options.forEach((opt, index) => {
       if (filter && opt.value === "") return;
       if (lowerFilter && !opt.text.toLowerCase().includes(lowerFilter)) return;
 
       hasResults = true;
       const optionEl = document.createElement("div");
+      const optionId = `searchable-option-${index}`;
       optionEl.className = "searchable-select-option";
       optionEl.dataset.value = opt.value;
       optionEl.textContent = opt.text;
+      optionEl.setAttribute("role", "option");
+      optionEl.setAttribute("id", optionId);
 
       if (this.element.value === opt.value && opt.value !== "") {
         optionEl.classList.add("selected");
+        optionEl.setAttribute("aria-selected", "true");
+        selectedOptionId = optionId;
+      } else {
+        optionEl.setAttribute("aria-selected", "false");
       }
 
       optionEl.addEventListener("click", () => this.selectOption(opt.value));
       this.optionsContainer.appendChild(optionEl);
     });
 
+    // Update aria-activedescendant on the display element
+    if (selectedOptionId) {
+      this.display.setAttribute("aria-activedescendant", selectedOptionId);
+    } else {
+      this.display.removeAttribute("aria-activedescendant");
+    }
+
     if (!hasResults && filter) {
       const noResults = document.createElement("div");
       noResults.className = "searchable-select-no-results";
       noResults.textContent = `No results found for "${filter}"`;
+      noResults.setAttribute("role", "status");
+      noResults.setAttribute("aria-live", "polite");
       this.optionsContainer.appendChild(noResults);
     }
   }
@@ -201,6 +226,7 @@ export default class extends Controller {
   openDropdown() {
     this.positionDropdown();
     this.dropdown.style.display = "block";
+    this.display.setAttribute("aria-expanded", "true");
     this.searchInput.value = "";
     this.renderOptions();
     this.searchInput.focus();
@@ -208,6 +234,7 @@ export default class extends Controller {
 
   closeDropdown() {
     this.dropdown.style.display = "none";
+    this.display.setAttribute("aria-expanded", "false");
   }
 
   positionDropdown() {
