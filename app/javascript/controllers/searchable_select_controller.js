@@ -76,7 +76,6 @@ export default class extends Controller {
     this.searchInput.type = "text";
     this.searchInput.className = "form-control searchable-select-search";
     this.searchInput.placeholder = "Type to search...";
-    this.searchInput.setAttribute("role", "searchbox");
     this.searchInput.setAttribute("aria-label", "Search options");
 
     this.optionsContainer = document.createElement("div");
@@ -122,7 +121,9 @@ export default class extends Controller {
 
       hasResults = true;
       const optionEl = document.createElement("div");
-      const optionId = `searchable-option-${index}`;
+      // Use a stable ID based on element ID and option value
+      const elementId = this.element.id || 'searchable-select';
+      const optionId = `${elementId}-option-${opt.value || 'empty'}`;
       optionEl.className = "searchable-select-option";
       optionEl.dataset.value = opt.value;
       optionEl.textContent = opt.text;
