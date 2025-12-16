@@ -52,9 +52,15 @@ $searchable-select-z-index: 9999;
   line-height: 1;
   padding: 0.25rem;
   z-index: 5;
+  border-radius: 0.25rem;
 
   &:hover {
     color: $searchable-select-danger;
+  }
+
+  &:focus {
+    outline: 2px solid $searchable-select-selected;
+    outline-offset: 2px;
   }
 }
 

@@ -48,6 +48,11 @@ export default class extends Controller {
     this.options = this.buildOptions();
     this.highlightedIndex = -1;
 
+    // Generate unique IDs for ARIA relationships
+    this.uniqueId = `searchable-select-${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
+
     this.createWrapper();
     this.createDisplay();
     this.createClearButton();
@@ -69,6 +74,24 @@ export default class extends Controller {
     this.display = document.createElement("div");
     this.display.className = "form-select searchable-select-display";
     this.display.tabIndex = 0;
+
+    // ARIA attributes for combobox pattern
+    this.display.setAttribute("role", "combobox");
+    this.display.setAttribute("aria-haspopup", "listbox");
+    this.display.setAttribute("aria-expanded", "false");
+    this.display.id = `${this.uniqueId}-display`;
+    this.display.setAttribute("aria-controls", `${this.uniqueId}-listbox`);
+
+    // Copy label association from original select if present
+    const label = document.querySelector(`label[for="${this.element.id}"]`);
+    if (label) {
+      this.display.setAttribute(
+        "aria-labelledby",
+        label.id || `${this.uniqueId}-label`
+      );
+      if (!label.id) label.id = `${this.uniqueId}-label`;
+    }
+
     this.updateDisplayText();
   }
 
@@ -95,14 +118,23 @@ export default class extends Controller {
   createDropdown() {
     this.dropdown = document.createElement("div");
     this.dropdown.className = "searchable-select-dropdown";
+    this.dropdown.setAttribute("role", "dialog");
+    this.dropdown.setAttribute("aria-label", "Search options");
 
     this.searchInput = document.createElement("input");
     this.searchInput.type = "text";
     this.searchInput.className = "form-control searchable-select-search";
     this.searchInput.placeholder = "Type to search...";
+    this.searchInput.id = `${this.uniqueId}-search`;
+    this.searchInput.setAttribute("aria-label", "Search options");
+    this.searchInput.setAttribute("aria-controls", `${this.uniqueId}-listbox`);
+    this.searchInput.setAttribute("aria-autocomplete", "list");
 
     this.optionsContainer = document.createElement("div");
     this.optionsContainer.className = "searchable-select-options";
+    this.optionsContainer.id = `${this.uniqueId}-listbox`;
+    this.optionsContainer.setAttribute("role", "listbox");
+    this.optionsContainer.setAttribute("aria-label", "Available options");
 
     this.dropdown.appendChild(this.searchInput);
     this.dropdown.appendChild(this.optionsContainer);
@@ -144,9 +176,15 @@ export default class extends Controller {
       optionEl.className = "searchable-select-option";
       optionEl.dataset.value = opt.value;
       optionEl.textContent = opt.text;
+      optionEl.id = `${this.uniqueId}-option-${this.optionsContainer.children.length}`;
+      optionEl.setAttribute("role", "option");
 
-      if (this.element.value === opt.value && opt.value !== "") {
+      const isSelected = this.element.value === opt.value && opt.value !== "";
+      if (isSelected) {
         optionEl.classList.add("selected");
+        optionEl.setAttribute("aria-selected", "true");
+      } else {
+        optionEl.setAttribute("aria-selected", "false");
       }
 
       optionEl.addEventListener("click", () => this.selectOption(opt.value));
@@ -160,10 +198,13 @@ export default class extends Controller {
       const noResults = document.createElement("div");
       noResults.className = "searchable-select-no-results";
       noResults.textContent = `No results found for "${filter}"`;
+      noResults.setAttribute("role", "status");
+      noResults.setAttribute("aria-live", "polite");
       this.optionsContainer.appendChild(noResults);
     }
 
     this.highlightedIndex = -1;
+    this.updateActiveDescendant();
   }
 
   // === Events ===
@@ -181,14 +222,16 @@ export default class extends Controller {
         e.preventDefault();
         if (!this.isOpen()) {
           this.openDropdown();
+        } else {
+          this.highlightNextOption();
         }
-        this.highlightNextOption();
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         if (!this.isOpen()) {
           this.openDropdown();
+        } else {
+          this.highlightPreviousOption();
         }
-        this.highlightPreviousOption();
       }
     });
 
@@ -202,6 +245,10 @@ export default class extends Controller {
 
     this.searchInput.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
+        this.closeDropdown();
+        this.display.focus();
+      } else if (e.key === "Tab") {
+        // Allow natural tab behavior but close dropdown
         this.closeDropdown();
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
@@ -252,14 +299,18 @@ export default class extends Controller {
   openDropdown() {
     this.positionDropdown();
     this.dropdown.style.display = "block";
+    this.display.setAttribute("aria-expanded", "true");
     this.searchInput.value = "";
     this.renderOptions();
     this.highlightedIndex = -1;
+    this.updateActiveDescendant();
     this.searchInput.focus();
   }
 
   closeDropdown() {
     this.dropdown.style.display = "none";
+    this.display.setAttribute("aria-expanded", "false");
+    this.updateActiveDescendant();
   }
 
   positionDropdown() {
@@ -340,10 +391,15 @@ export default class extends Controller {
     const options = this.getVisibleOptions();
     if (options.length === 0) return;
 
-    this.highlightedIndex = Math.min(
-      this.highlightedIndex + 1,
-      options.length - 1
-    );
+    if (this.highlightedIndex < 0) {
+      // Nothing highlighted yet, start at first option
+      this.highlightedIndex = 0;
+    } else {
+      this.highlightedIndex = Math.min(
+        this.highlightedIndex + 1,
+        options.length - 1
+      );
+    }
     this.updateHighlight(options);
   }
 
@@ -351,12 +407,13 @@ export default class extends Controller {
     const options = this.getVisibleOptions();
     if (options.length === 0) return;
 
-    if (this.highlightedIndex <= 0) {
-      // Stay at first option or don't navigate if nothing is highlighted
-      this.highlightedIndex = 0;
-    } else {
+    if (this.highlightedIndex < 0) {
+      // Nothing highlighted yet, start at last option
+      this.highlightedIndex = options.length - 1;
+    } else if (this.highlightedIndex > 0) {
       this.highlightedIndex = this.highlightedIndex - 1;
     }
+    // If already at 0, stay there
     this.updateHighlight(options);
   }
 
@@ -378,6 +435,20 @@ export default class extends Controller {
         opt.classList.remove("highlighted");
       }
     });
+    this.updateActiveDescendant();
+  }
+
+  updateActiveDescendant() {
+    const options = this.getVisibleOptions();
+    const highlighted = options[this.highlightedIndex];
+
+    if (highlighted && this.isOpen()) {
+      this.searchInput.setAttribute("aria-activedescendant", highlighted.id);
+      this.display.setAttribute("aria-activedescendant", highlighted.id);
+    } else {
+      this.searchInput.removeAttribute("aria-activedescendant");
+      this.display.removeAttribute("aria-activedescendant");
+    }
   }
 
   getVisibleOptions() {
