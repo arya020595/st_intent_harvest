@@ -269,10 +269,7 @@ export default class extends Controller {
     }
 
     this.outsideClickHandler = (e) => {
-      if (
-        !this.wrapper.contains(e.target) &&
-        !this.dropdown.contains(e.target)
-      ) {
+      if (!this.wrapper.contains(e.target)) {
         this.closeDropdown();
       }
     };
