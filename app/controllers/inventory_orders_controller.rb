@@ -7,7 +7,6 @@ class InventoryOrdersController < ApplicationController
   # GET /inventories/:inventory_id/inventory_orders
   def index
     authorize InventoryOrder
-    @inventories = Inventory.all
     # Eager load inventory for display
     base = policy_scope(InventoryOrder).where(inventory_id: @inventory.id).includes(:inventory).order(purchase_date: :desc)
     apply_ransack_search(base)
