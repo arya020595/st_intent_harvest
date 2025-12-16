@@ -89,7 +89,7 @@ export default class extends Controller {
       this.wrapper,
       this.element.nextSibling
     );
-    document.body.appendChild(this.dropdown);
+    this.wrapper.appendChild(this.dropdown);
     this.renderOptions();
   }
 
