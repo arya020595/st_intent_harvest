@@ -30,6 +30,7 @@ export default class extends Controller {
   };
 
   // Debounce delay for batching rapid option changes (in milliseconds)
+  // Can be increased (e.g., 50ms) if dealing with very frequent DOM updates
   static DEBOUNCE_DELAY = 10;
 
   connect() {
@@ -284,22 +285,26 @@ export default class extends Controller {
 
   // === MutationObserver ===
 
+  hasMutatedOptions(mutations) {
+    // Check if any mutations involve option elements
+    return mutations.some((mutation) => {
+      // Check if added or removed nodes include option elements
+      const hasAddedOptions = Array.from(mutation.addedNodes).some(
+        (node) =>
+          node.nodeType === Node.ELEMENT_NODE && node.nodeName === "OPTION"
+      );
+      const hasRemovedOptions = Array.from(mutation.removedNodes).some(
+        (node) =>
+          node.nodeType === Node.ELEMENT_NODE && node.nodeName === "OPTION"
+      );
+      return hasAddedOptions || hasRemovedOptions;
+    });
+  }
+
   observeSelectChanges() {
     // Watch for changes to the select element's children (options)
     this.selectObserver = new MutationObserver((mutations) => {
-      // Check if any mutations involve option elements
-      const hasOptionChanges = mutations.some((mutation) => {
-        // Check if added or removed nodes include option elements
-        const hasAddedOptions = Array.from(mutation.addedNodes).some(
-          (node) => node.nodeName === "OPTION"
-        );
-        const hasRemovedOptions = Array.from(mutation.removedNodes).some(
-          (node) => node.nodeName === "OPTION"
-        );
-        return hasAddedOptions || hasRemovedOptions;
-      });
-
-      if (hasOptionChanges) {
+      if (this.hasMutatedOptions(mutations)) {
         // Clear any pending refresh to debounce multiple rapid changes
         if (this.refreshTimeout) {
           clearTimeout(this.refreshTimeout);
