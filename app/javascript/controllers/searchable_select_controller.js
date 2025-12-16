@@ -316,7 +316,7 @@ export default class extends Controller {
     options.forEach((opt, idx) => {
       if (idx === this.highlightedIndex) {
         opt.classList.add("highlighted");
-        opt.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        opt.scrollIntoView({ block: "nearest", behavior: "auto" });
       } else {
         opt.classList.remove("highlighted");
       }
@@ -334,10 +334,6 @@ export default class extends Controller {
     if (this.highlightedIndex >= 0 && this.highlightedIndex < options.length) {
       const highlightedOption = options[this.highlightedIndex];
       const value = highlightedOption.dataset.value;
-      this.selectOption(value);
-    } else if (options.length > 0) {
-      // Fallback: select the first option if nothing is highlighted
-      const value = options[0].dataset.value;
       this.selectOption(value);
     }
   }
