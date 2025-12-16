@@ -38,6 +38,10 @@ class InventoryOrderPolicy < ApplicationPolicy
     user.has_permission?('inventory.destroy')
   end
 
+  def confirm_delete?
+    destroy?
+  end
+
   private
 
   def permission_resource

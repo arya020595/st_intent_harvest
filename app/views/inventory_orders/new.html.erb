@@ -1,1 +1,6 @@
-<%= render "inventory_orders/form", inventory: @inventory, inventory_order: @inventory_order %>
+<%= turbo_frame_tag "modal" do %>
+  <%= render "form",
+  inventory: @inventory,
+  inventory_order: @inventory_order
+   %>
+<% end %>

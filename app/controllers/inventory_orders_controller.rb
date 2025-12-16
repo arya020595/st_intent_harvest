@@ -7,7 +7,7 @@ class InventoryOrdersController < ApplicationController
   # GET /inventories/:inventory_id/inventory_orders
   def index
     authorize InventoryOrder
-
+    @inventories = Inventory.all
     # Eager load inventory for display
     base = policy_scope(InventoryOrder).where(inventory_id: @inventory.id).includes(:inventory).order(purchase_date: :desc)
     apply_ransack_search(base)
@@ -67,19 +67,16 @@ class InventoryOrdersController < ApplicationController
 
     respond_to do |format|
       if @inventory_order.save
-        format.turbo_stream do
-          flash.now[:notice] = 'Inventory order was successfully created.'
-        end
-        format.html do
-          redirect_to inventory_inventory_orders_path(@inventory), notice: 'Inventory order was successfully created.'
-        end
+        # Reload all orders so table is consistent
+        @inventory_orders = @inventory.inventory_orders.order(purchase_date: :desc)
+
+        # Turbo Stream flash message
+        flash.now[:notice] = "Inventory order was successfully created."
+
+        format.turbo_stream # renders create.turbo_stream.erb
+        format.html { redirect_to inventory_inventory_orders_path(@inventory), notice: "Inventory order was successfully created." }
       else
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace('modal', partial: 'inventory_orders/form',
-                                                             locals: { inventory: @inventory,
-                                                                       inventory_order: @inventory_order }),
-                 status: :unprocessable_entity
-        end
+        format.turbo_stream { render :new, status: :unprocessable_entity }
         format.html { render :new, status: :unprocessable_entity }
       end
     end
@@ -91,23 +88,23 @@ class InventoryOrdersController < ApplicationController
 
     respond_to do |format|
       if @inventory_order.update(inventory_order_params)
-        format.turbo_stream do
-          flash.now[:notice] = 'Inventory order was successfully updated.'
-        end
+        # Reload orders for table update
+        @inventory_orders = @inventory.inventory_orders.order(purchase_date: :desc)
+
+        # Set Turbo Stream flash
+        flash.now[:notice] = "Inventory order was successfully updated."
+
+        format.turbo_stream # renders update.turbo_stream.erb
         format.html do
           redirect_to inventory_inventory_orders_path(@inventory), notice: 'Inventory order was successfully updated.'
         end
       else
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace('modal', partial: 'inventory_orders/form',
-                                                             locals: { inventory: @inventory,
-                                                                       inventory_order: @inventory_order }),
-                 status: :unprocessable_entity
-        end
+        format.turbo_stream { render :edit, status: :unprocessable_entity }
         format.html { render :edit, status: :unprocessable_entity }
       end
     end
   end
+
 
   # DELETE /inventories/:inventory_id/inventory_orders/:id
   def destroy
@@ -116,7 +113,11 @@ class InventoryOrdersController < ApplicationController
     if @inventory_order.destroy
       respond_to do |format|
         format.turbo_stream do
+          # Turbo Stream flash message
           flash.now[:notice] = 'Inventory order deleted successfully.'
+
+          # Reload remaining orders for table update
+          @inventory_orders = @inventory.inventory_orders.order(purchase_date: :desc)
         end
         format.html do
           redirect_to inventory_inventory_orders_path(@inventory), notice: 'Inventory order deleted successfully.'
