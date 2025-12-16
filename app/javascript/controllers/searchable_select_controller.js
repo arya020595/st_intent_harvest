@@ -6,10 +6,20 @@ import { Controller } from "@hotwired/stimulus";
  * A pure JavaScript searchable dropdown implementation for Stimulus.
  * No external dependencies required.
  *
+ * Features:
+ * - Live search filtering
+ * - Keyboard navigation
+ * - Optional clear button
+ * - Automatic detection of option changes (via MutationObserver)
+ *
  * Usage:
  *   <select data-controller="searchable-select"
  *           data-searchable-select-placeholder-value="Select..."
  *           data-searchable-select-allow-clear-value="true">
+ *
+ * The controller automatically detects when options are added, removed, or modified
+ * in the underlying select element. If you need to manually trigger a refresh, you can
+ * call the `refresh()` method on the controller instance.
  *
  * Styles: app/assets/stylesheets/searchable_select.scss
  */
@@ -40,6 +50,7 @@ export default class extends Controller {
     this.assembleElements();
     this.bindEvents();
     this.updateClearButton();
+    this.observeSelectChanges();
   }
 
   // === Element Creation ===
@@ -268,9 +279,42 @@ export default class extends Controller {
     this.updateClearButton();
   }
 
+  // === MutationObserver ===
+
+  observeSelectChanges() {
+    // Watch for changes to the select element's children (options)
+    this.selectObserver = new MutationObserver((mutations) => {
+      // Check if any of the mutations involved option changes
+      const hasOptionChanges = mutations.some((mutation) => {
+        return (
+          mutation.type === "childList" ||
+          (mutation.type === "attributes" &&
+            (mutation.attributeName === "value" ||
+              mutation.attributeName === "selected"))
+        );
+      });
+
+      if (hasOptionChanges) {
+        this.refresh();
+      }
+    });
+
+    // Observe the select element for changes to its children and attributes
+    this.selectObserver.observe(this.element, {
+      childList: true, // Watch for added/removed options
+      subtree: true, // Watch changes in all descendants
+      attributes: true, // Watch for attribute changes
+      attributeFilter: ["value", "selected"], // Only watch value and selected attributes
+    });
+  }
+
   // === Cleanup ===
 
   destroy() {
+    if (this.selectObserver) {
+      this.selectObserver.disconnect();
+      this.selectObserver = null;
+    }
     if (this.outsideClickHandler) {
       document.removeEventListener("click", this.outsideClickHandler);
     }
