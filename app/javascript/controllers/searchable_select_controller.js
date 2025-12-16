@@ -286,31 +286,37 @@ export default class extends Controller {
     this.selectObserver = new MutationObserver((mutations) => {
       // Check if any of the mutations involved option changes
       const hasOptionChanges = mutations.some((mutation) => {
-        return (
-          mutation.type === "childList" ||
-          (mutation.type === "attributes" &&
-            (mutation.attributeName === "value" ||
-              mutation.attributeName === "selected"))
-        );
+        return mutation.type === "childList";
       });
 
       if (hasOptionChanges) {
-        this.refresh();
+        // Clear any pending refresh to debounce multiple rapid changes
+        if (this.refreshTimeout) {
+          clearTimeout(this.refreshTimeout);
+        }
+        
+        // Schedule refresh with a small delay to batch multiple changes
+        this.refreshTimeout = setTimeout(() => {
+          this.refresh();
+          this.refreshTimeout = null;
+        }, 10);
       }
     });
 
-    // Observe the select element for changes to its children and attributes
+    // Observe the select element for changes to its children
     this.selectObserver.observe(this.element, {
       childList: true, // Watch for added/removed options
       subtree: true, // Watch changes in all descendants
-      attributes: true, // Watch for attribute changes
-      attributeFilter: ["value", "selected"], // Only watch value and selected attributes
     });
   }
 
   // === Cleanup ===
 
   destroy() {
+    if (this.refreshTimeout) {
+      clearTimeout(this.refreshTimeout);
+      this.refreshTimeout = null;
+    }
     if (this.selectObserver) {
       this.selectObserver.disconnect();
       this.selectObserver = null;
