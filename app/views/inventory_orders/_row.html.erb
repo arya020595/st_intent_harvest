@@ -13,11 +13,11 @@
         <i class="bi bi-pencil-fill"></i>
       <% end %>
 
-        <%= link_to confirm_delete_inventory_inventory_order_path(order.inventory, order),
-            data: { turbo_frame: "modal" },
-            class: "action-btn danger" do %>
+      <%= link_to confirm_delete_inventory_inventory_order_path(order.inventory, order),
+          data: { turbo_frame: "modal" },
+          class: "action-btn danger" do %>
         <i class="bi bi-trash-fill"></i>
-        <% end %>
+      <% end %>
     </div>
   </td>
 
