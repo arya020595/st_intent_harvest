@@ -1,0 +1,35 @@
+<tr id="<%= dom_id(order) %>">
+  <td class="text-center">
+    <div class="action-buttons">
+      <%= link_to inventory_inventory_order_path(order.inventory, order),
+          data: { turbo_frame: "modal" },
+          class: "action-btn info" do %>
+        <i class="bi bi-info-circle-fill"></i>
+      <% end %>
+
+      <%= link_to edit_inventory_inventory_order_path(order.inventory, order),
+          data: { turbo_frame: "modal" },
+          class: "action-btn warning" do %>
+        <i class="bi bi-pencil-fill"></i>
+      <% end %>
+
+      <%= link_to confirm_delete_inventory_inventory_order_path(order.inventory, order),
+          data: { turbo_frame: "modal" },
+          class: "action-btn danger" do %>
+        <i class="bi bi-trash-fill"></i>
+      <% end %>
+    </div>
+  </td>
+
+  <td class="text-center"><%= order.purchase_date.strftime("%d %b %Y") %></td>
+  <td class="text-center"><%= order.supplier %></td>
+  <td class="text-center"><%= number_with_delimiter(order.quantity) %> <%= order.inventory.unit&.name %></td>
+  <td class="text-center">
+    <% if order.unit_price.present? %>
+      RM <%= number_with_precision(order.unit_price, precision: 2) %>
+    <% else %>
+      -
+    <% end %>
+  </td>
+  <td class="text-center"><strong>RM <%= number_with_precision(order.total_price, precision: 2) %></strong></td>
+</tr>

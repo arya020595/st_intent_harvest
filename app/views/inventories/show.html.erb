@@ -15,6 +15,7 @@
         <dt class="col-sm-3">Total Stock:</dt>
         <dd class="col-sm-9"><%= @inventory.total_stock %><%= @inventory.unit&.name ? " #{@inventory.unit.name}" : " -" %></dd>
       </dl>
+
       <% if @recent_orders.any? %>
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h6 class="fw-bold mb-0">Purchase History</h6>
@@ -22,6 +23,7 @@
             <small class="text-muted">Showing 5 of <%= @inventory.inventory_orders.count %> total orders</small>
           <% end %>
         </div>
+
         <div class="table-responsive">
           <table class="table table-sm table-bordered">
             <thead class="table-light">
@@ -41,17 +43,20 @@
                   <td><%= order.purchase_date.strftime("%d-%m-%Y") %></td>
                   <td><%= order.date_of_arrival&.strftime("%d-%m-%Y") || "-" %></td>
                   <td class="text-end"><%= order.quantity %></td>
-                  <td class="text-end">
-                    <%= number_to_currency(order.unit_price, unit: 'RM ', precision: 2) %>
-                  </td>
-                  <td class="text-end">
-                    <%= number_to_currency(order.total_price, unit: 'RM ', precision: 2) %>
-                  </td>
+                  <td class="text-end"><%= number_to_currency(order.unit_price, unit: 'RM ', precision: 2) %></td>
+                  <td class="text-end"><%= number_to_currency(order.total_price, unit: 'RM ', precision: 2) %></td>
                 </tr>
               <% end %>
             </tbody>
           </table>
         </div>
+
+        <% if @inventory.inventory_orders.count > 5 %>
+          <div class="text-end mt-2">
+            <%= link_to "View More", inventory_inventory_orders_path(@inventory), class: "btn btn-sm btn-success", data: { turbo: false } %>
+          </div>
+        <% end %>
+
       <% else %>
         <p class="text-muted">No purchase orders recorded yet.</p>
       <% end %>

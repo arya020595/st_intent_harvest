@@ -1,0 +1,9 @@
+<turbo-stream action="replace" target="<%= dom_id(@inventory_order) %>">
+  <template>
+    <%= render partial: "inventory_orders/row",
+               formats: [:html],
+               locals: { order: @inventory_order } %>
+  </template>
+</turbo-stream>
+
+<%= turbo_stream.update "flash_messages", partial: "shared/flash" %>

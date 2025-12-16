@@ -1,0 +1,52 @@
+<%= turbo_frame_tag "modal" do %>
+  <div class="modal-content">
+
+    <!-- Modal Header -->
+    <div class="modal-header">
+      <h5 class="modal-title">Purchase Order Details</h5>
+      <button type="button"
+              class="btn-close custom-close-btn"
+              data-bs-dismiss="modal"
+              aria-label="Close"></button>
+    </div>
+
+    <!-- Modal Body -->
+    <div class="modal-body">
+      <dl class="row mb-0">
+
+        <dt class="col-sm-3 text-muted">Inventory:</dt>
+        <dd class="col-sm-9"><%= @inventory.name %></dd>
+
+        <dt class="col-sm-3 text-muted">Supplier:</dt>
+        <dd class="col-sm-9"><%= @inventory_order.supplier %></dd>
+
+        <dt class="col-sm-3 text-muted">Purchase Date:</dt>
+        <dd class="col-sm-9"><%= @inventory_order.purchase_date.strftime("%d %B %Y") %></dd>
+
+        <dt class="col-sm-3 text-muted">Quantity:</dt>
+        <dd class="col-sm-9">
+          <%= number_with_delimiter(@inventory_order.quantity) %>
+          <%= @inventory.unit&.name || "-" %>
+        </dd>
+
+        <dt class="col-sm-3 text-muted">Unit Price:</dt>
+        <dd class="col-sm-9">RM <%= number_with_precision(@inventory_order.unit_price, precision: 2) %></dd>
+
+        <dt class="col-sm-3 text-muted">Total Price:</dt>
+        <dd class="col-sm-9 text-primary">
+          <strong>RM <%= number_with_precision(@inventory_order.total_price, precision: 2) %></strong>
+        </dd>
+
+        <dt class="col-sm-3 text-muted">Created At:</dt>
+        <dd class="col-sm-9"><%= @inventory_order.created_at.strftime("%d %b %Y at %I:%M %p") %></dd>
+
+        <% if @inventory_order.updated_at != @inventory_order.created_at %>
+          <dt class="col-sm-3 text-muted">Last Updated:</dt>
+          <dd class="col-sm-9"><%= @inventory_order.updated_at.strftime("%d %b %Y at %I:%M %p") %></dd>
+        <% end %>
+
+      </dl>
+    </div>
+
+  </div>
+<% end %>

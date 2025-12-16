@@ -1,0 +1,6 @@
+<%= turbo_stream.prepend "inventory_orders_rows",
+      partial: "inventory_orders/row",
+      locals: { order: @inventory_order } %>
+
+<%= turbo_stream.update "modal", "" %>
+<%= turbo_stream.update "flash_messages", partial: "shared/flash" %>
