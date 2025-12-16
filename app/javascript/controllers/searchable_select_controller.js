@@ -10,15 +10,15 @@ import { Controller } from "@hotwired/stimulus";
  * - Live search filtering
  * - Keyboard navigation
  * - Optional clear button
- * - Automatic detection of option changes (via MutationObserver)
+ * - Automatic detection of option additions/removals (via MutationObserver)
  *
  * Usage:
  *   <select data-controller="searchable-select"
  *           data-searchable-select-placeholder-value="Select..."
  *           data-searchable-select-allow-clear-value="true">
  *
- * The controller automatically detects when options are added, removed, or modified
- * in the underlying select element. If you need to manually trigger a refresh, you can
+ * The controller automatically detects when options are added or removed in the
+ * underlying select element. If you need to manually trigger a refresh, you can
  * call the `refresh()` method on the controller instance.
  *
  * Styles: app/assets/stylesheets/searchable_select.scss
@@ -283,24 +283,17 @@ export default class extends Controller {
 
   observeSelectChanges() {
     // Watch for changes to the select element's children (options)
-    this.selectObserver = new MutationObserver((mutations) => {
-      // Check if any of the mutations involved option changes
-      const hasOptionChanges = mutations.some((mutation) => {
-        return mutation.type === "childList";
-      });
-
-      if (hasOptionChanges) {
-        // Clear any pending refresh to debounce multiple rapid changes
-        if (this.refreshTimeout) {
-          clearTimeout(this.refreshTimeout);
-        }
-        
-        // Schedule refresh with a small delay to batch multiple changes
-        this.refreshTimeout = setTimeout(() => {
-          this.refresh();
-          this.refreshTimeout = null;
-        }, 10);
+    this.selectObserver = new MutationObserver(() => {
+      // Clear any pending refresh to debounce multiple rapid changes
+      if (this.refreshTimeout) {
+        clearTimeout(this.refreshTimeout);
       }
+      
+      // Schedule refresh with a small delay to batch multiple changes
+      this.refreshTimeout = setTimeout(() => {
+        this.refresh();
+        this.refreshTimeout = null;
+      }, 10);
     });
 
     // Observe the select element for changes to its children
