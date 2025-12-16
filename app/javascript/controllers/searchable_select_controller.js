@@ -46,6 +46,7 @@ export default class extends Controller {
 
     this.element.style.display = "none";
     this.options = this.buildOptions();
+    this.highlightedIndex = -1;
 
     this.createWrapper();
     this.createDisplay();
@@ -156,6 +157,10 @@ export default class extends Controller {
         optionEl.classList.add("selected");
       }
 
+      optionEl.addEventListener("click", () => this.selectOption(opt.value));
+      optionEl.addEventListener("mouseenter", () => {
+        this.highlightOptionByElement(optionEl);
+      });
       this.optionsContainer.appendChild(optionEl);
     });
 
@@ -165,6 +170,8 @@ export default class extends Controller {
       noResults.textContent = `No results found for "${filter}"`;
       this.optionsContainer.appendChild(noResults);
     }
+
+    this.highlightedIndex = -1;
   }
 
   // === Events ===
@@ -178,6 +185,18 @@ export default class extends Controller {
         this.toggleDropdown();
       } else if (e.key === "Escape") {
         this.closeDropdown();
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (!this.isOpen()) {
+          this.openDropdown();
+        }
+        this.highlightNextOption();
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        if (!this.isOpen()) {
+          this.openDropdown();
+        }
+        this.highlightPreviousOption();
       }
     });
 
@@ -190,22 +209,15 @@ export default class extends Controller {
     this.searchInput.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         this.closeDropdown();
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        this.highlightNextOption();
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        this.highlightPreviousOption();
       } else if (e.key === "Enter") {
-        const firstOption = this.optionsContainer.querySelector(
-          ".searchable-select-option"
-        );
-        if (firstOption) {
-          const value = firstOption.dataset.value;
-          this.selectOption(value);
-        }
-      }
-    });
-
-    this.optionsContainer.addEventListener("click", (e) => {
-      const optionEl = e.target.closest(".searchable-select-option");
-      if (optionEl) {
-        const value = optionEl.dataset.value;
-        this.selectOption(value);
+        e.preventDefault();
+        this.selectHighlightedOption();
       }
     });
 
@@ -248,6 +260,7 @@ export default class extends Controller {
     this.dropdown.style.display = "block";
     this.searchInput.value = "";
     this.renderOptions();
+    this.highlightedIndex = -1;
     this.searchInput.focus();
   }
 
@@ -302,6 +315,67 @@ export default class extends Controller {
     if (!this.clearBtn) return;
     this.clearBtn.style.display =
       this.element.value && this.element.value !== "" ? "block" : "none";
+  }
+
+  // === Keyboard Navigation ===
+
+  highlightNextOption() {
+    const options = this.getVisibleOptions();
+    if (options.length === 0) return;
+
+    this.highlightedIndex = Math.min(
+      this.highlightedIndex + 1,
+      options.length - 1
+    );
+    this.updateHighlight(options);
+  }
+
+  highlightPreviousOption() {
+    const options = this.getVisibleOptions();
+    if (options.length === 0) return;
+
+    if (this.highlightedIndex <= 0) {
+      // Stay at first option or don't navigate if nothing is highlighted
+      this.highlightedIndex = 0;
+    } else {
+      this.highlightedIndex = this.highlightedIndex - 1;
+    }
+    this.updateHighlight(options);
+  }
+
+  highlightOptionByElement(optionEl) {
+    const options = this.getVisibleOptions();
+    const index = options.indexOf(optionEl);
+    if (index !== -1) {
+      this.highlightedIndex = index;
+      this.updateHighlight(options);
+    }
+  }
+
+  updateHighlight(options) {
+    options.forEach((opt, idx) => {
+      if (idx === this.highlightedIndex) {
+        opt.classList.add("highlighted");
+        opt.scrollIntoView({ block: "nearest", behavior: "auto" });
+      } else {
+        opt.classList.remove("highlighted");
+      }
+    });
+  }
+
+  getVisibleOptions() {
+    return Array.from(
+      this.optionsContainer.querySelectorAll(".searchable-select-option")
+    );
+  }
+
+  selectHighlightedOption() {
+    const options = this.getVisibleOptions();
+    if (this.highlightedIndex >= 0 && this.highlightedIndex < options.length) {
+      const highlightedOption = options[this.highlightedIndex];
+      const value = highlightedOption.dataset.value;
+      this.selectOption(value);
+    }
   }
 
   // === Public API ===
