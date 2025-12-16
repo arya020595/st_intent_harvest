@@ -81,20 +81,12 @@ export default class extends Controller {
     this.clearBtn.setAttribute("role", "button");
     this.clearBtn.setAttribute("aria-label", "Clear selection");
     this.clearBtn.tabIndex = 0;
+
     // Keyboard accessibility: trigger clear on Enter/Space
     this.clearBtn.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " " || e.keyCode === 13 || e.keyCode === 32) {
+      if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        this.clearSelection();
-      }
-    });
-    this.clearBtn.setAttribute("role", "button");
-    this.clearBtn.setAttribute("aria-label", "Clear selection");
-    this.clearBtn.tabIndex = 0;
-    // Keyboard accessibility: trigger clear on Enter/Space
-    this.clearBtn.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " " || e.keyCode === 13 || e.keyCode === 32) {
-        e.preventDefault();
+        e.stopPropagation();
         this.clearSelection();
       }
     });
@@ -202,6 +194,8 @@ export default class extends Controller {
 
     this.searchInput.addEventListener("input", () => {
       this.renderOptions(this.searchInput.value);
+      // Reposition dropdown after filtering since height may change
+      this.positionDropdown();
     });
 
     this.searchInput.addEventListener("click", (e) => e.stopPropagation());
@@ -270,13 +264,36 @@ export default class extends Controller {
 
   positionDropdown() {
     const rect = this.display.getBoundingClientRect();
-    const dropdownHeight = 250;
+    const maxDropdownHeight = 250;
     const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
 
-    this.dropdown.style.top =
-      spaceBelow >= dropdownHeight || spaceBelow >= rect.top
-        ? `${rect.bottom}px`
-        : `${rect.top - Math.min(dropdownHeight, rect.top)}px`;
+    // Temporarily show dropdown to measure actual height
+    const wasHidden = this.dropdown.style.display === "none";
+    if (wasHidden) {
+      this.dropdown.style.visibility = "hidden";
+      this.dropdown.style.display = "block";
+    }
+
+    // Get actual dropdown height (capped at max)
+    const actualHeight = Math.min(
+      this.dropdown.offsetHeight,
+      maxDropdownHeight
+    );
+
+    if (wasHidden) {
+      this.dropdown.style.display = "none";
+      this.dropdown.style.visibility = "";
+    }
+
+    // Decide whether to open above or below
+    const openBelow = spaceBelow >= actualHeight || spaceBelow >= spaceAbove;
+
+    if (openBelow) {
+      this.dropdown.style.top = `${rect.bottom}px`;
+    } else {
+      this.dropdown.style.top = `${rect.top - actualHeight}px`;
+    }
 
     this.dropdown.style.left = `${rect.left}px`;
     this.dropdown.style.width = `${rect.width}px`;
