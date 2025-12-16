@@ -86,9 +86,6 @@ class InventoryOrdersController < ApplicationController
 
     respond_to do |format|
       if @inventory_order.update(inventory_order_params)
-        # Reload orders for table update
-        @inventory_orders = @inventory.inventory_orders.order(purchase_date: :desc)
-
         # Set Turbo Stream flash
         flash.now[:notice] = "Inventory order was successfully updated."
 
