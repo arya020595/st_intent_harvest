@@ -1,0 +1,9 @@
+<%= turbo_stream.remove dom_id(@inventory_order) %>
+<%= turbo_stream.update "inventory_orders_rows" do %>
+  <%= render partial: "inventory_orders/row", collection: @inventory.inventory_orders, as: :order %>
+<% end %>
+<%= turbo_stream.update "modal", "" %>
+<%= turbo_stream.update "flash_messages", partial: "shared/flash" %>
+<%= turbo_stream.update "url-manager",
+      partial: "shared/url_updater",
+      locals: { url: inventory_inventory_orders_path(@inventory) } %>
