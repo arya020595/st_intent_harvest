@@ -121,16 +121,16 @@ export default class extends Controller {
 
       hasResults = true;
       const optionEl = document.createElement("div");
-      // Use a stable ID based on element ID and option value
+      // Use a stable ID based on element ID and index to avoid invalid HTML IDs
       const elementId = this.element.id || 'searchable-select';
-      const optionId = `${elementId}-option-${opt.value || 'empty'}`;
+      const optionId = `${elementId}-option-${index}`;
       optionEl.className = "searchable-select-option";
       optionEl.dataset.value = opt.value;
       optionEl.textContent = opt.text;
       optionEl.setAttribute("role", "option");
       optionEl.setAttribute("id", optionId);
 
-      if (this.element.value === opt.value && opt.value !== "") {
+      if (this.element.value === opt.value) {
         optionEl.classList.add("selected");
         optionEl.setAttribute("aria-selected", "true");
         selectedOptionId = optionId;
