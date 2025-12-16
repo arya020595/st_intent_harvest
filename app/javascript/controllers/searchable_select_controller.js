@@ -156,7 +156,6 @@ export default class extends Controller {
         optionEl.classList.add("selected");
       }
 
-      optionEl.addEventListener("click", () => this.selectOption(opt.value));
       this.optionsContainer.appendChild(optionEl);
     });
 
@@ -195,7 +194,18 @@ export default class extends Controller {
         const firstOption = this.optionsContainer.querySelector(
           ".searchable-select-option"
         );
-        if (firstOption) firstOption.click();
+        if (firstOption) {
+          const value = firstOption.dataset.value;
+          this.selectOption(value);
+        }
+      }
+    });
+
+    this.optionsContainer.addEventListener("click", (e) => {
+      const optionEl = e.target.closest(".searchable-select-option");
+      if (optionEl) {
+        const value = optionEl.dataset.value;
+        this.selectOption(value);
       }
     });
 
