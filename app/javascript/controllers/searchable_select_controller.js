@@ -29,6 +29,9 @@ export default class extends Controller {
     allowClear: { type: Boolean, default: true },
   };
 
+  // Debounce delay for batching rapid option changes (in milliseconds)
+  static DEBOUNCE_DELAY = 10;
+
   connect() {
     this.initialize();
   }
@@ -306,7 +309,7 @@ export default class extends Controller {
         this.refreshTimeout = setTimeout(() => {
           this.refresh();
           this.refreshTimeout = null;
-        }, 10);
+        }, this.constructor.DEBOUNCE_DELAY);
       }
     });
 
