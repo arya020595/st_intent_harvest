@@ -19,6 +19,9 @@ export default class extends Controller {
     allowClear: { type: Boolean, default: true },
   };
 
+  // Static counter for generating unique IDs
+  static instanceCounter = 0;
+
   connect() {
     this.initialize();
   }
@@ -29,6 +32,13 @@ export default class extends Controller {
 
   initialize() {
     if (this.wrapper) return;
+
+    // Generate a unique ID for this instance if the select doesn't have one
+    if (!this.element.id) {
+      this.uniqueId = `searchable-select-${++this.constructor.instanceCounter}`;
+    } else {
+      this.uniqueId = this.element.id;
+    }
 
     this.element.style.display = "none";
     this.options = this.buildOptions();
@@ -121,9 +131,8 @@ export default class extends Controller {
 
       hasResults = true;
       const optionEl = document.createElement("div");
-      // Use a stable ID based on element ID and index to avoid invalid HTML IDs
-      const elementId = this.element.id || 'searchable-select';
-      const optionId = `${elementId}-option-${index}`;
+      // Use a stable ID based on the unique instance ID and index
+      const optionId = `${this.uniqueId}-option-${index}`;
       optionEl.className = "searchable-select-option";
       optionEl.dataset.value = opt.value;
       optionEl.textContent = opt.text;
