@@ -299,7 +299,12 @@ export default class extends Controller {
     const options = this.getVisibleOptions();
     if (options.length === 0) return;
 
-    this.highlightedIndex = Math.max(this.highlightedIndex - 1, 0);
+    if (this.highlightedIndex <= 0) {
+      // Stay at first option or don't navigate if nothing is highlighted
+      this.highlightedIndex = 0;
+    } else {
+      this.highlightedIndex = this.highlightedIndex - 1;
+    }
     this.updateHighlight(options);
   }
 
