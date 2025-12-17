@@ -38,4 +38,38 @@ module ApplicationHelper
   def record_policy(record, policy_class)
     policy_class.new(current_user, record)
   end
+
+  # Returns the appropriate Bootstrap badge class for a work order status
+  # @param status [String] the work order status
+  # @param variant [Symbol] the badge variant (:default, :info) - defaults to :default
+  # @return [String] Bootstrap badge class (e.g., 'bg-warning', 'bg-info')
+  #
+  # Example usage:
+  #   work_order_status_badge_class('pending') # => 'bg-warning'
+  #   work_order_status_badge_class('ongoing', :info) # => 'bg-info'
+  def work_order_status_badge_class(status, variant: :default)
+    case status
+    when 'ongoing'
+      variant == :info ? 'bg-info' : 'bg-primary'
+    when 'pending'
+      'bg-warning'
+    when 'amendment_required'
+      'bg-danger'
+    when 'completed'
+      'bg-success'
+    else
+      'bg-secondary'
+    end
+  end
+
+  # Returns the display text for a work order status
+  # @param status [String] the work order status
+  # @return [String] human-readable status text
+  #
+  # Example usage:
+  #   work_order_status_text('pending') # => 'Pending Approval'
+  #   work_order_status_text('ongoing') # => 'Ongoing'
+  def work_order_status_text(status)
+    status == 'pending' ? 'Pending Approval' : status&.humanize
+  end
 end

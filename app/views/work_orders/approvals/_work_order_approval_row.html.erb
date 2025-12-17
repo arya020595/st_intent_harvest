@@ -14,12 +14,8 @@
   <td class="text-center"><%= work_order.start_date&.strftime('%d-%m-%Y') || '-' %></td>
   <td class="text-center"><%= work_order.completion_date&.strftime('%d-%m-%Y') || '-' %></td>
   <td class="text-center">
-    <% badge_class = case work_order.work_order_status
-      when 'pending' then 'bg-warning'
-      when 'amendment_required' then 'bg-danger'
-      when 'completed' then 'bg-success'
-      else 'bg-secondary'
-    end %>
-    <span class="badge <%= badge_class %>"><%= work_order.work_order_status == 'pending' ? 'Pending Approval' : work_order.work_order_status&.humanize %></span>
+    <span class="badge <%= work_order_status_badge_class(work_order.work_order_status) %>">
+      <%= work_order_status_text(work_order.work_order_status) %>
+    </span>
   </td>
 </tr>
