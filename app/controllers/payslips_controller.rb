@@ -6,37 +6,103 @@ class PayslipsController < ApplicationController
 
   # GET /payslips
   def index
-    @payslip_pdf_url = nil
-
-    return unless params[:worker_id].present? && params[:month].present? && params[:year].present?
-
-    @worker = Worker.find_by(id: params[:worker_id])
-    month   = params[:month].to_i
-    year    = params[:year].to_i
-
-    return unless @worker && month.positive? && year.positive?
-
-    @payslip_pdf_url = payslip_path_for_worker(@worker, year, month, format: :pdf)
-  end
-
-  # GET /payslips/:id
-  def show
-    data_result = PayslipServices::FetchPayslipDataService.new(
-      worker: @worker,
-      month_year: @month_year
-    ).call
-
-    render_no_payslip_error and return if data_result.failure?
-
-    data = data_result.value!
-    @payslip            = data[:payslip]
-    @payslip_detail     = data[:payslip_detail]
-    @work_order_workers = data[:work_order_workers]
-    @month_year_date    = data[:month_year_date]
-
     respond_to do |format|
-      format.html
-      format.pdf { render_payslip_pdf }
+      format.html do
+        @payslip_pdf_url = nil
+        return unless params[:worker_ids].present? && params[:month].present? && params[:year].present?
+
+        month = params[:month].to_i
+        year  = params[:year].to_i
+        worker_ids = params[:worker_ids].map(&:to_i)
+
+        @workers = Worker.where(id: worker_ids)
+        return if @workers.empty? || month <= 0 || year <= 0
+
+        combined_html = @workers.map do |worker|
+          data_result = PayslipServices::FetchPayslipDataService.new(
+            worker: worker,
+            month_year: format('%04d-%02d', year, month)
+          ).call
+
+          next unless data_result.success?
+
+          data = data_result.value!
+          render_to_string(
+            template: 'payslips/show',
+            layout: 'pdf',
+            formats: :html,
+            locals: {
+              worker: worker,
+              payslip: data[:payslip],
+              payslip_detail: data[:payslip_detail],
+              work_order_workers: data[:work_order_workers],
+              month_year_date: data[:month_year_date]
+            }
+          )
+        end.compact.join("<div style='page-break-after: always;'></div>")
+
+        if combined_html.present?
+          service_result = PayslipServices::GeneratePayslipPdfService.new(
+            html: combined_html,
+            worker: nil,
+            year: year,
+            month: month
+          ).call
+
+          temp_pdf_path = Rails.root.join("tmp", "combined_payslips_#{Time.now.to_i}.pdf")
+          File.binwrite(temp_pdf_path, service_result.pdf_bytes)
+          @payslip_pdf_url = "/tmp/#{File.basename(temp_pdf_path)}"
+        end
+      end
+
+      format.pdf do
+        return head :bad_request unless params[:worker_ids].present? && params[:month].present? && params[:year].present?
+
+        month = params[:month].to_i
+        year  = params[:year].to_i
+        worker_ids = params[:worker_ids].map(&:to_i)
+        @workers = Worker.where(id: worker_ids)
+        return head :not_found if @workers.empty?
+
+        combined_html = @workers.map do |worker|
+          data_result = PayslipServices::FetchPayslipDataService.new(
+            worker: worker,
+            month_year: format('%04d-%02d', year, month)
+          ).call
+
+          next unless data_result.success?
+
+          data = data_result.value!
+          render_to_string(
+            template: 'payslips/show',
+            layout: 'pdf',
+            formats: :html,
+            locals: {
+              worker: worker,
+              payslip: data[:payslip],
+              payslip_detail: data[:payslip_detail],
+              work_order_workers: data[:work_order_workers],
+              month_year_date: data[:month_year_date]
+            }
+          )
+        end.compact.join("<div style='page-break-after: always;'></div>")
+
+        if combined_html.blank?
+          render html: '<h1>No payslips available</h1>'.html_safe, status: :not_found and return
+        end
+
+        service_result = PayslipServices::GeneratePayslipPdfService.new(
+          html: combined_html,
+          worker: nil,
+          year: year,
+          month: month
+        ).call
+
+        send_data service_result.pdf_bytes,
+                  filename: "combined_payslips_#{month}_#{year}.pdf",
+                  type: 'application/pdf',
+                  disposition: 'inline' and return
+      end
     end
   end
 
