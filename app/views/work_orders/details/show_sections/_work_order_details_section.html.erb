@@ -11,7 +11,7 @@
                       when 'completed' then 'bg-success'
                       else 'bg-secondary'
                     end %>
-      <span class="badge rounded-pill <%= badge_class %>"><%= work_order.work_order_status&.humanize %></span>
+      <span class="badge rounded-pill <%= badge_class %>"><%= work_order.work_order_status == 'pending' ? 'Pending Approval' : work_order.work_order_status&.humanize %></span>
     </div>
   </div>
   <div class="card-body mt-3">

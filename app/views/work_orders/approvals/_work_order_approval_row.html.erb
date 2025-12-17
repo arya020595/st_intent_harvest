@@ -20,6 +20,6 @@
       when 'completed' then 'bg-success'
       else 'bg-secondary'
     end %>
-    <span class="badge <%= badge_class %>"><%= work_order.work_order_status&.humanize %></span>
+    <span class="badge <%= badge_class %>"><%= work_order.work_order_status == 'pending' ? 'Pending Approval' : work_order.work_order_status&.humanize %></span>
   </td>
 </tr>

@@ -68,7 +68,7 @@
                           when 'completed' then 'bg-success'
                           else 'bg-secondary'
                           end %>">
-                      <%= work_order.work_order_status.humanize %>
+                      <%= work_order.work_order_status == 'pending' ? 'Pending Approval' : work_order.work_order_status.humanize %>
                     </span>
                   </td>
                   <td>
