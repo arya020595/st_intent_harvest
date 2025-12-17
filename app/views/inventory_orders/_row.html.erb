@@ -1,4 +1,4 @@
-<tr id="order_<%= order.id %>">
+<tr id="<%= dom_id(order) %>">
   <td class="text-center">
     <div class="action-buttons">
       <%= link_to inventory_inventory_order_path(order.inventory, order),

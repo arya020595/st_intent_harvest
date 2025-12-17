@@ -7,7 +7,6 @@ class InventoryOrdersController < ApplicationController
   # GET /inventories/:inventory_id/inventory_orders
   def index
     authorize InventoryOrder
-    @inventories = Inventory.all
     # Eager load inventory for display
     base = policy_scope(InventoryOrder).where(inventory_id: @inventory.id).includes(:inventory).order(purchase_date: :desc)
     apply_ransack_search(base)
@@ -68,7 +67,6 @@ class InventoryOrdersController < ApplicationController
     respond_to do |format|
       if @inventory_order.save
         # Reload all orders so table is consistent
-        @inventory_orders = @inventory.inventory_orders.order(purchase_date: :desc)
 
         # Turbo Stream flash message
         flash.now[:notice] = "Inventory order was successfully created."
@@ -88,9 +86,6 @@ class InventoryOrdersController < ApplicationController
 
     respond_to do |format|
       if @inventory_order.update(inventory_order_params)
-        # Reload orders for table update
-        @inventory_orders = @inventory.inventory_orders.order(purchase_date: :desc)
-
         # Set Turbo Stream flash
         flash.now[:notice] = "Inventory order was successfully updated."
 
@@ -105,7 +100,6 @@ class InventoryOrdersController < ApplicationController
     end
   end
 
-
   # DELETE /inventories/:inventory_id/inventory_orders/:id
   def destroy
     authorize @inventory_order
@@ -116,8 +110,7 @@ class InventoryOrdersController < ApplicationController
           # Turbo Stream flash message
           flash.now[:notice] = 'Inventory order deleted successfully.'
 
-          # Reload remaining orders for table update
-          @inventory_orders = @inventory.inventory_orders.order(purchase_date: :desc)
+          # (No need to reload all orders; Turbo Stream will remove the row)
         end
         format.html do
           redirect_to inventory_inventory_orders_path(@inventory), notice: 'Inventory order deleted successfully.'
