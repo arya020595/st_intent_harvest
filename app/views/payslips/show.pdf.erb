@@ -3,7 +3,14 @@
   logo_path = Rails.root.join('app', 'assets', 'images', 'intent-harvest-logo.png')
   logo_base64 = Base64.strict_encode64(File.read(logo_path))
   logo_data_url = "data:image/png;base64,#{logo_base64}"
+
+  # Deduction breakdown
+  deduction_breakdown = payslip_detail.deduction_breakdown || {}
+  total_employee_deduction = payslip_detail.employee_deductions || 0
+  overall_net_pay = payslip_detail.gross_salary - total_employee_deduction
 %>
+
+<!-- Header -->
 <table style="width: 100%; margin-bottom: 20px; border: none; border-collapse: collapse;">
   <tr>
     <!-- Left: Address -->
@@ -19,34 +26,38 @@
     </td>
   </tr>
 </table>
+
 <hr/>
+
 <h1>EMPLOYEE PAYSLIP</h1>
 <h3>
-  <% if @month_year_date %>
-    (<%= @month_year_date.strftime('%B %Y') %>)
+  <% if month_year_date %>
+    (<%= month_year_date.strftime('%B %Y') %>)
   <% else %>
     Unknown Month
   <% end %>
 </h3>
+
 <!-- Worker Info -->
 <table style="width: 100%; margin-bottom: 20px;">
   <tr>
-    <td><strong>Worker Name:</strong> <%= @worker&.name || "N/A" %></td>
-    <td><strong>Gender:</strong> <%= @worker&.gender || "N/A" %></td>
+    <td><strong>Worker Name:</strong> <%= worker&.name || "N/A" %></td>
+    <td><strong>Gender:</strong> <%= worker&.gender || "N/A" %></td>
   </tr>
   <tr>
-    <td><strong>Worker ID:</strong> <%= @worker&.id || "N/A" %></td>
-    <td><strong>Nationality:</strong> <%= @worker&.nationality || "N/A" %></td>
+    <td><strong>Worker ID:</strong> <%= worker&.id || "N/A" %></td>
+    <td><strong>Nationality:</strong> <%= worker&.nationality || "N/A" %></td>
   </tr>
   <tr>
-    <td><strong>Hired Date:</strong> <%= @worker&.hired_date ? @worker.hired_date.strftime('%d-%m-%Y') : "N/A" %></td>
-    <td><strong>Worker Type:</strong> <%= @worker&.worker_type || "N/A" %></td>
+    <td><strong>Hired Date:</strong> <%= worker&.hired_date ? worker.hired_date.strftime('%d-%m-%Y') : "N/A" %></td>
+    <td><strong>Worker Type:</strong> <%= worker&.worker_type || "N/A" %></td>
   </tr>
   <tr>
     <td><strong>Position:</strong> <%= @worker&.position || "N/A" %></td>
     <td></td>
   </tr>
 </table>
+
 <!-- Earnings Table -->
 <table border="1" cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
   <thead style="background-color: #f0f0f0;">
@@ -58,18 +69,16 @@
     </tr>
   </thead>
   <tbody>
-    <% if @work_order_workers.any? %>
-      <% @work_order_workers.each do |order_worker| %>
+    <% if work_order_workers.any? %>
+      <% work_order_workers.each do |order_worker| %>
         <% order = order_worker.work_order %>
         <% unit_name = order.work_order_rate_unit_name || "N/A" %>
         <% quantity  = order_worker.work_area_size || 0 %>
         <tr>
           <td><%= order.work_order_rate_name || "N/A" %></td>
           <td><%= "#{quantity} #{unit_name}" %></td>
-          <td class="text-center" style="text-align: center;">
-            <%= number_to_currency(order.work_order_rate_price, unit: '', separator: '.', delimiter: ',', precision: 2) %>
-          </td>
-          <td class="text-center" style="text-align: center;"><%= number_to_currency(order_worker.amount, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+          <td class="text-center"><%= number_to_currency(order.work_order_rate_price, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+          <td class="text-center"><%= number_to_currency(order_worker.amount, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
         </tr>
       <% end %>
     <% else %>
@@ -80,22 +89,15 @@
   </tbody>
   <tfoot>
     <tr class="totals">
-      <td class="text-center" colspan="3">Overall Total (RM):</td>
-      <td class="text-center" style="text-align: center;"><%= number_to_currency(@payslip_detail.gross_salary, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+      <td colspan="3" class="text-center">Overall Total (RM):</td>
+      <td class="text-center"><%= number_to_currency(payslip_detail.gross_salary, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
     </tr>
   </tfoot>
 </table>
-<hr/>
-<%
-  # Use deduction breakdown from PayCalculationDetail
-  # This ensures deductions match what's stored in the pay calculation system
-  deduction_breakdown = @payslip_detail.deduction_breakdown || {}
-  total_employee_deduction = @payslip_detail.employee_deductions || 0
 
-  # Net salary after employee deduction (use gross_salary from pay_calculation_detail)
-  overall_net_pay = @payslip_detail.gross_salary - total_employee_deduction
-%>
-<!-- Deduction Table (RM Display) -->
+<hr/>
+
+<!-- Deductions Table -->
 <table border="1" cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
   <thead style="background-color: #f0f0f0;">
     <tr>
@@ -109,8 +111,8 @@
       <% sorted_deductions(deduction_breakdown).each do |deduction_code, data| %>
         <tr>
           <td><%= data['name'] %></td>
-          <td class="text-center" style="text-align: center;"><%= data['employer_amount'] == 0 ? '-' : number_to_currency(data['employer_amount'], unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
-          <td class="text-center" style="text-align: center;"><%= data['employee_amount'] == 0 ? '-' : number_to_currency(data['employee_amount'], unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+          <td class="text-center"><%= data['employer_amount'] == 0 ? '-' : number_to_currency(data['employer_amount'], unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+          <td class="text-center"><%= data['employee_amount'] == 0 ? '-' : number_to_currency(data['employee_amount'], unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
         </tr>
       <% end %>
     <% else %>
@@ -120,10 +122,12 @@
     <% end %>
   </tbody>
 </table>
+
 <div class="totals" style="margin-top: 15px;">
   <strong>Total Deduction (RM):</strong>
   <%= number_to_currency(total_employee_deduction, unit: '', separator: '.', delimiter: ',', precision: 2) %>
 </div>
+
 <div class="totals" style="margin-top: 15px;">
   <strong>Overall Net Pay (RM):</strong>
   <%= number_to_currency(overall_net_pay, unit: '', separator: '.', delimiter: ',', precision: 2) %>
