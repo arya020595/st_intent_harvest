@@ -60,15 +60,8 @@
                   <td><%= work_order.start_date&.strftime("%d %b %Y").presence || 'N/A' %></td>
                   <td><%= work_order.block&.block_number.presence || 'N/A' %></td>
                   <td>
-                    <span class="badge
-                      <%= case work_order.work_order_status
-                          when 'ongoing' then 'bg-primary'
-                          when 'pending' then 'bg-warning'
-                          when 'amendment_required' then 'bg-danger'
-                          when 'completed' then 'bg-success'
-                          else 'bg-secondary'
-                          end %>">
-                      <%= work_order.work_order_status.humanize %>
+                    <span class="badge <%= work_order_status_badge_class(work_order.work_order_status) %>">
+                      <%= work_order_status_text(work_order.work_order_status) %>
                     </span>
                   </td>
                   <td>
