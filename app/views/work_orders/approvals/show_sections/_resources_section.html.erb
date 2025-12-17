@@ -13,10 +13,7 @@
               <th style="width: 35%">Resources Name</th>
               <th style="width: 30%">Resource Category</th>
               <th style="width: 20%">Unit</th>
-              <%# Only show Amount Used column for normal type %>
-              <% if work_order.work_order_rate_type == "normal" %>
-                <th style="width: 15%">Amount Used</th>
-              <% end %>
+              <th style="width: 15%">Amount Used</th>
             </tr>
           </thead>
           <tbody>
@@ -26,15 +23,12 @@
                   <td><%= item.item_name %></td>
                   <td><%= item.category_name || '-' %></td>
                   <td><%= item.unit_name || '-' %></td>
-                  <%# Only show amount_used for normal type %>
-                  <% if work_order.work_order_rate_type == "normal" %>
-                    <td><%= item.amount_used %></td>
-                  <% end %>
+                  <td><%= item.amount_used %></td>
                 </tr>
               <% end %>
             <% else %>
               <tr>
-                <td colspan="<%= work_order.work_order_rate_type == "normal" ? 4 : 3 %>" class="text-center text-muted">No resources used</td>
+                <td colspan="4" class="text-center text-muted">No resources used</td>
               </tr>
             <% end %>
           </tbody>

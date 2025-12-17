@@ -144,7 +144,7 @@ class InventoriesController < ApplicationController
       :name,
       :unit_id,
       :category_id,
-      inventory_orders_attributes: %i[id quantity total_price supplier purchase_date _destroy]
+      inventory_orders_attributes: %i[id quantity total_price supplier purchase_date date_of_arrival _destroy]
     )
   end
 end

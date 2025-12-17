@@ -25,7 +25,7 @@
           <% work_order.work_order_workers.each_with_index do |wow, index| %>
             <tr data-worker-index="<%= index %>">
               <td>
-                <select class="form-select form-select-sm" name="work_order[work_order_workers_attributes][<%= index %>][worker_id]" data-action="change->work-order-form#updateWorkerDetails" data-worker-index="<%= index %>">
+                <select class="form-select form-select-sm" name="work_order[work_order_workers_attributes][<%= index %>][worker_id]" data-controller="searchable-select" data-searchable-select-placeholder-value="Select Worker" data-searchable-select-allow-clear-value="true" data-action="change->work-order-form#updateWorkerDetails" data-worker-index="<%= index %>">
                   <option value="">Select Worker</option>
                   <% @workers.each do |w| %>
                     <option value="<%= w.id %>" <%= 'selected' if w.id == wow.worker_id %>><%= w.name %></option>

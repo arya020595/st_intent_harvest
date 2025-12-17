@@ -6,7 +6,7 @@
     <!-- Dashboard -->
     <% if can_view_menu?('dashboard.index') %>
       <li class="nav-item">
-        <%= link_to root_path, class: "nav-link #{active_nav_item?(root_path) ? 'active' : 'link-dark'}" do %>
+        <%= link_to dashboard_path, class: "nav-link #{active_nav_item?(dashboard_path) ? 'active' : 'link-dark'}" do %>
           <i class="bi bi-speedometer2 me-2"></i> Dashboard
         <% end %>
       </li>
@@ -37,6 +37,9 @@
             <% end %>
             <% if can_view_menu?('work_orders.approvals.index') %>
               <li><%= link_to "Work Order Approvals", work_orders_approvals_path, class: "nav-link #{active_controller?('work_orders/approvals') ? 'active' : 'link-dark'}" %></li>
+            <% end %>
+            <% if can_view_menu?('work_orders.mandays.index') %>
+              <li><%= link_to "Mandays", work_orders_mandays_path, class: "nav-link #{active_controller?('work_orders/mandays') ? 'active' : 'link-dark'}" %></li>
             <% end %>
             <% if can_view_menu?('work_orders.pay_calculations.index') %>
               <li><%= link_to "Pay Calculation", work_orders_pay_calculations_path, class: "nav-link #{active_controller?('work_orders/pay_calculations') ? 'active' : 'link-dark'}" %></li>

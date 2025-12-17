@@ -22,7 +22,7 @@
       <div class="mb-3">
         <%= form.label :work_order_rate_type, "Work Order Rate Type", class: "form-label" %>
         <%= form.select :work_order_rate_type,
-                        WorkOrderRate.work_order_rate_types.keys.map { |key| [key.titleize, key] },
+                        WorkOrderRate.work_order_rate_types.except('work_days').keys.map { |key| [key.titleize, key] },
                         {include_blank: "Select Rate Type"},
                         class: "form-select",
                         required: true,

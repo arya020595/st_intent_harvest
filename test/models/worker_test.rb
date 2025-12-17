@@ -1,19 +1,19 @@
 # frozen_string_literal: true
-
 # == Schema Information
 #
 # Table name: workers
 #
 #  id              :integer          not null, primary key
-#  name            :string
-#  worker_type     :string
-#  gender          :string
-#  is_active       :boolean
-#  hired_date      :date
-#  nationality     :string
-#  identity_number :string
 #  created_at      :datetime         not null
+#  gender          :string
+#  hired_date      :date
+#  identity_number :string
+#  is_active       :boolean
+#  name            :string
+#  nationality     :string
 #  updated_at      :datetime         not null
+#  worker_type     :string
+#  position        :string
 #
 
 require 'test_helper'

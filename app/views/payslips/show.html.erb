@@ -44,6 +44,10 @@
     <td><strong>Hired Date:</strong> <%= worker_data&.hired_date ? worker_data.hired_date.strftime('%d-%m-%Y') : "N/A" %></td>
     <td><strong>Worker Type:</strong> <%= worker_data&.worker_type || "N/A" %></td>
   </tr>
+  <tr>
+    <td><strong>Position:</strong> <%= @worker&.position || "N/A" %></td>
+    <td></td>
+  </tr>
 </table>
 
 <!-- Earnings Table -->
@@ -108,7 +112,7 @@
   </thead>
   <tbody>
     <% if deduction_breakdown.any? %>
-      <% deduction_breakdown.each do |_, data| %>
+      <% sorted_deductions(deduction_breakdown).each do |deduction_code, data| %>
         <tr>
           <td><%= data['name'] %></td>
           <td class="text-center" style="text-align: center;">

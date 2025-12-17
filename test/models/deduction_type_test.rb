@@ -244,6 +244,10 @@ class DeductionTypeTest < ActiveSupport::TestCase
     assert_includes foreign_deductions, @socso_foreign
     assert_not_includes foreign_deductions, @socso_malaysian
     assert_not_includes foreign_deductions, @sip
+
+    # Special case: foreigner_no_passport workers get NO deductions
+    foreigner_no_passport_deductions = DeductionType.for_nationality('foreigner_no_passport')
+    assert_empty foreigner_no_passport_deductions
   end
 
   # ============================================================================
@@ -328,5 +332,154 @@ class DeductionTypeTest < ActiveSupport::TestCase
     assert_includes DeductionType.active_on(Date.parse('2025-06-30')), bounded_deduction
     assert_not_includes DeductionType.active_on(Date.parse('2025-07-01')), bounded_deduction
     assert_not_includes DeductionType.active_on(Date.parse('2024-12-31')), bounded_deduction
+  end
+
+  # ============================================================================
+  # WAGE RANGE CALCULATION TESTS
+  # ============================================================================
+
+  test 'should support wage_range calculation type' do
+    wage_range_deduction = DeductionType.new(
+      code: 'SOCSO_LOCAL',
+      name: 'SOCSO Local',
+      calculation_type: 'wage_range',
+      is_active: true,
+      effective_from: Date.current
+    )
+    assert wage_range_deduction.valid?
+  end
+
+  test 'wage_range deduction should allow NULL contributions' do
+    wage_range_deduction = DeductionType.create!(
+      code: 'SOCSO_LOCAL',
+      name: 'SOCSO Local',
+      calculation_type: 'wage_range',
+      employee_contribution: nil,
+      employer_contribution: nil,
+      is_active: true,
+      effective_from: Date.current
+    )
+    assert_nil wage_range_deduction.employee_contribution
+    assert_nil wage_range_deduction.employer_contribution
+  end
+
+  test 'wage_range deduction should have association with wage ranges' do
+    wage_range_deduction = DeductionType.create!(
+      code: 'SOCSO_LOCAL',
+      name: 'SOCSO Local',
+      calculation_type: 'wage_range',
+      is_active: true,
+      effective_from: Date.current
+    )
+
+    assert_respond_to wage_range_deduction, :deduction_wage_ranges
+    assert_equal 0, wage_range_deduction.deduction_wage_ranges.count
+  end
+
+  test 'wage_range deduction should calculate using wage ranges' do
+    wage_range_deduction = DeductionType.create!(
+      code: 'SOCSO_LOCAL',
+      name: 'SOCSO Local',
+      calculation_type: 'wage_range',
+      is_active: true,
+      effective_from: Date.current
+    )
+
+    # Create wage range
+    DeductionWageRange.create!(
+      deduction_type: wage_range_deduction,
+      min_wage: 3000.00,
+      max_wage: 4000.00,
+      employee_amount: 17.25,
+      employer_amount: 60.35,
+      calculation_method: 'fixed'
+    )
+
+    employee_amount = wage_range_deduction.calculate_amount(3500, field: :employee_contribution)
+    employer_amount = wage_range_deduction.calculate_amount(3500, field: :employer_contribution)
+
+    assert_equal BigDecimal('17.25'), employee_amount
+    assert_equal BigDecimal('60.35'), employer_amount
+  end
+
+  test 'wage_range deduction should return zero when no range matches' do
+    wage_range_deduction = DeductionType.create!(
+      code: 'SOCSO_LOCAL',
+      name: 'SOCSO Local',
+      calculation_type: 'wage_range',
+      is_active: true,
+      effective_from: Date.current
+    )
+
+    # No wage ranges created
+    amount = wage_range_deduction.calculate_amount(3500, field: :employee_contribution)
+    assert_equal BigDecimal('0'), amount
+  end
+
+  test 'should destroy wage ranges when deduction type is destroyed' do
+    wage_range_deduction = DeductionType.create!(
+      code: 'SOCSO_LOCAL',
+      name: 'SOCSO Local',
+      calculation_type: 'wage_range',
+      is_active: true,
+      effective_from: Date.current
+    )
+
+    3.times do |i|
+      DeductionWageRange.create!(
+        deduction_type: wage_range_deduction,
+        min_wage: i * 1000,
+        max_wage: (i + 1) * 1000,
+        employee_amount: 10.0,
+        employer_amount: 20.0
+      )
+    end
+
+    assert_equal 3, wage_range_deduction.deduction_wage_ranges.count
+
+    assert_difference 'DeductionWageRange.count', -3 do
+      wage_range_deduction.destroy
+    end
+  end
+
+  # ============================================================================
+  # STRATEGY PATTERN INTEGRATION TESTS
+  # ============================================================================
+
+  test 'should delegate calculation to appropriate calculator strategy' do
+    # Percentage calculator
+    percentage_amount = @epf.calculate_amount(3500, field: :employee_contribution)
+    assert_equal BigDecimal('385.00'), percentage_amount
+
+    # Fixed calculator
+    fixed_deduction = DeductionType.create!(
+      code: 'FIXED_TEST',
+      name: 'Fixed Test',
+      calculation_type: 'fixed',
+      employee_contribution: 50.0,
+      employer_contribution: 50.0,
+      is_active: true,
+      effective_from: Date.current
+    )
+    fixed_amount = fixed_deduction.calculate_amount(3500, field: :employee_contribution)
+    assert_equal BigDecimal('50.0'), fixed_amount
+
+    # Wage range calculator
+    wage_range_deduction = DeductionType.create!(
+      code: 'WAGE_RANGE_TEST',
+      name: 'Wage Range Test',
+      calculation_type: 'wage_range',
+      is_active: true,
+      effective_from: Date.current
+    )
+    DeductionWageRange.create!(
+      deduction_type: wage_range_deduction,
+      min_wage: 3000.00,
+      max_wage: 4000.00,
+      employee_amount: 25.50,
+      employer_amount: 50.00
+    )
+    wage_range_amount = wage_range_deduction.calculate_amount(3500, field: :employee_contribution)
+    assert_equal BigDecimal('25.50'), wage_range_amount
   end
 end

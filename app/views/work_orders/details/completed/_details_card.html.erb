@@ -25,6 +25,10 @@
           <label class="form-label fw-bold">Vehicle Model</label>
           <div class="p-2 rounded"><%= work_order.vehicle_model || 'N/A' %></div>
         </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label fw-bold">Date of Usage</label>
+          <div class="p-2 rounded"><%= work_order.date_of_usage&.strftime('%d-%m-%Y') || '-' %></div>
+        </div>
       <% end %>
       <% if work_order.normal_type? %>
         <div class="col-md-6 mb-3">

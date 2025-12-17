@@ -62,11 +62,20 @@
         </div>
       </div>
     </div>
-    <div class="mb-3">
-      <div class="form-check form-switch">
-        <%= form.check_box :is_active, class: "form-check-input", role: "switch" %>
-        <%= form.label :is_active, "Active Status", class: "form-check-label" %>
-        <small class="form-text text-muted d-block">Toggle to set worker as active or inactive</small>
+    <div class="row">
+      <div class="col-md-6 mb-3 d-flex align-items-end">
+        <div class="form-check form-switch">
+          <%= form.check_box :is_active, class: "form-check-input", role: "switch" %>
+          <%= form.label :is_active, "Active Status", class: "form-check-label" %>
+          <small class="form-text text-muted d-block">Toggle to set worker as active or inactive</small>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <%= form.label :position, class: "form-label fw-semibold" %>
+        <%= form.select :position,
+            Worker::POSITIONS.map { |p| [p, p] },
+            { include_blank: "Select Position" },
+            { class: "form-select" } %>
       </div>
     </div>
   </div>
