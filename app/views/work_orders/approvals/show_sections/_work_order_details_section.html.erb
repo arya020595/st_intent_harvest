@@ -4,14 +4,9 @@
     <div class="fw-bold fs-4" style="color: #155e1a">Work Order Details</div>
     <div class="fw-bold fs-5 d-flex align-items-center justify-content-center">
       <span class="me-2">Status</span>
-      <% badge_class = case work_order.work_order_status
-                      when 'ongoing' then 'bg-info'
-                      when 'pending' then 'bg-warning'
-                      when 'amendment_required' then 'bg-danger'
-                      when 'completed' then 'bg-success'
-                      else 'bg-secondary'
-                    end %>
-      <span class="badge rounded-pill <%= badge_class %>"><%= work_order.work_order_status&.humanize %></span>
+      <span class="badge rounded-pill <%= work_order_status_badge_class(work_order.work_order_status, variant: :info) %>">
+        <%= work_order_status_text(work_order.work_order_status) %>
+      </span>
     </div>
   </div>
   <div class="card-body mt-3">
