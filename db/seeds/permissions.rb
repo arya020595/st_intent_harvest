@@ -8,6 +8,7 @@ resources = {
 
   'work_orders.details' => %w[index show create update destroy mark_complete],
   'work_orders.approvals' => %w[index show update approve request_amendment],
+  'work_orders.mandays' => %w[index show create update],
   'work_orders.pay_calculations' => %w[index show create update destroy worker_detail],
 
   'payslip' => %w[show],

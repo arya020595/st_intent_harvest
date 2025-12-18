@@ -3,24 +3,24 @@
 module WorkOrders
   class MandayPolicy < ApplicationPolicy
     # Permission codes:
-    # - work_order_manday.index
-    # - work_order_manday.show
-    # - work_order_manday.new
-    # - work_order_manday.create
-    # - work_order_manday.edit
-    # - work_order_manday.update
-    # - work_order_manday.destroy
+    # - work_orders.mandays.index
+    # - work_orders.mandays.show
+    # - work_orders.mandays.new
+    # - work_orders.mandays.create
+    # - work_orders.mandays.edit
+    # - work_orders.mandays.update
+    # - work_orders.mandays.destroy
     private
 
     def permission_resource
-      'work_order_manday'
+      'work_orders.mandays'
     end
 
     class Scope < ApplicationPolicy::Scope
       private
 
       def permission_resource
-        'work_order_manday'
+        'work_orders.mandays'
       end
     end
   end
