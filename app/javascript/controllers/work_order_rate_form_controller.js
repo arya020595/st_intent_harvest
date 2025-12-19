@@ -12,8 +12,8 @@ export default class extends Controller {
   toggleUnitAndRate() {
     const selectedType = this.rateTypeTarget.value;
 
-    // Hide unit field and rate field when "work_days" is selected
-    if (selectedType === "work_days") {
+    // Hide unit field and rate field when "work_days" or "resources" is selected
+    if (selectedType === "work_days" || selectedType === "resources") {
       // Hide and disable unit field
       this.unitFieldTarget.style.display = "none";
       const unitSelect = this.unitFieldTarget.querySelector("select");
@@ -25,11 +25,11 @@ export default class extends Controller {
       this.rateFieldTarget.style.display = "none";
       const rateInput = this.rateFieldTarget.querySelector("input");
       if (rateInput) {
-        rateInput.value = '';
+        rateInput.value = "";
         rateInput.removeAttribute("required");
       }
     } else {
-      // Show unit field for normal and resources types
+      // Show unit field for normal type
       this.unitFieldTarget.style.display = "block";
       const unitSelect = this.unitFieldTarget.querySelector("select");
       if (unitSelect && selectedType !== "") {
