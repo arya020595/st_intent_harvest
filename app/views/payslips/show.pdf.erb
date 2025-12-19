@@ -9,7 +9,6 @@
   total_employee_deduction = payslip_detail.employee_deductions || 0
   overall_net_pay = payslip_detail.gross_salary - total_employee_deduction
 %>
-
 <!-- Header -->
 <table style="width: 100%; margin-bottom: 20px; border: none; border-collapse: collapse;">
   <tr>
@@ -26,9 +25,7 @@
     </td>
   </tr>
 </table>
-
 <hr/>
-
 <h1>EMPLOYEE PAYSLIP</h1>
 <h3>
   <% if month_year_date %>
@@ -37,7 +34,6 @@
     Unknown Month
   <% end %>
 </h3>
-
 <!-- Worker Info -->
 <table style="width: 100%; margin-bottom: 20px;">
   <tr>
@@ -46,7 +42,7 @@
   </tr>
   <tr>
     <td><strong>Worker ID:</strong> <%= worker&.id || "N/A" %></td>
-    <td><strong>Nationality:</strong> <%= worker&.nationality || "N/A" %></td>
+    <td><strong>Nationality:</strong> <%= worker&.nationality&.humanize || "N/A" %></td>
   </tr>
   <tr>
     <td><strong>Hired Date:</strong> <%= worker&.hired_date ? worker.hired_date.strftime('%d-%m-%Y') : "N/A" %></td>
@@ -57,7 +53,6 @@
     <td></td>
   </tr>
 </table>
-
 <!-- Earnings Table -->
 <table border="1" cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
   <thead style="background-color: #f0f0f0;">
@@ -94,9 +89,7 @@
     </tr>
   </tfoot>
 </table>
-
 <hr/>
-
 <!-- Deductions Table -->
 <table border="1" cellspacing="0" cellpadding="5" style="width: 100%; border-collapse: collapse;">
   <thead style="background-color: #f0f0f0;">
@@ -122,12 +115,10 @@
     <% end %>
   </tbody>
 </table>
-
 <div class="totals" style="margin-top: 15px;">
   <strong>Total Deduction (RM):</strong>
   <%= number_to_currency(total_employee_deduction, unit: '', separator: '.', delimiter: ',', precision: 2) %>
 </div>
-
 <div class="totals" style="margin-top: 15px;">
   <strong>Overall Net Pay (RM):</strong>
   <%= number_to_currency(overall_net_pay, unit: '', separator: '.', delimiter: ',', precision: 2) %>
