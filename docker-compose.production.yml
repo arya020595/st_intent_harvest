@@ -19,6 +19,8 @@ services:
 
   web:
     image: ${DOCKER_IMAGE:-ghcr.io/arya020595/st_intent_harvest:latest}
+    env_file:
+      - .env
     environment:
       # Database connection - PENTING!
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-st_intent_harvest_production}
