@@ -2,6 +2,7 @@
   controller: "work-order-form",
   work_order_form_inventories_value: Inventory.includes(:category, :unit).all.to_json(include: [:category, :unit]),
   work_order_form_workers_value: @workers.to_json,
+  work_order_form_units_value: @units.to_json,
   work_order_form_resource_index_start_value: work_order.work_order_items.size,
   work_order_form_worker_index_start_value: work_order.work_order_workers.size,
   work_order_form_current_rate_type_value: work_order.work_order_rate&.work_order_rate_type || 'normal',

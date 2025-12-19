@@ -27,10 +27,13 @@ export default class extends Controller {
     "rateCell",
     "amountUsedHeader",
     "amountUsedCell",
+    "resourceUnitDisplay",
+    "resourceUnitSelect",
   ];
   static values = {
     inventories: Array,
     workers: Array,
+    units: Array,
     resourceIndexStart: Number,
     workerIndexStart: Number,
     currentRateType: String,
@@ -40,6 +43,7 @@ export default class extends Controller {
     // Initialize values first
     this.inventories = this.inventoriesValue || [];
     this.workers = this.workersValue || [];
+    this.units = this.unitsValue || [];
     this.currentWorkOrderRate = 0;
     this.currentRateType = this.currentRateTypeValue || "normal";
 
@@ -174,115 +178,113 @@ export default class extends Controller {
   }
 
   updateConditionalSections() {
-    console.log("=== UPDATE CONDITIONAL SECTIONS ===");
-    console.log("Current rate type:", this.currentRateType);
-
-    // Get all sections - use built-in Stimulus has* methods
-    const resourcesSection = this.hasResourcesSectionTarget
-      ? this.resourcesSectionTarget
-      : null;
-    const workersSection = this.hasWorkersSectionTarget
-      ? this.workersSectionTarget
-      : null;
-    const normalFieldsSection = this.hasNormalFieldsSectionTarget
-      ? this.normalFieldsSectionTargets
-      : [];
-    const workMonthSection = this.hasWorkMonthSectionTarget
-      ? this.workMonthSectionTarget
-      : null;
-    const rateFieldSection = this.hasRateFieldSectionTarget
-      ? this.rateFieldSectionTarget
-      : null;
-    const unitSection = this.hasUnitSectionTarget
-      ? this.unitSectionTarget
-      : null;
-    const vehicleSection = this.hasVehicleSectionTarget
-      ? this.vehicleSectionTarget
-      : null;
-    const quantityHeaders = this.hasQuantityHeaderTarget
-      ? this.quantityHeaderTargets
-      : [];
-    const amountUsedHeaders = this.hasAmountUsedHeaderTarget
-      ? this.amountUsedHeaderTargets
-      : [];
-
-    console.log("Targets found:", {
-      resources: !!resourcesSection,
-      workers: !!workersSection,
-      normalFields: normalFieldsSection.length,
-      workMonth: !!workMonthSection,
-      rateField: !!rateFieldSection,
-      unit: !!unitSection,
-      vehicle: !!vehicleSection,
-    });
+    const sections = this.getSections();
 
     if (this.currentRateType === "resources") {
-      console.log(">>> RESOURCES MODE - Hiding workers");
-      // Show: Work Order ID, Work Order, Vehicle, Resources (with amount used)
-      if (resourcesSection) {
-        resourcesSection.style.display = "block";
-        console.log("Resources section shown");
-      }
-      if (workersSection) {
-        workersSection.style.display = "none";
-        console.log("Workers section HIDDEN");
-      }
-      normalFieldsSection.forEach((el) => (el.style.display = "none"));
-      if (workMonthSection) workMonthSection.style.display = "none";
-      // Hide rate and unit fields for resources type
-      if (rateFieldSection) rateFieldSection.style.display = "none";
-      if (unitSection) unitSection.style.display = "none";
-      if (vehicleSection) {
-        vehicleSection.style.display = "";
-        console.log("Vehicle section shown");
-      }
-
-      // Show amount used column in resources
-      amountUsedHeaders.forEach(
-        (header) => (header.style.display = "table-cell")
-      );
-      if (this.hasAmountUsedCellTarget) {
-        this.amountUsedCellTargets.forEach(
-          (cell) => (cell.style.display = "table-cell")
-        );
-      }
+      this.showResourcesMode(sections);
     } else if (this.currentRateType === "work_days") {
-      // Show: Work Order ID, Work Order, Work Month, Worker Details (Days instead of Quantity)
-      // HIDE Resources & Machineries and Vehicle
-      if (resourcesSection) resourcesSection.style.display = "none";
-      if (workersSection) workersSection.style.display = "block";
-      normalFieldsSection.forEach((el) => (el.style.display = "none"));
-      if (workMonthSection) workMonthSection.style.display = "flex";
-      if (rateFieldSection) rateFieldSection.style.display = "none";
-      if (unitSection) unitSection.style.display = "none";
-      if (vehicleSection) vehicleSection.style.display = "none";
-
-      // Change header to "Days" and show work_days input
-      quantityHeaders.forEach((header) => (header.textContent = "Days"));
-      this.toggleWorkerQuantityFields(true); // true = show days
+      this.showWorkDaysMode(sections);
     } else {
-      // Normal: Show all fields except vehicle
-      if (resourcesSection) resourcesSection.style.display = "block";
-      if (workersSection) workersSection.style.display = "block";
-      normalFieldsSection.forEach((el) => (el.style.display = "flex"));
-      if (workMonthSection) workMonthSection.style.display = "none";
-      if (rateFieldSection) rateFieldSection.style.display = "block";
-      if (unitSection) unitSection.style.display = "block";
-      if (vehicleSection) vehicleSection.style.display = "none";
+      this.showNormalMode(sections);
+    }
+  }
 
-      // Show amount used in resources
-      amountUsedHeaders.forEach(
-        (header) => (header.style.display = "table-cell")
+  getSections() {
+    return {
+      resources: this.hasResourcesSectionTarget
+        ? this.resourcesSectionTarget
+        : null,
+      workers: this.hasWorkersSectionTarget ? this.workersSectionTarget : null,
+      normalFields: this.hasNormalFieldsSectionTarget
+        ? this.normalFieldsSectionTargets
+        : [],
+      workMonth: this.hasWorkMonthSectionTarget
+        ? this.workMonthSectionTarget
+        : null,
+      rateField: this.hasRateFieldSectionTarget
+        ? this.rateFieldSectionTarget
+        : null,
+      unit: this.hasUnitSectionTarget ? this.unitSectionTarget : null,
+      vehicle: this.hasVehicleSectionTarget ? this.vehicleSectionTarget : null,
+      quantityHeaders: this.hasQuantityHeaderTarget
+        ? this.quantityHeaderTargets
+        : [],
+      amountUsedHeaders: this.hasAmountUsedHeaderTarget
+        ? this.amountUsedHeaderTargets
+        : [],
+    };
+  }
+
+  showResourcesMode(sections) {
+    this.toggleSection(sections.resources, true);
+    this.toggleSection(sections.workers, false);
+    this.toggleSection(sections.vehicle, true);
+    this.toggleSection(sections.workMonth, false);
+    this.toggleSection(sections.rateField, false);
+    this.toggleSection(sections.unit, false);
+    sections.normalFields.forEach((el) => (el.style.display = "none"));
+
+    this.toggleResourceUnitFields(true);
+    this.toggleAmountUsedColumn(sections.amountUsedHeaders, true);
+  }
+
+  showWorkDaysMode(sections) {
+    this.toggleSection(sections.resources, false);
+    this.toggleSection(sections.workers, true);
+    this.toggleSection(sections.vehicle, false);
+    this.toggleSection(sections.workMonth, true, "flex");
+    this.toggleSection(sections.rateField, false);
+    this.toggleSection(sections.unit, false);
+    sections.normalFields.forEach((el) => (el.style.display = "none"));
+
+    sections.quantityHeaders.forEach((header) => (header.textContent = "Days"));
+    this.toggleWorkerQuantityFields(true);
+  }
+
+  showNormalMode(sections) {
+    this.toggleSection(sections.resources, true);
+    this.toggleSection(sections.workers, true);
+    this.toggleSection(sections.vehicle, false);
+    this.toggleSection(sections.workMonth, false);
+    this.toggleSection(sections.rateField, true);
+    this.toggleSection(sections.unit, true);
+    sections.normalFields.forEach((el) => (el.style.display = "flex"));
+
+    this.toggleResourceUnitFields(false);
+    this.toggleAmountUsedColumn(sections.amountUsedHeaders, true);
+    sections.quantityHeaders.forEach(
+      (header) => (header.textContent = "Quantity")
+    );
+    this.toggleWorkerQuantityFields(false);
+  }
+
+  toggleSection(section, show, displayType = "") {
+    if (section) {
+      section.style.display = show ? displayType : "none";
+    }
+  }
+
+  toggleAmountUsedColumn(headers, show) {
+    headers.forEach(
+      (header) => (header.style.display = show ? "table-cell" : "none")
+    );
+    if (this.hasAmountUsedCellTarget) {
+      this.amountUsedCellTargets.forEach(
+        (cell) => (cell.style.display = show ? "table-cell" : "none")
       );
-      if (this.hasAmountUsedCellTarget) {
-        this.amountUsedCellTargets.forEach(
-          (cell) => (cell.style.display = "table-cell")
-        );
-      }
+    }
+  }
 
-      // Show Quantity for workers
-      quantityHeaders.forEach((header) => (header.textContent = "Quantity"));
-      this.toggleWorkerQuantityFields(false); // false = show work_area_size
+  toggleResourceUnitFields(showDropdown) {
+    if (this.hasResourceUnitDisplayTarget) {
+      this.resourceUnitDisplayTargets.forEach((display) => {
+        display.style.display = showDropdown ? "none" : "";
+      });
+    }
+    if (this.hasResourceUnitSelectTarget) {
+      this.resourceUnitSelectTargets.forEach((select) => {
+        select.style.display = showDropdown ? "" : "none";
+      });
     }
   }
 
@@ -297,9 +299,9 @@ export default class extends Controller {
       if (quantityInput && daysInput) {
         if (showDays) {
           quantityInput.style.display = "none";
-          daysInput.style.display = "block";
+          daysInput.style.display = "";
         } else {
-          quantityInput.style.display = "block";
+          quantityInput.style.display = "";
           daysInput.style.display = "none";
         }
       }
@@ -316,12 +318,12 @@ export default class extends Controller {
         if (rateInput && rateDisplay) {
           if (showDays) {
             // Work days: show editable input, hide disabled display
-            rateInput.style.display = "block";
+            rateInput.style.display = "";
             rateDisplay.style.display = "none";
           } else {
             // Normal/Resources: hide editable input, show disabled display
             rateInput.style.display = "none";
-            rateDisplay.style.display = "block";
+            rateDisplay.style.display = "";
           }
         }
       });
@@ -368,6 +370,15 @@ export default class extends Controller {
       )
       .join("");
 
+    const unitOptions = (this.units || [])
+      .map(
+        (unit) =>
+          `<option value="${unit.id}">${this.escapeHTML(unit.name)}</option>`
+      )
+      .join("");
+
+    const isResourceType = this.currentRateType === "resources";
+
     return `
       <tr data-resource-index="${index}">
         <td>
@@ -380,7 +391,19 @@ export default class extends Controller {
           <input type="text" class="form-control form-control-sm" id="resource_category_${index}" value="Auto Filled" disabled style="background-color: #e9ecef;">
         </td>
         <td>
-          <input type="text" class="form-control form-control-sm" id="resource_unit_${index}" value="Auto Filled" disabled style="background-color: #e9ecef;">
+          <input type="text" class="form-control form-control-sm" id="resource_unit_${index}" value="Auto Filled" disabled style="background-color: #e9ecef; ${
+      isResourceType ? "display: none;" : ""
+    }" data-work-order-form-target="resourceUnitDisplay">
+          <select class="form-select form-select-sm" name="work_order[work_order_items_attributes][${index}][unit_id]" id="resource_unit_select_${index}" style="${
+      isResourceType ? "" : "display: none;"
+    }" data-work-order-form-target="resourceUnitSelect" ${
+      isResourceType
+        ? 'data-controller="searchable-select" data-searchable-select-placeholder-value="Select Unit" data-searchable-select-allow-clear-value="true"'
+        : ""
+    }>
+            <option value="">Select Unit</option>
+            ${unitOptions}
+          </select>
         </td>
         <td data-work-order-form-target="amountUsedCell">
           <input type="number" class="form-control form-control-sm" name="work_order[work_order_items_attributes][${index}][amount_used]" placeholder="0" step="0.01" min="0">
@@ -456,16 +479,16 @@ export default class extends Controller {
         </td>
         <td data-work-order-form-target="quantityCell">
           <input type="number" class="form-control form-control-sm" id="worker_quantity_${index}" name="work_order[work_order_workers_attributes][${index}][work_area_size]" placeholder="0" step="0.001" min="0" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="${index}" style="display: ${
-      isWorkDays ? "none" : "block"
+      isWorkDays ? "none" : ""
     };">
           <input type="number" class="form-control form-control-sm" id="worker_days_${index}" name="work_order[work_order_workers_attributes][${index}][work_days]" placeholder="0" step="1" min="0" max="31" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="${index}" style="display: ${
-      isWorkDays ? "block" : "none"
+      isWorkDays ? "" : "none"
     };">
         </td>
         <td data-work-order-form-target="rateCell">
           <!-- Editable input for work_days type -->
           <input type="number" class="form-control form-control-sm" id="worker_rate_input_${index}" placeholder="Rate" step="0.01" min="0" data-action="input->work-order-form#handleRateInput" data-worker-index="${index}" style="display: ${
-      isWorkDays ? "block" : "none"
+      isWorkDays ? "" : "none"
     };">
           <!-- Display field for normal/resources type -->
           <input type="text" class="form-control form-control-sm" id="worker_rate_${index}" value="${
@@ -473,7 +496,7 @@ export default class extends Controller {
         ? `RM ${this.currentWorkOrderRate.toFixed(2)}`
         : "Auto Calculate"
     }" disabled style="background-color: #e9ecef; display: ${
-      isWorkDays ? "none" : "block"
+      isWorkDays ? "none" : ""
     };">
           <!-- Hidden field for actual value -->
           <input type="hidden" id="worker_rate_value_${index}" name="work_order[work_order_workers_attributes][${index}][rate]" value="${(
