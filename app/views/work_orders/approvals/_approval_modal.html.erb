@@ -49,7 +49,8 @@
         <div data-approval-modal-target="submitField" style="display: none;">
           <%= button_tag type: "button",
               class: "btn btn-success w-100 fw-bold fs-5",
-              data: { action: "click->approval-modal#submitApproval" } do %>
+              data: { action: "click->approval-modal#submitApproval" },
+              'data-approval-modal-target': 'submitButton' do %>
             <i class="bi bi-check-circle me-1 text-white"></i> Submit Approval
           <% end %>
         </div>

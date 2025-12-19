@@ -9,6 +9,7 @@ export default class extends Controller {
     "approvalRemarks",
     "errorMessage",
     "errorText",
+    "submitButton",
   ];
   static values = {
     workOrderId: String,
@@ -73,12 +74,22 @@ export default class extends Controller {
     this.showElement(this.remarksFieldTarget);
     this.showElement(this.submitFieldTarget);
     this.hideElement(this.buttonGroupTarget);
+    // Update submit button label for amendment flow
+    if (this.hasSubmitButtonTarget) {
+      this.submitButtonTarget.innerHTML =
+        '<i class="bi bi-check-circle me-1 text-white"></i> Submit';
+    }
   }
 
   showApprovalFlow() {
     this.hideElement(this.remarksFieldTarget);
     this.showElement(this.submitFieldTarget);
     this.hideElement(this.buttonGroupTarget);
+    // Update submit button label for approval flow
+    if (this.hasSubmitButtonTarget) {
+      this.submitButtonTarget.innerHTML =
+        '<i class="bi bi-check-circle me-1 text-white"></i> Submit Approval';
+    }
   }
 
   showElement(element) {
