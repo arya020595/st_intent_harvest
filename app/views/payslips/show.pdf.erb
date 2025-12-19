@@ -42,7 +42,7 @@
   </tr>
   <tr>
     <td><strong>Worker ID:</strong> <%= worker&.id || "N/A" %></td>
-    <td><strong>Nationality:</strong> <%= worker&.nationality&.humanize || "N/A" %></td>
+    <td><strong>Nationality:</strong> <%= worker&.nationality&.humanize&.capitalize || "N/A" %></td>
   </tr>
   <tr>
     <td><strong>Hired Date:</strong> <%= worker&.hired_date ? worker.hired_date.strftime('%d-%m-%Y') : "N/A" %></td>
