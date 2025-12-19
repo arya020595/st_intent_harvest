@@ -1,5 +1,28 @@
 // Isolated styles for login page only
 #login-page {
+  .back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.back-button a {
+  color: white;
+  font-size: 18px;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background-color: #155e1a; /* solid green */
+  backdrop-filter: none; /* remove blur */
+  transition: background-color 0.2s ease-in-out;
+}
+
+.back-button a:hover {
+  background-color: #1f7a27; /* slightly lighter green on hover */
+}
+
+
   .login-wrapper {
     display: flex;
     height: 100vh;
