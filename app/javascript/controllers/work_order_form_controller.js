@@ -229,8 +229,9 @@ export default class extends Controller {
       }
       normalFieldsSection.forEach((el) => (el.style.display = "none"));
       if (workMonthSection) workMonthSection.style.display = "none";
-      if (rateFieldSection) rateFieldSection.style.display = "block";
-      if (unitSection) unitSection.style.display = "block";
+      // Hide rate and unit fields for resources type
+      if (rateFieldSection) rateFieldSection.style.display = "none";
+      if (unitSection) unitSection.style.display = "none";
       if (vehicleSection) {
         vehicleSection.style.display = "";
         console.log("Vehicle section shown");
