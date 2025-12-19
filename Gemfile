@@ -4,8 +4,8 @@ source 'https://rubygems.org'
 
 ruby '3.4.7'
 
-# Apply dotenv for any link related to .env file
-gem 'dotenv', '~> 3.2'
+# Load environment variables from .env files
+gem 'dotenv-rails'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem 'rails', '~> 8.1'
