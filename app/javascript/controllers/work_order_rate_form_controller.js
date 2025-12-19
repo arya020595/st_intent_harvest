@@ -12,7 +12,7 @@ export default class extends Controller {
   toggleUnitAndRate() {
     const selectedType = this.rateTypeTarget.value;
 
-    // Hide unit field and rate field when "work_days" or "resource" is selected
+    // Hide unit field and rate field when "work_days" or "resources" is selected
     if (selectedType === "work_days" || selectedType === "resources") {
       // Hide and disable unit field
       this.unitFieldTarget.style.display = "none";
