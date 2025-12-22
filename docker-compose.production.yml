@@ -1,6 +1,8 @@
 services:
   db:
     image: postgres:16.1-alpine
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -19,6 +21,8 @@ services:
 
   web:
     image: ${DOCKER_IMAGE:-ghcr.io/arya020595/st_intent_harvest:latest}
+    env_file:
+      - .env
     environment:
       # Database connection - PENTING!
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-st_intent_harvest_production}
@@ -36,6 +40,7 @@ services:
       RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
       WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
       TZ: Asia/Jakarta
+      PORT: 3000 # Force Puma to bind to 3000 inside container
     ports:
       - "${PORT:-3005}:3000"
     volumes:
