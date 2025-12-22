@@ -171,25 +171,9 @@ class CascadingSoftDeleteTest < ActiveSupport::TestCase
   # ============================================
   # Documentation Tests
   # ============================================
-
-  test 'concern includes documentation about performance improvements' do
-    assert_match(/Performance/, @concern_file_content,
-                 'Documentation should mention performance improvements')
-    assert_match(/batch/, @concern_file_content,
-                 'Documentation should mention batch operations')
-  end
-
-  test 'concern documents supported association types' do
-    assert_match(/Supported Associations/, @concern_file_content,
-                 'Documentation should list supported association types')
-    assert_match(/polymorphic/, @concern_file_content,
-                 'Documentation should mention polymorphic associations')
-  end
-
-  test 'concern documents limitations' do
-    assert_match(/Limitations/, @concern_file_content,
-                 'Documentation should include limitations section')
-    assert_match(/has_many :through/, @concern_file_content,
-                 'Documentation should mention has_many :through limitation')
-  end
+  #
+  # NOTE: Previous tests in this section asserted specific documentation
+  # strings by reading the concern source file. Those tests were removed
+  # because testing documentation via implementation string matching is
+  # fragile and not a best practice.
 end
