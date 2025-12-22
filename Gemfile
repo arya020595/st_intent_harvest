@@ -65,7 +65,7 @@ gem 'pundit'
 gem 'ransack'
 
 # Background jobs (Sidekiq 8.x)
-gem 'sidekiq', '~> 8.0', '>= 8.0.8'
+gem 'sidekiq', '~> 8.1'
 
 # dry-rb: functional programming helpers
 gem 'dry-monads', '~> 1.9'
