@@ -27,12 +27,12 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  # Disabled for now - enable when using Nginx with SSL
-  config.assume_ssl = false
+  # Set RAILS_ASSUME_SSL=false to disable (e.g., for local testing without SSL)
+  config.assume_ssl = ENV.fetch('RAILS_ASSUME_SSL', 'true') == 'true'
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # Disabled for now - enable when using Nginx with SSL
-  config.force_ssl = false
+  # Set RAILS_FORCE_SSL=false to disable (e.g., for local testing without SSL)
+  config.force_ssl = ENV.fetch('RAILS_FORCE_SSL', 'true') == 'true'
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
