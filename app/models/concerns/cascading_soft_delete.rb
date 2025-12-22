@@ -6,6 +6,19 @@
 # Open/Closed: Configurable cascade associations without modifying core logic
 # Dependency Inversion: Depends on SoftDeletable abstraction
 #
+# Performance: Uses batch SQL updates instead of individual record updates
+# for efficient cascading operations, especially with large associations.
+#
+# Supported Associations:
+# - Standard associations (has_many, has_one, belongs_to)
+# - Polymorphic associations
+# - Custom foreign keys
+#
+# Limitations:
+# - has_many :through associations are not supported for cascading
+#   as the relationship is indirect
+# - All associated models must include the Discard gem functionality
+#
 # Usage:
 #   class ParentModel < ApplicationRecord
 #     include SoftDeletable
@@ -58,11 +71,42 @@ module CascadingSoftDelete
   end
 
   def cascade_discard_association(association_name)
-    association = send(association_name)
-    return unless association.respond_to?(:each)
+    association = self.class.reflect_on_association(association_name)
+    return unless association
 
-    association.find_each do |record|
-      record.discard if record.respond_to?(:discard) && record.kept?
+    klass = association.klass
+    return unless klass.respond_to?(:discard_all)
+
+    # Build the query based on association type
+    query = build_cascade_query_for_discard(association)
+    return unless query
+
+    # Use batch update instead of individual discard calls for better performance
+    # This updates all records in a single SQL UPDATE statement
+    query.update_all(discarded_at: Time.current)
+  end
+
+  def build_cascade_query_for_discard(association)
+    klass = association.klass
+
+    # Handle polymorphic associations
+    if association.polymorphic?
+      foreign_type = association.foreign_type
+      foreign_key = association.foreign_key
+
+      klass.kept.where(
+        foreign_type => self.class.base_class.name,
+        foreign_key => id
+      )
+    # Handle has_many :through associations
+    elsif association.through_reflection
+      # For has_many :through, we cannot cascade directly
+      # as the relationship is indirect
+      nil
+    # Handle standard associations (has_many, has_one, etc.)
+    else
+      foreign_key = association.foreign_key
+      klass.kept.where(foreign_key => id)
     end
   end
 
@@ -70,13 +114,39 @@ module CascadingSoftDelete
     association = self.class.reflect_on_association(association_name)
     return unless association
 
-    # For has_many, we need to query with_discarded to find soft-deleted children
     klass = association.klass
     return unless klass.respond_to?(:with_discarded)
 
-    foreign_key = association.foreign_key
-    klass.with_discarded.discarded.where(foreign_key => id).find_each do |record|
-      record.undiscard if record.respond_to?(:undiscard)
+    # Build the query based on association type
+    query = build_cascade_query(association)
+    return unless query
+
+    # Use batch update instead of individual undiscard calls for better performance
+    # This updates all records in a single SQL UPDATE statement
+    query.update_all(discarded_at: nil)
+  end
+
+  def build_cascade_query(association)
+    klass = association.klass
+
+    # Handle polymorphic associations
+    if association.polymorphic?
+      foreign_type = association.foreign_type
+      foreign_key = association.foreign_key
+
+      klass.with_discarded.discarded.where(
+        foreign_type => self.class.base_class.name,
+        foreign_key => id
+      )
+    # Handle has_many :through associations
+    elsif association.through_reflection
+      # For has_many :through, we cannot cascade directly
+      # as the relationship is indirect
+      nil
+    # Handle standard associations (has_many, has_one, etc.)
+    else
+      foreign_key = association.foreign_key
+      klass.with_discarded.discarded.where(foreign_key => id)
     end
   end
 end
