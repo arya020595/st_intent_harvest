@@ -51,11 +51,15 @@ module SoftDeletable
     # Already provided by Discard as `kept`
 
     # Batch soft delete by IDs
+    # Only discards kept (non-discarded) records to avoid re-discarding
+    # Returns the count of records actually discarded
     def soft_delete_all(ids)
-      with_discarded.where(id: ids).discard_all
+      kept.where(id: ids).discard_all
     end
 
     # Batch restore by IDs
+    # Only restores discarded records
+    # Returns the count of records actually restored
     def restore_all(ids)
       with_discarded.discarded.where(id: ids).undiscard_all
     end

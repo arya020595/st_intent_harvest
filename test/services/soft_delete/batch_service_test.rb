@@ -115,4 +115,17 @@ class SoftDeleteBatchServiceTest < ActiveSupport::TestCase
     assert @worker1.reload.kept?
     assert @worker2.reload.kept? # Was already kept
   end
+
+  test 'batch delete only affects kept records' do
+    @worker1.discard
+    # worker2 is not discarded
+    ids = [@worker1.id, @worker2.id]
+
+    result = SoftDelete::BatchService.call(Worker, ids: ids, action: :delete)
+
+    assert result.success?
+    # Only worker2 should be newly discarded, worker1 was already discarded
+    assert @worker1.reload.discarded?
+    assert @worker2.reload.discarded?
+  end
 end

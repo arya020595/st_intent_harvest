@@ -122,8 +122,18 @@ module SoftDeletableController
     else
       send("#{controller_name}_path")
     end
-  rescue NoMethodError
-    # Fallback to root path if route helper doesn't exist
+  rescue NoMethodError => e
+    route_helper = self.class.module_parent != Object ? "#{self.class.module_parent.name.underscore}_#{controller_name}_path" : "#{controller_name}_path"
+
+    # Log warning about missing route helper
+    Rails.logger.warn "SoftDeletableController: Route helper '#{route_helper}' not found for #{self.class.name}. Falling back to root_path."
+
+    # In development/test, raise informative error to help catch configuration issues
+    if Rails.env.development? || Rails.env.test?
+      raise NoMethodError, "Route helper '#{route_helper}' not found. Please ensure routes are properly configured for #{self.class.name}. Original error: #{e.message}"
+    end
+
+    # In production, fall back gracefully to root path
     root_path
   end
 end
