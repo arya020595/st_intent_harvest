@@ -2,18 +2,20 @@
 #
 # Table name: permissions
 #
-#  id         :integer          not null, primary key
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  code       :string           not null
-#  name       :string           not null
-#  resource   :string           not null
-#  section    :string
+#  id           :integer          not null, primary key
+#  code         :string           not null
+#  created_at   :datetime         not null
+#  name         :string           not null
+#  resource     :string           not null
+#  section      :string
+#  updated_at   :datetime         not null
+#  discarded_at :datetime
 #
 # Indexes
 #
-#  index_permissions_on_code      (code) UNIQUE
-#  index_permissions_on_resource  (resource)
+#  index_permissions_on_code          (code) UNIQUE
+#  index_permissions_on_discarded_at  (discarded_at)
+#  index_permissions_on_resource      (resource)
 #
 
 dashboard_index:

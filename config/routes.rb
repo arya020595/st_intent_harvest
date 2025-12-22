@@ -1,6 +1,13 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  # Soft delete restore route concern
+  concern :restorable do
+    member do
+      patch :restore
+    end
+  end
+
   devise_for :users,
              controllers: {
                sessions: 'users/sessions',
@@ -26,7 +33,7 @@ Rails.application.routes.draw do
 
   # Work Order Namespace
   namespace :work_orders do
-    resources :details do
+    resources :details, concerns: :restorable do
       member do
         patch :mark_complete
         get :confirm_delete
@@ -43,7 +50,7 @@ Rails.application.routes.draw do
         get :worker_detail
       end
     end
-    resources :mandays
+    resources :mandays, concerns: :restorable
   end
 
   # Payslips
@@ -54,11 +61,11 @@ Rails.application.routes.draw do
   end
 
   # Inventory
-  resources :inventories do
+  resources :inventories, concerns: :restorable do
     member do
       get :confirm_delete
     end
-    resources :inventory_orders do
+    resources :inventory_orders, concerns: :restorable do
       member do
         get :confirm_delete
       end
@@ -66,7 +73,7 @@ Rails.application.routes.draw do
   end
 
   # Workers
-  resources :workers do
+  resources :workers, concerns: :restorable do
     member do
       get :confirm_delete
     end
@@ -74,31 +81,31 @@ Rails.application.routes.draw do
 
   # Master Data Namespace
   namespace :master_data do
-    resources :vehicles do
+    resources :vehicles, concerns: :restorable do
       member do
         get :confirm_delete
       end
     end
 
-    resources :work_order_rates do
+    resources :work_order_rates, concerns: :restorable do
       member do
         get :confirm_delete
       end
     end
 
-    resources :blocks do
+    resources :blocks, concerns: :restorable do
       member do
         get :confirm_delete
       end
     end
 
-    resources :units do
+    resources :units, concerns: :restorable do
       member do
         get :confirm_delete
       end
     end
 
-    resources :categories do
+    resources :categories, concerns: :restorable do
       member do
         get :confirm_delete
       end
@@ -107,13 +114,13 @@ Rails.application.routes.draw do
 
   # User Management Namespace
   namespace :user_management do
-    resources :roles do
+    resources :roles, concerns: :restorable do
       member do
         get :confirm_delete
       end
     end
 
-    resources :users do
+    resources :users, concerns: :restorable do
       member do
         get :confirm_delete
       end

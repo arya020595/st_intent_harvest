@@ -127,6 +127,8 @@ GEM
       responders
       warden (~> 1.2.3)
     diff-lcs (1.6.2)
+    discard (1.4.0)
+      activerecord (>= 4.2, < 9.0)
     dotenv (2.8.1)
     drb (2.2.3)
     dry-core (1.1.0)
@@ -459,6 +461,7 @@ DEPENDENCIES
   csv
   debug
   devise
+  discard (~> 1.4)
   dotenv (~> 2.1, >= 2.1.1)
   dry-monads (~> 1.9)
   faker

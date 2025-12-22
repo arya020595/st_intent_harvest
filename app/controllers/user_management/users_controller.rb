@@ -3,6 +3,7 @@
 module UserManagement
   class UsersController < ApplicationController
     include RansackMultiSort
+    include SoftDeletableController
 
     before_action :set_user, only: %i[show edit update destroy confirm_delete]
 
@@ -77,17 +78,13 @@ module UserManagement
 
     def destroy
       authorize @user, policy_class: UserManagement::UserPolicy
+      super
+    end
 
-      if @user.destroy
-        respond_to do |format|
-          format.turbo_stream do
-            flash.now[:notice] = 'User deleted successfully.'
-          end
-          format.html { redirect_to user_management_users_path, notice: 'User deleted successfully.' }
-        end
-      else
-        redirect_to user_management_users_path, alert: 'Failed to delete user.'
-      end
+    def restore
+      @user = User.with_discarded.find(params[:id])
+      authorize @user, policy_class: UserManagement::UserPolicy
+      super
     end
 
     private

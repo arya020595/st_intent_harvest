@@ -43,12 +43,14 @@ end
 #
 # Table name: mandays
 #
-#  id         :integer          not null, primary key
-#  work_month :date             not null
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
+#  id           :integer          not null, primary key
+#  work_month   :date             not null
+#  created_at   :datetime         not null
+#  updated_at   :datetime         not null
+#  discarded_at :datetime
 #
 # Indexes
 #
-#  index_mandays_on_work_month  (work_month) UNIQUE
+#  index_mandays_on_discarded_at  (discarded_at)
+#  index_mandays_on_work_month    (work_month) UNIQUE
 #

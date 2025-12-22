@@ -4,6 +4,10 @@ module WorkOrders
   class DetailsController < ApplicationController
     include RansackMultiSort
     include ResponseHandling
+    include SoftDeletableController
+
+    # Specify the resource name since controller_name is 'details' not 'work_orders'
+    self.soft_deletable_resource_name = :work_order
 
     before_action :set_work_order, only: %i[show edit update destroy mark_complete confirm_delete]
 
@@ -85,28 +89,13 @@ module WorkOrders
 
     def destroy
       authorize @work_order, policy_class: WorkOrders::DetailPolicy
+      super
+    end
 
-      if @work_order.destroy
-        respond_to do |format|
-          format.turbo_stream do
-            flash.now[:notice] = 'Work order was successfully deleted.'
-          end
-          format.html do
-            redirect_to work_orders_details_path, notice: 'Work order was successfully deleted.', status: :see_other
-          end
-        end
-      else
-        respond_to do |format|
-          format.turbo_stream do
-            flash.now[:alert] = 'There was an error deleting the work order.'
-            render turbo_stream: turbo_stream.update('flash_messages', partial: 'shared/flash')
-          end
-          format.html do
-            redirect_to work_orders_detail_path(@work_order), alert: 'There was an error deleting the work order.',
-                                                              status: :see_other
-          end
-        end
-      end
+    def restore
+      @work_order = WorkOrder.with_discarded.find(params[:id])
+      authorize @work_order, policy_class: WorkOrders::DetailPolicy
+      super
     end
 
     def mark_complete
