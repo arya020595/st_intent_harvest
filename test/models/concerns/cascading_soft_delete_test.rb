@@ -40,6 +40,10 @@ class CascadingSoftDeleteTest < ActiveSupport::TestCase
   # ============================================
   # Batch Update Performance Tests
   # ============================================
+  # Note: These tests verify implementation details (source code) rather than behavior
+  # because the performance optimization is critical and we want to ensure it's maintained.
+  # Testing the actual SQL queries would require a database connection and fixtures,
+  # which adds complexity for this concern that may not be used yet.
 
   test 'cascade_undiscard_association uses batch update instead of individual calls' do
     # This test verifies that the implementation uses update_all for performance

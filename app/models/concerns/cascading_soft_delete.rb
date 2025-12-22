@@ -75,7 +75,8 @@ module CascadingSoftDelete
     return unless association
 
     klass = association.klass
-    return unless klass.respond_to?(:discard_all)
+    # Verify the model supports soft delete functionality
+    return unless klass.respond_to?(:kept)
 
     # Build the query based on association type
     query = build_cascade_query_for_discard(association)
@@ -113,9 +114,9 @@ module CascadingSoftDelete
   end
 
   # Shared method to build cascade queries for both discard and undiscard operations
-  # @param association [ActiveRecord::Reflection] - the association reflection
-  # @param base_scope [ActiveRecord::Relation] - the base scope to build upon (kept or with_discarded.discarded)
-  # @return [ActiveRecord::Relation, nil] - the query to execute, or nil if not supported
+  # @param association [ActiveRecord::Reflection::AssociationReflection] the association reflection
+  # @param base_scope [ActiveRecord::Relation] the base scope to build upon (kept or with_discarded.discarded)
+  # @return [ActiveRecord::Relation, nil] the query to execute, or nil if not supported
   def build_cascade_base_query(association, base_scope)
     # Handle has_many :through associations
     return nil if association.through_reflection
