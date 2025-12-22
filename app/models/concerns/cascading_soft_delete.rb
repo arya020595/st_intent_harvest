@@ -99,7 +99,7 @@ module CascadingSoftDelete
     return unless klass.respond_to?(:with_discarded)
 
     # Build the query based on association type
-    query = build_cascade_query(association)
+    query = build_cascade_query_for_undiscard(association)
     return unless query
 
     # Use batch update instead of individual undiscard calls for better performance
@@ -107,7 +107,7 @@ module CascadingSoftDelete
     query.update_all(discarded_at: nil)
   end
 
-  def build_cascade_query(association)
+  def build_cascade_query_for_undiscard(association)
     return unless association.klass.respond_to?(:with_discarded)
     
     build_cascade_base_query(association, association.klass.with_discarded.discarded)
