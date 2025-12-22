@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class Worker < ApplicationRecord
+  include CascadingSoftDelete
+
+  cascade_soft_delete :work_order_workers, :pay_calculation_details
+
   # Constants for form options
   WORKER_TYPES = ['Part - Time', 'Full - Time'].freeze
   GENDERS = %w[Male Female].freeze
