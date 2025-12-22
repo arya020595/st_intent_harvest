@@ -6,24 +6,49 @@ class CascadingSoftDeleteTest < ActiveSupport::TestCase
   # Test the CascadingSoftDelete concern functionality
   # This concern provides batch cascade operations for soft deleting and restoring associated records
 
-  # We'll use a simple test setup with mock models to test the concern
+  # Create test models that use the concern
+  class TestParent < ApplicationRecord
+    self.table_name = 'blocks' # Reuse existing table with discarded_at
+    include SoftDeletable
+    include CascadingSoftDelete
+
+    has_many :test_children, foreign_key: 'block_id', class_name: 'CascadingSoftDeleteTest::TestChild',
+                             dependent: :destroy
+
+    cascade_soft_delete :test_children
+  end
+
+  class TestChild < ApplicationRecord
+    self.table_name = 'work_orders' # Reuse existing table with discarded_at
+    include SoftDeletable
+
+    belongs_to :test_parent, foreign_key: 'block_id', class_name: 'CascadingSoftDeleteTest::TestParent',
+                             optional: true
+  end
+
   setup do
-    # Skip if no models use this concern yet
-    skip "No models currently use CascadingSoftDelete concern" unless models_with_cascade.any?
+    @parent = TestParent.create!(block_number: 'TEST-CASCADE-001', hectarage: 10.5)
+    @child1 = TestChild.create!(
+      test_parent: @parent,
+      work_order_status: 'draft',
+      start_date: Date.today,
+      completion_date: Date.today + 7.days
+    )
+    @child2 = TestChild.create!(
+      test_parent: @parent,
+      work_order_status: 'draft',
+      start_date: Date.today,
+      completion_date: Date.today + 7.days
+    )
 
     # Read the concern file content once for all tests
     @concern_file_content = File.read(Rails.root.join('app/models/concerns/cascading_soft_delete.rb'))
   end
 
-  # ============================================
-  # Helper Methods
-  # ============================================
-
-  def models_with_cascade
-    # Find all models that include CascadingSoftDelete
-    ApplicationRecord.descendants.select do |model|
-      model.included_modules.include?(CascadingSoftDelete)
-    end
+  teardown do
+    # Clean up in correct order: children first, then parent
+    TestChild.with_discarded.where(block_id: @parent&.id).delete_all if @parent
+    TestParent.with_discarded.where(id: @parent&.id).delete_all if @parent
   end
 
   # ============================================
@@ -31,10 +56,68 @@ class CascadingSoftDeleteTest < ActiveSupport::TestCase
   # ============================================
 
   test 'cascade_soft_delete configures cascade associations' do
-    models_with_cascade.each do |model|
-      assert_respond_to model, :_cascade_associations
-      assert model._cascade_associations.is_a?(Array) || model._cascade_associations.nil?
-    end
+    assert_respond_to TestParent, :_cascade_associations
+    assert_equal [:test_children], TestParent._cascade_associations
+  end
+
+  # ============================================
+  # Cascade Discard Tests
+  # ============================================
+
+  test 'discarding parent cascades to children using batch update' do
+    @parent.discard
+
+    assert @parent.discarded?
+    assert @child1.reload.discarded?
+    assert @child2.reload.discarded?
+  end
+
+  test 'cascade discard only affects kept children' do
+    # Discard one child manually first
+    @child1.discard
+    first_discarded_at = @child1.discarded_at
+
+    # Discard parent (should cascade to child2 only)
+    @parent.discard
+
+    assert @parent.discarded?
+    assert @child1.reload.discarded?
+    assert @child2.reload.discarded?
+
+    # child1's discarded_at should not have changed (was already discarded)
+    assert_equal first_discarded_at.to_i, @child1.reload.discarded_at.to_i
+  end
+
+  # ============================================
+  # Cascade Undiscard Tests
+  # ============================================
+
+  test 'undiscarding parent cascades to children using batch update' do
+    @parent.discard
+    assert @child1.reload.discarded?
+    assert @child2.reload.discarded?
+
+    @parent.undiscard
+
+    assert @parent.kept?
+    assert @child1.reload.kept?
+    assert @child2.reload.kept?
+  end
+
+  test 'cascade undiscard only affects discarded children' do
+    @child1.discard
+    @child2.discard
+
+    # Restore child1 manually
+    @child1.undiscard
+
+    # Now discard and restore parent
+    @parent.discard
+    @parent.undiscard
+
+    # Both children should be restored (child1 was already restored, child2 was discarded)
+    assert @child1.reload.kept?
+    assert @child2.reload.kept?
   end
 
   # ============================================
@@ -49,9 +132,9 @@ class CascadingSoftDeleteTest < ActiveSupport::TestCase
     # This test verifies that the implementation uses update_all for performance
     # The implementation should use query.update_all(discarded_at: nil) instead of
     # iterating through records with find_each and calling undiscard on each one
-    
+
     # Verify the implementation by checking the code uses update_all
-    assert_match(/update_all\(discarded_at: nil\)/, @concern_file_content, 
+    assert_match(/update_all\(discarded_at: nil\)/, @concern_file_content,
                  'cascade_undiscard_association should use update_all for batch updates')
   end
 

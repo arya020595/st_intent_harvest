@@ -18,11 +18,31 @@
 # - has_many :through associations are not supported for cascading
 #   as the relationship is indirect
 # - All associated models must include the Discard gem functionality
-# - **Multi-level cascading**: This concern uses batch updates (update_all)
-#   which bypass ActiveRecord callbacks. If child records have their own
-#   cascade associations, those won't be triggered. Only one level of
-#   cascading is supported. For multi-level cascading, consider using
-#   individual discard calls (find_each) at the cost of performance.
+# - **Callback and Validation Bypassing**: This concern uses batch updates
+#   (update_all) which bypass:
+#   * ActiveRecord callbacks (before_save, after_save, etc.)
+#   * ActiveRecord validations
+#   * Discard gem's own callbacks (before_discard, after_discard, etc.)
+#   * Multi-level cascading (child records' cascade associations won't trigger)
+#
+#   This provides excellent performance for large datasets but means:
+#   - Only one level of cascading is supported
+#   - Important business logic in callbacks won't execute
+#   - Validations won't prevent invalid state transitions
+#
+#   **Alternative for data integrity**: If callbacks/validations are critical,
+#   use individual discard calls wrapped in a transaction:
+#   ```ruby
+#   def cascade_discard_association(association_name)
+#     association = send(association_name)
+#     return unless association.respond_to?(:each)
+#
+#     ActiveRecord::Base.transaction do
+#       association.find_each { |record| record.discard if record.kept? }
+#     end
+#   end
+#   ```
+#   This trades performance for data integrity and callback execution.
 #
 # Usage:
 #   class ParentModel < ApplicationRecord
