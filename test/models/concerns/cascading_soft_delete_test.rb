@@ -113,6 +113,13 @@ class CascadingSoftDeleteTest < ActiveSupport::TestCase
 
     # Now discard and restore parent
     @parent.discard
+    @parent.undiscard
+
+    # Both children should be restored (including the manually restored one)
+    assert @child1.reload.kept?
+    assert @child2.reload.kept?
+  end
+
   # Documentation Tests
   # ============================================
   #
