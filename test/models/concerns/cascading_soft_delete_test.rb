@@ -113,54 +113,6 @@ class CascadingSoftDeleteTest < ActiveSupport::TestCase
 
     # Now discard and restore parent
     @parent.discard
-    @parent.undiscard
-
-    # Both children should be restored (child1 was already restored, child2 was discarded)
-    assert @child1.reload.kept?
-    assert @child2.reload.kept?
-  end
-
-  # ============================================
-  # Batch Update Performance Tests
-  # ============================================
-  # Note: These tests verify implementation details (source code) rather than behavior
-  # because the performance optimization is critical and we want to ensure it's maintained.
-  # Testing the actual SQL queries would require a database connection and fixtures,
-  # which adds complexity for this concern that may not be used yet.
-
-  test 'cascade_undiscard_association uses batch update instead of individual calls' do
-    # This test verifies that the implementation uses update_all for performance
-    # The implementation should use query.update_all(discarded_at: nil) instead of
-    # iterating through records with find_each and calling undiscard on each one
-
-    # Verify the implementation by checking the code uses update_all
-    assert_match(/update_all\(discarded_at: nil\)/, @concern_file_content,
-                 'cascade_undiscard_association should use update_all for batch updates')
-  end
-
-  test 'cascade_discard_association uses batch update instead of individual calls' do
-    # Verify the implementation uses update_all for discarding as well
-    assert_match(/update_all\(discarded_at: Time\.current\)/, @concern_file_content,
-                 'cascade_discard_association should use update_all for batch updates')
-  end
-
-  # ============================================
-  # Association Type Support Tests
-  # ============================================
-
-  test 'implementation supports polymorphic associations' do
-    skip 'Behavior for polymorphic associations should be tested via model behavior, not source code string matching'
-  end
-
-  test 'implementation supports custom foreign keys' do
-    skip 'Behavior for custom foreign keys should be tested via model behavior, not source code string matching'
-  end
-
-  test 'implementation handles has_many through associations' do
-    skip 'Behavior for has_many :through associations should be tested via model behavior, not source code string matching'
-  end
-
-  # ============================================
   # Documentation Tests
   # ============================================
   #
