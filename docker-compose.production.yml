@@ -38,6 +38,7 @@ services:
       RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
       WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
       TZ: Asia/Jakarta
+      PORT: 3000 # Force Puma to bind to 3000 inside container
     ports:
       - "${PORT:-3005}:3000"
     volumes:
