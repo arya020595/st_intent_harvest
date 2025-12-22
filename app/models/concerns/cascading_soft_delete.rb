@@ -18,6 +18,11 @@
 # - has_many :through associations are not supported for cascading
 #   as the relationship is indirect
 # - All associated models must include the Discard gem functionality
+# - **Multi-level cascading**: This concern uses batch updates (update_all)
+#   which bypass ActiveRecord callbacks. If child records have their own
+#   cascade associations, those won't be triggered. Only one level of
+#   cascading is supported. For multi-level cascading, consider using
+#   individual discard calls (find_each) at the cost of performance.
 #
 # Usage:
 #   class ParentModel < ApplicationRecord
@@ -109,7 +114,7 @@ module CascadingSoftDelete
 
   def build_cascade_query_for_undiscard(association)
     return unless association.klass.respond_to?(:with_discarded)
-    
+
     build_cascade_base_query(association, association.klass.with_discarded.discarded)
   end
 
