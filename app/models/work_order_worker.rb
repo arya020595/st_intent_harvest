@@ -53,9 +53,11 @@ end
 #  work_order_id  :integer          not null
 #  worker_id      :integer          not null
 #  worker_name    :string
+#  discarded_at   :datetime
 #
 # Indexes
 #
+#  index_work_order_workers_on_discarded_at   (discarded_at)
 #  index_work_order_workers_on_work_order_id  (work_order_id)
 #  index_work_order_workers_on_worker_id      (worker_id)
 #
