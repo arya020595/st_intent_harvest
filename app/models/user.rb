@@ -62,6 +62,17 @@ class User < ApplicationRecord
     @permission_codes = nil
   end
 
+  # Devise: Prevent discarded users from logging in and stop their sessions
+  # Override Devise's active_for_authentication? to check if user is discarded
+  def active_for_authentication?
+    super && !discarded?
+  end
+
+  # Devise: Custom message for discarded users attempting to login
+  def inactive_message
+    discarded? ? :discarded : super
+  end
+
   # Get the first accessible path for the user
   # Delegates to UserRedirectService to keep model lean
   def first_accessible_path
