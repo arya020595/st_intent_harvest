@@ -18,17 +18,18 @@ export default class extends Controller {
 
     const row = event.target.closest('[data-inventory-form-target="orderRow"]');
     const destroyField = row.querySelector('input[name*="_destroy"]');
+    const idField = row.querySelector('input[type="hidden"][name*="[id]"]');
 
-    if (destroyField) {
-      // If record exists in database, mark for destruction
-      if (row.querySelector('input[type="hidden"][name*="[id]"]')) {
-        destroyField.value = "1";
-        row.style.display = "none";
-      } else {
-        // If new record, just remove from DOM
-        row.remove();
-      }
+    // Check if record exists in database (has an ID value)
+    const isPersistedRecord =
+      idField && idField.value && idField.value.trim() !== "";
+
+    if (destroyField && isPersistedRecord) {
+      // If record exists in database, mark for destruction and hide
+      destroyField.value = "1";
+      row.style.display = "none";
     } else {
+      // If new record (no ID or empty ID), just remove from DOM
       row.remove();
     }
   }

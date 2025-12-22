@@ -3,6 +3,7 @@
 module UserManagement
   class RolesController < ApplicationController
     include RansackMultiSort
+    include SoftDeletableController
 
     before_action :set_role, only: %i[show edit update destroy confirm_delete]
 
@@ -80,25 +81,13 @@ module UserManagement
 
     def destroy
       authorize @role, policy_class: UserManagement::RolePolicy
+      super
+    end
 
-      respond_to do |format|
-        if @role.destroy
-          format.turbo_stream do
-            flash.now[:notice] = 'Role was successfully deleted.'
-          end
-          format.html { redirect_to user_management_roles_path, notice: 'Role was successfully deleted.' }
-          format.json { head :no_content }
-        else
-          format.turbo_stream do
-            flash.now[:alert] = @role.errors.full_messages.join(', ')
-            render turbo_stream: turbo_stream.replace('flash_messages') do
-              render partial: 'shared/flash'
-            end
-          end
-          format.html { redirect_to user_management_roles_path, alert: @role.errors.full_messages.join(', ') }
-          format.json { render json: @role.errors, status: :unprocessable_entity }
-        end
-      end
+    def restore
+      @role = Role.with_discarded.find(params[:id])
+      authorize @role, policy_class: UserManagement::RolePolicy
+      super
     end
 
     private

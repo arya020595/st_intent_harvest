@@ -3,6 +3,7 @@
 module WorkOrders
   class MandaysController < ApplicationController
     include RansackMultiSort
+    include SoftDeletableController
 
     before_action :set_manday, only: %i[show edit update destroy]
     before_action :load_workers, only: %i[new edit]
@@ -57,12 +58,13 @@ module WorkOrders
 
     def destroy
       authorize @manday, policy_class: WorkOrders::MandayPolicy
+      super
+    end
 
-      if @manday.destroy
-        redirect_to work_orders_mandays_path, notice: 'Manday was successfully deleted.', status: :see_other
-      else
-        redirect_to work_orders_mandays_path, alert: 'There was an error deleting the manday.', status: :see_other
-      end
+    def restore
+      @manday = Manday.with_discarded.find(params[:id])
+      authorize @manday, policy_class: WorkOrders::MandayPolicy
+      super
     end
 
     private

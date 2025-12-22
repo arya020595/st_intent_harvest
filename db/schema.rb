@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_22_030000) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_22_062302) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -182,11 +182,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_22_030000) do
   create_table "permissions", force: :cascade do |t|
     t.string "code", null: false
     t.datetime "created_at", null: false
+    t.datetime "discarded_at"
     t.string "name", null: false
     t.string "resource", null: false
     t.string "section"
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_permissions_on_code", unique: true
+    t.index ["discarded_at"], name: "index_permissions_on_discarded_at"
     t.index ["resource"], name: "index_permissions_on_resource"
   end
 
@@ -201,9 +203,11 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_22_030000) do
 
   create_table "roles_permissions", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "discarded_at"
     t.bigint "permission_id", null: false
     t.bigint "role_id", null: false
     t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_roles_permissions_on_discarded_at"
     t.index ["permission_id"], name: "index_roles_permissions_on_permission_id"
     t.index ["role_id", "permission_id"], name: "index_roles_permissions_on_role_id_and_permission_id", unique: true
     t.index ["role_id"], name: "index_roles_permissions_on_role_id"

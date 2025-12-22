@@ -2,6 +2,7 @@
 
 class WorkersController < ApplicationController
   include RansackMultiSort
+  include SoftDeletableController
 
   before_action :set_worker, only: %i[show edit update destroy]
 
@@ -109,23 +110,13 @@ class WorkersController < ApplicationController
 
   def destroy
     authorize @worker
+    super
+  end
 
-    respond_to do |format|
-      if @worker.destroy
-        format.turbo_stream do
-          flash.now[:notice] = 'Worker was successfully deleted.'
-        end
-        format.html { redirect_to workers_url, notice: 'Worker was successfully deleted.' }
-      else
-        format.turbo_stream do
-          flash.now[:alert] = "Unable to delete worker: #{@worker.errors.full_messages.join(', ')}"
-          render turbo_stream: turbo_stream.replace('flash', partial: 'shared/flash'), status: :unprocessable_entity
-        end
-        format.html do
-          redirect_to workers_url, alert: "Unable to delete worker: #{@worker.errors.full_messages.join(', ')}"
-        end
-      end
-    end
+  def restore
+    @worker = Worker.with_discarded.find(params[:id])
+    authorize @worker
+    super
   end
 
   private

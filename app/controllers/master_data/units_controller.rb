@@ -3,6 +3,7 @@
 module MasterData
   class UnitsController < ApplicationController
     include RansackMultiSort
+    include SoftDeletableController
 
     before_action :set_unit, only: %i[show edit update destroy confirm_delete]
 
@@ -92,23 +93,13 @@ module MasterData
 
     def destroy
       authorize @unit, policy_class: MasterData::UnitPolicy
+      super
+    end
 
-      respond_to do |format|
-        if @unit.destroy
-          format.turbo_stream do
-            flash.now[:notice] = 'Unit was successfully deleted.'
-          end
-          format.html { redirect_to master_data_units_url, notice: 'Unit was successfully deleted.' }
-        else
-          format.turbo_stream do
-            flash.now[:alert] = "Unable to delete unit: #{@unit.errors.full_messages.join(', ')}"
-            render :destroy, status: :unprocessable_entity
-          end
-          format.html do
-            redirect_to master_data_units_url, alert: "Unable to delete unit: #{@unit.errors.full_messages.join(', ')}"
-          end
-        end
-      end
+    def restore
+      @unit = Unit.with_discarded.find(params[:id])
+      authorize @unit, policy_class: MasterData::UnitPolicy
+      super
     end
 
     private
