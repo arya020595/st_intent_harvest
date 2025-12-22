@@ -22,7 +22,12 @@ end
 #
 #  id           :integer          not null, primary key
 #  block_number :string
-#  hectarage    :decimal(10, 2)
 #  created_at   :datetime         not null
+#  hectarage    :decimal(10, 2)
 #  updated_at   :datetime         not null
+#  discarded_at :datetime
+#
+# Indexes
+#
+#  index_blocks_on_discarded_at  (discarded_at)
 #

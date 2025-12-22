@@ -3,6 +3,7 @@
 module MasterData
   class VehiclesController < ApplicationController
     include RansackMultiSort
+    include SoftDeletableController
 
     before_action :set_vehicle, only: %i[show edit update destroy confirm_delete]
 
@@ -89,24 +90,13 @@ module MasterData
 
     def destroy
       authorize @vehicle, policy_class: MasterData::VehiclePolicy
+      super
+    end
 
-      respond_to do |format|
-        if @vehicle.destroy
-          format.turbo_stream do
-            flash.now[:notice] = 'Vehicle was successfully deleted.'
-          end
-          format.html { redirect_to master_data_vehicles_url, notice: 'Vehicle was successfully deleted.' }
-        else
-          format.turbo_stream do
-            flash.now[:alert] = "Unable to delete vehicle: #{@vehicle.errors.full_messages.join(', ')}"
-            render :destroy, status: :unprocessable_entity
-          end
-          format.html do
-            redirect_to master_data_vehicles_url,
-                        alert: "Unable to delete vehicle: #{@vehicle.errors.full_messages.join(', ')}"
-          end
-        end
-      end
+    def restore
+      @vehicle = Vehicle.with_discarded.find(params[:id])
+      authorize @vehicle, policy_class: MasterData::VehiclePolicy
+      super
     end
 
     private

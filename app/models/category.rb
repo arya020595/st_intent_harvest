@@ -22,9 +22,14 @@ end
 # Table name: categories
 #
 #  id            :integer          not null, primary key
-#  name          :string
 #  category_type :string
-#  parent_id     :integer
 #  created_at    :datetime         not null
+#  name          :string
+#  parent_id     :integer
 #  updated_at    :datetime         not null
+#  discarded_at  :datetime
+#
+# Indexes
+#
+#  index_categories_on_discarded_at  (discarded_at)
 #

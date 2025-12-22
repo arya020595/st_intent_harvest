@@ -21,18 +21,21 @@ end
 # Table name: work_order_items
 #
 #  id            :integer          not null, primary key
-#  work_order_id :integer          not null
-#  inventory_id  :integer
-#  item_name     :string
 #  amount_used   :integer
-#  price         :decimal(10, 2)
-#  unit_name     :string
 #  category_name :string
 #  created_at    :datetime         not null
+#  inventory_id  :integer
+#  item_name     :string
+#  price         :decimal(10, 2)
+#  unit_name     :string
 #  updated_at    :datetime         not null
+#  work_order_id :integer          not null
+#  unit_id       :integer
+#  discarded_at  :datetime
 #
 # Indexes
 #
+#  index_work_order_items_on_discarded_at   (discarded_at)
 #  index_work_order_items_on_inventory_id   (inventory_id)
 #  index_work_order_items_on_work_order_id  (work_order_id)
 #

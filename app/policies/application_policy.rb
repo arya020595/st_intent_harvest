@@ -36,6 +36,12 @@ class ApplicationPolicy
     user.has_permission?(build_permission_code('destroy'))
   end
 
+  def restore?
+    # Restore permission defaults to destroy permission
+    # Override in specific policies if different permission needed
+    destroy?
+  end
+
   private
 
   # Build full permission code from action

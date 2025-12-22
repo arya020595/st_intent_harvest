@@ -1,5 +1,6 @@
 class InventoryOrdersController < ApplicationController
   include RansackMultiSort
+  include SoftDeletableController
 
   before_action :set_inventory
   before_action :set_inventory_order, only: %i[show edit update destroy confirm_delete]
@@ -101,22 +102,13 @@ class InventoryOrdersController < ApplicationController
   # DELETE /inventories/:inventory_id/inventory_orders/:id
   def destroy
     authorize @inventory_order
+    super
+  end
 
-    if @inventory_order.destroy
-      respond_to do |format|
-        format.turbo_stream do
-          # Turbo Stream flash message
-          flash.now[:notice] = 'Inventory order deleted successfully.'
-
-          # (No need to reload all orders; Turbo Stream will remove the row)
-        end
-        format.html do
-          redirect_to inventory_inventory_orders_path(@inventory), notice: 'Inventory order deleted successfully.'
-        end
-      end
-    else
-      redirect_to inventory_inventory_orders_path(@inventory), alert: 'Failed to delete inventory order.'
-    end
+  def restore
+    @inventory_order = InventoryOrder.with_discarded.find(params[:id])
+    authorize @inventory_order
+    super
   end
 
   private

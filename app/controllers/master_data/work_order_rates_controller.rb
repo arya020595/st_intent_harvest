@@ -3,6 +3,7 @@
 module MasterData
   class WorkOrderRatesController < ApplicationController
     include RansackMultiSort
+    include SoftDeletableController
 
     before_action :set_work_order_rate, only: %i[show edit update destroy confirm_delete]
 
@@ -103,22 +104,13 @@ module MasterData
 
     def destroy
       authorize @work_order_rate, policy_class: MasterData::WorkOrderRatePolicy
+      super
+    end
 
-      respond_to do |format|
-        if @work_order_rate.destroy
-          format.turbo_stream { flash.now[:notice] = 'Work order rate was successfully deleted.' }
-          format.html { redirect_to master_data_work_order_rates_url, notice: 'Work order rate was successfully deleted.' }
-        else
-          format.turbo_stream do
-            flash.now[:alert] = "Unable to delete work order rate: #{@work_order_rate.errors.full_messages.join(', ')}"
-            render :destroy, status: :unprocessable_entity
-          end
-          format.html do
-            redirect_to master_data_work_order_rates_url,
-                        alert: "Unable to delete work order rate: #{@work_order_rate.errors.full_messages.join(', ')}"
-          end
-        end
-      end
+    def restore
+      @work_order_rate = WorkOrderRate.with_discarded.find(params[:id])
+      authorize @work_order_rate, policy_class: MasterData::WorkOrderRatePolicy
+      super
     end
 
     private

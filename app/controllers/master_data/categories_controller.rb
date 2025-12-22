@@ -3,6 +3,7 @@
 module MasterData
   class CategoriesController < ApplicationController
     include RansackMultiSort
+    include SoftDeletableController
 
     before_action :set_category, only: %i[show edit update destroy confirm_delete]
 
@@ -98,24 +99,13 @@ module MasterData
 
     def destroy
       authorize @category, policy_class: MasterData::CategoryPolicy
+      super
+    end
 
-      respond_to do |format|
-        if @category.destroy
-          format.turbo_stream do
-            flash.now[:notice] = 'Category was successfully deleted.'
-          end
-          format.html { redirect_to master_data_categories_url, notice: 'Category was successfully deleted.' }
-        else
-          format.turbo_stream do
-            flash.now[:alert] = "Unable to delete category: #{@category.errors.full_messages.join(', ')}"
-            render :destroy, status: :unprocessable_entity
-          end
-          format.html do
-            redirect_to master_data_categories_url,
-                        alert: "Unable to delete category: #{@category.errors.full_messages.join(', ')}"
-          end
-        end
-      end
+    def restore
+      @category = Category.with_discarded.find(params[:id])
+      authorize @category, policy_class: MasterData::CategoryPolicy
+      super
     end
 
     private
