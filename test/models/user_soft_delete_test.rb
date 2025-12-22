@@ -23,6 +23,7 @@ class UserSoftDeleteTest < ActiveSupport::TestCase
 
     @user.undiscard
     assert @user.active_for_authentication?
+    assert_not_equal :discarded, @user.inactive_message
   end
 
   test 'inactive_message returns :discarded for discarded users' do
