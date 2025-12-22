@@ -87,27 +87,7 @@ module CascadingSoftDelete
   end
 
   def build_cascade_query_for_discard(association)
-    klass = association.klass
-
-    # Handle polymorphic associations
-    if association.polymorphic?
-      foreign_type = association.foreign_type
-      foreign_key = association.foreign_key
-
-      klass.kept.where(
-        foreign_type => self.class.base_class.name,
-        foreign_key => id
-      )
-    # Handle has_many :through associations
-    elsif association.through_reflection
-      # For has_many :through, we cannot cascade directly
-      # as the relationship is indirect
-      nil
-    # Handle standard associations (has_many, has_one, etc.)
-    else
-      foreign_key = association.foreign_key
-      klass.kept.where(foreign_key => id)
-    end
+    build_cascade_base_query(association, association.klass.kept)
   end
 
   def cascade_undiscard_association(association_name)
@@ -127,26 +107,32 @@ module CascadingSoftDelete
   end
 
   def build_cascade_query(association)
-    klass = association.klass
+    return unless association.klass.respond_to?(:with_discarded)
+    
+    build_cascade_base_query(association, association.klass.with_discarded.discarded)
+  end
+
+  # Shared method to build cascade queries for both discard and undiscard operations
+  # @param association [ActiveRecord::Reflection] - the association reflection
+  # @param base_scope [ActiveRecord::Relation] - the base scope to build upon (kept or with_discarded.discarded)
+  # @return [ActiveRecord::Relation, nil] - the query to execute, or nil if not supported
+  def build_cascade_base_query(association, base_scope)
+    # Handle has_many :through associations
+    return nil if association.through_reflection
 
     # Handle polymorphic associations
     if association.polymorphic?
       foreign_type = association.foreign_type
       foreign_key = association.foreign_key
 
-      klass.with_discarded.discarded.where(
+      base_scope.where(
         foreign_type => self.class.base_class.name,
         foreign_key => id
       )
-    # Handle has_many :through associations
-    elsif association.through_reflection
-      # For has_many :through, we cannot cascade directly
-      # as the relationship is indirect
-      nil
     # Handle standard associations (has_many, has_one, etc.)
     else
       foreign_key = association.foreign_key
-      klass.with_discarded.discarded.where(foreign_key => id)
+      base_scope.where(foreign_key => id)
     end
   end
 end
