@@ -175,11 +175,37 @@ module PayCalculationServices
       # This tests the integration with SoftDeletable concern
       initial_total = @pay_calc.total_gross_salary
 
-      # Soft delete the work order - should trigger after_discard callback
+      # Soft delete the work order - should trigger before_discard callback
       @work_order.discard
 
       # PayCalculation should be destroyed (no more details)
       assert_nil PayCalculation.find_by(id: @pay_calc.id)
+    end
+
+    test 'discard is aborted when pay calculation reversal fails' do
+      # Stub the service to return a failure
+      mock_service = Minitest::Mock.new
+      mock_service.expect(:call, Dry::Monads::Result::Failure.new('Database error'))
+
+      PayCalculationServices::ReverseWorkOrderService.stub(:new, ->(_) { mock_service }) do
+        # Attempt to discard should raise an exception
+        error = assert_raises(StandardError) do
+          @work_order.discard
+        end
+
+        assert_match(/Pay calculation reversal failed/, error.message)
+        assert_match(/Database error/, error.message)
+      end
+
+      # Work order should NOT be discarded
+      @work_order.reload
+      assert_not @work_order.discarded?
+      assert_nil @work_order.discarded_at
+
+      # PayCalculation should still exist
+      assert_not_nil PayCalculation.find_by(id: @pay_calc.id)
+
+      mock_service.verify
     end
 
     test 'recalculates deductions after updating gross salary' do
