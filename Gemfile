@@ -111,6 +111,9 @@ group :development, :test do
 
   # Security vulnerability scanner for Ruby on Rails applications
   gem 'brakeman', require: false
+
+  # Bundler audit for checking gem vulnerabilities
+  gem 'bundler-audit', '~> 0.9.3', require: false
 end
 
 group :development do
