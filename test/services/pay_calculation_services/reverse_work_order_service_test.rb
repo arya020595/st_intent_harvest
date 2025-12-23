@@ -132,8 +132,8 @@ module PayCalculationServices
       second_work_order = WorkOrder.create!(
         work_order_rate: @work_order_rate,
         work_order_status: 'completed',
-        start_date: Date.new(2025, 11, 5),
-        completion_date: Date.new(2025, 11, 20),
+        start_date: @work_order.completion_date.change(day: 5),
+        completion_date: @work_order.completion_date.change(day: 20),
         block: @block
       )
 
