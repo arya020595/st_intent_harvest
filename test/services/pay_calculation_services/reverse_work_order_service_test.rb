@@ -13,11 +13,14 @@ module PayCalculationServices
       @worker2 = workers(:two)
 
       # Create and complete a work order with workers
+      completion_date = Date.current.prev_month.change(day: 18)
+      start_date = completion_date.change(day: 1)
+
       @work_order = WorkOrder.create!(
         work_order_rate: @work_order_rate,
         work_order_status: 'completed',
-        start_date: Date.new(2025, 11, 1),
-        completion_date: Date.new(2025, 11, 18),
+        start_date: start_date,
+        completion_date: completion_date,
         block: @block
       )
 
@@ -143,6 +146,7 @@ module PayCalculationServices
       ProcessWorkOrderService.new(second_work_order).call
 
       total_gross_before = @pay_calc.reload.total_gross_salary
+      assert_equal 1500.0, total_gross_before.to_f
 
       # Reverse the first work order
       ReverseWorkOrderService.new(@work_order).call
@@ -173,7 +177,6 @@ module PayCalculationServices
 
     test 'soft delete of work order triggers automatic reversal via callback' do
       # This tests the integration with SoftDeletable concern
-      initial_total = @pay_calc.total_gross_salary
 
       # Soft delete the work order - should trigger after_discard callback
       @work_order.discard
