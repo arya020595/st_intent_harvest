@@ -14,6 +14,9 @@ class WorkOrder < ApplicationRecord
     completed: 'completed'
   }.freeze
 
+  # Discard callback - reverses pay calculations when completed work order is soft-deleted
+  after_discard :reverse_pay_calculation_if_completed
+
   # Audit trail - automatically tracks create/update/destroy with user and changes
   # audited # Temporarily disabled due to Psych::DisallowedClass issue with Date serialization
   # TODO: Re-enable audited after fixing Psych::DisallowedClass issue. See tracking ticket: TICKET-1234
@@ -160,6 +163,20 @@ class WorkOrder < ApplicationRecord
       user: Current.user,
       remarks: final_remarks
     )
+  end
+
+  # SoftDeletable/Discard callback - triggered when a work order is soft-deleted
+  # Automatically reverses pay calculations for completed work orders
+  def reverse_pay_calculation_if_completed
+    return unless completed? && completion_date.present?
+
+    result = PayCalculationServices::ReverseWorkOrderService.new(self).call
+
+    if result.failure?
+      AppLogger.error("Pay calculation reversal failed for WorkOrder ##{id}: #{result.failure}")
+    else
+      AppLogger.info("Pay calculation reversed for WorkOrder ##{id}: #{result.value!}")
+    end
   end
 end
 
