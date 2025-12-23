@@ -1,0 +1,75 @@
+# Gitleaks configuration for ST Intent Harvest
+# Documentation: https://github.com/gitleaks/gitleaks
+
+title = "ST Intent Harvest Secret Detection"
+
+[extend]
+# Use default gitleaks rules
+useDefault = true
+
+[allowlist]
+description = "Allowlist for safe files and patterns"
+
+# Allow example/template files
+paths = [
+  '''\.env\.example$''',
+  '''\.env\.sample$''',
+  '''env\.production\.example$''',
+  '''\.template$''',
+  '''^README\.md$''',
+  '''^docs/''',
+]
+
+# Allow placeholder values
+regexes = [
+  '''your_secure_password_here''',
+  '''your_secret_key_base_here''',
+  '''generate_with_rails_secret''',
+  '''change_me''',
+  '''placeholder''',
+  '''example_password''',
+  '''test_secret''',
+]
+
+# Specific rules for Rails secrets
+[[rules]]
+id = "rails-secret-key-base"
+description = "Rails SECRET_KEY_BASE"
+regex = '''SECRET_KEY_BASE\s*=\s*[a-f0-9]{64,}'''
+tags = ["rails", "secret"]
+
+[[rules]]
+id = "postgres-password"
+description = "PostgreSQL password"
+regex = '''POSTGRES_PASSWORD\s*=\s*[^(your_|change_|example_)][a-zA-Z0-9!@#$%^&*]{8,}'''
+tags = ["database", "password"]
+
+[[rules]]
+id = "rails-master-key"
+description = "Rails master.key file"
+path = '''config/master\.key'''
+tags = ["rails", "secret"]
+
+[[rules]]
+id = "env-production-file"
+description = "Production .env file"
+path = '''\.env$|\.env\.production$|\.env\.local$'''
+tags = ["environment", "secret"]
+
+[[rules]]
+id = "private-key"
+description = "Private SSH/SSL keys"
+regex = '''-----BEGIN (RSA|OPENSSH|EC|DSA|PGP) PRIVATE KEY-----'''
+tags = ["key", "private"]
+
+[[rules]]
+id = "aws-access-key"
+description = "AWS Access Key ID"
+regex = '''AKIA[0-9A-Z]{16}'''
+tags = ["aws", "key"]
+
+[[rules]]
+id = "generic-api-key"
+description = "Generic API Key"
+regex = '''(?i)(api_key|apikey|access_token)\s*[:=]\s*['"][a-zA-Z0-9]{32,}['"]'''
+tags = ["api", "key"]
