@@ -13,11 +13,14 @@ module PayCalculationServices
       @worker2 = workers(:two)
 
       # Create and complete a work order with workers
+      completion_date = Date.current.prev_month.change(day: 18)
+      start_date = completion_date.change(day: 1)
+
       @work_order = WorkOrder.create!(
         work_order_rate: @work_order_rate,
         work_order_status: 'completed',
-        start_date: Date.new(2025, 11, 1),
-        completion_date: Date.new(2025, 11, 18),
+        start_date: start_date,
+        completion_date: completion_date,
         block: @block
       )
 
