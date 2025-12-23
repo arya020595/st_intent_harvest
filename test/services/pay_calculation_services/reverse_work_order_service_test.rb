@@ -161,8 +161,8 @@ module PayCalculationServices
       resource_work_order = WorkOrder.create!(
         work_order_rate: resource_rate,
         work_order_status: 'completed',
-        start_date: Date.new(2025, 11, 1),
-        completion_date: Date.new(2025, 11, 18),
+        start_date: Date.current.prev_month.beginning_of_month,
+        completion_date: Date.current.prev_month.change(day: 18),
         block: @block
       )
 
