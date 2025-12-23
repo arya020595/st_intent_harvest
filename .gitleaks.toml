@@ -41,7 +41,7 @@ tags = ["rails", "secret"]
 [[rules]]
 id = "postgres-password"
 description = "PostgreSQL password"
-regex = '''POSTGRES_PASSWORD\s*=\s*[^(your_|change_|example_)][a-zA-Z0-9!@#$%^&*]{8,}'''
+regex = '''POSTGRES_PASSWORD\s*=\s*[a-zA-Z0-9!@#$%^&*]{8,}'''
 tags = ["database", "password"]
 
 [[rules]]
