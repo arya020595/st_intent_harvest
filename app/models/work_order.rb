@@ -14,8 +14,10 @@ class WorkOrder < ApplicationRecord
     completed: 'completed'
   }.freeze
 
-  # Discard callback - reverses pay calculations when completed work order is soft-deleted
-  after_discard :reverse_pay_calculation_if_completed
+  # Discard callbacks - handle pay calculation updates on soft-delete/restore
+  # Uses before_discard to ensure reversal happens before soft-delete, allowing transaction rollback on failure
+  before_discard :reverse_pay_calculation, if: :needs_pay_calculation_reversal?
+  after_undiscard :reprocess_pay_calculation, if: :needs_pay_calculation_reversal?
 
   # Audit trail - automatically tracks create/update/destroy with user and changes
   # audited # Temporarily disabled due to Psych::DisallowedClass issue with Date serialization
@@ -139,6 +141,12 @@ class WorkOrder < ApplicationRecord
     WorkOrderHistory.latest_amendment_for(self)
   end
 
+  # Condition for pay calculation callbacks (must be public for callback conditions)
+  # Returns true if this work order has pay calculations that need to be managed
+  def needs_pay_calculation_reversal?
+    completed? && completion_date.present?
+  end
+
   private
 
   # Process pay calculation when work order is completed
@@ -165,17 +173,32 @@ class WorkOrder < ApplicationRecord
     )
   end
 
-  # SoftDeletable/Discard callback - triggered when a work order is soft-deleted
-  # Automatically reverses pay calculations for completed work orders
-  def reverse_pay_calculation_if_completed
-    return unless completed? && completion_date.present?
-
+  # Discard callback - reverses pay calculations when work order is soft-deleted
+  # Raises an exception if reversal fails to abort the discard transaction
+  def reverse_pay_calculation
     result = PayCalculationServices::ReverseWorkOrderService.new(self).call
 
     if result.failure?
-      AppLogger.error("Pay calculation reversal failed for WorkOrder ##{id}: #{result.failure}")
+      error_message = "Pay calculation reversal failed for WorkOrder ##{id}: #{result.failure}"
+      AppLogger.error(error_message)
+      raise StandardError, error_message
+    end
+
+    AppLogger.info("Pay calculation reversed for WorkOrder ##{id}: #{result.value!}")
+  end
+
+  # Undiscard callback - reprocesses pay calculations when work order is restored
+  # This ensures pay calculations are recalculated after restoring a deleted work order
+  def reprocess_pay_calculation
+    result = PayCalculationServices::ProcessWorkOrderService.new(self).call
+
+    if result.failure?
+      error_message = "Pay calculation reprocessing failed for WorkOrder ##{id}: #{result.failure}"
+      AppLogger.error(error_message)
+      # Don't raise here - restoration should still succeed, pay calc can be fixed manually
+      # The undiscard is more important than the pay calculation reprocessing
     else
-      AppLogger.info("Pay calculation reversed for WorkOrder ##{id}: #{result.value!}")
+      AppLogger.info("Pay calculation reprocessed for WorkOrder ##{id}: #{result.value!}")
     end
   end
 end

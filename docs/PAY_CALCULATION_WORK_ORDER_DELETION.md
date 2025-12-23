@@ -11,11 +11,19 @@ When a completed work order is soft-deleted, the system automatically:
 3. Updates PayCalculation totals
 4. Removes empty PayCalculation records
 
+When a soft-deleted work order is restored (undiscarded), the system automatically:
+
+1. Reprocesses the pay calculation for that work order
+2. Adds the earnings back to affected workers
+
 ### Implementation Details
 
 - **Service**: `PayCalculationServices::ReverseWorkOrderService`
-- **Callback**: `after_discard :reverse_pay_calculation_if_completed` in `WorkOrder` model
-- **Scope**: Only affects completed work orders with a `completion_date`
+- **Callbacks**:
+  - `before_discard :reverse_pay_calculation` - Reverses pay calculations before delete (allows transaction rollback on failure)
+  - `after_undiscard :reprocess_pay_calculation` - Reprocesses pay calculations on restore
+- **Condition**: `if: :needs_pay_calculation_reversal?` - Only for completed work orders with `completion_date`
+- **Transaction Safety**: Uses `before_discard` callback - if reversal fails, exception aborts the discard automatically
 
 ---
 
@@ -435,47 +443,69 @@ def prevent_completed_deletion
 end
 ```
 
-### Option 4: Auto-Reverse on Discard (Recommended for Production)
+### Option 4: Auto-Reverse on Discard (✅ IMPLEMENTED)
 
-Add automatic pay calculation reversal when discarding:
+This option has been **implemented** in the codebase. Here's the current implementation:
 
 ```ruby
 # app/models/work_order.rb
-after_discard :reverse_pay_calculation_if_completed
+
+# Discard callbacks - handle pay calculation updates on soft-delete/restore
+# Uses before_discard to ensure reversal happens before soft-delete, allowing transaction rollback on failure
+before_discard :reverse_pay_calculation, if: :needs_pay_calculation_reversal?
+after_undiscard :reprocess_pay_calculation, if: :needs_pay_calculation_reversal?
+
+# Condition for pay calculation callbacks (must be public for callback conditions)
+# Returns true if this work order has pay calculations that need to be managed
+def needs_pay_calculation_reversal?
+  completed? && completion_date.present?
+end
 
 private
 
-def reverse_pay_calculation_if_completed
-  return unless completed? && completion_date.present?
+# Discard callback - reverses pay calculations when work order is soft-deleted
+# Raises an exception if reversal fails to abort the discard transaction
+def reverse_pay_calculation
+  result = PayCalculationServices::ReverseWorkOrderService.new(self).call
 
-  PayCalculationServices::ReverseWorkOrderService.new(self).call
+  if result.failure?
+    error_message = "Pay calculation reversal failed for WorkOrder ##{id}: #{result.failure}"
+    AppLogger.error(error_message)
+    raise StandardError, error_message
+  end
+
+  AppLogger.info("Pay calculation reversed for WorkOrder ##{id}: #{result.value!}")
+end
+
+# Undiscard callback - reprocesses pay calculations when work order is restored
+# This ensures pay calculations are recalculated after restoring a deleted work order
+def reprocess_pay_calculation
+  result = PayCalculationServices::ProcessWorkOrderService.new(self).call
+
+  if result.failure?
+    error_message = "Pay calculation reprocessing failed for WorkOrder ##{id}: #{result.failure}"
+    AppLogger.error(error_message)
+    # Don't raise here - restoration should still succeed, pay calc can be fixed manually
+  else
+    AppLogger.info("Pay calculation reprocessed for WorkOrder ##{id}: #{result.value!}")
+  end
 end
 ```
+
+**Key Features:**
+
+- ✅ Conditional callback pattern for clarity
+- ✅ `before_discard` reverses pay calculations (exception aborts discard automatically)
+- ✅ `after_undiscard` automatically reprocesses pay calculations when restored
+- ✅ No custom transaction wrapping needed - Discard gem handles rollback on exception
 
 ---
 
-## Future Prevention Options
+## Implementation Details
 
-### Option 1: Add Soft-Delete Callback (Recommended)
+### The ReverseWorkOrderService
 
-Add a callback to `WorkOrder` that handles pay calculation updates on soft-delete:
-
-```ruby
-# In app/models/work_order.rb
-include Discard::Model
-
-after_discard :reverse_pay_calculation, if: :completed?
-
-private
-
-def reverse_pay_calculation
-  return unless completion_date.present?
-
-  PayCalculationServices::ReverseWorkOrderService.new(self).call
-end
-```
-
-Then create the service:
+The service that handles pay calculation reversal:
 
 ```ruby
 # app/services/pay_calculation_services/reverse_work_order_service.rb
@@ -483,21 +513,25 @@ module PayCalculationServices
   class ReverseWorkOrderService
     include Dry::Monads[:result]
 
+    MONTH_YEAR_FORMAT = '%Y-%m'
+
+    attr_reader :work_order
+
     def initialize(work_order)
       @work_order = work_order
     end
 
     def call
-      return Success('Not completed') unless @work_order.completed?
+      return Success('Not completed') unless work_order.completed?
+      return Success('No completion date') unless work_order.completion_date.present?
+      return Success('Resource-only work order, no pay calculation impact') if resource_only?
 
-      month_year = @work_order.completion_date.strftime('%Y-%m')
-      pay_calc = PayCalculation.find_by(month_year: month_year)
-
+      pay_calc = find_pay_calculation
       return Success('No pay calculation found') unless pay_calc
 
       ActiveRecord::Base.transaction do
         recalculate_affected_workers(pay_calc)
-        pay_calc.recalculate_overall_total!
+        update_or_destroy_pay_calculation(pay_calc)
       end
 
       Success("Reversed pay calculation for #{month_year}")
@@ -507,44 +541,87 @@ module PayCalculationServices
 
     private
 
+    def resource_only?
+      work_order.work_order_rate_type == 'resources'
+    end
+
+    def month_year
+      @month_year ||= work_order.completion_date.strftime(MONTH_YEAR_FORMAT)
+    end
+
+    def month_range
+      @month_range ||= begin
+        month_start = Date.parse("#{month_year}-01")
+        month_start..month_start.end_of_month
+      end
+    end
+
+    def find_pay_calculation
+      PayCalculation.find_by(month_year: month_year)
+    end
+
+    def affected_worker_ids
+      @affected_worker_ids ||= work_order.work_order_workers.pluck(:worker_id)
+    end
+
     def recalculate_affected_workers(pay_calc)
-      worker_ids = @work_order.work_order_workers.pluck(:worker_id)
-      month_range = pay_calc_month_range(pay_calc)
+      # Batch load all affected workers' pay calculation details to avoid N+1
+      details_by_worker = pay_calc.pay_calculation_details
+                                  .where(worker_id: affected_worker_ids)
+                                  .index_by(&:worker_id)
 
-      worker_ids.each do |worker_id|
-        recalculate_worker(pay_calc, worker_id, month_range)
+      # Calculate active earnings for all affected workers in a single query
+      active_earnings_by_worker = calculate_active_earnings_batch
+
+      # Process each affected worker
+      affected_worker_ids.each do |worker_id|
+        detail = details_by_worker[worker_id]
+        next unless detail
+
+        active_earnings = active_earnings_by_worker[worker_id] || 0
+
+        if active_earnings.zero?
+          # Worker has no remaining earnings for this month - remove the detail
+          AppLogger.info("ReverseWorkOrderService: Removing PayCalculationDetail for Worker ##{worker_id}")
+          detail.destroy!
+        else
+          # Update with recalculated earnings
+          old_gross = detail.gross_salary
+          detail.update!(gross_salary: active_earnings)
+          detail.recalculate_deductions!
+          AppLogger.info("ReverseWorkOrderService: Updated Worker ##{worker_id}: #{old_gross} -> #{active_earnings}")
+        end
       end
     end
 
-    def recalculate_worker(pay_calc, worker_id, month_range)
-      active_earnings = WorkOrderWorker
+    # Calculate active earnings for all affected workers in a single query
+    # Returns a hash of { worker_id => total_amount }
+    def calculate_active_earnings_batch
+      WorkOrderWorker
         .joins(:work_order)
-        .where(worker_id: worker_id)
-        .where.not(work_order_id: @work_order.id)
+        .where(worker_id: affected_worker_ids)
+        .where.not(work_order_id: work_order.id)
+        .merge(WorkOrder.kept) # Only non-discarded work orders
         .where(work_orders: {
-          work_order_status: 'completed',
-          completion_date: month_range
-        })
+                 work_order_status: 'completed',
+                 completion_date: month_range
+               })
+        .group(:worker_id)
         .sum(:amount)
-
-      detail = PayCalculationDetail.find_by(
-        pay_calculation: pay_calc,
-        worker_id: worker_id
-      )
-
-      return unless detail
-
-      if active_earnings.zero?
-        detail.destroy!
-      else
-        detail.update!(gross_salary: active_earnings)
-        detail.recalculate_deductions!
-      end
     end
 
-    def pay_calc_month_range(pay_calc)
-      month_start = Date.parse("#{pay_calc.month_year}-01")
-      month_start..month_start.end_of_month
+    def update_or_destroy_pay_calculation(pay_calc)
+      pay_calc.reload
+
+      if pay_calc.pay_calculation_details.exists?
+        # Recalculate totals
+        pay_calc.recalculate_overall_total!
+        AppLogger.info("ReverseWorkOrderService: Updated PayCalculation ##{pay_calc.id} for #{month_year}")
+      else
+        # No more details - remove the empty pay calculation
+        AppLogger.info("ReverseWorkOrderService: Removing empty PayCalculation ##{pay_calc.id}")
+        pay_calc.destroy!
+      end
     end
   end
 end
