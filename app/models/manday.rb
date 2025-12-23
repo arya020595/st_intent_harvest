@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class Manday < ApplicationRecord
+  include CascadingSoftDelete
+
+  cascade_soft_delete :mandays_workers
+
   has_many :mandays_workers, dependent: :destroy
   accepts_nested_attributes_for :mandays_workers,
                                 allow_destroy: true,

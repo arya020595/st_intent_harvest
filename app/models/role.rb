@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class Role < ApplicationRecord
+  include CascadingSoftDelete
+
+  cascade_soft_delete :roles_permissions
+
   has_many :users
   has_many :roles_permissions, dependent: :destroy
   has_many :permissions, through: :roles_permissions
