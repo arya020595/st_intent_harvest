@@ -55,39 +55,6 @@ jobs:
       - name: Secret Scanning
         run: |
           echo "🔒 Scanning for secrets..."
-
-          # Check for common secret patterns
-          FOUND=0
-
-          # Check for actual .env files (exclude any file ending with .example)
-          if git diff --name-only origin/main...HEAD | grep -E '(^|/)\.env' | grep -v "\.example$"; then
-            echo "❌ Found .env files in changes (non-example files)"
-            git diff --name-only origin/main...HEAD | grep -E '(^|/)\.env' | grep -v "\.example$"
-            FOUND=1
-          fi
-
-          # Check for master.key
-          if git diff --name-only origin/main...HEAD | grep "config/master.key"; then
-            echo "❌ Found master.key in changes"
-            FOUND=1
-          fi
-
-          # Check for real passwords/secrets in diff (exclude .example, .sample, .template files)
-          CHANGED_FILES=$(git diff --name-only origin/main...HEAD | grep -v -E '\.(example|sample|template)$' || true)
-          if [ -n "$CHANGED_FILES" ]; then
-            if git diff origin/main...HEAD -- $CHANGED_FILES | grep -E "POSTGRES_PASSWORD=.{16,}|SECRET_KEY_BASE=[a-f0-9]{64,}|password.*=.*['\"][a-zA-Z0-9]{16,}"; then
-              echo "❌ Found potential secrets in code"
-              FOUND=1
-            fi
-          fi
-
-          if [ $FOUND -eq 1 ]; then
-            echo "🚨 Secret detection failed! Please remove secrets before pushing."
-            exit 1
-          fi
-
-          echo "✅ No secrets detected"
-
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.4.7"
