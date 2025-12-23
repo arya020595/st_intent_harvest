@@ -177,7 +177,6 @@ module PayCalculationServices
 
     test 'soft delete of work order triggers automatic reversal via callback' do
       # This tests the integration with SoftDeletable concern
-      initial_total = @pay_calc.total_gross_salary
 
       # Soft delete the work order - should trigger after_discard callback
       @work_order.discard
