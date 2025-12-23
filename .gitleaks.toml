@@ -23,7 +23,7 @@ paths = [
 # Allow placeholder values
 regexes = [
   '''your_secure_password_here''',
-  '''your_secret_key_base_here''',
+  '''your_secret_key_base_here(_minimum_64_characters_generate_with_rails_secret)?''',
   '''generate_with_rails_secret''',
   '''change_me''',
   '''placeholder''',
