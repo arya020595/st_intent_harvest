@@ -1,5 +1,6 @@
 class InventoriesController < ApplicationController
   include RansackMultiSort
+  include SoftDeletableController
 
   before_action :set_inventory, only: %i[show edit update destroy confirm_delete]
   before_action :load_collections, only: %i[new edit]
@@ -107,17 +108,13 @@ class InventoriesController < ApplicationController
 
   def destroy
     authorize @inventory
+    super
+  end
 
-    if @inventory.destroy
-      respond_to do |format|
-        format.turbo_stream do
-          flash.now[:notice] = 'Inventory deleted successfully.'
-        end
-        format.html { redirect_to inventories_path, notice: 'Inventory deleted successfully.' }
-      end
-    else
-      redirect_to inventories_path, alert: 'Failed to delete inventory.'
-    end
+  def restore
+    @inventory = Inventory.with_discarded.find(params[:id])
+    authorize @inventory
+    super
   end
 
   private

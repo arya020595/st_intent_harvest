@@ -3,6 +3,7 @@
 module MasterData
   class BlocksController < ApplicationController
     include RansackMultiSort
+    include SoftDeletableController
 
     before_action :set_block, only: %i[show edit update destroy confirm_delete]
 
@@ -96,17 +97,13 @@ module MasterData
 
     def destroy
       authorize @block, policy_class: MasterData::BlockPolicy
+      super
+    end
 
-      if @block.destroy
-        respond_to do |format|
-          format.turbo_stream do
-            flash.now[:notice] = 'Block deleted successfully.'
-          end
-          format.html { redirect_to master_data_blocks_path, notice: 'Block deleted successfully.' }
-        end
-      else
-        redirect_to master_data_blocks_path, alert: 'Failed to delete block.'
-      end
+    def restore
+      @block = Block.with_discarded.find(params[:id])
+      authorize @block, policy_class: MasterData::BlockPolicy
+      super
     end
 
     private

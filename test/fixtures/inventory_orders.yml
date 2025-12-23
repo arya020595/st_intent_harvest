@@ -12,9 +12,11 @@
 #  created_at      :datetime         not null
 #  updated_at      :datetime         not null
 #  date_of_arrival :date
+#  discarded_at    :datetime
 #
 # Indexes
 #
+#  index_inventory_orders_on_discarded_at   (discarded_at)
 #  index_inventory_orders_on_inventory_id   (inventory_id)
 #  index_inventory_orders_on_purchase_date  (purchase_date)
 #

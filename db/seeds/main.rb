@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-# Production Seeds - Main Entry Point
-# Usage: SEED_ENV=production rails db:seed
+# Main Seeds Orchestrator
+# Usage: rails db:seed (development/test only)
 #
 # This file orchestrates the seeding process by loading modular seed files
 # in the correct dependency order. Each module is responsible for its own
 # domain context following SOLID principles.
 
-puts '🌱 Starting production seed process...'
+puts '🌱 Starting seed process...'
 puts "📅 Seeding at: #{Time.current}"
 puts '─' * 80
 
@@ -21,29 +21,35 @@ puts "\n🧹 Cleanup Phase: Removing existing data..."
 puts '─' * 80
 
 # Clean up existing data (in reverse order of dependencies)
-cleanup_models = [
-  PayCalculationDetail,
-  PayCalculation,
-  WorkOrderItem,
-  WorkOrderWorker,
-  WorkOrder,
-  Inventory,
-  WorkOrderRate,
-  User,
-  RolesPermission,
-  Role,
-  Permission,
-  Worker,
-  Block,
-  Vehicle,
-  Unit,
-  Category
-]
+# Using delete_all with disable_referential_integrity for clean slate
+ActiveRecord::Base.connection.disable_referential_integrity do
+  cleanup_models = [
+    PayCalculationDetail,
+    PayCalculation,
+    WorkOrderItem,
+    WorkOrderWorker,
+    WorkOrder,
+    InventoryOrder,
+    Inventory,
+    WorkOrderRate,
+    User,
+    RolesPermission,
+    Role,
+    Permission,
+    Worker,
+    Block,
+    Vehicle,
+    Unit,
+    Category,
+    DeductionType,
+    Manday
+  ]
 
-cleanup_models.each do |model|
-  count = model.count
-  model.destroy_all
-  puts "  ✓ Deleted #{count} #{model.name.pluralize}"
+  cleanup_models.each do |model|
+    count = model.count
+    model.delete_all
+    puts "  ✓ Deleted #{count} #{model.name.pluralize}"
+  end
 end
 
 puts "\n✅ Cleanup completed"
@@ -51,20 +57,22 @@ puts "\n✅ Cleanup completed"
 # ============================================================================
 # SEEDING PHASE
 # ============================================================================
-puts "\n🌱 Seeding Phase: Creating production data..."
+puts "\n🌱 Seeding Phase: Creating data..."
 puts '─' * 80
 
 # Define seed modules in dependency order
 seed_modules = [
-  'permissions',      # Foundation: Permission definitions
-  'roles',            # Roles with permission assignments
-  'users',            # Users with role assignments
-  'master_data',      # Units, Categories, Blocks, Vehicles, Deduction Types
-  'workers',          # Worker records
-  'inventories',      # Inventory items
-  'work_order_rates', # Work order rate definitions
-  'work_orders',      # Work orders with workers and items
-  'pay_calculations'  # Pay calculations and details
+  'permissions',        # Foundation: Permission definitions
+  'roles',              # Roles with permission assignments
+  'users',              # Users with role assignments
+  'deduction_types',    # Deduction type definitions (EPF, SOCSO, SIP)
+  'master_data',        # Units, Categories, Blocks, Vehicles
+  'workers',            # Worker records
+  'inventories',        # Inventory items
+  'work_order_rates',   # Work order rate definitions
+  'work_orders',        # Work orders with workers and items
+  'pay_calculations',   # Pay calculations and details
+  'reset_sequences'     # Reset PostgreSQL sequences (must be last)
 ]
 
 # Load each seed module
@@ -72,7 +80,7 @@ seed_modules.each_with_index do |module_name, index|
   puts "\n[#{index + 1}/#{seed_modules.size}] Loading #{module_name}..."
   puts '─' * 80
 
-  seed_file = Rails.root.join('db', 'seeds', 'production', "#{module_name}.rb")
+  seed_file = Rails.root.join('db', 'seeds', 'data', "#{module_name}.rb")
 
   begin
     load seed_file
@@ -86,7 +94,7 @@ end
 # ============================================================================
 # FINALIZATION PHASE
 # ============================================================================
-puts "\n🎉 Production seeding completed successfully!"
+puts "\n🎉 Seeding completed successfully!"
 puts '─' * 80
 
 # Re-enable auditing
@@ -117,21 +125,6 @@ summary_models.each do |item|
   count = item[:model].count
   puts "  #{item[:name].ljust(25)}: #{count.to_s.rjust(5)} records"
 end
-
-puts "\n👤 Test User Credentials:"
-puts '─' * 80
-puts '  Email                      | Password      | Role'
-puts '  ---------------------------|---------------|----------------'
-puts '  superadmin@example.com     | ChangeMe123!  | Superadmin'
-puts '  manager@example.com        | ChangeMe123!  | Manager'
-puts '  conductor@example.com      | ChangeMe123!  | Field Conductor'
-puts '  clerk@example.com          | ChangeMe123!  | Clerk'
-
-puts "\n⚠️  IMPORTANT SECURITY NOTICE:"
-puts '─' * 80
-puts '  🔐 Change all user passwords immediately after first login!'
-puts '  🔐 These default credentials should NEVER be used in production!'
-puts '  🔐 Consider implementing password rotation policies.'
 
 puts "\n✨ Seeding completed at: #{Time.current}"
 puts '─' * 80

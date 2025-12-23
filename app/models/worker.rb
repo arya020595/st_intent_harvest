@@ -67,4 +67,9 @@ end
 #  updated_at      :datetime         not null
 #  worker_type     :string
 #  position        :string
+#  discarded_at    :datetime
+#
+# Indexes
+#
+#  index_workers_on_discarded_at  (discarded_at)
 #
