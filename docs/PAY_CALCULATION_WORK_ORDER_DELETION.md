@@ -2,7 +2,7 @@
 
 ## ✅ Current Status: FIXED
 
-**As of December 2025**, this issue has been fixed with automatic pay calculation reversal.
+**As of the December 2025 release**, this issue has been fixed with automatic pay calculation reversal.
 
 When a completed work order is soft-deleted, the system automatically:
 
