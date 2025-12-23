@@ -101,22 +101,24 @@ inventory_data.each do |category_name, items|
 
     unit_id = units[item[:unit]]
 
-    # Create inventory with nested inventory_orders
-    Inventory.create!(
+    # Create inventory and its inventory_orders explicitly (avoid nested attributes dependency)
+    inventory = Inventory.create!(
       name: item[:name],
       category_id: category_id,
-      unit_id: unit_id,
-      inventory_orders_attributes: item[:orders].map do |order|
-        purchase_date = Date.current - order[:days_ago].days
-        {
-          quantity: order[:quantity],
-          total_price: order[:total_price],
-          supplier: order[:supplier],
-          purchase_date: purchase_date,
-          date_of_arrival: purchase_date + rand(3..14).days
-        }
-      end
+      unit_id: unit_id
     )
+
+    item[:orders].each do |order|
+      purchase_date = Date.current - order[:days_ago].days
+      InventoryOrder.create!(
+        inventory_id: inventory.id,
+        quantity: order[:quantity],
+        total_price: order[:total_price],
+        supplier: order[:supplier],
+        purchase_date: purchase_date,
+        date_of_arrival: purchase_date + rand(3..14).days
+      )
+    end
   end
 end
 
