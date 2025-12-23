@@ -61,9 +61,13 @@ services:
 
 volumes:
   postgres_data:
+    name: st_intent_harvest_postgres_data
   storage_data:
+    name: st_intent_harvest_storage_data
   log_data:
+    name: st_intent_harvest_log_data
 
 networks:
   app_network:
+    name: st_intent_harvest_app_network
     driver: bridge
