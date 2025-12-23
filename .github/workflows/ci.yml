@@ -60,9 +60,9 @@ jobs:
           FOUND=0
 
           # Check for actual .env files (exclude any file ending with .example)
-          if git diff --name-only origin/main...HEAD | grep -E "^\.env" | grep -v "\.example$"; then
+          if git diff --name-only origin/main...HEAD | grep -E '(^|/)\.env' | grep -v "\.example$"; then
             echo "❌ Found .env files in changes (non-example files)"
-            git diff --name-only origin/main...HEAD | grep -E "^\.env" | grep -v "\.example$"
+            git diff --name-only origin/main...HEAD | grep -E '(^|/)\.env' | grep -v "\.example$"
             FOUND=1
           fi
 
