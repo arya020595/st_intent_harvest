@@ -68,43 +68,49 @@ module PayCalculationServices
     end
 
     def recalculate_affected_workers(pay_calc)
+      # Batch load all affected workers' pay calculation details to avoid N+1
+      details_by_worker = pay_calc.pay_calculation_details
+                                  .where(worker_id: affected_worker_ids)
+                                  .index_by(&:worker_id)
+
+      # Calculate active earnings for all affected workers in a single query
+      active_earnings_by_worker = calculate_active_earnings_batch
+
+      # Process each affected worker
       affected_worker_ids.each do |worker_id|
-        recalculate_worker(pay_calc, worker_id)
+        detail = details_by_worker[worker_id]
+        next unless detail
+
+        active_earnings = active_earnings_by_worker[worker_id] || 0
+
+        if active_earnings.zero?
+          # Worker has no remaining earnings for this month - remove the detail
+          AppLogger.info("ReverseWorkOrderService: Removing PayCalculationDetail for Worker ##{worker_id}")
+          detail.destroy!
+        else
+          # Update with recalculated earnings
+          old_gross = detail.gross_salary
+          detail.update!(gross_salary: active_earnings)
+          detail.recalculate_deductions!
+          AppLogger.info("ReverseWorkOrderService: Updated Worker ##{worker_id}: #{old_gross} -> #{active_earnings}")
+        end
       end
     end
 
-    def recalculate_worker(pay_calc, worker_id)
-      # Calculate earnings from remaining ACTIVE (non-deleted) completed work orders only
-      # Exclude the current work order explicitly (it's being discarded)
-      active_earnings = WorkOrderWorker
-                        .joins(:work_order)
-                        .where(worker_id: worker_id)
-                        .where.not(work_order_id: work_order.id)
-                        .merge(WorkOrder.kept) # Only non-discarded work orders
-                        .where(work_orders: {
-                                 work_order_status: 'completed',
-                                 completion_date: month_range
-                               })
-                        .sum(:amount)
-
-      detail = PayCalculationDetail.find_by(
-        pay_calculation: pay_calc,
-        worker_id: worker_id
-      )
-
-      return unless detail
-
-      if active_earnings.zero?
-        # Worker has no remaining earnings for this month - remove the detail
-        AppLogger.info("ReverseWorkOrderService: Removing PayCalculationDetail for Worker ##{worker_id}")
-        detail.destroy!
-      else
-        # Update with recalculated earnings
-        old_gross = detail.gross_salary
-        detail.update!(gross_salary: active_earnings)
-        detail.recalculate_deductions!
-        AppLogger.info("ReverseWorkOrderService: Updated Worker ##{worker_id}: #{old_gross} -> #{active_earnings}")
-      end
+    # Calculate active earnings for all affected workers in a single query
+    # Returns a hash of { worker_id => total_amount }
+    def calculate_active_earnings_batch
+      WorkOrderWorker
+        .joins(:work_order)
+        .where(worker_id: affected_worker_ids)
+        .where.not(work_order_id: work_order.id)
+        .merge(WorkOrder.kept) # Only non-discarded work orders
+        .where(work_orders: {
+                 work_order_status: 'completed',
+                 completion_date: month_range
+               })
+        .group(:worker_id)
+        .sum(:amount)
     end
 
     def update_or_destroy_pay_calculation(pay_calc)
