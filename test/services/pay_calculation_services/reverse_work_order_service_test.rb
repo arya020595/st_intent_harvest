@@ -146,6 +146,7 @@ module PayCalculationServices
       ProcessWorkOrderService.new(second_work_order).call
 
       total_gross_before = @pay_calc.reload.total_gross_salary
+      assert_equal 1500.0, total_gross_before.to_f
 
       # Reverse the first work order
       ReverseWorkOrderService.new(@work_order).call
