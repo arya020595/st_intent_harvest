@@ -10,9 +10,6 @@ puts 'Seeding Deduction Types...'
 # This ensures deductions work for all months in the current year
 effective_start_date = Date.new(Date.current.year, 1, 1)
 
-# Clean up existing deductions to start fresh
-DeductionType.delete_all
-
 # EPF (Employees Provident Fund) - Percentage based
 # Different for Local vs Foreign employees
 DeductionType.create!([
