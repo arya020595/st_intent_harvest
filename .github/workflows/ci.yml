@@ -73,9 +73,12 @@ jobs:
           fi
 
           # Check for real passwords/secrets in diff (exclude .example, .sample, .template files)
-          if git diff origin/main...HEAD | grep -v -E "\.(example|sample|template)(\.|$)" | grep -E "POSTGRES_PASSWORD=.{16,}|SECRET_KEY_BASE=[a-f0-9]{64,}|password.*=.*['\"][a-zA-Z0-9]{16,}"; then
-            echo "❌ Found potential secrets in code"
-            FOUND=1
+          CHANGED_FILES=$(git diff --name-only origin/main...HEAD | grep -v -E '\.(example|sample|template)$' || true)
+          if [ -n "$CHANGED_FILES" ]; then
+            if git diff origin/main...HEAD -- $CHANGED_FILES | grep -E "POSTGRES_PASSWORD=.{16,}|SECRET_KEY_BASE=[a-f0-9]{64,}|password.*=.*['\"][a-zA-Z0-9]{16,}"; then
+              echo "❌ Found potential secrets in code"
+              FOUND=1
+            fi
           fi
 
           if [ $FOUND -eq 1 ]; then
