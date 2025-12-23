@@ -43,11 +43,6 @@ end
 
 puts "    ✓ #{Category.count} categories"
 
-# ========== Deduction Types ==========
-puts '  • Deduction Types...'
-deduction_types_file = Rails.root.join('db', 'seeds', 'deduction_types.rb')
-load deduction_types_file
-
 # ========== Blocks ==========
 puts '  • Blocks...'
 blocks_data = [
