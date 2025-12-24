@@ -6,7 +6,7 @@
           <i class="bi bi-arrow-left-circle-fill text-white me-1"></i> Back
         <% end %>
       </div>
-      <%= image_tag "intent-harvest-logo.webp", alt: "Intent Harvest Logo", class: "logo" %>
+      <%= image_tag ENV["APP_LOGO_WEBP_URL"], alt: "Intent Harvest Logo", class: "logo" %>
       <h2>Intent Harvest Sdn. Bhd</h2>
       <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
         <div class="field">
