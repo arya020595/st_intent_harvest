@@ -2,12 +2,12 @@
   <div class="login-wrapper">
     <div class="login-container">
       <div class="back-button">
-        <%= link_to ENV["APP_LANDING_PAGE_URL"], aria: { label: "Return to Intent Harvest landing page" } do %>
+        <%= link_to ENV["APP_LANDING_PAGE_URL"], aria: { label: "Return to #{ENV['APP_COMPANY_NAME']} landing page" } do %>
           <i class="bi bi-arrow-left-circle-fill text-white me-1"></i> Back
         <% end %>
       </div>
-      <%= image_tag ENV["APP_LOGO_WEBP_URL"], alt: "Intent Harvest Logo", class: "logo" %>
-      <h2>Intent Harvest Sdn. Bhd</h2>
+      <%= image_tag ENV["APP_LOGO_WEBP_URL"], alt: "#{ENV['APP_COMPANY_NAME']} Logo", class: "logo" %>
+      <h2><%= ENV['APP_COMPANY_FULL_NAME'] %></h2>
       <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
         <div class="field">
           <%= f.label :email %><br />
