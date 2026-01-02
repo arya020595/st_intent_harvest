@@ -1,4 +1,4 @@
-<%# Only show the dashboard if the company is Intent AND the flag is true %>
+<%# Only show the dashboard if the BI dashboard feature flag is set to true %>
 <% if ENV['IS_SHOW_BI_DASHBOARD'] == 'true' %>
   <div class="dashboard">
     <h1>BI Dashboard</h1>
