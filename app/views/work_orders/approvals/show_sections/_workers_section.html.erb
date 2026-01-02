@@ -14,7 +14,7 @@
               <th style="width: 30%">Worker Name</th>
               <%# Show "Days" for work_days type, otherwise show unit name or default %>
               <th style="width: 15%">
-                <%= work_order.work_order_rate_type == "work_days" ? "Days" : (work_order.work_order_rate_unit_name.presence || 'Quantity(Ha)') %>
+                <%= work_order.work_order_rate_type == "work_days" ? "Days" : (work_order.work_order_rate_unit_name.presence || 'Quantity') %>
               </th>
               <th style="width: 15%">Rate (RM)</th>
               <th style="width: 15%">Amount (RM)</th>
