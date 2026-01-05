@@ -15,6 +15,10 @@ class DeductionType < ApplicationRecord
   validates :effective_from, presence: true
   validates :calculation_type, presence: true, inclusion: { in: CALCULATION_TYPES }
   validates :applies_to_nationality, inclusion: { in: NATIONALITY_TYPES }, allow_nil: true
+  # Allow up to 4 decimal places for rounding precision.
+  # 2 is the standard for most currencies, but 3–4 decimals are supported for
+  # specific deduction use cases (e.g. statutory rules, prorated or percentage
+  # calculations) where higher precision is required before final rounding.
   validates :rounding_precision, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 4 }
 
   # Custom validation: Only one active record per code with no end date
