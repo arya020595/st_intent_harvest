@@ -34,3 +34,29 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# Ignore all credential key files
+/config/credentials/*.key
+
+# Ignore database configuration with passwords
+/config/database.yml
+
+# Ignore any backup files that might contain sensitive data
+*.sql
+*.dump
+*.backup
+
+# Ignore SSH keys
+*.pem
+*.key
+*.cert
+id_rsa
+id_rsa.pub
+
+# Ignore any secret or credential files
+secrets.yml
+secrets.json
+credentials.json
+
+# Ignore vendor bundle (if using local bundler)
+/vendor/bundle

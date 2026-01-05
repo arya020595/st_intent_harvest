@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# This file should run LAST (hence the 999 prefix)
-# It resets all PostgreSQL sequences to prevent duplicate key errors
+# Reset PostgreSQL Sequences
+# This module runs LAST to reset all sequences and prevent duplicate key errors
 # This is especially important after seeding data with specific IDs
 
 if ActiveRecord::Base.connection.adapter_name.downcase.include?('postgres')

@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class PayCalculationDetail < ApplicationRecord
+  # Ignore block_id column during removal migration
+  self.ignored_columns += ['block_id']
+
   belongs_to :pay_calculation
   belongs_to :worker
 

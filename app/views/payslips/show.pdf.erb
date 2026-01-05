@@ -1,6 +1,6 @@
 <%
   # Use absolute path for images in PDF to ensure Grover can load them
-  logo_path = Rails.root.join('app', 'assets', 'images', 'intent-harvest-logo.png')
+  logo_path = Rails.root.join('app', 'assets', 'images', ENV['APP_LOGO_PNG_URL'])
   logo_base64 = Base64.strict_encode64(File.read(logo_path))
   logo_data_url = "data:image/png;base64,#{logo_base64}"
 
@@ -14,7 +14,7 @@
   <tr>
     <!-- Left: Address -->
     <td style="text-align: left; vertical-align: top; line-height: 1.2; border: none;">
-      <p><strong>Intent Harvest Sdn. Bhd. (977470-K)</strong></p>
+      <p><strong><%= ENV['APP_COMPANY_FULL_NAME'] %> (977470-K)</strong></p>
       <p><strong>3rd floor, Lot 16, Block K, Jalan Ikan</strong></p>
       <p><strong>Juara Satu, Sadong Jaya,</strong></p>
       <p><strong>Karamunsing, 88000, Kota Kinabalu, Sabah</strong></p>
@@ -49,7 +49,7 @@
     <td><strong>Worker Type:</strong> <%= worker&.worker_type || "N/A" %></td>
   </tr>
   <tr>
-    <td><strong>Position:</strong> <%= @worker&.position || "N/A" %></td>
+    <td><strong>Position:</strong> <%= worker&.position || "N/A" %></td>
     <td></td>
   </tr>
 </table>
