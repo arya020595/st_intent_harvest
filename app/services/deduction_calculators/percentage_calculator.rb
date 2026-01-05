@@ -37,9 +37,9 @@ module DeductionCalculators
     private
 
     # Get rounding precision from deduction type configuration
-    # Defaults to 2 decimal places if not specified
+    # Always present due to NOT NULL database constraint with default of 2
     def rounding_precision
-      deduction_type.rounding_precision || 2
+      deduction_type.rounding_precision
     end
   end
 end
