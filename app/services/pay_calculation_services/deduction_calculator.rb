@@ -84,7 +84,8 @@ module PayCalculationServices
           'gross_salary' => gross_salary.to_f,
           'nationality' => nationality,
           'applies_to_nationality' => deduction_type.applies_to_nationality,
-          'rounding_precision' => deduction_type.rounding_precision
+          'rounding_precision' => deduction_type.rounding_precision,
+          'rounding_method' => deduction_type.rounding_method
         }
       end
     end
