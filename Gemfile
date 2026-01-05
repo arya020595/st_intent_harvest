@@ -14,7 +14,7 @@ gem 'rails', '~> 8.1'
 gem 'sprockets-rails'
 
 # Use postgresql as the database for Active Record
-gem 'pg', '~> 1.1'
+gem 'pg', '~> 1.6'
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
@@ -41,7 +41,7 @@ gem 'kredis'
 gem 'csv'
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-gem 'bcrypt', '~> 3.1.7'
+gem 'bcrypt', '~> 3.1.21'
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[windows jruby]
@@ -127,7 +127,7 @@ group :development do
   # gem "spring"
 
   # Code completion and inline documentation for Ruby/Rails [https://solargraph.org]
-  gem 'solargraph', '~> 0.57.0', require: false
+  gem 'solargraph', '~> 0.58.1', require: false
 
   # HTML formatter for Ruby/Rails code [https://github.com/threedaymonk/htmlbeautifier]
   gem 'htmlbeautifier', require: false
