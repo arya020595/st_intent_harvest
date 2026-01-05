@@ -25,6 +25,8 @@ module PayCalculationServices
         worker_id: work_order_worker.worker_id
       ) do |detail|
         detail.currency = DEFAULT_CURRENCY
+        # Set block_id from the work order (first block assignment for this worker in this month)
+        detail.block_id = work_order.block_id
       end
     end
 

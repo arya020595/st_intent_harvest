@@ -223,6 +223,94 @@ SoftDelete::BatchService.call(User, ids: [1, 2, 3], action: :delete)
 SoftDelete::BatchService.call(User, ids: [1, 2, 3], action: :restore)
 ```
 
+#### ⚠️ Batch Operations Bypass Callbacks
+
+**IMPORTANT:** `soft_delete_all` and `restore_all` use `discard_all`/`undiscard_all` which perform batch SQL updates (`UPDATE ... SET discarded_at = ...`). This means:
+
+| Feature                   | Individual `discard` | Batch `soft_delete_all` |
+| ------------------------- | -------------------- | ----------------------- |
+| `before_discard` callback | ✅ Executes          | ❌ Skipped              |
+| `after_discard` callback  | ✅ Executes          | ❌ Skipped              |
+| `CascadingSoftDelete`     | ✅ Cascades          | ❌ Skipped              |
+| Validations               | ✅ Runs              | ❌ Skipped              |
+| Performance               | Slower (N queries)   | Fast (1 query)          |
+
+**When to Use Each Approach:**
+
+| Use Case                                                | Recommended Method           |
+| ------------------------------------------------------- | ---------------------------- |
+| Simple records without callbacks                        | `soft_delete_all` ✅         |
+| Records with `before_discard`/`after_discard` callbacks | Individual `discard` in loop |
+| Records with `CascadingSoftDelete`                      | Individual `discard` in loop |
+| Records that affect other tables (e.g., PayCalculation) | Individual `discard` in loop |
+| Bulk cleanup of orphan/test data                        | `soft_delete_all` ✅         |
+
+### Workaround: Manually Delete Completed WorkOrders via Console
+
+Di UI, user **tidak bisa menghapus WorkOrder yang sudah complete**. Jika perlu menghapus WorkOrder yang sudah complete, harus dilakukan manual melalui Rails console dengan cara yang benar agar callback `reverse_pay_calculation` tetap terpanggil.
+
+#### ✅ Cara yang Benar (Triggers Callbacks)
+
+```ruby
+# Di Rails console (production/staging)
+work_order_ids = [320, 507, 445]
+
+ActiveRecord::Base.transaction do
+  WorkOrder.where(id: work_order_ids).find_each do |work_order|
+    work_order.discard  # Triggers before_discard :reverse_pay_calculation
+    puts "✅ WorkOrder ##{work_order.id} deleted successfully"
+  end
+end
+```
+
+#### ❌ Cara yang Salah (Callbacks Tidak Terpanggil)
+
+```ruby
+# JANGAN GUNAKAN INI untuk WorkOrder!
+# PayCalculation TIDAK akan di-reverse
+WorkOrder.soft_delete_all([320, 507, 445])
+```
+
+#### 🔧 Cara Fix Jika Sudah Terlanjur Menggunakan `soft_delete_all`
+
+Jika sudah terlanjur menggunakan `soft_delete_all`, PayCalculation tidak ter-update. Jalankan service secara manual:
+
+```ruby
+# Run di Rails console untuk fix PayCalculation
+work_order_ids = [320, 507, 445]
+
+ActiveRecord::Base.transaction do
+  WorkOrder.with_discarded.where(id: work_order_ids).find_each do |work_order|
+    # Panggil service reverse secara manual
+    result = PayCalculationServices::ReverseWorkOrderService.new(work_order).call
+
+    if result.success?
+      puts "✅ WorkOrder ##{work_order.id}: PayCalculation reversed - #{result.value!}"
+    else
+      puts "❌ WorkOrder ##{work_order.id}: #{result.failure}"
+      raise "Failed for WorkOrder ##{work_order.id}"  # Rollback jika gagal
+    end
+  end
+end
+```
+
+#### Penjelasan Callback WorkOrder
+
+WorkOrder memiliki callback penting yang harus dijalankan saat soft delete:
+
+```ruby
+# app/models/work_order.rb
+before_discard :reverse_pay_calculation, if: :needs_pay_calculation_reversal?
+after_undiscard :reprocess_pay_calculation, if: :needs_pay_calculation_reversal?
+```
+
+`ReverseWorkOrderService` akan:
+
+1. **Recalculate** gross salary worker dari work order yang masih aktif
+2. **Update** `PayCalculationDetail` dengan nilai baru
+3. **Destroy** `PayCalculationDetail` jika worker tidak punya earnings lagi di bulan tersebut
+4. **Destroy** `PayCalculation` jika tidak ada detail tersisa
+
 ### Cascading Soft Delete
 
 The `CascadingSoftDelete` concern enables automatic soft deletion of child records when a parent record is soft deleted, and automatic restoration when the parent is restored.
