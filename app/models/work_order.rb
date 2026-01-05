@@ -40,6 +40,8 @@ class WorkOrder < ApplicationRecord
   validates_with WorkOrderTypeValidator
   validates :work_order_rate_id, presence: true
   validates :work_order_status, inclusion: { in: STATUSES.values, allow_nil: true }
+  # Ensure completion_date is set when work order is completed (prevents pay calculation issues)
+  validates :completion_date, presence: { message: 'is required for completed work orders' }, if: :completed?
 
   # Define denormalized fields - auto-populated from associations
   denormalize :block_number, from: :block
