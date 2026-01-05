@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_05_042543) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_05_130248) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -68,6 +68,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_042543) do
     t.decimal "employer_contribution", precision: 10, scale: 2, default: "0.0", comment: "Employer's contribution rate (percentage) or fixed amount (RM)"
     t.boolean "is_active", default: true, null: false
     t.string "name", null: false
+    t.integer "rounding_precision", default: 2, null: false, comment: "Decimal places for rounding calculated amounts (e.g., 0 for whole numbers, 2 for cents)"
     t.datetime "updated_at", null: false
     t.index ["applies_to_nationality"], name: "index_deduction_types_on_applies_to_nationality"
     t.index ["calculation_type"], name: "index_deduction_types_on_calculation_type"
