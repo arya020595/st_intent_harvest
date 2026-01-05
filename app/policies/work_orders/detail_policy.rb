@@ -30,6 +30,8 @@ module WorkOrders
     end
 
     def destroy?
+      return true if user.superadmin?
+
       user.has_permission?(build_permission_code('destroy')) && !destroyable?
     end
 
