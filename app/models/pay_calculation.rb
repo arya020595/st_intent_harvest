@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class PayCalculation < ApplicationRecord
+  include CascadingSoftDelete
+
+  cascade_soft_delete :pay_calculation_details
+
   has_many :pay_calculation_details, dependent: :destroy
   has_many :workers, through: :pay_calculation_details
 

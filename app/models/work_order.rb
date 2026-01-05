@@ -5,6 +5,7 @@ class WorkOrder < ApplicationRecord
   include Denormalizable
   include WorkOrderTypeBehavior
   include WorkOrderGuardMessages
+  include CascadingSoftDelete
 
   # Status constants
   STATUSES = {
@@ -31,6 +32,9 @@ class WorkOrder < ApplicationRecord
   has_many :work_order_workers, dependent: :destroy
   has_many :work_order_items, dependent: :destroy
   has_many :work_order_histories, dependent: :destroy
+
+  # Cascade soft delete to direct dependent associations for performance
+  cascade_soft_delete :work_order_items, :work_order_workers, :work_order_histories
 
   # Nested attributes for dynamic form
   accepts_nested_attributes_for :work_order_workers, allow_destroy: true, reject_if: :all_blank
