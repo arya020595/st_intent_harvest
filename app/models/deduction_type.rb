@@ -3,6 +3,7 @@
 class DeductionType < ApplicationRecord
   CALCULATION_TYPES = %w[percentage fixed wage_range].freeze
   NATIONALITY_TYPES = %w[all local foreigner foreigner_no_passport].freeze
+  ROUNDING_METHODS = %w[round ceil floor].freeze
 
   # Associations
   has_many :deduction_wage_ranges, dependent: :destroy
@@ -20,6 +21,8 @@ class DeductionType < ApplicationRecord
   # specific deduction use cases (e.g. statutory rules, prorated or percentage
   # calculations) where higher precision is required before final rounding.
   validates :rounding_precision, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 4 }
+  # Rounding method: 'round' (standard), 'ceil' (always up), 'floor' (always down)
+  validates :rounding_method, inclusion: { in: ROUNDING_METHODS }
 
   # Custom validation: Only one active record per code with no end date
   validate :only_one_current_per_code

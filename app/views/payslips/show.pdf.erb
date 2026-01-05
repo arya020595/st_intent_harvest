@@ -104,8 +104,8 @@
       <% sorted_deductions(deduction_breakdown).each do |deduction_code, data| %>
         <tr>
           <td><%= data['name'] %></td>
-          <td class="text-center"><%= data['employer_amount'] == 0 ? '-' : number_to_currency(data['employer_amount'], unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
-          <td class="text-center"><%= data['employee_amount'] == 0 ? '-' : number_to_currency(data['employee_amount'], unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+          <td class="text-center"><%= format_deduction_amount(data, data['employer_amount']) %></td>
+          <td class="text-center"><%= format_deduction_amount(data, data['employee_amount']) %></td>
         </tr>
       <% end %>
     <% else %>
