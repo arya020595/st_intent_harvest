@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_05_033414) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_05_042543) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -151,7 +151,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_033414) do
   end
 
   create_table "pay_calculation_details", force: :cascade do |t|
-    t.bigint "block_id"
     t.datetime "created_at", null: false
     t.string "currency", default: "RM"
     t.jsonb "deduction_breakdown", comment: "JSON breakdown of deductions: {EPF: {worker: 0, employee: 0}, SOCSO: {...}}"
@@ -164,7 +163,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_033414) do
     t.bigint "pay_calculation_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "worker_id", null: false
-    t.index ["block_id"], name: "index_pay_calculation_details_on_block_id"
     t.index ["discarded_at"], name: "index_pay_calculation_details_on_discarded_at"
     t.index ["pay_calculation_id"], name: "index_pay_calculation_details_on_pay_calculation_id"
     t.index ["worker_id"], name: "index_pay_calculation_details_on_worker_id"
@@ -376,7 +374,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_033414) do
   add_foreign_key "inventory_orders", "inventories"
   add_foreign_key "mandays_workers", "mandays"
   add_foreign_key "mandays_workers", "workers"
-  add_foreign_key "pay_calculation_details", "blocks"
   add_foreign_key "pay_calculation_details", "pay_calculations"
   add_foreign_key "pay_calculation_details", "workers"
   add_foreign_key "roles_permissions", "permissions"
