@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 class Permission < ApplicationRecord
-  include CascadingSoftDelete
-
-  cascade_soft_delete :roles_permissions
-
   has_many :roles_permissions, dependent: :destroy
   has_many :roles, through: :roles_permissions
 

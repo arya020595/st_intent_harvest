@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 class DeductionType < ApplicationRecord
-  include CascadingSoftDelete
-
-  cascade_soft_delete :deduction_wage_ranges
-
   CALCULATION_TYPES = %w[percentage fixed wage_range].freeze
   NATIONALITY_TYPES = %w[all local foreigner foreigner_no_passport].freeze
 

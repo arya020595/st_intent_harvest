@@ -1,13 +1,6 @@
 # frozen_string_literal: true
 
 class Inventory < ApplicationRecord
-  include CascadingSoftDelete
-
-  cascade_soft_delete :inventory_orders
-
-  # Ignore removed columns for safe deployment
-  self.ignored_columns = %w[currency input_date price stock_quantity supplier]
-
   belongs_to :category, optional: true
   belongs_to :unit, optional: true
   has_many :work_order_items, dependent: :nullify
