@@ -15,7 +15,9 @@ class AddRoundingPrecisionToDeductionTypes < ActiveRecord::Migration[8.1]
 
     # Update existing EPF records to use whole number rounding
     # EPF calculations in Malaysia are always rounded to whole Ringgit
-    DeductionType.where("code LIKE 'EPF%'").update_all(rounding_precision: 0)
+    safety_assured do
+      DeductionType.where("code LIKE 'EPF%'").update_all(rounding_precision: 0)
+    end
   end
 
   def down
