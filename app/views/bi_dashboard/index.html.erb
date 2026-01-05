@@ -1,13 +1,19 @@
-<div class="dashboard">
-  <h1>BI Dashboard</h1>
+<%# Only show the dashboard if the BI dashboard feature flag is set to true %>
+<% if ENV['IS_SHOW_BI_DASHBOARD'].to_s.downcase == 'true' %>
+  <div class="dashboard">
+    <h1>BI Dashboard</h1>
 
-  <div class="powerbi-dashboard">
-  <iframe title="Intent Harvest Dashboard"
-          width="100%"
-          height="600"
-          src="https://app.powerbi.com/view?r=eyJrIjoiZDI5MGNlNTYtODFmYy00NGNjLWIxNDMtM2EzOWQxODdjMjRlIiwidCI6IjNiNmFjMTJhLTgwMDAtNGYwZS1iYmMyLWYwNzhiNTY0NGFlNiIsImMiOjEwfQ%3D%3D"
-          frameborder="0"
-          allowFullScreen="true">
-  </iframe>
-</div>
-</div>
+    <div class="powerbi-dashboard">
+      <iframe title="INTENT HARVEST DASHBOARD 2"
+        width="100%"
+        height="550"
+        src="https://app.powerbi.com/view?r=eyJrIjoiOTVlMjllYWEtZjJlNC00Y2QxLTlmYjUtNjI4ZGY3OWJlOThlIiwidCI6IjNiNmFjMTJhLTgwMDAtNGYwZS1iYmMyLWYwNzhiNTY0NGFlNiIsImMiOjEwfQ%3D%3D&pageName=cfe0ce6e0828dc2a2726"
+        frameborder="0"
+        allowFullScreen="true">
+      </iframe>
+    </div>
+  </div>
+<% else %>
+  <h1>BI Dashboard</h1>
+  <p>The dashboard is not available for your company.</p>
+<% end %>

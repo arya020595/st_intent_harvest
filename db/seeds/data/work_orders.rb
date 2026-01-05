@@ -77,6 +77,7 @@ work_orders_data.each do |data|
     if data[:status] == 'completed'
       work_order.approved_by = manager_user.name
       work_order.approved_at = data[:start_date] + 7.days
+      work_order.completion_date = data[:start_date] + 7.days
     end
   end
   created_work_orders << wo
@@ -156,15 +157,9 @@ if new_wow.any?
       created_at: data[:work_order].created_at,
       updated_at: data[:work_order].created_at
     }
-    # Set days or quantity based on work order type
-    case data[:work_order].work_order_rate_type
-    when 'work_days'
-      attrs[:work_days] = data[:days]
-      attrs[:remarks] = "#{data[:days]} days worked"
-    else
-      attrs[:work_area_size] = data[:days] # treat as quantity for normal type
-      attrs[:remarks] = "#{data[:days]} Ha worked"
-    end
+    # Set work_area_size for both normal and resources types
+    attrs[:work_area_size] = data[:days]
+    attrs[:remarks] = "#{data[:days]} units completed"
     attrs
   end
   WorkOrderWorker.insert_all(wow_insert_data)
@@ -197,13 +192,8 @@ workers.each do |worker|
     created_at: wo.created_at,
     updated_at: wo.created_at
   }
-  if wo.work_order_rate_type == 'work_days'
-    attrs[:work_days] = days
-    attrs[:remarks] = "#{days} days worked"
-  else
-    attrs[:work_area_size] = days
-    attrs[:remarks] = "#{days} Ha worked"
-  end
+  attrs[:work_area_size] = days
+  attrs[:remarks] = "#{days} units completed"
   WorkOrderWorker.insert_all([attrs])
 end
 
@@ -227,13 +217,8 @@ completed_wos.each do |wo|
       created_at: wo.created_at,
       updated_at: wo.created_at
     }
-    if wo.work_order_rate_type == 'work_days'
-      attrs[:work_days] = days
-      attrs[:remarks] = "#{days} days worked"
-    else
-      attrs[:work_area_size] = days
-      attrs[:remarks] = "#{days} Ha worked"
-    end
+    attrs[:work_area_size] = days
+    attrs[:remarks] = "#{days} units completed"
     attrs
   end
   WorkOrderWorker.insert_all(insert) if insert.any?
@@ -290,14 +275,18 @@ end
 
 if new_woi.any?
   woi_insert_data = new_woi.map do |data|
+    # Get unit price from latest inventory order, or default to 0
+    latest_order = data[:inventory].inventory_orders.order(purchase_date: :desc).first
+    unit_price = latest_order&.unit_price || 0
+
     {
       work_order_id: data[:work_order].id,
       inventory_id: data[:inventory].id,
       item_name: data[:inventory].name,
       amount_used: data[:amount_used],
-      price: data[:inventory].price,
-      unit_name: data[:inventory].unit.name,
-      category_name: data[:inventory].category.name,
+      price: unit_price,
+      unit_name: data[:inventory].unit&.name,
+      category_name: data[:inventory].category&.name,
       created_at: data[:work_order].created_at,
       updated_at: data[:work_order].created_at
     }

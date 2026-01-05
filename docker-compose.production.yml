@@ -10,6 +10,13 @@ services:
       POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./postgres-ssl/server.crt:/var/lib/postgresql/server.crt:ro
+      - ./postgres-ssl/server.key:/var/lib/postgresql/server.key:ro
+    command: >
+      postgres
+      -c ssl=on
+      -c ssl_cert_file=/var/lib/postgresql/server.crt
+      -c ssl_key_file=/var/lib/postgresql/server.key
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
       interval: 10s
@@ -40,7 +47,7 @@ services:
       RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
       WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
       TZ: Asia/Jakarta
-      PORT: 3000 # Force Puma to bind to 3000 inside container
+      PORT: 3000
     ports:
       - "${PORT:-3005}:3000"
     volumes:
@@ -61,9 +68,13 @@ services:
 
 volumes:
   postgres_data:
+    name: st_intent_harvest_postgres_data
   storage_data:
+    name: st_intent_harvest_storage_data
   log_data:
+    name: st_intent_harvest_log_data
 
 networks:
   app_network:
+    name: st_intent_harvest_app_network
     driver: bridge
