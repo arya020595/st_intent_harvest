@@ -67,7 +67,7 @@ class DeductionType < ApplicationRecord
   # Ransack configuration
   def self.ransackable_attributes(_auth_object = nil)
     %w[id name code description is_active employee_contribution employer_contribution effective_from effective_until
-       calculation_type applies_to_nationality rounding_precision created_at updated_at]
+       calculation_type applies_to_nationality rounding_precision rounding_method created_at updated_at]
   end
 
   def self.ransackable_associations(_auth_object = nil)
