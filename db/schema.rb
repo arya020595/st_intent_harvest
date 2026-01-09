@@ -97,7 +97,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_141431) do
     t.index ["deduction_type_id", "min_wage", "max_wage"], name: "idx_wage_ranges_salary_lookup"
     t.index ["deduction_type_id"], name: "index_deduction_wage_ranges_on_deduction_type_id"
     t.index ["discarded_at"], name: "index_deduction_wage_ranges_on_discarded_at"
-    t.check_constraint "calculation_method::text = ANY (ARRAY['fixed'::character varying, 'percentage'::character varying]::text[])", name: "calculation_method_check"
+    t.check_constraint "calculation_method::text = ANY (ARRAY['fixed'::character varying::text, 'percentage'::character varying::text])", name: "calculation_method_check"
     t.check_constraint "max_wage IS NULL OR max_wage >= min_wage", name: "max_wage_check"
   end
 

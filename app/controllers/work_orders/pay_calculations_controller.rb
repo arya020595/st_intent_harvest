@@ -64,8 +64,11 @@ module WorkOrders
       month_end = month_date.end_of_month
 
       # Get all work order workers for this worker created in the pay calculation month
+      # Only include non-discarded (kept) work orders and work_order_workers
       @work_order_workers = @worker.work_order_workers
+                                   .where(discarded_at: nil)
                                    .joins(:work_order)
+                                   .merge(WorkOrder.kept)
                                    .where(work_orders: {
                                             completion_date: month_start..month_end,
                                             work_order_status: 'completed',
