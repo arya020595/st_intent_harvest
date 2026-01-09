@@ -101,6 +101,7 @@ module PayCalculationServices
     # Returns a hash of { worker_id => total_amount }
     def calculate_active_earnings_batch
       WorkOrderWorker
+        .where(discarded_at: nil)
         .joins(:work_order)
         .where(worker_id: affected_worker_ids)
         .where.not(work_order_id: work_order.id)
