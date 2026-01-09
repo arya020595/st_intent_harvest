@@ -1,39 +1,57 @@
 # frozen_string_literal: true
 
 namespace :pay_calculations do
-  desc 'Recalculate all pay calculation details (employee and employer deductions)'
+  desc 'Recalculate all pay calculation details (gross salary from kept work orders + deductions)'
   task recalculate_all: :environment do
     puts 'Starting recalculation of all pay calculation details...'
 
-    total_count = PayCalculationDetail.count
-    updated_count = 0
-    error_count = 0
+    PayCalculation.find_each do |pay_calc|
+      puts "\n#{'=' * 60}"
+      puts "Processing PayCalculation ##{pay_calc.id} (#{pay_calc.month_year})"
+      puts '=' * 60
 
-    PayCalculationDetail.find_each.with_index do |detail, index|
-      detail.recalculate_deductions!
-      updated_count += 1
+      month_date = Date.parse("#{pay_calc.month_year}-01")
+      month_start = month_date.beginning_of_month
+      month_end = month_date.end_of_month
 
-      puts "Progress: #{index + 1}/#{total_count} processed..." if ((index + 1) % 50).zero?
-    rescue StandardError => e
-      error_count += 1
-      puts "Error processing PayCalculationDetail ID #{detail.id}: #{e.message}"
+      pay_calc.pay_calculation_details.includes(:worker).find_each do |detail|
+        worker = detail.worker
+
+        # Calculate active earnings from kept work orders and work_order_workers only
+        active_earnings = WorkOrderWorker
+          .where(discarded_at: nil)
+          .joins(:work_order)
+          .where(worker_id: worker.id)
+          .merge(WorkOrder.kept)
+          .where(work_orders: {
+                   work_order_status: 'completed',
+                   completion_date: month_start..month_end,
+                   work_order_rate_type: %w[normal work_days]
+                 })
+          .sum(:amount)
+
+        old_gross = detail.gross_salary
+
+        if old_gross != active_earnings
+          detail.update!(gross_salary: active_earnings)
+          detail.recalculate_deductions!
+          puts "  Worker ##{worker.id} (#{worker.name}): #{old_gross} -> #{active_earnings}"
+        else
+          detail.recalculate_deductions!
+          puts "  Worker ##{worker.id} (#{worker.name}): No gross change (#{old_gross})"
+        end
+      rescue StandardError => e
+        puts "  Error processing Worker ##{worker&.id}: #{e.message}"
+      end
+
+      # Recalculate overall totals
+      pay_calc.recalculate_overall_total!
+      puts "Updated PayCalculation ##{pay_calc.id} totals"
     end
 
     puts "\n#{'=' * 60}"
-    puts 'Recalculation completed!'
-    puts "Total records: #{total_count}"
-    puts "Successfully updated: #{updated_count}"
-    puts "Errors: #{error_count}"
+    puts 'All done! ✓'
     puts '=' * 60
-
-    # Recalculate overall totals for all pay calculations
-    puts "\nRecalculating overall totals for pay calculations..."
-    PayCalculation.find_each do |pay_calc|
-      pay_calc.recalculate_overall_total!
-      puts "Updated PayCalculation ID #{pay_calc.id} (#{pay_calc.month_year})"
-    end
-
-    puts "\nAll done! ✓"
   end
 
   desc 'Recalculate pay calculation details for a specific month (format: YYYY-MM)'
@@ -53,13 +71,42 @@ namespace :pay_calculations do
       exit 1
     end
 
+    puts "=" * 60
     puts "Recalculating pay calculation details for #{month_year}..."
+    puts "=" * 60
+
+    month_date = Date.parse("#{month_year}-01")
+    month_start = month_date.beginning_of_month
+    month_end = month_date.end_of_month
 
     updated_count = 0
-    pay_calculation.pay_calculation_details.each do |detail|
-      detail.recalculate_deductions!
+    pay_calculation.pay_calculation_details.includes(:worker).each do |detail|
+      worker = detail.worker
+
+      # Calculate active earnings from kept work orders and work_order_workers only
+      active_earnings = WorkOrderWorker
+        .where(discarded_at: nil)
+        .joins(:work_order)
+        .where(worker_id: worker.id)
+        .merge(WorkOrder.kept)
+        .where(work_orders: {
+                 work_order_status: 'completed',
+                 completion_date: month_start..month_end,
+                 work_order_rate_type: %w[normal work_days]
+               })
+        .sum(:amount)
+
+      old_gross = detail.gross_salary
+
+      if old_gross != active_earnings
+        detail.update!(gross_salary: active_earnings)
+        detail.recalculate_deductions!
+        puts "  Worker ##{worker.id} (#{worker.name}): #{old_gross} -> #{active_earnings}"
+      else
+        detail.recalculate_deductions!
+        puts "  Worker ##{worker.id} (#{worker.name}): No gross change (#{old_gross})"
+      end
       updated_count += 1
-      puts "Updated: Worker ID #{detail.worker_id} - #{detail.worker.name}"
     end
 
     # Recalculate overall total
