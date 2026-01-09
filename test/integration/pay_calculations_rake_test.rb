@@ -139,6 +139,7 @@ class PayCalculationsRakeTest < ActiveSupport::TestCase
 
     # Run recalculate_month
     Rake::Task['pay_calculations:recalculate_month'].invoke(@month_year)
+    Rake::Task['pay_calculations:recalculate_month'].reenable
 
     detail.reload
     assert_equal 500.0, detail.gross_salary.to_f
