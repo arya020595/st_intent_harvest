@@ -13,8 +13,8 @@
           <% sorted_deductions(pay_calculation_detail.deduction_breakdown).each_with_index do |(deduction_code, data), index| %>
             <tr>
               <td class="text-center"><%= data['name'] %></td>
-              <td class="text-center"><%= data['employee_amount'] == 0 ? '-' : number_to_currency(data['employee_amount'], unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
-              <td class="text-end"><%= data['employer_amount'] == 0 ? '-' : number_to_currency(data['employer_amount'], unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
+              <td class="text-center"><%= format_deduction_amount(data, data['employee_amount']) %></td>
+              <td class="text-end"><%= format_deduction_amount(data, data['employer_amount']) %></td>
             </tr>
           <% end %>
         </tbody>

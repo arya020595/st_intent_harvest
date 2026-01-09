@@ -23,7 +23,9 @@ DeductionType.create!([
                           applies_to_nationality: 'local',
                           is_active: true,
                           effective_from: effective_start_date,
-                          effective_until: nil
+                          effective_until: nil,
+                          rounding_precision: 0, # EPF rounds to whole numbers
+                          rounding_method: 'ceil' # Always round up (50.20 → 51)
                         }
                       ])
 
@@ -38,7 +40,9 @@ DeductionType.create!([
                           applies_to_nationality: 'foreigner',
                           is_active: true,
                           effective_from: effective_start_date,
-                          effective_until: nil
+                          effective_until: nil,
+                          rounding_precision: 0, # EPF rounds to whole numbers
+                          rounding_method: 'ceil' # Always round up (50.20 → 51)
                         }
                       ])
 

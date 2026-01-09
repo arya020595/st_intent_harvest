@@ -3,6 +3,7 @@
 class DeductionType < ApplicationRecord
   CALCULATION_TYPES = %w[percentage fixed wage_range].freeze
   NATIONALITY_TYPES = %w[all local foreigner foreigner_no_passport].freeze
+  ROUNDING_METHODS = %w[round ceil floor].freeze
 
   # Associations
   has_many :deduction_wage_ranges, dependent: :destroy
@@ -15,6 +16,13 @@ class DeductionType < ApplicationRecord
   validates :effective_from, presence: true
   validates :calculation_type, presence: true, inclusion: { in: CALCULATION_TYPES }
   validates :applies_to_nationality, inclusion: { in: NATIONALITY_TYPES }, allow_nil: true
+  # Allow up to 4 decimal places for rounding precision.
+  # 2 is the standard for most currencies, but 3–4 decimals are supported for
+  # specific deduction use cases (e.g. statutory rules, prorated or percentage
+  # calculations) where higher precision is required before final rounding.
+  validates :rounding_precision, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 4 }
+  # Rounding method: 'round' (standard), 'ceil' (always up), 'floor' (always down)
+  validates :rounding_method, inclusion: { in: ROUNDING_METHODS }
 
   # Custom validation: Only one active record per code with no end date
   validate :only_one_current_per_code
@@ -59,7 +67,7 @@ class DeductionType < ApplicationRecord
   # Ransack configuration
   def self.ransackable_attributes(_auth_object = nil)
     %w[id name code description is_active employee_contribution employer_contribution effective_from effective_until
-       calculation_type applies_to_nationality created_at updated_at]
+       calculation_type applies_to_nationality rounding_precision rounding_method created_at updated_at]
   end
 
   def self.ransackable_associations(_auth_object = nil)
