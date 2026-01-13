@@ -10,7 +10,7 @@ A Git pre-push hook is now set up to automatically run RuboCop auto-correction b
 
 Every time you run `git push`, the hook will:
 
-1. 🔍 Run `bundle exec rubocop -A` on all files
+1. 🔍 Run `bundle exec rubocop -a` on all files
 2. ✅ Auto-correct all possible formatting issues
 3. 🚀 Proceed with the push if successful
 4. ❌ Block the push if there are unfixable issues
@@ -24,7 +24,7 @@ git commit -m "Update feature"
 
 # Push to remote
 git push origin main
-# → Hook automatically runs: bundle exec rubocop -A
+# → Hook automatically runs: bundle exec rubocop -a
 # → If successful, push proceeds
 # → If issues remain, push is blocked
 ```
@@ -56,7 +56,7 @@ This tells Git to use the custom hooks directory instead of `.git/hooks/`.
 
 The pre-push hook:
 
-- Runs `bundle exec rubocop -A` for auto-correction
+- Runs `bundle exec rubocop -a` for auto-correction
 - Exits with code 1 if issues can't be auto-fixed
 - Shows helpful error messages
 - Can be bypassed with `--no-verify` if needed
