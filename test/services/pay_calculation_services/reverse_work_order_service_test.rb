@@ -95,8 +95,8 @@ module PayCalculationServices
       second_work_order = WorkOrder.create!(
         work_order_rate: @work_order_rate,
         work_order_status: 'completed',
-        start_date: Date.new(2025, 11, 5),
-        completion_date: Date.new(2025, 11, 20),
+        start_date: @work_order.completion_date.change(day: 5),
+        completion_date: @work_order.completion_date.change(day: 20),
         block: @block
       )
 
@@ -147,7 +147,10 @@ module PayCalculationServices
       ProcessWorkOrderService.new(second_work_order).call
 
       total_gross_before = @pay_calc.reload.total_gross_salary
-      assert_equal 1500.0, total_gross_before.to_f
+      # Worker1: 1000 (from @work_order) + 500 (from second_work_order) = 1500
+      # Worker2: 750 (from @work_order)
+      # Total: 2250
+      assert_equal 2250.0, total_gross_before.to_f
 
       # Reverse the first work order
       ReverseWorkOrderService.new(@work_order).call
