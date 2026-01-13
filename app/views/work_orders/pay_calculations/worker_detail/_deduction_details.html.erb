@@ -1,24 +1,26 @@
-<div id="work_orders_pay_calculations" class="card shadow-sm mb-4">
-  <div class="card-body">
-    <div class="table-responsive">
-      <table class="table table-hover table-sm mb-0">
-        <thead class="header-row">
-          <tr class="header-row">
-            <th class="text-center">Deduction</th>
-            <th class="text-center">Employee (RM)</th>
-            <th class="text-end">Employer (RM)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% sorted_deductions(pay_calculation_detail.deduction_breakdown).each_with_index do |(deduction_code, data), index| %>
-            <tr>
-              <td class="text-center"><%= data['name'] %></td>
-              <td class="text-center"><%= format_deduction_amount(data, data['employee_amount']) %></td>
-              <td class="text-end"><%= format_deduction_amount(data, data['employer_amount']) %></td>
+<% if pay_calculation_detail.present? %>
+  <div id="work_orders_pay_calculations" class="card shadow-sm mb-4">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover table-sm mb-0">
+          <thead class="header-row">
+            <tr class="header-row">
+              <th class="text-center">Deduction</th>
+              <th class="text-center">Employee (RM)</th>
+              <th class="text-end">Employer (RM)</th>
             </tr>
-          <% end %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <% sorted_deductions(pay_calculation_detail.deduction_breakdown).each_with_index do |(deduction_code, data), index| %>
+              <tr>
+                <td class="text-center"><%= data['name'] %></td>
+                <td class="text-center"><%= format_deduction_amount(data, data['employee_amount']) %></td>
+                <td class="text-end"><%= format_deduction_amount(data, data['employer_amount']) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-</div>
+<% end %>

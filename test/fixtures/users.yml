@@ -58,6 +58,7 @@ admin:
   email: "admin@example.com"
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
   is_active: true
+  role: superadmin
 
 one:
   name: "John Doe"

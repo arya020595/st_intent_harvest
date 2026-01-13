@@ -4,6 +4,8 @@ require 'test_helper'
 
 module WorkOrders
   class PayCalculationsControllerWorkerDetailTest < ActionDispatch::IntegrationTest
+    include Devise::Test::IntegrationHelpers
+
     fixtures :workers, :work_order_rates, :blocks, :users
 
     setup do
@@ -55,8 +57,8 @@ module WorkOrders
       @pay_calc = PayCalculation.find_by(month_year: @month_year)
       @pay_calc_detail = @pay_calc.pay_calculation_details.find_by(worker: @worker1)
 
-      # Sign in
-      sign_in_as(@user)
+      # Sign in using Devise helpers
+      sign_in @user
     end
 
     test 'worker_detail excludes discarded work orders from displayed work_order_workers' do
@@ -124,14 +126,6 @@ module WorkOrders
 
       # Should show "No work orders found" message
       assert_select 'td', text: /No work orders found for this worker/
-    end
-
-    private
-
-    def sign_in_as(user)
-      post user_session_path, params: {
-        user: { email: user.email, password: 'password' }
-      }
     end
   end
 end

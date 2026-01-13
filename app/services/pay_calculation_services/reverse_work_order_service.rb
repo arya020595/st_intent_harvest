@@ -84,9 +84,9 @@ module PayCalculationServices
         active_earnings = active_earnings_by_worker[worker_id] || 0
 
         if active_earnings.zero?
-          # Worker has no remaining earnings for this month - remove the detail
-          AppLogger.info("ReverseWorkOrderService: Removing PayCalculationDetail for Worker ##{worker_id}")
-          detail.destroy!
+          # Worker has no remaining earnings for this month - soft delete the detail
+          AppLogger.info("ReverseWorkOrderService: Soft deleting PayCalculationDetail for Worker ##{worker_id}")
+          detail.discard
         else
           # Update with recalculated earnings
           old_gross = detail.gross_salary
@@ -122,9 +122,9 @@ module PayCalculationServices
         pay_calc.recalculate_overall_total!
         AppLogger.info("ReverseWorkOrderService: Updated PayCalculation ##{pay_calc.id} for #{month_year}")
       else
-        # No more details - remove the empty pay calculation
-        AppLogger.info("ReverseWorkOrderService: Removing empty PayCalculation ##{pay_calc.id}")
-        pay_calc.destroy!
+        # No more details - soft delete the empty pay calculation
+        AppLogger.info("ReverseWorkOrderService: Soft deleting empty PayCalculation ##{pay_calc.id}")
+        pay_calc.discard
       end
     end
   end

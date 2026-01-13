@@ -4,7 +4,8 @@ module WorkOrders
   class PayCalculationsController < ApplicationController
     include RansackMultiSort
 
-    before_action :set_pay_calculation, only: %i[show edit update destroy worker_detail]
+    before_action :set_pay_calculation, only: %i[show edit update destroy]
+    before_action :set_pay_calculation_with_discarded, only: %i[worker_detail]
     before_action :set_worker, only: %i[worker_detail]
 
     def index
@@ -80,6 +81,10 @@ module WorkOrders
 
     def set_pay_calculation
       @pay_calculation = PayCalculation.find(params[:id])
+    end
+
+    def set_pay_calculation_with_discarded
+      @pay_calculation = PayCalculation.with_discarded.find(params[:id])
     end
 
     def set_worker

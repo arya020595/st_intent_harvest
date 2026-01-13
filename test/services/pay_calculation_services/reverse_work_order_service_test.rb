@@ -74,12 +74,13 @@ module PayCalculationServices
       initial_details_count = @pay_calc.pay_calculation_details.count
       assert_equal 2, initial_details_count
 
+      pay_calc_id = @pay_calc.id
       result = ReverseWorkOrderService.new(@work_order).call
 
       assert result.success?
 
-      # Both workers should have their details removed (no other work orders)
-      assert_equal 0, @pay_calc.reload.pay_calculation_details.count
+      # Pay calculation should be destroyed since all details are removed
+      assert_nil PayCalculation.find_by(id: pay_calc_id)
     end
 
     test 'destroys empty pay calculation after removing all details' do
@@ -204,14 +205,15 @@ module PayCalculationServices
       ProcessWorkOrderService.new(second_work_order).call
 
       # Get deductions before
-      detail_before = @pay_calc.pay_calculation_details.find_by(worker: @worker1)
+      pay_calc_before = PayCalculation.find_by(month_year: '2025-11')
+      detail_before = pay_calc_before.pay_calculation_details.find_by(worker: @worker1)
       detail_before.employee_deductions
 
       # Reverse the first work order
       ReverseWorkOrderService.new(@work_order).call
 
-      @pay_calc.reload
-      detail_after = @pay_calc.pay_calculation_details.find_by(worker: @worker1)
+      pay_calc_after = PayCalculation.find_by(month_year: '2025-11')
+      detail_after = pay_calc_after.pay_calculation_details.find_by(worker: @worker1)
 
       # Deductions should be recalculated based on new gross salary
       # (New gross is lower, so deductions should also be lower or same depending on brackets)
