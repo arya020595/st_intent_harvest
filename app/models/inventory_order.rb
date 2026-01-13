@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class InventoryOrder < ApplicationRecord
   belongs_to :inventory
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateInventoryOrders < ActiveRecord::Migration[8.1]
   def change
     create_table :inventory_orders do |t|

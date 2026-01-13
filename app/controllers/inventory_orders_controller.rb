@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class InventoryOrdersController < ApplicationController
   include RansackMultiSort
   include SoftDeletableController

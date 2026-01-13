@@ -180,6 +180,6 @@ class PayCalculationsRakeTest < ActiveSupport::TestCase
     # Deductions should be 0 since gross is 0
     assert_equal 0.0, detail.gross_salary.to_f
     # Deductions should be recalculated (may be 0 or different based on new gross)
-    assert_not_equal original_deductions, detail.employee_deductions if original_deductions.to_f > 0
+    assert_not_equal original_deductions, detail.employee_deductions if original_deductions.to_f.positive?
   end
 end

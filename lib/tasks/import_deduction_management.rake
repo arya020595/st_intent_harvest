@@ -187,7 +187,7 @@ namespace :deductions do
         )
 
         success_count += 1
-        print '.' if success_count % 10 == 0
+        print '.' if (success_count % 10).zero?
       rescue StandardError => e
         puts "\n✗ Failed to create range #{code} #{min_wage}-#{max_wage || 'unlimited'}: #{e.message}"
         error_count += 1
@@ -278,7 +278,7 @@ namespace :deductions do
             calculation_method: row['calculation_method'] || 'fixed'
           )
           success += 1
-          print '.' if success % 10 == 0
+          print '.' if (success % 10).zero?
         rescue StandardError => e
           errors += 1
           warn "✗ Error creating wage range for code=#{code}, min_wage=#{min_wage}, max_wage=#{max_wage}: #{e.message}"
