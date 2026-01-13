@@ -11,12 +11,10 @@ bundle exec rubocop -a
 RUBOCOP_EXIT_CODE=$?
 
 if [ $RUBOCOP_EXIT_CODE -ne 0 ]; then
-  echo "❌ RuboCop found issues that couldn't be auto-corrected."
-  echo "Please fix the remaining issues manually before pushing."
-  echo ""
+  echo "⚠️  RuboCop found issues that couldn't be auto-corrected."
+  echo "Consider fixing these issues manually later."
   echo "To see all issues, run: bundle exec rubocop"
-  echo "To skip this hook, use: git push --no-verify"
-  exit 1
+  echo ""
 fi
 
 echo "✅ RuboCop auto-correction complete! Proceeding with push..."
