@@ -49,14 +49,16 @@ class PayslipsController < ApplicationController
             month: month
           ).call
 
-          temp_pdf_path = Rails.root.join("tmp", "combined_payslips_#{Time.now.to_i}.pdf")
+          temp_pdf_path = Rails.root.join('tmp', "combined_payslips_#{Time.now.to_i}.pdf")
           File.binwrite(temp_pdf_path, service_result.pdf_bytes)
           @payslip_pdf_url = "/tmp/#{File.basename(temp_pdf_path)}"
         end
       end
 
       format.pdf do
-        return head :bad_request unless params[:worker_ids].present? && params[:month].present? && params[:year].present?
+        unless params[:worker_ids].present? && params[:month].present? && params[:year].present?
+          return head :bad_request
+        end
 
         month = params[:month].to_i
         year  = params[:year].to_i
@@ -87,9 +89,7 @@ class PayslipsController < ApplicationController
           )
         end.compact.join("<div style='page-break-after: always;'></div>")
 
-        if combined_html.blank?
-          render html: '<h1>No payslips available</h1>'.html_safe, status: :not_found and return
-        end
+        render html: '<h1>No payslips available</h1>'.html_safe, status: :not_found and return if combined_html.blank?
 
         service_result = PayslipServices::GeneratePayslipPdfService.new(
           html: combined_html,

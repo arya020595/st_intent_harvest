@@ -16,8 +16,8 @@ module SoftDelete
   class Service
     include Dry::Monads[:result]
 
-    def self.call(record, action:, **options)
-      new(record, action:, **options).call
+    def self.call(record, action:, **)
+      new(record, action:, **).call
     end
 
     def initialize(record, action:, cascade: false, reason: nil)

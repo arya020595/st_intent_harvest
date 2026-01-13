@@ -30,7 +30,7 @@ module WorkOrders
       @work_order_worker1_wo1 = @work_order1.work_order_workers.create!(
         worker: @worker1,
         rate: 10,
-        work_area_size: 100  # amount = 1000
+        work_area_size: 100 # amount = 1000
       )
 
       # Create second completed work order for same worker
@@ -45,7 +45,7 @@ module WorkOrders
       @work_order_worker1_wo2 = @work_order2.work_order_workers.create!(
         worker: @worker1,
         rate: 15,
-        work_area_size: 50  # amount = 750
+        work_area_size: 50 # amount = 750
       )
 
       # Process pay calculations

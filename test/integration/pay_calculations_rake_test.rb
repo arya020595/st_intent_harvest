@@ -33,13 +33,13 @@ class PayCalculationsRakeTest < ActiveSupport::TestCase
     @work_order_worker1 = @work_order.work_order_workers.create!(
       worker: @worker1,
       rate: 10,
-      work_area_size: 100  # amount = 1000
+      work_area_size: 100 # amount = 1000
     )
 
     @work_order_worker2 = @work_order.work_order_workers.create!(
       worker: @worker2,
       rate: 15,
-      work_area_size: 50  # amount = 750
+      work_area_size: 50 # amount = 750
     )
 
     # Process the pay calculation
@@ -50,8 +50,12 @@ class PayCalculationsRakeTest < ActiveSupport::TestCase
 
   teardown do
     # Re-enable all rake tasks for other tests
-    Rake::Task['pay_calculations:recalculate_all'].reenable if Rake::Task.task_defined?('pay_calculations:recalculate_all')
-    Rake::Task['pay_calculations:recalculate_month'].reenable if Rake::Task.task_defined?('pay_calculations:recalculate_month')
+    if Rake::Task.task_defined?('pay_calculations:recalculate_all')
+      Rake::Task['pay_calculations:recalculate_all'].reenable
+    end
+    if Rake::Task.task_defined?('pay_calculations:recalculate_month')
+      Rake::Task['pay_calculations:recalculate_month'].reenable
+    end
   end
 
   test 'recalculate_all excludes discarded work orders from gross salary' do
@@ -67,7 +71,7 @@ class PayCalculationsRakeTest < ActiveSupport::TestCase
     second_work_order.work_order_workers.create!(
       worker: @worker1,
       rate: 10,
-      work_area_size: 50  # amount = 500
+      work_area_size: 50 # amount = 500
     )
 
     # Process the second work order
@@ -124,7 +128,7 @@ class PayCalculationsRakeTest < ActiveSupport::TestCase
     second_work_order.work_order_workers.create!(
       worker: @worker1,
       rate: 20,
-      work_area_size: 25  # amount = 500
+      work_area_size: 25 # amount = 500
     )
 
     PayCalculationServices::ProcessWorkOrderService.new(second_work_order).call

@@ -63,7 +63,7 @@ class CategoriesImporter
 
   def header
     puts "Importing categories from #{file_path}"
-    puts "=" * 80
+    puts '=' * 80
   end
 
   def parse_rows
@@ -77,19 +77,19 @@ class CategoriesImporter
   end
 
   def summary
-    puts "=" * 80
-    puts "IMPORT SUMMARY"
+    puts '=' * 80
+    puts 'IMPORT SUMMARY'
     puts " Total rows: #{stats[:total]}"
     puts " Created:    #{stats[:created]}"
     puts " Updated:    #{stats[:updated]}"
     puts " Skipped:    #{stats[:skipped]}"
     puts " Errors:     #{stats[:errors]}"
-    puts "=" * 80
+    puts '=' * 80
 
     if stats[:errors].zero?
-      puts "✓ Import completed successfully."
+      puts '✓ Import completed successfully.'
     else
-      puts "⚠ Import completed with errors."
+      puts '⚠ Import completed with errors.'
     end
   end
 
@@ -112,7 +112,7 @@ class CategoriesRowProcessor
   end
 
   def process
-    return skip("name is missing") if name.blank?
+    return skip('name is missing') if name.blank?
 
     upsert_category
   rescue ActiveRecord::RecordInvalid => e
@@ -131,7 +131,7 @@ class CategoriesRowProcessor
 
   def upsert_category
     # Find parent by name unless parent is "-"
-    parent = (parent_name.present? && parent_name != '-') ? Category.find_by(name: parent_name) : nil
+    parent = parent_name.present? && parent_name != '-' ? Category.find_by(name: parent_name) : nil
 
     category = Category.find_by(name: name)
 
@@ -152,16 +152,16 @@ end
 # ================================
 class CategoriesSampleFormatter
   def self.display
-    puts "Sample CSV format for categories:"
-    puts "=" * 80
-    puts "category_type,parent_category"
-    puts "Diesel,-"
-    puts "Petrol,-"
-    puts "Spare Part,-"
-    puts "=" * 80
+    puts 'Sample CSV format for categories:'
+    puts '=' * 80
+    puts 'category_type,parent_category'
+    puts 'Diesel,-'
+    puts 'Petrol,-'
+    puts 'Spare Part,-'
+    puts '=' * 80
 
     puts "\nCOLUMN DESCRIPTION:"
-    puts " category_type   - Name of the category (required)"
+    puts ' category_type   - Name of the category (required)'
     puts " parent_category - Parent category name or '-' if none (required)"
   end
 end
@@ -174,13 +174,13 @@ class CategoriesLister
     categories = Category.order(:name)
 
     if categories.empty?
-      puts "No categories found."
+      puts 'No categories found.'
       return
     end
 
-    puts "=" * 80
-    puts "Categories List"
-    puts "=" * 80
+    puts '=' * 80
+    puts 'Categories List'
+    puts '=' * 80
 
     categories.each do |c|
       parent_name = c.parent&.name || '-'
@@ -199,7 +199,7 @@ class CategoriesDeleter
     count = Category.count
 
     if count.zero?
-      puts "No categories to delete."
+      puts 'No categories to delete.'
       return
     end
 
@@ -207,11 +207,11 @@ class CategoriesDeleter
     print "Type 'yes' to confirm: "
     confirm = $stdin.gets.chomp
 
-    if confirm.downcase == "yes"
+    if confirm.downcase == 'yes'
       Category.delete_all
       puts "✓ Deleted all #{count} categories"
     else
-      puts "Deletion cancelled."
+      puts 'Deletion cancelled.'
     end
   end
 end

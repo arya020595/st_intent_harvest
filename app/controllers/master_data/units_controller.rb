@@ -78,8 +78,7 @@ module MasterData
       end
     end
 
-
-   def confirm_delete
+    def confirm_delete
       authorize @unit, policy_class: MasterData::UnitPolicy
 
       # Only show the modal
@@ -89,7 +88,6 @@ module MasterData
         redirect_to master_data_unit_path
       end
     end
-
 
     def destroy
       authorize @unit, policy_class: MasterData::UnitPolicy
@@ -109,12 +107,11 @@ module MasterData
       return if @unit.present?
 
       if turbo_frame_request?
-        render turbo_stream: turbo_stream.replace("modal", ""), status: :ok
+        render turbo_stream: turbo_stream.replace('modal', ''), status: :ok
       else
         redirect_to master_data_units_path
       end
     end
-
 
     def unit_params
       params.require(:unit).permit(

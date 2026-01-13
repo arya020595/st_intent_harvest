@@ -27,13 +27,13 @@ module PayCalculationServices
       @work_order.work_order_workers.create!(
         worker: @worker1,
         rate: 10,
-        work_area_size: 100  # Will result in 1000 gross salary
+        work_area_size: 100 # Will result in 1000 gross salary
       )
 
       @work_order.work_order_workers.create!(
         worker: @worker2,
         rate: 15,
-        work_area_size: 50  # Will result in 750 gross salary
+        work_area_size: 50 # Will result in 750 gross salary
       )
 
       # Process the pay calculation (simulating what happens on completion)
@@ -102,7 +102,7 @@ module PayCalculationServices
       second_work_order.work_order_workers.create!(
         worker: @worker1,
         rate: 10,
-        work_area_size: 50  # 500 additional gross salary
+        work_area_size: 50 # 500 additional gross salary
       )
 
       # Process the second work order
@@ -205,7 +205,7 @@ module PayCalculationServices
 
       # Get deductions before
       detail_before = @pay_calc.pay_calculation_details.find_by(worker: @worker1)
-      deductions_before = detail_before.employee_deductions
+      detail_before.employee_deductions
 
       # Reverse the first work order
       ReverseWorkOrderService.new(@work_order).call

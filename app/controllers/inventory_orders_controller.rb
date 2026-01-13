@@ -68,10 +68,12 @@ class InventoryOrdersController < ApplicationController
     respond_to do |format|
       if @inventory_order.save
         # Turbo Stream flash message
-        flash.now[:notice] = "Inventory order was successfully created."
+        flash.now[:notice] = 'Inventory order was successfully created.'
 
         format.turbo_stream # renders create.turbo_stream.erb
-        format.html { redirect_to inventory_inventory_orders_path(@inventory), notice: "Inventory order was successfully created." }
+        format.html do
+          redirect_to inventory_inventory_orders_path(@inventory), notice: 'Inventory order was successfully created.'
+        end
       else
         format.turbo_stream { render :new, status: :unprocessable_entity }
         format.html { render :new, status: :unprocessable_entity }
@@ -86,7 +88,7 @@ class InventoryOrdersController < ApplicationController
     respond_to do |format|
       if @inventory_order.update(inventory_order_params)
         # Set Turbo Stream flash
-        flash.now[:notice] = "Inventory order was successfully updated."
+        flash.now[:notice] = 'Inventory order was successfully updated.'
 
         format.turbo_stream # renders update.turbo_stream.erb
         format.html do

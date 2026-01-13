@@ -21,15 +21,15 @@ namespace :pay_calculations do
     active_earnings = calculate_active_earnings(worker.id, month_start, month_end)
     old_gross = detail.gross_salary
 
-    if old_gross != active_earnings
+    if old_gross == active_earnings
+      detail.recalculate_deductions!
+      puts "  Worker ##{worker.id} (#{worker.name}): No gross change (#{old_gross})"
+      false
+    else
       detail.update!(gross_salary: active_earnings)
       detail.recalculate_deductions!
       puts "  Worker ##{worker.id} (#{worker.name}): #{old_gross} -> #{active_earnings}"
       true
-    else
-      detail.recalculate_deductions!
-      puts "  Worker ##{worker.id} (#{worker.name}): No gross change (#{old_gross})"
-      false
     end
   end
 

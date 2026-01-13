@@ -79,12 +79,9 @@ module MasterData
       end
     end
 
-
     def confirm_delete
       @category = Category.find_by(id: params[:id])
-      unless @category
-        redirect_to master_data_categories_path, alert: "Category not found" and return
-      end
+      redirect_to master_data_categories_path, alert: 'Category not found' and return unless @category
 
       authorize @category, policy_class: MasterData::CategoryPolicy
 
@@ -95,7 +92,6 @@ module MasterData
         redirect_to master_data_categories_path
       end
     end
-
 
     def destroy
       authorize @category, policy_class: MasterData::CategoryPolicy
@@ -115,7 +111,7 @@ module MasterData
       return if @category.present?
 
       if turbo_frame_request?
-        render turbo_stream: turbo_stream.replace("modal", ""), status: :ok
+        render turbo_stream: turbo_stream.replace('modal', ''), status: :ok
       else
         redirect_to master_data_categories_path
       end

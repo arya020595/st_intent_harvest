@@ -114,23 +114,24 @@ module SoftDeletableController
   end
 
   # Get the index path for the resource (handles namespaced controllers)
-  def polymorphic_index_path(resource)
+  def polymorphic_index_path(_resource)
     # Try to use the controller's namespace if available
-    if self.class.module_parent != Object
+    if self.class.module_parent == Object
+      send("#{controller_name}_path")
+    else
       namespace = self.class.module_parent.name.underscore.to_sym
       send("#{namespace}_#{controller_name}_path")
-    else
-      send("#{controller_name}_path")
     end
   rescue NoMethodError => e
-    route_helper = self.class.module_parent != Object ? "#{self.class.module_parent.name.underscore}_#{controller_name}_path" : "#{controller_name}_path"
+    route_helper = self.class.module_parent == Object ? "#{controller_name}_path" : "#{self.class.module_parent.name.underscore}_#{controller_name}_path"
 
     # Log warning about missing route helper
     Rails.logger.warn "SoftDeletableController: Route helper '#{route_helper}' not found for #{self.class.name}. Falling back to root_path."
 
     # In development/test, raise informative error to help catch configuration issues
     if Rails.env.development? || Rails.env.test?
-      raise NoMethodError, "Route helper '#{route_helper}' not found. Please ensure routes are properly configured for #{self.class.name}. Original error: #{e.message}"
+      raise NoMethodError,
+            "Route helper '#{route_helper}' not found. Please ensure routes are properly configured for #{self.class.name}. Original error: #{e.message}"
     end
 
     # In production, fall back gracefully to root path

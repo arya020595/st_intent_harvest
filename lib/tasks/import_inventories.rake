@@ -3,24 +3,24 @@
 require 'csv'
 
 namespace :inventories do
-  desc "Import inventories from CSV"
+  desc 'Import inventories from CSV'
   task :import, [:file_path] => :environment do |_t, args|
     importer = InventoriesImporter.new(args[:file_path])
     importer.import
   end
 
-  desc "Display sample CSV structure"
+  desc 'Display sample CSV structure'
   task :sample do
     InventoriesSampleFormatter.display
   end
 
-  desc "List all inventories"
-  task :list => :environment do
+  desc 'List all inventories'
+  task list: :environment do
     InventoriesLister.display
   end
 
-  desc "Delete all inventories"
-  task :delete_all => :environment do
+  desc 'Delete all inventories'
+  task delete_all: :environment do
     InventoriesDeleter.execute
   end
 end
@@ -29,7 +29,7 @@ end
 # INVENTORIES IMPORTER
 # =====================================================
 class InventoriesImporter
-  DEFAULT_CSV_PATH = Rails.root.join("db/master_data/master_data_inventories.csv").freeze
+  DEFAULT_CSV_PATH = Rails.root.join('db/master_data/master_data_inventories.csv').freeze
 
   def initialize(file_path = nil)
     @file_path = file_path || DEFAULT_CSV_PATH
@@ -53,16 +53,16 @@ class InventoriesImporter
   attr_reader :file_path, :stats
 
   def validate_file!
-    unless File.exist?(file_path)
-      puts "File not found: #{file_path}"
-      puts "Expected at: #{DEFAULT_CSV_PATH}"
-      exit 1
-    end
+    return if File.exist?(file_path)
+
+    puts "File not found: #{file_path}"
+    puts "Expected at: #{DEFAULT_CSV_PATH}"
+    exit 1
   end
 
   def header
     puts "Importing inventories from #{file_path}"
-    puts "=" * 80
+    puts '=' * 80
   end
 
   def parse_rows
@@ -76,14 +76,14 @@ class InventoriesImporter
   end
 
   def summary
-    puts "=" * 80
-    puts "IMPORT SUMMARY"
+    puts '=' * 80
+    puts 'IMPORT SUMMARY'
     puts " Total rows: #{stats[:total]}"
     puts " Created:    #{stats[:created]}"
     puts " Updated:    #{stats[:updated]}"
     puts " Skipped:    #{stats[:skipped]}"
     puts " Errors:     #{stats[:errors]}"
-    puts "=" * 80
+    puts '=' * 80
   end
 
   def abort_transaction(error)
@@ -106,9 +106,9 @@ class InventoriesRowProcessor
   end
 
   def process
-    return skip("name is missing") if @name.blank?
-    return skip("category is missing") if @category.blank?
-    return skip("unit is missing") if @unit.blank?
+    return skip('name is missing') if @name.blank?
+    return skip('category is missing') if @category.blank?
+    return skip('unit is missing') if @unit.blank?
 
     category_id = lookup_category
     unit_id = lookup_unit
@@ -169,12 +169,12 @@ end
 # =====================================================
 class InventoriesSampleFormatter
   def self.display
-    puts "Sample CSV format for inventories:"
-    puts "=" * 80
-    puts "name,category,unit"
-    puts "Pencil,Stationery,Piece"
-    puts "Cement,Building Materials,Bag"
-    puts "=" * 80
+    puts 'Sample CSV format for inventories:'
+    puts '=' * 80
+    puts 'name,category,unit'
+    puts 'Pencil,Stationery,Piece'
+    puts 'Cement,Building Materials,Bag'
+    puts '=' * 80
   end
 end
 
@@ -186,13 +186,13 @@ class InventoriesLister
     inventories = Inventory.includes(:category, :unit).order(:name)
 
     if inventories.empty?
-      puts "No inventories found."
+      puts 'No inventories found.'
       return
     end
 
-    puts "=" * 80
-    puts "Inventories List"
-    puts "=" * 80
+    puts '=' * 80
+    puts 'Inventories List'
+    puts '=' * 80
 
     inventories.each do |i|
       puts "• #{i.name.ljust(30)} | Category: #{i.category&.name.to_s.ljust(20)} | Unit: #{i.unit&.name}"
@@ -209,7 +209,7 @@ class InventoriesDeleter
   def self.execute
     count = Inventory.count
     if count.zero?
-      puts "No inventories to delete."
+      puts 'No inventories to delete.'
       return
     end
 
@@ -217,11 +217,11 @@ class InventoriesDeleter
     print "Type 'yes' to confirm: "
     confirm = $stdin.gets.chomp
 
-    if confirm.downcase == "yes"
+    if confirm.downcase == 'yes'
       Inventory.delete_all
       puts "✓ Deleted all #{count} inventories"
     else
-      puts "Deletion cancelled."
+      puts 'Deletion cancelled.'
     end
   end
 end

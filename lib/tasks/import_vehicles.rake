@@ -63,7 +63,7 @@ class VehiclesImporter
 
   def header
     puts "Importing vehicles from #{file_path}"
-    puts "=" * 80
+    puts '=' * 80
   end
 
   def parse_rows
@@ -77,19 +77,19 @@ class VehiclesImporter
   end
 
   def summary
-    puts "=" * 80
-    puts "IMPORT SUMMARY"
+    puts '=' * 80
+    puts 'IMPORT SUMMARY'
     puts " Total rows: #{stats[:total]}"
     puts " Created:    #{stats[:created]}"
     puts " Updated:    #{stats[:updated]}"
     puts " Skipped:    #{stats[:skipped]}"
     puts " Errors:     #{stats[:errors]}"
-    puts "=" * 80
+    puts '=' * 80
 
     if stats[:errors].zero?
-      puts "✓ Import completed successfully."
+      puts '✓ Import completed successfully.'
     else
-      puts "⚠ Import completed with errors."
+      puts '⚠ Import completed with errors.'
     end
   end
 
@@ -112,8 +112,8 @@ class VehiclesRowProcessor
   end
 
   def process
-    return skip("vehicle_number is missing") if vehicle_number.blank?
-    return skip("vehicle_model is missing") if vehicle_model.blank?
+    return skip('vehicle_number is missing') if vehicle_number.blank?
+    return skip('vehicle_model is missing') if vehicle_model.blank?
 
     upsert_vehicle
   rescue ActiveRecord::RecordInvalid => e
@@ -150,17 +150,17 @@ end
 # ================================
 class VehiclesSampleFormatter
   def self.display
-    puts "Sample CSV format for vehicles:"
-    puts "=" * 80
-    puts "vehicle_number,vehicle_model"
-    puts "V001,Toyota Hiace"
-    puts "V002,Hino 500"
-    puts "V003,Mitsubishi Canter"
-    puts "=" * 80
+    puts 'Sample CSV format for vehicles:'
+    puts '=' * 80
+    puts 'vehicle_number,vehicle_model'
+    puts 'V001,Toyota Hiace'
+    puts 'V002,Hino 500'
+    puts 'V003,Mitsubishi Canter'
+    puts '=' * 80
 
     puts "\nCOLUMN DESCRIPTION:"
-    puts " vehicle_number - Unique identifier for vehicle (required)"
-    puts " vehicle_model  - Model of the vehicle (required)"
+    puts ' vehicle_number - Unique identifier for vehicle (required)'
+    puts ' vehicle_model  - Model of the vehicle (required)'
   end
 end
 
@@ -172,13 +172,13 @@ class VehiclesLister
     vehicles = Vehicle.order(:vehicle_number)
 
     if vehicles.empty?
-      puts "No vehicles found."
+      puts 'No vehicles found.'
       return
     end
 
-    puts "=" * 80
-    puts "Vehicles List"
-    puts "=" * 80
+    puts '=' * 80
+    puts 'Vehicles List'
+    puts '=' * 80
 
     vehicles.each do |v|
       puts "• #{v.vehicle_number.ljust(15)} | #{v.vehicle_model}"
@@ -196,7 +196,7 @@ class VehiclesDeleter
     count = Vehicle.count
 
     if count.zero?
-      puts "No vehicles to delete."
+      puts 'No vehicles to delete.'
       return
     end
 
@@ -204,11 +204,11 @@ class VehiclesDeleter
     print "Type 'yes' to confirm: "
     confirm = $stdin.gets.chomp
 
-    if confirm.downcase == "yes"
+    if confirm.downcase == 'yes'
       Vehicle.delete_all
       puts "✓ Deleted all #{count} vehicles"
     else
-      puts "Deletion cancelled."
+      puts 'Deletion cancelled.'
     end
   end
 end
