@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateMandaysWorkers < ActiveRecord::Migration[8.1]
   def change
     create_table :mandays_workers do |t|
@@ -9,7 +11,7 @@ class CreateMandaysWorkers < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :mandays_workers, [:manday_id, :worker_id], unique: true,
-              comment: 'Ensure one entry per worker per month'
+    add_index :mandays_workers, %i[manday_id worker_id], unique: true,
+                                                         comment: 'Ensure one entry per worker per month'
   end
 end

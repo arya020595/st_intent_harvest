@@ -10,6 +10,7 @@ module WorkOrders
     # - work_orders.mandays.edit
     # - work_orders.mandays.update
     # - work_orders.mandays.destroy
+
     private
 
     def permission_resource

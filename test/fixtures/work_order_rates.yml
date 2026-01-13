@@ -35,3 +35,9 @@ work_days:
   rate: 50.00
   currency: "RM"
   work_order_rate_type: "work_days"
+
+resources:
+  work_order_name: "Resources Only"
+  rate: 0.00
+  currency: "RM"
+  work_order_rate_type: "resources_only"

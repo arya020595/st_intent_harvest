@@ -135,7 +135,9 @@ class BlockRowProcessor
   end
 
   def extract_hectarage
-    Float(row[:hectarage]&.strip) rescue nil
+    Float(row[:hectarage]&.strip)
+  rescue StandardError
+    nil
   end
 
   def skip_blank_block

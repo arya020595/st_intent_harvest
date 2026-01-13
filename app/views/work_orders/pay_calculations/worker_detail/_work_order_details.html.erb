@@ -27,10 +27,12 @@
                 <td class="text-end"><%= number_to_currency(work_order_worker.amount, unit: '', separator: '.', delimiter: ',', precision: 2) %></td>
               </tr>
             <% end %>
-            <tr class="table-secondary">
-              <td colspan="5" class="text-end"><strong>Total Gross Salary (RM)</strong></td>
-              <td class="text-end"><strong><%= number_to_currency(pay_calculation_detail.gross_salary, unit: '', separator: '.', delimiter: ',', precision: 2) %></strong></td>
-            </tr>
+            <% if pay_calculation_detail.present? %>
+              <tr class="table-secondary">
+                <td colspan="5" class="text-end"><strong>Total Gross Salary (RM)</strong></td>
+                <td class="text-end"><strong><%= number_to_currency(pay_calculation_detail.gross_salary, unit: '', separator: '.', delimiter: ',', precision: 2) %></strong></td>
+              </tr>
+            <% end %>
           <% else %>
             <tr>
               <td colspan="6" class="text-center text-muted py-4">

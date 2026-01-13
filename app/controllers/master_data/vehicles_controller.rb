@@ -101,12 +101,12 @@ module MasterData
 
     private
 
-   def set_vehicle
+    def set_vehicle
       @vehicle = Vehicle.find_by(id: params[:id])
       return if @vehicle.present?
 
       if turbo_frame_request?
-        render turbo_stream: turbo_stream.replace("modal", ""), status: :ok
+        render turbo_stream: turbo_stream.replace('modal', ''), status: :ok
       else
         redirect_to master_data_vehicles_path
       end

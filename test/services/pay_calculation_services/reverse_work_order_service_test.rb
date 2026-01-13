@@ -27,13 +27,13 @@ module PayCalculationServices
       @work_order.work_order_workers.create!(
         worker: @worker1,
         rate: 10,
-        work_area_size: 100  # Will result in 1000 gross salary
+        work_area_size: 100 # Will result in 1000 gross salary
       )
 
       @work_order.work_order_workers.create!(
         worker: @worker2,
         rate: 15,
-        work_area_size: 50  # Will result in 750 gross salary
+        work_area_size: 50 # Will result in 750 gross salary
       )
 
       # Process the pay calculation (simulating what happens on completion)
@@ -74,12 +74,13 @@ module PayCalculationServices
       initial_details_count = @pay_calc.pay_calculation_details.count
       assert_equal 2, initial_details_count
 
+      pay_calc_id = @pay_calc.id
       result = ReverseWorkOrderService.new(@work_order).call
 
       assert result.success?
 
-      # Both workers should have their details removed (no other work orders)
-      assert_equal 0, @pay_calc.reload.pay_calculation_details.count
+      # Pay calculation should be destroyed since all details are removed
+      assert_nil PayCalculation.find_by(id: pay_calc_id)
     end
 
     test 'destroys empty pay calculation after removing all details' do
@@ -94,15 +95,15 @@ module PayCalculationServices
       second_work_order = WorkOrder.create!(
         work_order_rate: @work_order_rate,
         work_order_status: 'completed',
-        start_date: Date.new(2025, 11, 5),
-        completion_date: Date.new(2025, 11, 20),
+        start_date: @work_order.completion_date.change(day: 5),
+        completion_date: @work_order.completion_date.change(day: 20),
         block: @block
       )
 
       second_work_order.work_order_workers.create!(
         worker: @worker1,
         rate: 10,
-        work_area_size: 50  # 500 additional gross salary
+        work_area_size: 50 # 500 additional gross salary
       )
 
       # Process the second work order
@@ -146,7 +147,10 @@ module PayCalculationServices
       ProcessWorkOrderService.new(second_work_order).call
 
       total_gross_before = @pay_calc.reload.total_gross_salary
-      assert_equal 1500.0, total_gross_before.to_f
+      # Worker1: 1000 (from @work_order) + 500 (from second_work_order) = 1500
+      # Worker2: 750 (from @work_order)
+      # Total: 2250
+      assert_equal 2250.0, total_gross_before.to_f
 
       # Reverse the first work order
       ReverseWorkOrderService.new(@work_order).call
@@ -204,14 +208,15 @@ module PayCalculationServices
       ProcessWorkOrderService.new(second_work_order).call
 
       # Get deductions before
-      detail_before = @pay_calc.pay_calculation_details.find_by(worker: @worker1)
-      deductions_before = detail_before.employee_deductions
+      pay_calc_before = PayCalculation.find_by(month_year: '2025-11')
+      detail_before = pay_calc_before.pay_calculation_details.find_by(worker: @worker1)
+      detail_before.employee_deductions
 
       # Reverse the first work order
       ReverseWorkOrderService.new(@work_order).call
 
-      @pay_calc.reload
-      detail_after = @pay_calc.pay_calculation_details.find_by(worker: @worker1)
+      pay_calc_after = PayCalculation.find_by(month_year: '2025-11')
+      detail_after = pay_calc_after.pay_calculation_details.find_by(worker: @worker1)
 
       # Deductions should be recalculated based on new gross salary
       # (New gross is lower, so deductions should also be lower or same depending on brackets)

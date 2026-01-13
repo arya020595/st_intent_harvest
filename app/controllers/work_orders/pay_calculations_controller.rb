@@ -4,7 +4,8 @@ module WorkOrders
   class PayCalculationsController < ApplicationController
     include RansackMultiSort
 
-    before_action :set_pay_calculation, only: %i[show edit update destroy worker_detail]
+    before_action :set_pay_calculation, only: %i[show edit update destroy]
+    before_action :set_pay_calculation_with_discarded, only: %i[worker_detail]
     before_action :set_worker, only: %i[worker_detail]
 
     def index
@@ -55,7 +56,7 @@ module WorkOrders
     def worker_detail
       authorize @pay_calculation, policy_class: WorkOrders::PayCalculationPolicy
 
-      @pay_calculation_detail = @pay_calculation.pay_calculation_details.find_by!(worker: @worker)
+      @pay_calculation_detail = @pay_calculation.pay_calculation_details.find_by(worker: @worker)
 
       # Parse month_year to get the month range
       # month_year format is "YYYY-MM" (e.g., "2025-11")
@@ -80,6 +81,10 @@ module WorkOrders
 
     def set_pay_calculation
       @pay_calculation = PayCalculation.find(params[:id])
+    end
+
+    def set_pay_calculation_with_discarded
+      @pay_calculation = PayCalculation.with_discarded.find(params[:id])
     end
 
     def set_worker

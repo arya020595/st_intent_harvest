@@ -63,7 +63,7 @@ class UsersImporter
 
   def header
     puts "Importing users from #{file_path}"
-    puts "=" * 80
+    puts '=' * 80
   end
 
   def parse_rows
@@ -77,19 +77,19 @@ class UsersImporter
   end
 
   def summary
-    puts "=" * 80
-    puts "IMPORT SUMMARY"
+    puts '=' * 80
+    puts 'IMPORT SUMMARY'
     puts " Total rows: #{stats[:total]}"
     puts " Created:    #{stats[:created]}"
     puts " Updated:    #{stats[:updated]}"
     puts " Skipped:    #{stats[:skipped]}"
     puts " Errors:     #{stats[:errors]}"
-    puts "=" * 80
+    puts '=' * 80
 
     if stats[:errors].zero?
-      puts "✓ Import completed successfully."
+      puts '✓ Import completed successfully.'
     else
-      puts "⚠ Import completed with errors."
+      puts '⚠ Import completed with errors.'
     end
   end
 
@@ -114,9 +114,9 @@ class UsersRowProcessor
   end
 
   def process
-    return skip("name is missing") if name.blank?
-    return skip("email is missing") if email.blank?
-    return skip("password is missing") if password.blank?
+    return skip('name is missing') if name.blank?
+    return skip('email is missing') if email.blank?
+    return skip('password is missing') if password.blank?
 
     upsert_user
   rescue ActiveRecord::RecordInvalid => e
@@ -135,6 +135,7 @@ class UsersRowProcessor
 
   def find_role(role_name)
     return nil if role_name.blank?
+
     Role.find_by(name: role_name.strip)
   end
 
@@ -166,19 +167,19 @@ end
 # ================================
 class UsersSampleFormatter
   def self.display
-    puts "Sample CSV format for users:"
-    puts "=" * 80
-    puts "name,role,email,password"
-    puts "John Doe,Manager,john@example.com,securepassword123"
-    puts "Sarah Tan,Clerk,sarah@example.com,securepassword123"
-    puts "Michael Lee,Field Conductor,mlee@example.com,securepassword123"
-    puts "=" * 80
+    puts 'Sample CSV format for users:'
+    puts '=' * 80
+    puts 'name,role,email,password'
+    puts 'John Doe,Manager,john@example.com,securepassword123'
+    puts 'Sarah Tan,Clerk,sarah@example.com,securepassword123'
+    puts 'Michael Lee,Field Conductor,mlee@example.com,securepassword123'
+    puts '=' * 80
 
     puts "\nCOLUMN DESCRIPTION:"
-    puts " name     - User full name (required)"
+    puts ' name     - User full name (required)'
     puts " role     - Matches 'roles.name' in DB (required)"
-    puts " email    - Unique email (required)"
-    puts " password - User password (required)"
+    puts ' email    - Unique email (required)'
+    puts ' password - User password (required)'
   end
 end
 
@@ -190,13 +191,13 @@ class UsersLister
     users = User.includes(:role).order(:name)
 
     if users.empty?
-      puts "No users found."
+      puts 'No users found.'
       return
     end
 
-    puts "=" * 80
-    puts "Users List"
-    puts "=" * 80
+    puts '=' * 80
+    puts 'Users List'
+    puts '=' * 80
 
     users.each do |u|
       puts "• #{u.name.ljust(25)} | #{u.role&.name.to_s.ljust(15)} | #{u.email}"
@@ -214,7 +215,7 @@ class UsersDeleter
     count = User.count
 
     if count.zero?
-      puts "No users to delete."
+      puts 'No users to delete.'
       return
     end
 
@@ -222,11 +223,11 @@ class UsersDeleter
     print "Type 'yes' to confirm: "
     confirm = $stdin.gets.chomp
 
-    if confirm.downcase == "yes"
+    if confirm.downcase == 'yes'
       User.delete_all
       puts "✓ Deleted all #{count} users"
     else
-      puts "Deletion cancelled."
+      puts 'Deletion cancelled.'
     end
   end
 end

@@ -63,7 +63,7 @@ class UnitsImporter
 
   def header
     puts "Importing units from #{file_path}"
-    puts "=" * 80
+    puts '=' * 80
   end
 
   def parse_rows
@@ -77,19 +77,19 @@ class UnitsImporter
   end
 
   def summary
-    puts "=" * 80
-    puts "IMPORT SUMMARY"
+    puts '=' * 80
+    puts 'IMPORT SUMMARY'
     puts " Total rows: #{stats[:total]}"
     puts " Created:    #{stats[:created]}"
     puts " Updated:    #{stats[:updated]}"
     puts " Skipped:    #{stats[:skipped]}"
     puts " Errors:     #{stats[:errors]}"
-    puts "=" * 80
+    puts '=' * 80
 
     if stats[:errors].zero?
-      puts "✓ Import completed successfully."
+      puts '✓ Import completed successfully.'
     else
-      puts "⚠ Import completed with errors."
+      puts '⚠ Import completed with errors.'
     end
   end
 
@@ -112,8 +112,8 @@ class UnitsRowProcessor
   end
 
   def process
-    return skip("name is missing") if name.blank?
-    return skip("unit_type is missing") if unit_type.blank?
+    return skip('name is missing') if name.blank?
+    return skip('unit_type is missing') if unit_type.blank?
 
     upsert_unit
   rescue ActiveRecord::RecordInvalid => e
@@ -150,17 +150,17 @@ end
 # ================================
 class UnitsSampleFormatter
   def self.display
-    puts "Sample CSV format for units:"
-    puts "=" * 80
-    puts "name,unit_type"
-    puts "Litres,Volume"
-    puts "Bag,Count"
-    puts "Gram,Weight"
-    puts "=" * 80
+    puts 'Sample CSV format for units:'
+    puts '=' * 80
+    puts 'name,unit_type'
+    puts 'Litres,Volume'
+    puts 'Bag,Count'
+    puts 'Gram,Weight'
+    puts '=' * 80
 
     puts "\nCOLUMN DESCRIPTION:"
-    puts " name      - Unit name (required)"
-    puts " unit_type - Type/category of unit (required)"
+    puts ' name      - Unit name (required)'
+    puts ' unit_type - Type/category of unit (required)'
   end
 end
 
@@ -172,13 +172,13 @@ class UnitsLister
     units = Unit.order(:name)
 
     if units.empty?
-      puts "No units found."
+      puts 'No units found.'
       return
     end
 
-    puts "=" * 80
-    puts "Units List"
-    puts "=" * 80
+    puts '=' * 80
+    puts 'Units List'
+    puts '=' * 80
 
     units.each do |u|
       puts "• #{u.name.ljust(20)} | #{u.unit_type}"
@@ -196,7 +196,7 @@ class UnitsDeleter
     count = Unit.count
 
     if count.zero?
-      puts "No units to delete."
+      puts 'No units to delete.'
       return
     end
 
@@ -204,11 +204,11 @@ class UnitsDeleter
     print "Type 'yes' to confirm: "
     confirm = $stdin.gets.chomp
 
-    if confirm.downcase == "yes"
+    if confirm.downcase == 'yes'
       Unit.delete_all
       puts "✓ Deleted all #{count} units"
     else
-      puts "Deletion cancelled."
+      puts 'Deletion cancelled.'
     end
   end
 end

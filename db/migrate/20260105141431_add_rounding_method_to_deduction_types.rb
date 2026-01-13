@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddRoundingMethodToDeductionTypes < ActiveRecord::Migration[8.1]
   def up
     add_column :deduction_types, :rounding_method, :string, default: 'round', null: false

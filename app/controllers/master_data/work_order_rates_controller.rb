@@ -37,7 +37,9 @@ module MasterData
       respond_to do |format|
         if @work_order_rate.save
           format.turbo_stream { flash.now[:notice] = 'Work order rate was successfully created.' }
-          format.html { redirect_to master_data_work_order_rates_path, notice: 'Work order rate was successfully created.' }
+          format.html do
+            redirect_to master_data_work_order_rates_path, notice: 'Work order rate was successfully created.'
+          end
         else
           format.turbo_stream do
             render turbo_stream: turbo_stream.replace(
@@ -68,7 +70,9 @@ module MasterData
       respond_to do |format|
         if @work_order_rate.update(work_order_rate_params)
           format.turbo_stream { flash.now[:notice] = 'Work order rate was successfully updated.' }
-          format.html { redirect_to master_data_work_order_rates_path, notice: 'Work order rate was successfully updated.' }
+          format.html do
+            redirect_to master_data_work_order_rates_path, notice: 'Work order rate was successfully updated.'
+          end
         else
           format.turbo_stream do
             render turbo_stream: turbo_stream.replace(
@@ -86,7 +90,7 @@ module MasterData
     def confirm_delete
       if @work_order_rate.nil?
         if turbo_frame_request?
-          render turbo_stream: turbo_stream.replace("modal", ""), status: :ok
+          render turbo_stream: turbo_stream.replace('modal', ''), status: :ok
         else
           redirect_to master_data_work_order_rates_path
         end
@@ -121,7 +125,7 @@ module MasterData
 
       if turbo_frame_request?
         # For missing record in Turbo modal → clear the modal
-        render turbo_stream: turbo_stream.replace("modal", ""), status: :ok
+        render turbo_stream: turbo_stream.replace('modal', ''), status: :ok
       else
         # Normal HTML request → redirect to index safely
         redirect_to master_data_work_order_rates_path

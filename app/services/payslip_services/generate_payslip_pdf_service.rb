@@ -37,8 +37,8 @@ module PayslipServices
       Result.new(pdf_bytes: pdf_bytes, debug_path: debug_path)
     rescue Grover::Error, Grover::JavaScript::Error => e
       Rails.logger.error(
-        "Payslip PDF generation failed: #{e.class}: #{e.message}\n" \
-        "  #{Array(e.backtrace).first(5).join("\n  ")}"
+        "Payslip PDF generation failed: #{e.class}: #{e.message}\n  " \
+        "#{Array(e.backtrace).first(5).join("\n  ")}"
       )
       raise e # Let caller decide fallback behaviour
     end

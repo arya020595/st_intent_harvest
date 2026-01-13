@@ -13,8 +13,8 @@ module SoftDelete
   class BatchService
     include Dry::Monads[:result]
 
-    def self.call(model_class, ids:, action:, **options)
-      new(model_class, ids:, action:, **options).call
+    def self.call(model_class, ids:, action:, **)
+      new(model_class, ids:, action:, **).call
     end
 
     def initialize(model_class, ids:, action:)

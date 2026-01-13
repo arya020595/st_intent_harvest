@@ -17,6 +17,9 @@ class PayCalculation < ApplicationRecord
 
   # Recalculate all totals from pay calculation details
   def recalculate_overall_total!
+    # Force reload of the association to get current kept details
+    pay_calculation_details.reload
+
     update!(
       total_gross_salary: pay_calculation_details.sum(:gross_salary),
       total_deductions: pay_calculation_details.sum(:employee_deductions),

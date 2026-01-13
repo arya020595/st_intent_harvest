@@ -201,7 +201,7 @@ class SoftDeletableTest < ActiveSupport::TestCase
 
   test 'associations respect default scope' do
     # Create a work order with workers
-    work_order_rate = work_order_rates(:one) if defined?(work_order_rates)
+    work_order_rates(:one) if defined?(work_order_rates)
 
     # Verify that when querying through associations, discarded records are excluded
     initial_count = Worker.count
@@ -242,7 +242,7 @@ class SoftDeletableTest < ActiveSupport::TestCase
 
   test 'discarding an already discarded record updates timestamp' do
     @worker.discard
-    first_discarded_at = @worker.discarded_at
+    @worker.discarded_at
 
     sleep 0.1 # Ensure time difference
     @worker.discard
@@ -265,7 +265,7 @@ class SoftDeletableTest < ActiveSupport::TestCase
 
     # Find with discarded scope and update a simple attribute
     worker = Worker.with_discarded.find(@worker.id)
-    original_name = worker.name
+    worker.name
     worker.name = 'Updated Name'
     worker.save!(validate: false) # Skip validations for this test
 

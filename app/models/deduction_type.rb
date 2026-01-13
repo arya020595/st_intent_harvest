@@ -20,7 +20,8 @@ class DeductionType < ApplicationRecord
   # 2 is the standard for most currencies, but 3–4 decimals are supported for
   # specific deduction use cases (e.g. statutory rules, prorated or percentage
   # calculations) where higher precision is required before final rounding.
-  validates :rounding_precision, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 4 }
+  validates :rounding_precision,
+            numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 4 }
   # Rounding method: 'round' (standard), 'ceil' (always up), 'floor' (always down)
   validates :rounding_method, inclusion: { in: ROUNDING_METHODS }
 

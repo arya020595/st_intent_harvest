@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class NormalizeWorkerNationalities < ActiveRecord::Migration[8.1]
   def up
     # Convert existing nationality values to normalized format

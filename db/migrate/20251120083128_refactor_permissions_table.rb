@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RefactorPermissionsTable < ActiveRecord::Migration[8.1]
   disable_ddl_transaction!
 
