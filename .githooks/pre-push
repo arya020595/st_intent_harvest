@@ -10,12 +10,12 @@ bundle exec rubocop -a
 # Check the exit status
 RUBOCOP_EXIT_CODE=$?
 
-if [ $RUBOCOP_EXIT_CODE -ne 0 ]; then
+if [ "$RUBOCOP_EXIT_CODE" -ne 0 ]; then
   echo "⚠️  RuboCop found issues that couldn't be auto-corrected."
   echo "Consider fixing these issues manually later."
   echo "To see all issues, run: bundle exec rubocop"
   echo ""
+else
+  echo "✅ RuboCop auto-correction complete! Proceeding with push..."
 fi
-
-echo "✅ RuboCop auto-correction complete! Proceeding with push..."
-exit 0
+exit "$RUBOCOP_EXIT_CODE"
