@@ -80,7 +80,7 @@ gem 'audited', '~> 5.8'
 gem 'strong_migrations'
 
 # Bootstrap 5 framework integration
-gem 'bootstrap', '~> 5.3', '>= 5.3.5'
+gem 'bootstrap', '~> 5.3'
 
 # Sass compiler for CSS preprocessing (required for Bootstrap SCSS)
 gem 'sassc-rails'
