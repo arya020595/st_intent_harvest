@@ -122,7 +122,7 @@ class PayslipsController < ApplicationController
 
   # Load workers for dropdown
   def set_workers
-    @workers = Worker.all
+    @workers = Worker.select(:id, :name).order(:name)
   end
 
   # Show error if no payslip data
