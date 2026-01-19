@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_05_141431) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_19_070952) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -97,7 +97,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_141431) do
     t.index ["deduction_type_id", "min_wage", "max_wage"], name: "idx_wage_ranges_salary_lookup"
     t.index ["deduction_type_id"], name: "index_deduction_wage_ranges_on_deduction_type_id"
     t.index ["discarded_at"], name: "index_deduction_wage_ranges_on_discarded_at"
-    t.check_constraint "calculation_method::text = ANY (ARRAY['fixed'::character varying::text, 'percentage'::character varying::text])", name: "calculation_method_check"
+    t.check_constraint "calculation_method::text = ANY (ARRAY['fixed'::character varying, 'percentage'::character varying]::text[])", name: "calculation_method_check"
     t.check_constraint "max_wage IS NULL OR max_wage >= min_wage", name: "max_wage_check"
   end
 
@@ -150,6 +150,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_141431) do
     t.index ["manday_id", "worker_id"], name: "index_mandays_workers_on_manday_id_and_worker_id", unique: true, comment: "Ensure one entry per worker per month"
     t.index ["manday_id"], name: "index_mandays_workers_on_manday_id"
     t.index ["worker_id"], name: "index_mandays_workers_on_worker_id"
+  end
+
+  create_table "mills", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "discarded_at"
+    t.string "mill_name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_mills_on_discarded_at"
   end
 
   create_table "pay_calculation_details", force: :cascade do |t|
@@ -282,7 +290,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_141431) do
     t.bigint "inventory_id"
     t.string "item_name"
     t.decimal "price", precision: 10, scale: 2
-    t.integer "unit_id"
     t.string "unit_name"
     t.datetime "updated_at", null: false
     t.bigint "work_order_id", null: false
