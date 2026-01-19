@@ -95,7 +95,7 @@ export default class extends Controller {
         chipsHtml += `
       <span class="worker-chip d-flex align-items-center" id="selected-worker-${id}">
         ${name}
-        <button type="button" class="remove-worker" data-worker-id="${id}" data-action="click->payslip-filter#removeWorkerClick" aria-label="Remove worker">
+        <button type="button" class="remove-worker" data-worker-id="${id}" data-action="click->payslip-filter#removeWorkerClick" aria-label="Remove ${name}">
           <i class="bi bi-x-circle-fill"></i>
         </button>
       </span>
