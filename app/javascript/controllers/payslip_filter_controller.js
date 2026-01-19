@@ -25,7 +25,7 @@ export default class extends Controller {
     chip.id = `selected-worker-${id}`;
     chip.innerHTML = `
       ${name}
-      <button type="button" class="remove-worker" data-worker-id="${id}" data-action="click->payslip-filter#removeWorkerClick" aria-label="Remove worker">
+      <button type="button" class="remove-worker" data-worker-id="${id}" data-action="click->payslip-filter#removeWorkerClick" aria-label="Remove ${name}">
         <i class="bi bi-x-circle-fill"></i>
       </button>
     `;
