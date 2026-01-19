@@ -290,6 +290,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_070952) do
     t.bigint "inventory_id"
     t.string "item_name"
     t.decimal "price", precision: 10, scale: 2
+    t.integer "unit_id"
     t.string "unit_name"
     t.datetime "updated_at", null: false
     t.bigint "work_order_id", null: false
