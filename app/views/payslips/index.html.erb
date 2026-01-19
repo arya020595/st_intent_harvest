@@ -91,16 +91,15 @@
                       data-payslip-filter-target="workerItem">
                         <div class="form-check">
                           <input
-                        class="form-check-input worker-checkbox"
-                        type="checkbox"
-                        name="worker_ids[]"
-                        value="<%= w.id %>"
-                        data-worker-name="<%= w.name %>"
-                        id="worker_<%= w.id %>"
-                        <%= "checked" if selected_worker_ids.include?(w.id.to_s) || selected_worker_ids.include?("all") %>
-                        data-payslip-filter-target="workerCheckbox"
-                        data-action="change->payslip-filter#toggleWorkerCheckbox"
-                            >
+                            class="form-check-input worker-checkbox"
+                            type="checkbox"
+                            name="worker_ids[]"
+                            value="<%= w.id %>"
+                            data-worker-name="<%= w.name %>"
+                            id="worker_<%= w.id %>"
+                            <%= "checked" if selected_worker_ids.include?(w.id.to_s) || selected_worker_ids.include?("all") %>
+                            data-payslip-filter-target="workerCheckbox"
+                            data-action="change->payslip-filter#toggleWorkerCheckbox">
                             <label class="form-check-label" for="worker_<%= w.id %>">
                               <%= w.name %>
                             </label>
