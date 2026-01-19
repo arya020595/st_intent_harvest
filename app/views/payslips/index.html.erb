@@ -128,15 +128,7 @@
               <% if params[:worker_ids].present? && params[:month].present? && params[:year].present? %>
                 <% month = params[:month].to_i %>
                 <% year  = params[:year].to_i %>
-                <%
-                # Handle "all" workers selection
-                if params[:worker_ids].include?("all")
-                  workers = Worker.order(:name)
-                else
-                  worker_ids = params[:worker_ids].map(&:to_i)
-                  workers = Worker.where(id: worker_ids)
-                end
-              %>
+                <% workers = @workers || [] %>
                 <% no_payslip = workers.all? do |worker|
                !PayslipServices::FetchPayslipDataService.new(worker: worker, month_year: format('%04d-%02d', year, month)).call.success?
              end %>
