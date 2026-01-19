@@ -30,7 +30,7 @@
                   <option value="<%= y %>" <%= "selected" if params[:year].to_s == y.to_s %>><%= y %></option>
                   <% end %>
                 </select>
-            </div>
+              </div>
               <!-- WORKER -->
               <div class="form-group mt-2 text-start">
                 <%= f.label :worker_ids, "Workers", class: "form-label" %>
@@ -110,15 +110,15 @@
                   </div>
                   <!-- VIEW SELECTED WORKERS -->
                   <div id="selected-workers"
-                       class="mt-2 d-flex flex-wrap gap-2"
-                       data-payslip-filter-target="selectedContainer"></div>
+             class="mt-2 d-flex flex-wrap gap-2"
+             data-payslip-filter-target="selectedContainer"></div>
                 </div>
                 <!-- GENERATE BUTTON -->
                 <%= button_tag(type: 'submit',
-                               class: 'btn btn-success w-100 mt-3',
-                               id: 'generate-btn',
-                               disabled: true,
-                               data: { payslip_filter_target: "generateBtn" }) do %>
+                     class: 'btn btn-success w-100 mt-3',
+                     id: 'generate-btn',
+                     disabled: true,
+                     data: { payslip_filter_target: "generateBtn" }) do %>
                   <i class="bi bi-file-earmark-text-fill text-white"></i> Generate
                 <% end %>
               <% end %>
@@ -130,8 +130,15 @@
               <% if params[:worker_ids].present? && params[:month].present? && params[:year].present? %>
                 <% month = params[:month].to_i %>
                 <% year  = params[:year].to_i %>
-                <% worker_ids = params[:worker_ids].map(&:to_i) %>
-                <% workers = Worker.where(id: worker_ids) %>
+                <%
+                # Handle "all" workers selection
+                if params[:worker_ids].include?("all")
+                  workers = Worker.order(:name)
+                else
+                  worker_ids = params[:worker_ids].map(&:to_i)
+                  workers = Worker.where(id: worker_ids)
+                end
+              %>
                 <% no_payslip = workers.all? do |worker|
                !PayslipServices::FetchPayslipDataService.new(worker: worker, month_year: format('%04d-%02d', year, month)).call.success?
              end %>
