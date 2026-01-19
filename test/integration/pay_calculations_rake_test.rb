@@ -4,7 +4,7 @@ require 'test_helper'
 require 'rake'
 
 class PayCalculationsRakeTest < ActiveSupport::TestCase
-  fixtures :workers, :work_order_rates, :blocks
+  fixtures :workers, :work_order_rates, :blocks, :users
 
   setup do
     # Load Rake tasks
@@ -14,6 +14,7 @@ class PayCalculationsRakeTest < ActiveSupport::TestCase
     @block = blocks(:one)
     @worker1 = workers(:one)
     @worker2 = workers(:two)
+    @field_conductor = users(:field_conductor)
 
     # Set completion date in the past to avoid any date-related issues
     @completion_date = Date.new(2025, 11, 18)
@@ -27,7 +28,8 @@ class PayCalculationsRakeTest < ActiveSupport::TestCase
       work_order_status: 'completed',
       start_date: @month_start,
       completion_date: @completion_date,
-      block: @block
+      block: @block,
+      field_conductor: @field_conductor
     )
 
     @work_order_worker1 = @work_order.work_order_workers.create!(
@@ -65,7 +67,8 @@ class PayCalculationsRakeTest < ActiveSupport::TestCase
       work_order_status: 'completed',
       start_date: @month_start + 5.days,
       completion_date: @completion_date + 2.days,
-      block: @block
+      block: @block,
+      field_conductor: @field_conductor
     )
 
     second_work_order.work_order_workers.create!(
@@ -122,7 +125,8 @@ class PayCalculationsRakeTest < ActiveSupport::TestCase
       work_order_status: 'completed',
       start_date: @month_start + 5.days,
       completion_date: @completion_date + 2.days,
-      block: @block
+      block: @block,
+      field_conductor: @field_conductor
     )
 
     second_work_order.work_order_workers.create!(
