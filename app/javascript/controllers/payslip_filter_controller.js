@@ -37,7 +37,11 @@ export default class extends Controller {
     button.className = "remove-worker";
     button.dataset.workerId = id;
     button.dataset.action = "click->payslip-filter#removeWorkerClick";
-    button.setAttribute("aria-label", `Remove ${name}`);
+
+    // Safely construct aria-label text to avoid introducing HTML/XSS
+    const ariaLabelSpan = document.createElement("span");
+    ariaLabelSpan.textContent = `Remove ${name}`;
+    button.setAttribute("aria-label", ariaLabelSpan.textContent);
     button.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
 
     chip.appendChild(button);
