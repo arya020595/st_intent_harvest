@@ -11,13 +11,15 @@ module PayCalculationServices
       # Create a fresh work order for testing (not using fixtures to avoid conflicts)
       @work_order_rate = work_order_rates(:one)
       @block = blocks(:one)
+      @field_conductor = users(:field_conductor)
 
       @work_order = WorkOrder.create!(
         work_order_rate: @work_order_rate,
         work_order_status: 'completed',
         start_date: Date.new(2025, 11, 1),
         completion_date: Date.new(2025, 11, 18), # November 2025 - used for pay calculation month
-        block: @block
+        block: @block,
+        field_conductor: @field_conductor
       )
 
       @worker1 = workers(:one)
@@ -80,7 +82,8 @@ module PayCalculationServices
         work_order_rate: work_days_rate,
         work_order_status: 'completed',
         work_month: Date.new(2025, 12, 1), # Required for work_days type (Date object)
-        completion_date: Date.new(2025, 12, 15) # December 2025 - used for pay calculation
+        completion_date: Date.new(2025, 12, 15), # December 2025 - used for pay calculation
+        field_conductor: @field_conductor
       )
 
       work_order.work_order_workers.create!(
@@ -132,7 +135,8 @@ module PayCalculationServices
         work_order_status: 'completed',
         completion_date: @work_order.completion_date, # Same month as first work order
         start_date: @work_order.start_date,
-        block: block2 # Different block to avoid uniqueness constraint
+        block: block2, # Different block to avoid uniqueness constraint
+        field_conductor: @field_conductor
       )
       work_order2.work_order_workers.create!(
         worker: @worker1,
