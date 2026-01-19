@@ -81,15 +81,35 @@ export default class extends Controller {
   toggleSelectAll(event) {
     const isChecked = event.currentTarget.checked;
 
-    this.workerCheckboxTargets.forEach((cb) => {
-      cb.checked = isChecked;
-      if (isChecked) {
-        this.addWorker(cb.value, cb.dataset.workerName);
-      } else {
-        this.removeWorker(cb.value);
-      }
-    });
+    if (isChecked) {
+      // Check all checkboxes
+      this.workerCheckboxTargets.forEach((cb) => {
+        cb.checked = true;
+      });
 
+      // Build all worker chips in a single HTML string
+      let chipsHtml = "";
+      this.workerCheckboxTargets.forEach((cb) => {
+        const id = cb.value;
+        const name = cb.dataset.workerName;
+        chipsHtml += `
+      <span class="worker-chip d-flex align-items-center" id="selected-worker-${id}">
+        ${name}
+        <button type="button" class="remove-worker" data-worker-id="${id}" data-action="click->payslip-filter#removeWorkerClick" aria-label="Remove worker">
+          <i class="bi bi-x-circle-fill"></i>
+        </button>
+      </span>
+    `;
+      });
+
+      this.selectedContainerTarget.innerHTML = chipsHtml;
+    } else {
+      // Uncheck all checkboxes and clear all selected worker chips
+      this.workerCheckboxTargets.forEach((cb) => {
+        cb.checked = false;
+      });
+      this.selectedContainerTarget.innerHTML = "";
+    }
     this.updateGenerateButtonState();
   }
 
