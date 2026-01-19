@@ -110,15 +110,15 @@
                   </div>
                   <!-- VIEW SELECTED WORKERS -->
                   <div id="selected-workers"
-                 class="mt-2 d-flex flex-wrap gap-2"
-                 data-payslip-filter-target="selectedContainer"></div>
+                       class="mt-2 d-flex flex-wrap gap-2"
+                       data-payslip-filter-target="selectedContainer"></div>
                 </div>
                 <!-- GENERATE BUTTON -->
                 <%= button_tag(type: 'submit',
-                        class: 'btn btn-success w-100 mt-3',
-                        id: 'generate-btn',
-                        disabled: true,
-                        data: { payslip_filter_target: "generateBtn" }) do %>
+                               class: 'btn btn-success w-100 mt-3',
+                               id: 'generate-btn',
+                               disabled: true,
+                               data: { payslip_filter_target: "generateBtn" }) do %>
                   <i class="bi bi-file-earmark-text-fill text-white"></i> Generate
                 <% end %>
               <% end %>
