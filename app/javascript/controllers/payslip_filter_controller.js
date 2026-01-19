@@ -23,12 +23,28 @@ export default class extends Controller {
     const chip = document.createElement("span");
     chip.className = "worker-chip d-flex align-items-center";
     chip.id = `selected-worker-${id}`;
-    chip.innerHTML = `
-      ${name}
-      <button type="button" class="remove-worker" data-worker-id="${id}" data-action="click->payslip-filter#removeWorkerClick" aria-label="Remove ${name}">
-        <i class="bi bi-x-circle-fill"></i>
-      </button>
-    `;
+
+    // Create text node to safely display worker name (prevents XSS)
+    const nameText = document.createTextNode(name);
+    chip.appendChild(nameText);
+
+    // Add a space before the button
+    chip.appendChild(document.createTextNode(" "));
+
+    // Create remove button
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "remove-worker";
+    button.dataset.workerId = id;
+    button.dataset.action = "click->payslip-filter#removeWorkerClick";
+
+    // Safely construct aria-label text to avoid introducing HTML/XSS
+    const ariaLabelSpan = document.createElement("span");
+    ariaLabelSpan.textContent = `Remove ${name}`;
+    button.setAttribute("aria-label", ariaLabelSpan.textContent);
+    button.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
+
+    chip.appendChild(button);
     this.selectedContainerTarget.appendChild(chip);
   }
 
@@ -87,22 +103,13 @@ export default class extends Controller {
         cb.checked = true;
       });
 
-      // Build all worker chips in a single HTML string
-      let chipsHtml = "";
+      // Clear container and build worker chips safely
+      this.selectedContainerTarget.innerHTML = "";
       this.workerCheckboxTargets.forEach((cb) => {
         const id = cb.value;
         const name = cb.dataset.workerName;
-        chipsHtml += `
-      <span class="worker-chip d-flex align-items-center" id="selected-worker-${id}">
-        ${name}
-        <button type="button" class="remove-worker" data-worker-id="${id}" data-action="click->payslip-filter#removeWorkerClick" aria-label="Remove ${name}">
-          <i class="bi bi-x-circle-fill"></i>
-        </button>
-      </span>
-    `;
+        this.addWorker(id, name);
       });
-
-      this.selectedContainerTarget.innerHTML = chipsHtml;
     } else {
       // Uncheck all checkboxes and clear all selected worker chips
       this.workerCheckboxTargets.forEach((cb) => {
