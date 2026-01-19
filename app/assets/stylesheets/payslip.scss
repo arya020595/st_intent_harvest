@@ -19,3 +19,28 @@
   font-size: 20px;
   font-weight: 800;
 }
+
+#selected-workers .worker-chip {
+  font-size: 12px;
+  padding: 6px 12px;
+  background-color: #155e1a;
+  color: #ffffff;
+  border-radius: 16px;
+  font-weight: 600;
+}
+
+#selected-workers .worker-chip button {
+  background: none;
+  border: none;
+
+ color: #ffffff; margin-left: 8px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+#selected-workers .worker-chip button i {
+  font-size: 14px;
+  color: #ffffff;
+}
