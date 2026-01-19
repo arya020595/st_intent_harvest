@@ -11,6 +11,7 @@ module PayCalculationServices
       @block = blocks(:one)
       @worker1 = workers(:one)
       @worker2 = workers(:two)
+      @field_conductor = users(:field_conductor)
 
       # Create and complete a work order with workers
       completion_date = Date.current.prev_month.change(day: 18)
@@ -21,7 +22,8 @@ module PayCalculationServices
         work_order_status: 'completed',
         start_date: start_date,
         completion_date: completion_date,
-        block: @block
+        block: @block,
+        field_conductor: @field_conductor
       )
 
       @work_order.work_order_workers.create!(
@@ -97,7 +99,8 @@ module PayCalculationServices
         work_order_status: 'completed',
         start_date: @work_order.completion_date.change(day: 5),
         completion_date: @work_order.completion_date.change(day: 20),
-        block: @block
+        block: @block,
+        field_conductor: @field_conductor
       )
 
       second_work_order.work_order_workers.create!(
@@ -135,7 +138,8 @@ module PayCalculationServices
         work_order_status: 'completed',
         start_date: @work_order.completion_date.change(day: 5),
         completion_date: @work_order.completion_date.change(day: 20),
-        block: @block
+        block: @block,
+        field_conductor: @field_conductor
       )
 
       second_work_order.work_order_workers.create!(
@@ -167,7 +171,8 @@ module PayCalculationServices
         work_order_status: 'completed',
         start_date: Date.current.prev_month.beginning_of_month,
         completion_date: Date.current.prev_month.change(day: 18),
-        block: @block
+        block: @block,
+        field_conductor: @field_conductor
       )
 
       # Force the denormalized type
@@ -196,7 +201,8 @@ module PayCalculationServices
         work_order_status: 'completed',
         start_date: Date.new(2025, 11, 5),
         completion_date: Date.new(2025, 11, 20),
-        block: @block
+        block: @block,
+        field_conductor: @field_conductor
       )
 
       second_work_order.work_order_workers.create!(

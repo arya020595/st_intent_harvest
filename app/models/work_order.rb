@@ -43,7 +43,10 @@ class WorkOrder < ApplicationRecord
   # Type-based validations using custom validator (Single Responsibility Principle)
   validates_with WorkOrderTypeValidator
   validates :work_order_rate_id, presence: true
+  validates :field_conductor_id, presence: true
+  validates :block_id, presence: true
   validates :work_order_status, inclusion: { in: STATUSES.values, allow_nil: true }
+  validates :start_date, presence: true
   # Ensure completion_date is set when work order is completed (prevents pay calculation issues)
   validates :completion_date, presence: { message: 'is required for completed work orders' }, if: :completed?
 

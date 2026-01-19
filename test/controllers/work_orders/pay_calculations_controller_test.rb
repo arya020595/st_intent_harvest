@@ -14,6 +14,7 @@ module WorkOrders
       @worker1 = workers(:one)
       @worker2 = workers(:two)
       @user = users(:admin)
+      @field_conductor = users(:field_conductor)
 
       # Set completion date
       @completion_date = Date.new(2025, 11, 18)
@@ -26,7 +27,8 @@ module WorkOrders
         work_order_status: 'completed',
         start_date: @month_start,
         completion_date: @completion_date,
-        block: @block
+        block: @block,
+        field_conductor: @field_conductor
       )
 
       @work_order_worker1_wo1 = @work_order1.work_order_workers.create!(
@@ -41,7 +43,8 @@ module WorkOrders
         work_order_status: 'completed',
         start_date: @month_start + 5.days,
         completion_date: @completion_date + 2.days,
-        block: @block
+        block: @block,
+        field_conductor: @field_conductor
       )
 
       @work_order_worker1_wo2 = @work_order2.work_order_workers.create!(
