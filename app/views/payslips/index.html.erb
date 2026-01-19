@@ -37,9 +37,9 @@
                 <div class="dropdown w-100">
                   <% selected_worker_ids = Array(params[:worker_ids]) %>
                   <% selected_worker_names = if selected_worker_ids.include?("all")
-                                          Worker.pluck(:name)
+                                          @workers.pluck(:name)
                                         else
-                                          Worker.where(id: selected_worker_ids.map(&:to_i)).pluck(:name)
+                                          @workers.where(id: selected_worker_ids.map(&:to_i)).pluck(:name)
                                         end %>
                   <button class="btn btn-outline-secondary dropdown-toggle text-truncate w-100"
                       type="button"
@@ -85,7 +85,7 @@
                     </li>
                     <hr/>
                     <!-- Individual Workers -->
-                    <% Worker.all.each do |w| %>
+                    <% @workers.each do |w| %>
                       <li class="worker-item"
                       data-worker-name="<%= w.name.downcase %>"
                       data-payslip-filter-target="workerItem">
