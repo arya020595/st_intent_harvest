@@ -208,8 +208,6 @@ workerCheckboxes.forEach(cb =>
   cb.addEventListener('change', updateGenerateButtonState)
 );
 
-
-
   function removeWorker(id) {
     document.getElementById(`selected-worker-${id}`)?.remove();
     const checkbox = document.getElementById(`worker_${id}`);
