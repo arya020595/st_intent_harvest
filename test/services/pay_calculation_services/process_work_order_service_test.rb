@@ -82,7 +82,9 @@ module PayCalculationServices
         work_order_rate: work_days_rate,
         work_order_status: 'completed',
         work_month: Date.new(2025, 12, 1), # Required for work_days type (Date object)
+        start_date: Date.new(2025, 12, 1),
         completion_date: Date.new(2025, 12, 15), # December 2025 - used for pay calculation
+        block: @block,
         field_conductor: @field_conductor
       )
 
