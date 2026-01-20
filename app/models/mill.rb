@@ -3,6 +3,8 @@
 class Mill < ApplicationRecord
   include Discard::Model
 
+  has_many :productions, dependent: :restrict_with_error
+
   validates :name, presence: true, uniqueness: true
 
   scope :ordered, -> { order(:name) }
@@ -13,7 +15,7 @@ class Mill < ApplicationRecord
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    []
+    %w[productions]
   end
 
   def display_name

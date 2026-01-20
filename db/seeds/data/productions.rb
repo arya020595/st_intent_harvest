@@ -7,7 +7,7 @@ puts '📦 Creating production records...'
 
 # Get reference data
 blocks = Block.order(:block_number).limit(10).to_a
-mills = Mill.where(active: true).to_a
+mills = Mill.kept.to_a
 
 if blocks.empty?
   puts '    ⚠️  No blocks found, skipping production records'
@@ -15,7 +15,7 @@ if blocks.empty?
 end
 
 if mills.empty?
-  puts '    ⚠️  No active mills found, skipping production records'
+  puts '    ⚠️  No mills found, skipping production records'
   return
 end
 
