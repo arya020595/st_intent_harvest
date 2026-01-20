@@ -153,17 +153,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_070953) do
   end
 
   create_table "mills", force: :cascade do |t|
-    t.boolean "active", default: true
-    t.text "address"
-    t.string "code"
     t.datetime "created_at", null: false
     t.datetime "discarded_at"
     t.string "name", null: false
-    t.string "phone"
     t.datetime "updated_at", null: false
-    t.index ["code"], name: "index_mills_on_code", unique: true
     t.index ["discarded_at"], name: "index_mills_on_discarded_at"
-    t.index ["name"], name: "index_mills_on_name", unique: true
   end
 
   create_table "pay_calculation_details", force: :cascade do |t|
@@ -314,7 +308,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_070953) do
     t.bigint "inventory_id"
     t.string "item_name"
     t.decimal "price", precision: 10, scale: 2
-    t.integer "unit_id"
     t.string "unit_name"
     t.datetime "updated_at", null: false
     t.bigint "work_order_id", null: false
