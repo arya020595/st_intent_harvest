@@ -1,42 +1,39 @@
 # frozen_string_literal: true
 
 class ProductionPolicy < ApplicationPolicy
-  class Scope < ApplicationPolicy::Scope
-    def resolve
-      scope.all
-    end
-  end
+  # Permission codes:
+  # - production.index
+  # - production.show
+  # - production.create
+  # - production.update
+  # - production.destroy
 
-  def index?
-    user.has_permission?('production.index')
-  end
-
-  def show?
-    user.has_permission?('production.index')
+  # Define who can see the delete confirmation
+  def confirm_delete?
+    destroy?
   end
 
   def new?
-    user.has_permission?('production.create')
-  end
-
-  def create?
-    user.has_permission?('production.create')
+    create?
   end
 
   def edit?
-    user.has_permission?('production.update')
+    update?
   end
 
-  def update?
-    user.has_permission?('production.update')
+  private
+
+  def permission_resource
+    'production'
   end
 
-  def destroy?
-    user.has_permission?('production.delete')
-  end
+  class Scope < ApplicationPolicy::Scope
+    # Inherits default scope behavior
 
-  # Align delete confirmation permission with destroy?
-  def confirm_delete?
-    destroy?
+    private
+
+    def permission_resource
+      'production'
+    end
   end
 end
