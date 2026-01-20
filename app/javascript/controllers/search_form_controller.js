@@ -25,7 +25,7 @@ export default class extends Controller {
 
     this.timeout = setTimeout(() => {
       this.element.requestSubmit();
-    }, 300); // adjust debounce time as needed
+    }, 2000); // adjust debounce time as needed
   }
 
   /**

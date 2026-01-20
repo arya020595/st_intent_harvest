@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_19_070952) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_19_070953) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -155,7 +155,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_070952) do
   create_table "mills", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "discarded_at"
-    t.string "mill_name", null: false
+    t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_mills_on_discarded_at"
   end
@@ -200,6 +200,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_070952) do
     t.index ["code"], name: "index_permissions_on_code", unique: true
     t.index ["discarded_at"], name: "index_permissions_on_discarded_at"
     t.index ["resource"], name: "index_permissions_on_resource"
+  end
+
+  create_table "productions", force: :cascade do |t|
+    t.bigint "block_id", null: false
+    t.datetime "created_at", null: false
+    t.date "date", null: false
+    t.datetime "discarded_at"
+    t.bigint "mill_id", null: false
+    t.string "ticket_estate_no"
+    t.string "ticket_mill_no"
+    t.integer "total_bunches", default: 0, null: false
+    t.decimal "total_weight_ton", precision: 10, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["block_id"], name: "index_productions_on_block_id"
+    t.index ["date", "block_id"], name: "index_productions_on_date_and_block_id"
+    t.index ["date"], name: "index_productions_on_date"
+    t.index ["discarded_at"], name: "index_productions_on_discarded_at"
+    t.index ["mill_id"], name: "index_productions_on_mill_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -385,6 +403,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_070952) do
   add_foreign_key "mandays_workers", "workers"
   add_foreign_key "pay_calculation_details", "pay_calculations"
   add_foreign_key "pay_calculation_details", "workers"
+  add_foreign_key "productions", "blocks"
+  add_foreign_key "productions", "mills"
   add_foreign_key "roles_permissions", "permissions"
   add_foreign_key "roles_permissions", "roles"
   add_foreign_key "users", "roles"

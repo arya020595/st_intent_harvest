@@ -1,0 +1,56 @@
+<tr id="<%= dom_id(production) %>">
+  <td class="text-center">
+    <div class="action-buttons">
+      <% policy = record_policy(production, ProductionPolicy) %>
+      <% if policy.show? %>
+        <%= link_to production_path(production),
+              class: "action-btn info",
+              title: "View Details",
+              **modal_link_data do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to production_path(production),
+              class: "action-btn info",
+              title: "View Details" do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
+      <% end %>
+      <% if policy.edit? %>
+        <%= link_to edit_production_path(production),
+                    class: "action-btn warning",
+                    title: "Edit",
+                    **modal_link_data do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to edit_production_path(production),
+                    class: "action-btn warning",
+                    title: "Edit" do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
+      <% end %>
+      <% if policy.confirm_delete? %>
+        <%= link_to confirm_delete_production_path(production),
+                    class: "action-btn danger",
+                    title: "Delete",
+                    **modal_link_data(size: "modal-md") do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
+      <% else %>
+        <%= link_to confirm_delete_production_path(production),
+                    class: "action-btn danger",
+                    title: "Delete" do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
+      <% end %>
+    </div>
+  </td>
+  <td class="text-center"><%= production.date.strftime('%d-%m-%Y') %></td>
+  <td class="text-center"><%= production.ticket_estate_no %></td>
+  <td class="text-center"><%= production.ticket_mill_no %></td>
+  <td class="text-center"><%= production.mill.name %></td>
+  <td class="text-center"><%= production.block.block_number %></td>
+  <td class="text-center"><%= number_with_delimiter(production.total_bunches) %></td>
+  <td class="text-center"><%= number_with_precision(production.total_weight_ton, precision: 2) %></td>
+</tr>

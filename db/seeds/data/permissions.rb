@@ -5,6 +5,7 @@ puts 'Seeding Permissions...'
 # Define resources with their actions
 resources = {
   'dashboard' => %w[index],
+  'bi_dashboard' => %w[index],
 
   'work_orders.details' => %w[index show create update destroy mark_complete],
   'work_orders.approvals' => %w[index show update approve request_amendment],
@@ -12,6 +13,7 @@ resources = {
   'work_orders.pay_calculations' => %w[index show create update destroy worker_detail],
 
   'payslip' => %w[show],
+  'production' => %w[index show create update destroy],
   'inventory' => %w[index show create update destroy],
   'workers' => %w[index show create update destroy],
 
@@ -20,6 +22,7 @@ resources = {
   'master_data.units' => %w[index show create update destroy],
   'master_data.vehicles' => %w[index show create update destroy],
   'master_data.work_order_rates' => %w[index show create update destroy],
+  'master_data.mills' => %w[index show create update destroy],
 
   'user_management.roles' => %w[index show create update destroy],
   'user_management.users' => %w[index show create update destroy]
@@ -28,8 +31,10 @@ resources = {
 # Section mapping
 SECTION_MAPPING = {
   'dashboard' => 'Dashboard',
+  'bi_dashboard' => 'BI Dashboard',
   'work_orders' => 'Work Order',
   'payslip' => 'Payslip',
+  'production' => 'Production',
   'inventory' => 'Inventory',
   'workers' => 'Workers List',
   'master_data' => 'Master Data',

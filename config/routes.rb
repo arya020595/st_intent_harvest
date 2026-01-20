@@ -79,6 +79,13 @@ Rails.application.routes.draw do
     end
   end
 
+  # Production
+  resources :productions do
+    member do
+      get :confirm_delete
+    end
+  end
+
   # Master Data Namespace
   namespace :master_data do
     resources :vehicles, concerns: :restorable do
@@ -106,6 +113,12 @@ Rails.application.routes.draw do
     end
 
     resources :categories, concerns: :restorable do
+      member do
+        get :confirm_delete
+      end
+    end
+
+    resources :mills do
       member do
         get :confirm_delete
       end
