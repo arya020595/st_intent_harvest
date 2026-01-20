@@ -12,7 +12,8 @@
                     style: "background-color: #28a745; color: white;#{date_filtered ? '' : ' pointer-events: none; opacity: 0.6;'}",
                     data: { turbo: false },
                     aria: { disabled: !date_filtered },
-                    tabindex: (date_filtered ? nil : -1) do %>
+                    tabindex: (date_filtered ? nil : -1),
+                    title: (date_filtered ? '' : 'Please select a date range to export') do %>
           <i class="bi bi-file-earmark-spreadsheet text-white me-1"></i> Export CSV
         <% end %>
         <% export_params_pdf = { format: :pdf } %>
@@ -23,7 +24,8 @@
                     data: { turbo: false },
                     aria: { disabled: !date_filtered },
                     tabindex: (date_filtered ? nil : -1),
-                    target: "_blank" do %>
+                    target: "_blank",
+                    title: (date_filtered ? '' : 'Please select a date range to export') do %>
           <i class="bi bi-file-earmark-pdf text-white me-1"></i> Export PDF
         <% end %>
         <% if record_policy(Production.new, ProductionPolicy).new? %>
@@ -40,6 +42,16 @@
         <% end %>
       </div>
       <div class="card-body">
+        <% date_filtered = params.dig(:q, :date_gteq).present? || params.dig(:q, :date_lteq).present? %>
+        <% if !date_filtered %>
+          <div class="alert alert-info alert-dismissible fade show d-flex align-items-center" role="alert">
+            <i class="bi bi-info-circle me-2"></i>
+            <div>
+              <strong>Tip:</strong> Select a date range above to enable the Export CSV and Export PDF buttons. This helps you export specific production records.
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% end %>
         <%= search_form_for @q, url: productions_path, html: { id: 'production-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
           <div class="table-responsive">
             <table class="table table-hover table-sm mb-0">
