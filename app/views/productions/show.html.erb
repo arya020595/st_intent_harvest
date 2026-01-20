@@ -1,0 +1,26 @@
+<%= turbo_frame_tag "modal" do %>
+  <div class="modal-content">
+    <div class="modal-header d-flex justify-content-between align-items-center" style="padding: 20px;">
+      <h5 class="mb-0"><strong>Production Details</strong></h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <dl class="row mb-0">
+        <dt class="col-sm-3">Date:</dt>
+        <dd class="col-sm-9"><%= @production.date.strftime('%d-%m-%Y') %></dd>
+        <dt class="col-sm-3">Ticket Estate No.:</dt>
+        <dd class="col-sm-9"><%= @production.ticket_estate_no || '-' %></dd>
+        <dt class="col-sm-3">Ticket Mill No.:</dt>
+        <dd class="col-sm-9"><%= @production.ticket_mill_no || '-' %></dd>
+        <dt class="col-sm-3">Mill:</dt>
+        <dd class="col-sm-9"><%= @production.mill.name %></dd>
+        <dt class="col-sm-3">Block No.:</dt>
+        <dd class="col-sm-9"><%= @production.block.block_number %></dd>
+        <dt class="col-sm-3">Total Bunches:</dt>
+        <dd class="col-sm-9"><%= number_with_delimiter(@production.total_bunches) %></dd>
+        <dt class="col-sm-3">Total Weight:</dt>
+        <dd class="col-sm-9"><%= number_with_precision(@production.total_weight_ton, precision: 2) %> Ton</dd>
+      </dl>
+    </div>
+  </div>
+<% end %>

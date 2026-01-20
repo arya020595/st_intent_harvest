@@ -31,6 +31,7 @@ ActiveRecord::Base.connection.disable_referential_integrity do
     WorkOrder,
     InventoryOrder,
     Inventory,
+    Production,
     WorkOrderRate,
     User,
     RolesPermission,
@@ -72,6 +73,7 @@ seed_modules = [
   'work_order_rates',   # Work order rate definitions
   'work_orders',        # Work orders with workers and items
   'pay_calculations',   # Pay calculations and details
+  'productions',        # Daily production records
   'reset_sequences'     # Reset PostgreSQL sequences (must be last)
 ]
 
@@ -118,7 +120,8 @@ summary_models = [
   { name: 'Work Order Workers', model: WorkOrderWorker },
   { name: 'Work Order Items', model: WorkOrderItem },
   { name: 'Pay Calculations', model: PayCalculation },
-  { name: 'Pay Calculation Details', model: PayCalculationDetail }
+  { name: 'Pay Calculation Details', model: PayCalculationDetail },
+  { name: 'Productions', model: Production }
 ]
 
 summary_models.each do |item|
