@@ -3,7 +3,25 @@
   <div class="card shadow-sm">
     <div class="productions_page">
       <h1 class="mb-0">Production</h1>
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-end gap-2">
+        <% date_filtered = params.dig(:q, :date_gteq).present? || params.dig(:q, :date_lteq).present? %>
+        <% export_params = { format: :csv } %>
+        <% export_params[:q] = params[:q].to_unsafe_h if params[:q].present? %>
+        <%= link_to productions_path(export_params),
+                    class: "add-button btn btn-sm #{date_filtered ? '' : 'disabled'}",
+                    style: "background-color: #28a745; color: white;",
+                    data: { turbo: false } do %>
+          <i class="bi bi-file-earmark-spreadsheet text-white me-1"></i> Export CSV
+        <% end %>
+        <% export_params_pdf = { format: :pdf } %>
+        <% export_params_pdf[:q] = params[:q].to_unsafe_h if params[:q].present? %>
+        <%= link_to productions_path(export_params_pdf),
+                    class: "add-button btn btn-sm #{date_filtered ? '' : 'disabled'}",
+                    style: "background-color: #dc3545; color: white;",
+                    data: { turbo: false },
+                    target: "_blank" do %>
+          <i class="bi bi-file-earmark-pdf text-white me-1"></i> Export PDF
+        <% end %>
         <% if record_policy(Production.new, ProductionPolicy).new? %>
           <%= link_to new_production_path,
                       class: "add-button btn btn-primary btn-sm",

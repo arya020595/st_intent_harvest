@@ -2,6 +2,7 @@
 
 class ProductionsController < ApplicationController
   include RansackMultiSort
+  include ExportHandling
 
   before_action :set_production, only: %i[show edit update destroy confirm_delete]
   before_action :load_form_data, only: %i[new create edit update]
@@ -11,6 +12,12 @@ class ProductionsController < ApplicationController
 
     apply_ransack_search(policy_scope(Production).includes(:block, :mill).ordered)
     @pagy, @productions = paginate_results(@q.result)
+
+    respond_to do |format|
+      format.html
+      format.csv { export_csv }
+      format.pdf { export_pdf }
+    end
   end
 
   def show
@@ -129,5 +136,22 @@ class ProductionsController < ApplicationController
 
   def production_params
     params.require(:production).permit(:date, :block_id, :ticket_estate_no, :ticket_mill_no, :mill_id, :total_bunches, :total_weight_ton)
+  end
+
+  # Export methods - delegate to SOLID services with dry-monads
+  def export_csv
+    handle_csv_export(
+      ProductionServices::ExportCsvService,
+      @q.result.includes(:block, :mill),
+      error_path: productions_path
+    )
+  end
+
+  def export_pdf
+    handle_pdf_export(
+      ProductionServices::ExportPdfService,
+      @q.result.includes(:block, :mill),
+      error_path: productions_path
+    )
   end
 end
