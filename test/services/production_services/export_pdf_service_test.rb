@@ -16,6 +16,27 @@ module ProductionServices
         total_weight_ton: @records.sum(:total_weight_ton)
       }
       @filter_data = { mill: nil, block: nil }
+
+      # Stub Grover.new to avoid Puppeteer dependency
+      @original_grover_new = Grover.method(:new)
+      Grover.define_singleton_method(:new) do |*_args|
+        grover_instance = Object.new
+        def grover_instance.to_pdf
+          # Return a minimal but realistic PDF structure
+          "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Count 1/Kids[3 0 R]>>endobj 3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Resources<<>>>>endobj\nxref\n0 4\n0000000000 65535 f\n0000000009 00000 n\n0000000056 00000 n\n0000000114 00000 n\ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n210\n%%EOF\n"
+        end
+        grover_instance
+      end
+    end
+
+    teardown do
+      # Restore original Grover.new
+      Grover.define_singleton_method(:new, @original_grover_new) if @original_grover_new
+    end
+
+    # Helper method to stub Grover PDF generation (no longer needed but keeping for compatibility)
+    def stub_grover_pdf
+      yield
     end
 
     # ============================================
@@ -23,44 +44,50 @@ module ProductionServices
     # ============================================
 
     test 'call returns Success monad with export data' do
-      service = ExportPdfService.new(
-        records: @records,
-        params: @params,
-        view_context: @view_context,
-        extra_locals: { totals: @totals, filter_data: @filter_data }
-      )
-      result = service.call
+      stub_grover_pdf do
+        service = ExportPdfService.new(
+          records: @records,
+          params: @params,
+          view_context: @view_context,
+          extra_locals: { totals: @totals, filter_data: @filter_data }
+        )
+        result = service.call
 
-      assert result.success?
-      assert result.value!.key?(:data)
-      assert result.value!.key?(:filename)
-      assert result.value!.key?(:content_type)
+        assert result.success?
+        assert result.value!.key?(:data)
+        assert result.value!.key?(:filename)
+        assert result.value!.key?(:content_type)
+      end
     end
 
     test 'content type is application/pdf' do
-      service = ExportPdfService.new(
-        records: @records,
-        params: @params,
-        view_context: @view_context,
-        extra_locals: { totals: @totals, filter_data: @filter_data }
-      )
-      result = service.call
+      stub_grover_pdf do
+        service = ExportPdfService.new(
+          records: @records,
+          params: @params,
+          view_context: @view_context,
+          extra_locals: { totals: @totals, filter_data: @filter_data }
+        )
+        result = service.call
 
-      assert_equal 'application/pdf', result.value![:content_type]
+        assert_equal 'application/pdf', result.value![:content_type]
+      end
     end
 
     test 'generates valid PDF data' do
-      service = ExportPdfService.new(
-        records: @records,
-        params: @params,
-        view_context: @view_context,
-        extra_locals: { totals: @totals, filter_data: @filter_data }
-      )
-      result = service.call
+      stub_grover_pdf do
+        service = ExportPdfService.new(
+          records: @records,
+          params: @params,
+          view_context: @view_context,
+          extra_locals: { totals: @totals, filter_data: @filter_data }
+        )
+        result = service.call
 
-      pdf_data = result.value![:data]
-      # PDF files start with %PDF
-      assert_match(/^%PDF/, pdf_data)
+        pdf_data = result.value![:data]
+        # PDF files start with %PDF
+        assert_match(/^%PDF/, pdf_data)
+      end
     end
 
     # ============================================
@@ -125,33 +152,37 @@ module ProductionServices
     # ============================================
 
     test 'generates filename with date range when params provided' do
-      start_date = 3.days.ago.to_date
-      end_date = Date.today
-      params = { q: { date_gteq: start_date.to_s, date_lteq: end_date.to_s } }
+      stub_grover_pdf do
+        start_date = 3.days.ago.to_date
+        end_date = Date.today
+        params = { q: { date_gteq: start_date.to_s, date_lteq: end_date.to_s } }
 
-      service = ExportPdfService.new(
-        records: @records,
-        params: params,
-        view_context: @view_context,
-        extra_locals: { totals: @totals, filter_data: @filter_data }
-      )
-      result = service.call
+        service = ExportPdfService.new(
+          records: @records,
+          params: params,
+          view_context: @view_context,
+          extra_locals: { totals: @totals, filter_data: @filter_data }
+        )
+        result = service.call
 
-      expected_filename = "productions-#{start_date.strftime('%d-%m-%Y')}_to_#{end_date.strftime('%d-%m-%Y')}.pdf"
-      assert_equal expected_filename, result.value![:filename]
+        expected_filename = "productions-#{start_date.strftime('%d-%m-%Y')}_to_#{end_date.strftime('%d-%m-%Y')}.pdf"
+        assert_equal expected_filename, result.value![:filename]
+      end
     end
 
     test 'generates filename with current date when no date params' do
-      service = ExportPdfService.new(
-        records: @records,
-        params: {},
-        view_context: @view_context,
-        extra_locals: { totals: @totals, filter_data: @filter_data }
-      )
-      result = service.call
+      stub_grover_pdf do
+        service = ExportPdfService.new(
+          records: @records,
+          params: {},
+          view_context: @view_context,
+          extra_locals: { totals: @totals, filter_data: @filter_data }
+        )
+        result = service.call
 
-      expected_filename = "productions-#{Date.current.strftime('%Y%m%d')}.pdf"
-      assert_equal expected_filename, result.value![:filename]
+        expected_filename = "productions-#{Date.current.strftime('%Y%m%d')}.pdf"
+        assert_equal expected_filename, result.value![:filename]
+      end
     end
 
     # ============================================
@@ -159,19 +190,21 @@ module ProductionServices
     # ============================================
 
     test 'handles empty records collection' do
-      empty_records = Production.none
-      empty_totals = { total_bunches: 0, total_weight_ton: 0 }
+      stub_grover_pdf do
+        empty_records = Production.none
+        empty_totals = { total_bunches: 0, total_weight_ton: 0 }
 
-      service = ExportPdfService.new(
-        records: empty_records,
-        params: @params,
-        view_context: @view_context,
-        extra_locals: { totals: empty_totals, filter_data: @filter_data }
-      )
-      result = service.call
+        service = ExportPdfService.new(
+          records: empty_records,
+          params: @params,
+          view_context: @view_context,
+          extra_locals: { totals: empty_totals, filter_data: @filter_data }
+        )
+        result = service.call
 
-      assert result.success?
-      assert_match(/^%PDF/, result.value![:data])
+        assert result.success?
+        assert_match(/^%PDF/, result.value![:data])
+      end
     end
 
     test 'returns Failure monad when records is nil' do
@@ -248,49 +281,55 @@ module ProductionServices
     # ============================================
 
     test 'handles mill filter in extra_locals' do
-      mill = mills(:one)
-      filter_data = { mill: mill, block: nil }
+      stub_grover_pdf do
+        mill = mills(:one)
+        filter_data = { mill: mill, block: nil }
 
-      service = ExportPdfService.new(
-        records: @records,
-        params: { q: { mill_id_eq: mill.id } },
-        view_context: @view_context,
-        extra_locals: { totals: @totals, filter_data: filter_data }
-      )
-      result = service.call
+        service = ExportPdfService.new(
+          records: @records,
+          params: { q: { mill_id_eq: mill.id } },
+          view_context: @view_context,
+          extra_locals: { totals: @totals, filter_data: filter_data }
+        )
+        result = service.call
 
-      assert result.success?
+        assert result.success?
+      end
     end
 
     test 'handles block filter in extra_locals' do
-      block = blocks(:one)
-      filter_data = { mill: nil, block: block }
+      stub_grover_pdf do
+        block = blocks(:one)
+        filter_data = { mill: nil, block: block }
 
-      service = ExportPdfService.new(
-        records: @records,
-        params: { q: { block_id_eq: block.id } },
-        view_context: @view_context,
-        extra_locals: { totals: @totals, filter_data: filter_data }
-      )
-      result = service.call
+        service = ExportPdfService.new(
+          records: @records,
+          params: { q: { block_id_eq: block.id } },
+          view_context: @view_context,
+          extra_locals: { totals: @totals, filter_data: filter_data }
+        )
+        result = service.call
 
-      assert result.success?
+        assert result.success?
+      end
     end
 
     test 'handles both mill and block filters' do
-      mill = mills(:one)
-      block = blocks(:one)
-      filter_data = { mill: mill, block: block }
+      stub_grover_pdf do
+        mill = mills(:one)
+        block = blocks(:one)
+        filter_data = { mill: mill, block: block }
 
-      service = ExportPdfService.new(
-        records: @records,
-        params: { q: { mill_id_eq: mill.id, block_id_eq: block.id } },
-        view_context: @view_context,
-        extra_locals: { totals: @totals, filter_data: filter_data }
-      )
-      result = service.call
+        service = ExportPdfService.new(
+          records: @records,
+          params: { q: { mill_id_eq: mill.id, block_id_eq: block.id } },
+          view_context: @view_context,
+          extra_locals: { totals: @totals, filter_data: filter_data }
+        )
+        result = service.call
 
-      assert result.success?
+        assert result.success?
+      end
     end
 
     private

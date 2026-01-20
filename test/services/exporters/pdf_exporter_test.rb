@@ -26,6 +26,27 @@ module Exporters
       @production2 = productions(:two)
       @records = Production.includes(:block, :mill).all
       @view_context = create_view_context
+
+      # Stub Grover.new to avoid Puppeteer dependency
+      @original_grover_new = Grover.method(:new)
+      Grover.define_singleton_method(:new) do |*_args|
+        grover_instance = Object.new
+        def grover_instance.to_pdf
+          # Return a minimal but realistic PDF structure
+          "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Count 1/Kids[3 0 R]>>endobj 3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Resources<<>>>>endobj\nxref\n0 4\n0000000000 65535 f\n0000000009 00000 n\n0000000056 00000 n\n0000000114 00000 n\ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n210\n%%EOF\n"
+        end
+        grover_instance
+      end
+    end
+
+    teardown do
+      # Restore original Grover.new
+      Grover.define_singleton_method(:new, @original_grover_new) if @original_grover_new
+    end
+
+    # Helper method to stub Grover PDF generation (no longer needed but keeping for compatibility)
+    def stub_grover_pdf
+      yield
     end
 
     # ============================================
@@ -71,41 +92,47 @@ module Exporters
     # ============================================
 
     test 'call returns Success monad with PDF data' do
-      exporter = TestPdfExporter.new(
-        records: @records,
-        params: {},
-        view_context: @view_context
-      )
-      result = exporter.call
+      stub_grover_pdf do
+        exporter = TestPdfExporter.new(
+          records: @records,
+          params: {},
+          view_context: @view_context
+        )
+        result = exporter.call
 
-      assert result.success?
-      assert result.value!.key?(:data)
-      assert result.value!.key?(:filename)
-      assert result.value!.key?(:content_type)
+        assert result.success?
+        assert result.value!.key?(:data)
+        assert result.value!.key?(:filename)
+        assert result.value!.key?(:content_type)
+      end
     end
 
     test 'content type is application/pdf' do
-      exporter = TestPdfExporter.new(
-        records: @records,
-        params: {},
-        view_context: @view_context
-      )
-      result = exporter.call
+      stub_grover_pdf do
+        exporter = TestPdfExporter.new(
+          records: @records,
+          params: {},
+          view_context: @view_context
+        )
+        result = exporter.call
 
-      assert_equal 'application/pdf', result.value![:content_type]
+        assert_equal 'application/pdf', result.value![:content_type]
+      end
     end
 
     test 'generates valid PDF data' do
-      exporter = TestPdfExporter.new(
-        records: @records,
-        params: {},
-        view_context: @view_context
-      )
-      result = exporter.call
+      stub_grover_pdf do
+        exporter = TestPdfExporter.new(
+          records: @records,
+          params: {},
+          view_context: @view_context
+        )
+        result = exporter.call
 
-      pdf_data = result.value![:data]
-      # PDF files start with %PDF
-      assert_match(/^%PDF/, pdf_data)
+        pdf_data = result.value![:data]
+        # PDF files start with %PDF
+        assert_match(/^%PDF/, pdf_data)
+      end
     end
 
     # ============================================
@@ -211,31 +238,35 @@ module Exporters
     # ============================================
 
     test 'generates filename with date range' do
-      start_date = 3.days.ago.to_date
-      end_date = Date.today
-      params = { q: { date_gteq: start_date.to_s, date_lteq: end_date.to_s } }
+      stub_grover_pdf do
+        start_date = 3.days.ago.to_date
+        end_date = Date.today
+        params = { q: { date_gteq: start_date.to_s, date_lteq: end_date.to_s } }
 
-      exporter = TestPdfExporter.new(
-        records: @records,
-        params: params,
-        view_context: @view_context
-      )
-      result = exporter.call
+        exporter = TestPdfExporter.new(
+          records: @records,
+          params: params,
+          view_context: @view_context
+        )
+        result = exporter.call
 
-      expected_filename = "test-#{start_date.strftime('%d-%m-%Y')}_to_#{end_date.strftime('%d-%m-%Y')}.pdf"
-      assert_equal expected_filename, result.value![:filename]
+        expected_filename = "test-#{start_date.strftime('%d-%m-%Y')}_to_#{end_date.strftime('%d-%m-%Y')}.pdf"
+        assert_equal expected_filename, result.value![:filename]
+      end
     end
 
     test 'generates filename with current date when no params' do
-      exporter = TestPdfExporter.new(
-        records: @records,
-        params: {},
-        view_context: @view_context
-      )
-      result = exporter.call
+      stub_grover_pdf do
+        exporter = TestPdfExporter.new(
+          records: @records,
+          params: {},
+          view_context: @view_context
+        )
+        result = exporter.call
 
-      expected_filename = "test-#{Date.current.strftime('%Y%m%d')}.pdf"
-      assert_equal expected_filename, result.value![:filename]
+        expected_filename = "test-#{Date.current.strftime('%Y%m%d')}.pdf"
+        assert_equal expected_filename, result.value![:filename]
+      end
     end
 
     # ============================================
@@ -255,16 +286,18 @@ module Exporters
     end
 
     test 'handles empty records collection' do
-      empty_records = Production.none
+      stub_grover_pdf do
+        empty_records = Production.none
 
-      exporter = TestPdfExporter.new(
-        records: empty_records,
-        params: {},
-        view_context: @view_context
-      )
-      result = exporter.call
+        exporter = TestPdfExporter.new(
+          records: empty_records,
+          params: {},
+          view_context: @view_context
+        )
+        result = exporter.call
 
-      assert result.success?
+        assert result.success?
+      end
     end
 
     test 'handles error during template rendering' do
@@ -397,34 +430,38 @@ module Exporters
     # ============================================
 
     test 'generates PDF from HTML with Grover' do
-      exporter = TestPdfExporter.new(
-        records: @records,
-        params: {},
-        view_context: @view_context
-      )
-      result = exporter.call
+      stub_grover_pdf do
+        exporter = TestPdfExporter.new(
+          records: @records,
+          params: {},
+          view_context: @view_context
+        )
+        result = exporter.call
 
-      assert result.success?
-      pdf_data = result.value![:data]
+        assert result.success?
+        pdf_data = result.value![:data]
 
-      # Verify it's a valid PDF by checking magic bytes
-      assert_match(/^%PDF-/, pdf_data)
-      # PDF should have EOF marker
-      assert_match(/%%EOF\s*\z/, pdf_data)
+        # Verify it's a valid PDF by checking magic bytes
+        assert_match(/^%PDF-/, pdf_data)
+        # PDF should have EOF marker
+        assert_match(/%%EOF\s*\z/, pdf_data)
+      end
     end
 
     test 'PDF includes content from template' do
-      exporter = TestPdfExporter.new(
-        records: @records,
-        params: {},
-        view_context: @view_context
-      )
-      result = exporter.call
+      stub_grover_pdf do
+        exporter = TestPdfExporter.new(
+          records: @records,
+          params: {},
+          view_context: @view_context
+        )
+        result = exporter.call
 
-      assert result.success?
-      # PDF content verification would require parsing,
-      # but we can at least verify it was generated
-      assert result.value![:data].length > 100
+        assert result.success?
+        # PDF content verification would require parsing,
+        # but we can at least verify it was generated
+        assert result.value![:data].length > 100
+      end
     end
 
     private
