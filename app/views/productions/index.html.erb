@@ -3,12 +3,36 @@
   <div class="card shadow-sm">
     <div class="productions_page">
       <h1 class="mb-0">Production</h1>
-      <div class="d-flex justify-content-end">
+      <div class="d-flex justify-content-end gap-2">
+        <% date_filtered = params.dig(:q, :date_gteq).present? || params.dig(:q, :date_lteq).present? %>
+        <% export_params = { format: :csv } %>
+        <% export_params[:q] = params[:q].to_unsafe_h if params[:q].present? %>
+        <%= link_to productions_path(export_params),
+                    class: "add-button btn btn-sm #{date_filtered ? '' : 'disabled'}",
+                    style: "background-color: #28a745; color: white;#{date_filtered ? '' : ' pointer-events: none; opacity: 0.6;'}",
+                    data: { turbo: false },
+                    aria: { disabled: !date_filtered },
+                    tabindex: (date_filtered ? nil : -1),
+                    title: (date_filtered ? '' : 'Please select a date range to export') do %>
+          <i class="bi bi-file-earmark-spreadsheet text-white me-1"></i> Export CSV
+        <% end %>
+        <% export_params_pdf = { format: :pdf } %>
+        <% export_params_pdf[:q] = params[:q].to_unsafe_h if params[:q].present? %>
+        <%= link_to productions_path(export_params_pdf),
+                    class: "add-button btn btn-sm #{date_filtered ? '' : 'disabled'}",
+                    style: "background-color: #dc3545; color: white;#{date_filtered ? '' : ' pointer-events: none; opacity: 0.6;'}",
+                    data: { turbo: false },
+                    aria: { disabled: !date_filtered },
+                    tabindex: (date_filtered ? nil : -1),
+                    target: "_blank",
+                    title: (date_filtered ? '' : 'Please select a date range to export') do %>
+          <i class="bi bi-file-earmark-pdf text-white me-1"></i> Export PDF
+        <% end %>
         <% if record_policy(Production.new, ProductionPolicy).new? %>
           <%= link_to new_production_path,
                       class: "add-button btn btn-primary btn-sm",
                       **modal_link_data do %>
-            <i class="bi bi-plus-circle-fill text-white me-1"></i> Add Production
+            <i class="bi bi-plus-circle-fill text-white me-1"></i> Add Daily Record
           <% end %>
         <% else %>
           <%= link_to new_production_path,
@@ -18,6 +42,16 @@
         <% end %>
       </div>
       <div class="card-body">
+        <% date_filtered = params.dig(:q, :date_gteq).present? || params.dig(:q, :date_lteq).present? %>
+        <% if !date_filtered %>
+          <div class="alert alert-info alert-dismissible fade show d-flex align-items-center" role="alert">
+            <i class="bi bi-info-circle me-2"></i>
+            <div>
+              <strong>Tip:</strong> Select a date range above to enable the Export CSV and Export PDF buttons. This helps you export specific production records.
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% end %>
         <%= search_form_for @q, url: productions_path, html: { id: 'production-search-form', data: { controller: "search-form", action: "submit->search-form#resetPage" } } do |f| %>
           <div class="table-responsive">
             <table class="table table-hover table-sm mb-0">
@@ -25,10 +59,10 @@
                 <tr class="header-row">
                   <th></th>
                   <th class="text-center"><%= sort_link(@q, :date, 'Date') %></th>
-                  <th class="text-center">Ticket Estate No.</th>
-                  <th class="text-center">Ticket Mill No.</th>
-                  <th class="text-center">Mills</th>
-                  <th class="text-center">Block No.</th>
+                  <th class="text-center"><%= sort_link(@q, :ticket_estate_no, 'Ticket Estate No.') %></th>
+                  <th class="text-center"><%= sort_link(@q, :ticket_mill_no, 'Ticket Mill No.') %></th>
+                  <th class="text-center"><%= sort_link(@q, :mill_name, 'Mills') %></th>
+                  <th class="text-center"><%= sort_link(@q, :block_block_number, 'Block No.') %></th>
                   <th class="text-center"><%= sort_link(@q, :total_bunches, 'Total Bunches') %></th>
                   <th class="text-center"><%= sort_link(@q, :total_weight_ton, 'Total Weight (Ton)') %></th>
                 </tr>
@@ -38,7 +72,25 @@
                       <%= link_to 'Reset', productions_path, class: 'btn reset-btn', style: "width: 120px;" %>
                     </div>
                   </th>
-                  <th><%= f.search_field :date_eq, type: 'date', class: 'form-control form-control-sm', data: { action: "change->search-form#autoSubmit" } %></th>
+                  <th class="text-center">
+                    <div class="input-group input-group-sm"
+                            data-controller="flatpickr"
+                            data-flatpickr-mode-value="range"
+                            data-flatpickr-date-format-value="d-m-Y"
+                            data-flatpickr-field-name-value="q[date]"
+                        >
+                      <input type="text"
+                             class="form-control form-control-sm cursor-pointer"
+                             placeholder="Select Date Range"
+                             data-flatpickr-target="input"
+                             >
+                      <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
+                        <i class="bi bi-calendar-range"></i>
+                      </span>
+                    </div>
+                    <%= f.hidden_field :date_gteq, value: params.dig(:q, :date_gteq) %>
+                    <%= f.hidden_field :date_lteq, value: params.dig(:q, :date_lteq) %>
+                  </th>
                   <th><%= f.search_field :ticket_estate_no_cont, class: 'form-control form-control-sm', placeholder: 'Enter Ticket...', data: { action: "input->search-form#autoSubmit" } %></th>
                   <th><%= f.search_field :ticket_mill_no_cont, class: 'form-control form-control-sm', placeholder: 'Enter Ticket...', data: { action: "input->search-form#autoSubmit" } %></th>
                   <th>
