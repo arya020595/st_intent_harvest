@@ -1,0 +1,3 @@
+<%= turbo_stream.prepend "production_rows", partial: "productions/production_row", locals: { production: @production } %>
+<%= turbo_stream.update "modal", "" %>
+<%= turbo_stream.update "flash_messages", partial: "shared/flash" %>

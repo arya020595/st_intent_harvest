@@ -1,0 +1,5 @@
+<%= render "shared/confirm_delete",
+           item_name: "#{@production.date.strftime('%d-%m-%Y')} - #{@production.block.block_number}",
+           item_type: "Production",
+           delete_path: production_path(@production),
+           form_id: "deleteProductionForm" %>
