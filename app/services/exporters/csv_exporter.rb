@@ -19,7 +19,9 @@ module Exporters
     def generate_export
       CSV.generate(headers: true, encoding: 'UTF-8') do |csv|
         csv << headers
-        @records.find_each { |record| csv << row_data(record) }
+        # Use each instead of find_each to preserve ordering
+        # find_each ignores ORDER BY clauses for batch processing efficiency
+        @records.each { |record| csv << row_data(record) }
       end
     end
 

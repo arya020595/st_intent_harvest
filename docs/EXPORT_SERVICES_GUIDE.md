@@ -266,9 +266,8 @@ end
 ### 4. Use in Controller (with ExportHandling Concern)
 
 ```ruby
-# app/controllers/harvests_controller.rb
 class HarvestsController < ApplicationController
-  include ExportHandling  # Include the export handling concern
+  include ExportHandling  # Use the export handling concern
 
   def index
     @q = Harvest.ransack(params[:q])
@@ -287,7 +286,7 @@ class HarvestsController < ApplicationController
   def export_csv
     handle_csv_export(
       HarvestServices::ExportCsvService,
-      @q.result.includes(:block, :worker),
+      @q.result.includes(:block, :worker).ordered,  # Apply .ordered for sort consistency
       error_path: harvests_path
     )
   end
@@ -295,7 +294,7 @@ class HarvestsController < ApplicationController
   def export_pdf
     handle_pdf_export(
       HarvestServices::ExportPdfService,
-      @q.result.includes(:block, :worker),
+      @q.result.includes(:block, :worker).ordered,  # Apply .ordered for sort consistency
       error_path: harvests_path
     )
   end
@@ -555,17 +554,19 @@ class HarvestsController < ApplicationController
   private
 
   def export_csv
+    # Apply .ordered to maintain sort consistency with the website display
     handle_csv_export(
       HarvestServices::ExportCsvService,
-      @q.result.includes(:block, :worker),
+      @q.result.includes(:block, :worker).ordered,
       error_path: harvests_path
     )
   end
 
   def export_pdf
+    # Apply .ordered to maintain sort consistency with the website display
     handle_pdf_export(
       HarvestServices::ExportPdfService,
-      @q.result.includes(:block, :worker),
+      @q.result.includes(:block, :worker).ordered,
       error_path: harvests_path
     )
   end
@@ -789,24 +790,41 @@ end
    records = @q.result.includes(:block, :worker)  # Prevent N+1
    ```
 
-2. **Use FormatHelpers for consistency**
+2. **Apply ordering before export to maintain sort consistency**
+
+   ```ruby
+   # Apply your model's default ordering to match the website display
+   records = @q.result.includes(:block, :mill).ordered
+   ```
+
+3. **Use FormatHelpers for consistency**
 
    ```ruby
    format_date(record.date)      # Not: record.date.strftime(...)
    format_decimal(record.amount) # Not: sprintf('%.2f', record.amount)
    ```
 
-3. **Keep services minimal** - Only override what's needed
+4. **Keep services minimal** - Only override what's needed
 
-4. **Use local variables in PDF templates**
+5. **Use local variables in PDF templates**
 
    ```erb
    <% harvests.each do |h| %>  <!-- Use local variable -->
    ```
 
-5. **Handle nil values**
+6. **Handle nil values**
+
    ```ruby
    safe_value(record.optional_field)  # Returns '-' if nil
+   ```
+
+7. **Ensure query ordering is applied before export**
+   ```ruby
+   # In controller - apply .ordered to maintain sort order
+   def export_csv
+     records = @q.result.includes(:block, :mill).ordered  # Important!
+     handle_csv_export(ExportCsvService, records, error_path: root_path)
+   end
    ```
 
 ### ❌ DON'T
@@ -909,6 +927,27 @@ end
 ```ruby
 ExportCsvService.new(records: records, params: params)  # Include params!
 ```
+
+### Export Order Doesn't Match Website
+
+**Cause**: Query ordering not applied before passing to export service.
+
+**Symptoms**:
+
+- Website shows newest records first (DESC order)
+- CSV export shows oldest records first (ASC by ID)
+
+**Fix**: Apply `.ordered` scope before passing to export:
+
+```ruby
+# WRONG - Order is lost
+records = @q.result.includes(:block, :mill)
+
+# RIGHT - Preserves model's default ordering
+records = @q.result.includes(:block, :mill).ordered
+```
+
+**Note**: The CSV exporter uses `.each` (not `.find_each`) to preserve the query's ORDER BY clause. The `.ordered` scope must be called before the export service receives the records.
 
 ---
 
