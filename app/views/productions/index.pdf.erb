@@ -93,7 +93,7 @@
       <% end %>
       <strong>Generated:</strong> <%= Time.current.strftime('%d-%m-%Y %H:%M') %>
       <br>
-      <strong>Total Records:</strong> <%= productions.count %>
+      <strong>Total Records:</strong> <%= productions.size %>
     </div>
     <table>
       <thead>
@@ -115,8 +115,8 @@
             <td><%= production.date.strftime('%d-%m-%Y') %></td>
             <td><%= production.ticket_estate_no || '-' %></td>
             <td><%= production.ticket_mill_no || '-' %></td>
-            <td><%= production.mill.name %></td>
-            <td><%= production.block.block_number %></td>
+            <td><%= production.mill&.name || '-' %></td>
+            <td><%= production.block&.block_number || '-' %></td>
             <td><%= number_with_delimiter(production.total_bunches) %></td>
             <td><%= number_with_precision(production.total_weight_ton, precision: 2) %></td>
           </tr>
