@@ -140,7 +140,7 @@ class ProductionsController < ApplicationController
 
   # Export methods - delegate to SOLID services with dry-monads
   def export_csv
-    records = @q.result.includes(:block, :mill)
+    records = @q.result.includes(:block, :mill).ordered
     # Pre-calculate totals to avoid N+1 queries in the view
     totals = {
       total_bunches: records.sum(:total_bunches),
@@ -156,7 +156,7 @@ class ProductionsController < ApplicationController
   end
 
   def export_pdf
-    records = @q.result.includes(:block, :mill)
+    records = @q.result.includes(:block, :mill).ordered
     # Pre-calculate totals to avoid N+1 queries in the view
     totals = {
       total_bunches: records.sum(:total_bunches),
