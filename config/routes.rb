@@ -110,6 +110,12 @@ Rails.application.routes.draw do
         get :confirm_delete
       end
     end
+
+    resources :mills do
+      member do
+        get :confirm_delete
+      end
+    end
   end
 
   # User Management Namespace

@@ -1,0 +1,7 @@
+<%= turbo_frame_tag "modal" do %>
+  <%= render "shared/confirm_delete",
+             item_name: @mill.name,
+             item_type: "Mill",
+             delete_path: master_data_mill_path(@mill),
+             form_id: "deleteMillForm" %>
+<% end %>

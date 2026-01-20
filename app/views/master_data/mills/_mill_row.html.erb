@@ -1,0 +1,26 @@
+<tr id="<%= dom_id(mill) %>">
+  <td class="text-center">
+    <div class="action-buttons">
+      <% if record_policy(mill, MasterData::MillPolicy).show? %>
+        <%= link_to master_data_mill_path(mill), class: "action-btn info", title: "View Details", **modal_link_data do %>
+          <i class="bi bi-info-circle-fill"></i>
+        <% end %>
+      <% end %>
+      <% if record_policy(mill, MasterData::MillPolicy).edit? %>
+        <%= link_to edit_master_data_mill_path(mill), class: "action-btn warning", title: "Edit", **modal_link_data do %>
+          <i class="bi bi-pencil-fill"></i>
+        <% end %>
+      <% end %>
+      <% if record_policy(mill, MasterData::MillPolicy).confirm_delete? %>
+        <%= link_to confirm_delete_master_data_mill_path(mill),
+                    class: "action-btn danger",
+                    title: "Delete",
+                    **modal_link_data(size: "modal-md") do %>
+          <i class="bi bi-trash-fill"></i>
+        <% end %>
+      <% end %>
+    </div>
+  </td>
+  <td class="text-center"><%= mill.name %></td>
+  <td class="text-center"><%= mill.created_at.strftime('%d %b %Y') %></td>
+</tr>
