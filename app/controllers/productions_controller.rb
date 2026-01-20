@@ -124,7 +124,7 @@ class ProductionsController < ApplicationController
 
   def load_form_data
     @blocks = Block.order(:block_number)
-    @mills = Mill.active.ordered
+    @mills = Mill.ordered
   end
 
   def production_params

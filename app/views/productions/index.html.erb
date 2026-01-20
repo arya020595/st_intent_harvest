@@ -43,7 +43,7 @@
                   <th><%= f.search_field :ticket_mill_no_cont, class: 'form-control form-control-sm', placeholder: 'Enter Ticket...', data: { action: "input->search-form#autoSubmit" } %></th>
                   <th>
                     <%= f.select :mill_id_eq,
-                        options_from_collection_for_select(Mill.active.ordered, :id, :name, params.dig(:q, :mill_id_eq)),
+                        options_from_collection_for_select(Mill.ordered, :id, :name, params.dig(:q, :mill_id_eq)),
                         { include_blank: 'Select Mill' },
                         class: 'form-select form-select-sm',
                         data: { action: "change->search-form#autoSubmit" } %>
