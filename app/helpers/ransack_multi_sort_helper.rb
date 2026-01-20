@@ -4,28 +4,12 @@
 #
 # Provides view helpers for rendering multi-sort UI components and pagination.
 #
-# SECURITY NOTE:
-# This helper properly whitelists Ransack query parameters to prevent
-# unintended mass assignment of unexpected parameters. Use these helpers
-# instead of calling .to_unsafe_h directly on params[:q].
-#
 # Usage:
 #   <%= per_page_selector(current: params[:per_page]) %>
 #   <%== pagy_bootstrap_nav(@pagy) %>
-#   <% safe_params = sanitized_ransack_params %>
 module RansackMultiSortHelper
   # Default per-page options for pagination selector
   DEFAULT_PER_PAGE_OPTIONS = [10, 25, 50, 100].freeze
-
-  # Whitelisted Ransack search parameters for Productions
-  # Only these parameters are allowed to prevent mass assignment of unexpected attributes
-  ALLOWED_PRODUCTION_SEARCH_KEYS = {
-    date_gteq: :string,
-    date_lteq: :string,
-    block_id_eq: :string,
-    mill_id_eq: :string,
-    s: :string  # Sort parameter
-  }.freeze
 
   # ===== Per-page selector =====
 
@@ -86,66 +70,20 @@ module RansackMultiSortHelper
 
   # Generates hidden fields for all search params except sorts
   #
-  # Uses sanitized_ransack_params to only pass whitelisted parameters
-  #
   # @return [String] HTML safe string with hidden fields
   def hidden_search_fields
     return '' unless params[:q]
 
-    sanitized_ransack_params.map do |key, value|
-      hidden_field_tag "q[#{key}]", value
-    end.compact.join.html_safe
+    generate_hidden_fields.compact.join.html_safe
   end
 
-  # Sanitizes Ransack query parameters using a whitelist
+  # Generates array of hidden field tags
   #
-  # Only allows explicitly whitelisted search parameters to prevent
-  # mass assignment of unexpected parameters. This is more secure than
-  # using .to_unsafe_h which accepts any parameter without validation.
-  #
-  # @param allowed_keys [Hash] Hash of allowed parameter keys and types
-  # @return [Hash] Filtered hash containing only whitelisted parameters
-  #
-  # @example
-  #   safe_params = sanitized_ransack_params(ALLOWED_PRODUCTION_SEARCH_KEYS)
-  #   # => { date_gteq: "2024-01-01", date_lteq: "2024-12-31" }
-  def sanitized_ransack_params(allowed_keys = ALLOWED_PRODUCTION_SEARCH_KEYS)
-    return {} unless params[:q].present?
-
-    safe_params = {}
-    params[:q].to_unsafe_h.each do |key, value|
-      key_sym = key.to_sym
-      if allowed_keys.key?(key_sym)
-        safe_params[key_sym] = value
-      else
-        Rails.logger.warn("[Security] Skipped disallowed Ransack parameter: #{key}")
-      end
-    end
-
-    safe_params
-  end
-
-  # Helper for export URLs - includes only whitelisted parameters
-  #
-  # Safely passes Ransack parameters to export endpoints without
-  # allowing unintended mass assignment of unexpected parameters.
-  #
-  # @return [Hash] Filtered query parameters safe for export URLs
-  #
-  # @example
-  #   export_params[:q] = safe_export_params
-  def safe_export_params
-    sanitized_ransack_params
-  end
-
-  private
-
-  # Generates array of hidden field tags using sanitized params
-  #
-  # @deprecated Use hidden_search_fields instead (now internally uses sanitized params)
   # @return [Array<String>] Array of hidden field HTML strings
   def generate_hidden_fields
-    sanitized_ransack_params.map do |key, value|
+    params[:q].to_unsafe_h.map do |key, value|
+      next if key.to_s == 's' # Skip sort parameters
+
       hidden_field_tag "q[#{key}]", value
     end
   end
