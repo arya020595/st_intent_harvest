@@ -38,7 +38,25 @@
                       <%= link_to 'Reset', productions_path, class: 'btn reset-btn', style: "width: 120px;" %>
                     </div>
                   </th>
-                  <th><%= f.search_field :date_eq, type: 'date', class: 'form-control form-control-sm', data: { action: "change->search-form#autoSubmit" } %></th>
+                  <th class="text-center">
+                    <div class="input-group input-group-sm"
+                            data-controller="flatpickr"
+                            data-flatpickr-mode-value="range"
+                            data-flatpickr-date-format-value="d-m-Y"
+                            data-flatpickr-field-name-value="q[date]"
+                        >
+                      <input type="text"
+                             class="form-control form-control-sm cursor-pointer"
+                             placeholder="Select Date Range"
+                             data-flatpickr-target="input"
+                             >
+                      <span class="input-group-text cursor-pointer" data-action="click->flatpickr#open">
+                        <i class="bi bi-calendar-range"></i>
+                      </span>
+                    </div>
+                    <%= f.hidden_field :date_gteq, value: params.dig(:q, :date_gteq) %>
+                    <%= f.hidden_field :date_lteq, value: params.dig(:q, :date_lteq) %>
+                  </th>
                   <th><%= f.search_field :ticket_estate_no_cont, class: 'form-control form-control-sm', placeholder: 'Enter Ticket...', data: { action: "input->search-form#autoSubmit" } %></th>
                   <th><%= f.search_field :ticket_mill_no_cont, class: 'form-control form-control-sm', placeholder: 'Enter Ticket...', data: { action: "input->search-form#autoSubmit" } %></th>
                   <th>
