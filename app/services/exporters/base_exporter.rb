@@ -6,6 +6,12 @@ module Exporters
   # Returns Success/Failure monads for consistent error handling.
   # Subclasses implement: #generate_export, #generate_filename, #content_type, #file_extension
   #
+  # IMPORTANT: Subclasses have different parameter support:
+  # - CsvExporter: Does NOT use extra_locals (plain text format, no templates)
+  # - PdfExporter: Uses extra_locals for template variable passing
+  #
+  # See subclass documentation for which options are supported.
+  #
   # @example
   #   result = MyExporter.new(records: records).call
   #   result.success? # => true

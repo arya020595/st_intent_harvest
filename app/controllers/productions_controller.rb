@@ -139,6 +139,12 @@ class ProductionsController < ApplicationController
   end
 
   # Export methods - delegate to SOLID services with dry-monads
+  #
+  # NOTE: extra_locals is ONLY used by PDF exports, NOT CSV exports
+  # CSV exports ignore extra_locals because they generate plain text without templates
+  # PDF exports use extra_locals to pass variables to the HTML template
+  #
+  # See ExportHandling concern documentation for parameter differences
   def export_csv
     records = @q.result.includes(:block, :mill).ordered
     # Pre-calculate totals to avoid N+1 queries in the view
@@ -147,11 +153,13 @@ class ProductionsController < ApplicationController
       total_weight_ton: records.sum(:total_weight_ton)
     }
 
+    # NOTE: extra_locals parameter is NOT used by CsvExporter
+    # Include it here for consistency, but it will be silently ignored
+    # For CSV configuration, subclass must implement #headers and #row_data methods
     handle_csv_export(
       ProductionServices::ExportCsvService,
       records,
-      error_path: productions_path,
-      extra_locals: { totals: totals }
+      error_path: productions_path
     )
   end
 
@@ -169,6 +177,8 @@ class ProductionsController < ApplicationController
       block: params.dig(:q, :block_id_eq).present? ? Block.find_by(id: params.dig(:q, :block_id_eq)) : nil
     }
 
+    # extra_locals are PASSED to PDF template for rendering
+    # These variables are available in app/views/productions/index.pdf.erb
     handle_pdf_export(
       ProductionServices::ExportPdfService,
       records,
