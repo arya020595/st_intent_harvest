@@ -25,10 +25,10 @@
                 <tr class="header-row">
                   <th></th>
                   <th class="text-center"><%= sort_link(@q, :date, 'Date') %></th>
-                  <th class="text-center">Ticket Estate No.</th>
-                  <th class="text-center">Ticket Mill No.</th>
-                  <th class="text-center">Mills</th>
-                  <th class="text-center">Block No.</th>
+                  <th class="text-center"><%= sort_link(@q, :ticket_estate_no, 'Ticket Estate No.') %></th>
+                  <th class="text-center"><%= sort_link(@q, :ticket_mill_no, 'Ticket Mill No.') %></th>
+                  <th class="text-center"><%= sort_link(@q, :mill_name, 'Mills') %></th>
+                  <th class="text-center"><%= sort_link(@q, :block_block_number, 'Block No.') %></th>
                   <th class="text-center"><%= sort_link(@q, :total_bunches, 'Total Bunches') %></th>
                   <th class="text-center"><%= sort_link(@q, :total_weight_ton, 'Total Weight (Ton)') %></th>
                 </tr>
