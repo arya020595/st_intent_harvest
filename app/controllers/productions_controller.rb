@@ -140,18 +140,40 @@ class ProductionsController < ApplicationController
 
   # Export methods - delegate to SOLID services with dry-monads
   def export_csv
+    records = @q.result.includes(:block, :mill)
+    # Pre-calculate totals to avoid N+1 queries in the view
+    totals = {
+      total_bunches: records.sum(:total_bunches),
+      total_weight_ton: records.sum(:total_weight_ton)
+    }
+
     handle_csv_export(
       ProductionServices::ExportCsvService,
-      @q.result.includes(:block, :mill),
-      error_path: productions_path
+      records,
+      error_path: productions_path,
+      extra_locals: { totals: totals }
     )
   end
 
   def export_pdf
+    records = @q.result.includes(:block, :mill)
+    # Pre-calculate totals to avoid N+1 queries in the view
+    totals = {
+      total_bunches: records.sum(:total_bunches),
+      total_weight_ton: records.sum(:total_weight_ton)
+    }
+
+    # Pre-fetch filter data to avoid database queries in the view
+    filter_data = {
+      mill: params.dig(:q, :mill_id_eq).present? ? Mill.find_by(id: params.dig(:q, :mill_id_eq)) : nil,
+      block: params.dig(:q, :block_id_eq).present? ? Block.find_by(id: params.dig(:q, :block_id_eq)) : nil
+    }
+
     handle_pdf_export(
       ProductionServices::ExportPdfService,
-      @q.result.includes(:block, :mill),
-      error_path: productions_path
+      records,
+      error_path: productions_path,
+      extra_locals: { totals: totals, filter_data: filter_data }
     )
   end
 end

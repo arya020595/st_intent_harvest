@@ -22,9 +22,10 @@ module ExportHandling
   # @param records [ActiveRecord::Relation] Records to export
   # @param error_path [String] Path to redirect on failure
   # @param params [Hash] Additional params (defaults to controller params)
-  def handle_csv_export(service_class, records, error_path:, params: self.params)
+  # @param extra_locals [Hash] Extra locals to pass to the view
+  def handle_csv_export(service_class, records, error_path:, params: self.params, extra_locals: {})
     handle_export(
-      service_class.new(records: records, params: params),
+      service_class.new(records: records, params: params, extra_locals: extra_locals),
       error_path: error_path,
       disposition: 'attachment'
     )
@@ -36,9 +37,10 @@ module ExportHandling
   # @param error_path [String] Path to redirect on failure
   # @param params [Hash] Additional params (defaults to controller params)
   # @param disposition [String] 'inline' to view in browser, 'attachment' to download
-  def handle_pdf_export(service_class, records, error_path:, params: self.params, disposition: 'inline')
+  # @param extra_locals [Hash] Extra locals to pass to the view
+  def handle_pdf_export(service_class, records, error_path:, params: self.params, disposition: 'inline', extra_locals: {})
     handle_export(
-      service_class.new(records: records, params: params, view_context: self),
+      service_class.new(records: records, params: params, view_context: self, extra_locals: extra_locals),
       error_path: error_path,
       disposition: disposition
     )

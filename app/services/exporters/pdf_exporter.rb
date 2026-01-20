@@ -15,6 +15,7 @@ module Exporters
     def initialize(records:, params: {}, view_context:, **options)
       super(records: records, params: params, **options)
       @view_context = view_context
+      @extra_locals = options[:extra_locals] || {}
     end
 
     protected

@@ -79,14 +79,12 @@
       <% end %>
       <% if params.dig(:q, :mill_id_eq).present? %>
         <% has_filters = true %>
-        <% mill = Mill.find_by(id: params.dig(:q, :mill_id_eq)) %>
-        <strong>Mill:</strong> <%= mill&.name || 'Unknown' %>
+        <strong>Mill:</strong> <%= filter_data[:mill]&.name || 'Unknown' %>
         <br>
       <% end %>
       <% if params.dig(:q, :block_id_eq).present? %>
         <% has_filters = true %>
-        <% block = Block.find_by(id: params.dig(:q, :block_id_eq)) %>
-        <strong>Block No.:</strong> <%= block&.block_number || 'Unknown' %>
+        <strong>Block No.:</strong> <%= filter_data[:block]&.block_number || 'Unknown' %>
         <br>
       <% end %>
       <% unless has_filters %>
@@ -126,8 +124,8 @@
         <% if productions.any? %>
           <tr class="total-row">
             <td colspan="6" style="text-align: right;">Total:</td>
-            <td><%= number_with_delimiter(productions.sum(:total_bunches)) %></td>
-            <td><%= number_with_precision(productions.sum(:total_weight_ton), precision: 2) %></td>
+            <td><%= number_with_delimiter(totals[:total_bunches] || 0) %></td>
+            <td><%= number_with_precision(totals[:total_weight_ton] || 0, precision: 2) %></td>
           </tr>
         <% end %>
       </tbody>

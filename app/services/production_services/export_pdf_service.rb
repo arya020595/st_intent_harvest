@@ -14,7 +14,12 @@ module ProductionServices
     end
 
     def template_locals
-      { productions: @records, params: @params }
+      {
+        productions: @records,
+        params: @params,
+        totals: @extra_locals[:totals] || {},
+        filter_data: @extra_locals[:filter_data] || {}
+      }
     end
   end
 end

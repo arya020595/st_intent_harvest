@@ -75,10 +75,15 @@ module Exporters
 
       return nil unless start_date.present? || end_date.present?
 
-      start_text = start_date.present? ? Date.parse(start_date).strftime('%d-%m-%Y') : 'All'
-      end_text = end_date.present? ? Date.parse(end_date).strftime('%d-%m-%Y') : 'All'
+      begin
+        start_text = start_date.present? ? Date.parse(start_date).strftime('%d-%m-%Y') : 'All'
+        end_text = end_date.present? ? Date.parse(end_date).strftime('%d-%m-%Y') : 'All'
 
-      "#{start_text}_to_#{end_text}"
+        "#{start_text}_to_#{end_text}"
+      rescue ArgumentError, TypeError
+        # If date parsing fails, return nil to use fallback filename
+        nil
+      end
     end
   end
 end
