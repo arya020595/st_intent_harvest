@@ -43,10 +43,10 @@ class WorkOrder < ApplicationRecord
   # Type-based validations using custom validator (Single Responsibility Principle)
   validates_with WorkOrderTypeValidator
   validates :work_order_rate_id, presence: true
-  validates :field_conductor_id, presence: true
-  validates :block_id, presence: true
+  validates :field_conductor_id, presence: true, unless: :resources_type?
+  validates :block_id, presence: true, unless: :resources_type?
+  validates :start_date, presence: true, unless: :resources_type?
   validates :work_order_status, inclusion: { in: STATUSES.values, allow_nil: true }
-  validates :start_date, presence: true
   # Ensure completion_date is set when work order is completed (prevents pay calculation issues)
   validates :completion_date, presence: { message: 'is required for completed work orders' }, if: :completed?
 
@@ -154,6 +154,12 @@ class WorkOrder < ApplicationRecord
   # Returns true if this work order has pay calculations that need to be managed
   def needs_pay_calculation_reversal?
     completed? && completion_date.present?
+  end
+
+  # Check if this is a resources type work order
+  # Resources type work orders don't require field_conductor_id or block_id
+  def resources_type?
+    work_order_rate_type == 'resources' || work_order_rate&.work_order_rate_type == 'resources'
   end
 
   private
