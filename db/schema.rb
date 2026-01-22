@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_05_141431) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_19_070953) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -97,7 +97,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_141431) do
     t.index ["deduction_type_id", "min_wage", "max_wage"], name: "idx_wage_ranges_salary_lookup"
     t.index ["deduction_type_id"], name: "index_deduction_wage_ranges_on_deduction_type_id"
     t.index ["discarded_at"], name: "index_deduction_wage_ranges_on_discarded_at"
-    t.check_constraint "calculation_method::text = ANY (ARRAY['fixed'::character varying::text, 'percentage'::character varying::text])", name: "calculation_method_check"
+    t.check_constraint "calculation_method::text = ANY (ARRAY['fixed'::character varying, 'percentage'::character varying]::text[])", name: "calculation_method_check"
     t.check_constraint "max_wage IS NULL OR max_wage >= min_wage", name: "max_wage_check"
   end
 
@@ -152,6 +152,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_141431) do
     t.index ["worker_id"], name: "index_mandays_workers_on_worker_id"
   end
 
+  create_table "mills", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "discarded_at"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discarded_at"], name: "index_mills_on_discarded_at"
+  end
+
   create_table "pay_calculation_details", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "currency", default: "RM"
@@ -192,6 +200,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_141431) do
     t.index ["code"], name: "index_permissions_on_code", unique: true
     t.index ["discarded_at"], name: "index_permissions_on_discarded_at"
     t.index ["resource"], name: "index_permissions_on_resource"
+  end
+
+  create_table "productions", force: :cascade do |t|
+    t.bigint "block_id", null: false
+    t.datetime "created_at", null: false
+    t.date "date", null: false
+    t.datetime "discarded_at"
+    t.bigint "mill_id", null: false
+    t.string "ticket_estate_no"
+    t.string "ticket_mill_no"
+    t.integer "total_bunches", default: 0, null: false
+    t.decimal "total_weight_ton", precision: 10, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.index ["block_id"], name: "index_productions_on_block_id"
+    t.index ["date", "block_id"], name: "index_productions_on_date_and_block_id"
+    t.index ["date"], name: "index_productions_on_date"
+    t.index ["discarded_at"], name: "index_productions_on_discarded_at"
+    t.index ["mill_id"], name: "index_productions_on_mill_id"
   end
 
   create_table "roles", force: :cascade do |t|
@@ -282,7 +308,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_141431) do
     t.bigint "inventory_id"
     t.string "item_name"
     t.decimal "price", precision: 10, scale: 2
-    t.integer "unit_id"
     t.string "unit_name"
     t.datetime "updated_at", null: false
     t.bigint "work_order_id", null: false
@@ -378,6 +403,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_05_141431) do
   add_foreign_key "mandays_workers", "workers"
   add_foreign_key "pay_calculation_details", "pay_calculations"
   add_foreign_key "pay_calculation_details", "workers"
+  add_foreign_key "productions", "blocks"
+  add_foreign_key "productions", "mills"
   add_foreign_key "roles_permissions", "permissions"
   add_foreign_key "roles_permissions", "roles"
   add_foreign_key "users", "roles"

@@ -1,0 +1,3 @@
+<%= turbo_stream.replace dom_id(@mill), partial: "master_data/mills/mill_row", locals: { mill: @mill } %>
+<%= turbo_stream.update "modal", "" %>
+<%= turbo_stream.update "flash_messages", partial: "shared/flash" %>

@@ -1,0 +1,42 @@
+# == Schema Information
+#
+# Table name: productions
+#
+#  id               :integer          not null, primary key
+#  date             :date
+#  ticket_estate_no :string
+#  ticket_mill_no   :string
+#  total_bunches    :integer
+#  total_weight_ton :decimal(10, 2)
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  block_id         :integer
+#  mill_id          :integer
+#
+
+one:
+  date: <%= 3.days.ago.to_date %>
+  ticket_estate_no: "EST-001"
+  ticket_mill_no: "MILL-001"
+  total_bunches: 150
+  total_weight_ton: 3.5
+  block: one
+  mill: one
+
+two:
+  date: <%= 2.days.ago.to_date %>
+  ticket_estate_no: "EST-002"
+  ticket_mill_no: "MILL-002"
+  total_bunches: 200
+  total_weight_ton: 4.8
+  block: two
+  mill: two
+
+three:
+  date: <%= 1.day.ago.to_date %>
+  ticket_estate_no: "EST-003"
+  ticket_mill_no: "MILL-003"
+  total_bunches: 175
+  total_weight_ton: 4.2
+  block: one
+  mill: one
