@@ -10,7 +10,6 @@ export default class extends Controller {
     "monthSelect",
     "yearSelect",
     "generateBtn",
-    "resetBtn", // dropdown reset
     "pageResetBtn", // bottom reset link
   ];
 
