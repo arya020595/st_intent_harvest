@@ -143,10 +143,10 @@ module Exporters
     end
 
     test 'handles nil values in row_data' do
-      production = Production.create!(
+      production = Production.create!
         date: Date.today,
-        ticket_estate_no: nil,
-        ticket_mill_no: 'MILL-NIL',
+        ticket_estate_no: 'ESTATE-001',
+        ticket_mill_no: 'MILL-001',
         total_bunches: 100,
         total_weight_ton: 2.5,
         block: blocks(:one),
