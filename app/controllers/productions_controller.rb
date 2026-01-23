@@ -148,11 +148,6 @@ class ProductionsController < ApplicationController
   # See ExportHandling concern documentation for parameter differences
   def export_csv
     records = @q.result.includes(:block, :mill).ordered
-    # Pre-calculate totals to avoid N+1 queries in the view
-    {
-      total_bunches: records.sum(:total_bunches),
-      total_weight_ton: records.sum(:total_weight_ton)
-    }
 
     # NOTE: extra_locals parameter is NOT used by CsvExporter
     # Include it here for consistency, but it will be silently ignored
