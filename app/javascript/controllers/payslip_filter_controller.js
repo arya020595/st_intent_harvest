@@ -10,13 +10,26 @@ export default class extends Controller {
     "monthSelect",
     "yearSelect",
     "generateBtn",
+    "pageResetBtn", // bottom reset link
   ];
 
   connect() {
+    // Clear search input on load
+    if (this.hasSearchInputTarget) {
+      this.searchInputTarget.value = "";
+    }
+
+    // Show all workers first
+    this.workerItemTargets.forEach((item) => {
+      item.style.display = "";
+    });
+
     this.syncFromCheckboxes();
     this.updateGenerateButtonState();
+    this.updateResetButtonVisibility();
   }
 
+  // Add a worker chip
   addWorker(id, name) {
     if (document.getElementById(`selected-worker-${id}`)) return;
 
@@ -48,14 +61,18 @@ export default class extends Controller {
     this.selectedContainerTarget.appendChild(chip);
   }
 
+  // Remove a worker chip
   removeWorker(id) {
-    document.getElementById(`selected-worker-${id}`)?.remove();
+    const chip = document.getElementById(`selected-worker-${id}`);
+    if (chip) chip.remove();
+
     const checkbox = document.getElementById(`worker_${id}`);
     if (checkbox) checkbox.checked = false;
 
+    // Update Select All if needed
     if (
       this.hasSelectAllTarget &&
-      !this.workerCheckboxTargets.every((c) => c.checked)
+      !this.workerCheckboxTargets.every((cb) => cb.checked)
     ) {
       this.selectAllTarget.checked = false;
     }
@@ -69,10 +86,16 @@ export default class extends Controller {
     this.removeWorker(removeButton.dataset.workerId);
   }
 
+  // Sync chips from checkboxes
   syncFromCheckboxes() {
+    // Clear chips
     this.selectedContainerTarget.innerHTML = "";
+
     this.workerCheckboxTargets.forEach((cb) => {
       if (cb.checked) this.addWorker(cb.value, cb.dataset.workerName);
+
+      // IMPORTANT: make all worker items visible again
+      cb.closest(".worker-item").style.display = "";
     });
   }
 
@@ -87,37 +110,29 @@ export default class extends Controller {
 
     if (!checkbox.checked) {
       if (this.hasSelectAllTarget) this.selectAllTarget.checked = false;
-    } else if (this.workerCheckboxTargets.every((c) => c.checked)) {
+    } else if (this.workerCheckboxTargets.every((cb) => cb.checked)) {
       if (this.hasSelectAllTarget) this.selectAllTarget.checked = true;
     }
 
     this.updateGenerateButtonState();
+    this.updateResetButtonVisibility();
   }
 
   toggleSelectAll(event) {
     const isChecked = event.currentTarget.checked;
 
-    if (isChecked) {
-      // Check all checkboxes
-      this.workerCheckboxTargets.forEach((cb) => {
-        cb.checked = true;
-      });
+    this.workerCheckboxTargets.forEach((cb) => {
+      cb.checked = isChecked;
 
-      // Clear container and build worker chips safely
-      this.selectedContainerTarget.innerHTML = "";
-      this.workerCheckboxTargets.forEach((cb) => {
-        const id = cb.value;
-        const name = cb.dataset.workerName;
-        this.addWorker(id, name);
-      });
-    } else {
-      // Uncheck all checkboxes and clear all selected worker chips
-      this.workerCheckboxTargets.forEach((cb) => {
-        cb.checked = false;
-      });
-      this.selectedContainerTarget.innerHTML = "";
-    }
+      if (isChecked) this.addWorker(cb.value, cb.dataset.workerName);
+      else this.removeWorker(cb.value);
+
+      // Always make the item visible
+      cb.closest(".worker-item").style.display = "";
+    });
+
     this.updateGenerateButtonState();
+    this.updateResetButtonVisibility();
   }
 
   searchWorkers(event) {
@@ -125,6 +140,14 @@ export default class extends Controller {
 
     this.workerItemTargets.forEach((item) => {
       const name = item.dataset.workerName;
+      const checkbox = item.querySelector(".worker-checkbox");
+
+      // Always show checked workers
+      if (checkbox.checked) {
+        item.style.display = "";
+        return;
+      }
+
       item.style.display = name.includes(query) ? "" : "none";
     });
   }
@@ -148,7 +171,30 @@ export default class extends Controller {
     );
   }
 
+  updateResetButtonVisibility() {
+    const monthFilled =
+      this.hasMonthSelectTarget && this.monthSelectTarget.value !== "";
+    const yearFilled =
+      this.hasYearSelectTarget && this.yearSelectTarget.value !== "";
+    const workersSelected = this.workerCheckboxTargets.some((cb) => cb.checked);
+
+    const shouldShow = monthFilled || yearFilled || workersSelected;
+
+    // Dropdown reset
+    if (this.hasResetBtnTarget) {
+      this.resetBtnTarget.style.display = shouldShow ? "inline-block" : "none";
+    }
+
+    // Bottom page reset
+    if (this.hasPageResetBtnTarget) {
+      this.pageResetBtnTarget.style.display = shouldShow
+        ? "inline-block"
+        : "none";
+    }
+  }
+
   filterChange() {
     this.updateGenerateButtonState();
+    this.updateResetButtonVisibility();
   }
 }
