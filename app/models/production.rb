@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Production < ApplicationRecord
-  include Discard::Model
 
   belongs_to :block, -> { with_discarded }
   belongs_to :mill, -> { with_discarded }
