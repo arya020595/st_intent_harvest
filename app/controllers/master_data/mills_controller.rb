@@ -87,7 +87,7 @@ module MasterData
       authorize @mill, policy_class: MasterData::MillPolicy
 
       respond_to do |format|
-        if @mill.destroy
+        if @mill.discard
           format.turbo_stream do
             flash.now[:notice] = 'Mill was successfully deleted.'
           end

@@ -106,7 +106,7 @@ class ProductionsController < ApplicationController
     authorize @production
 
     respond_to do |format|
-      if @production.destroy
+      if @production.discard
         format.turbo_stream do
           flash.now[:notice] = 'Production record was successfully deleted.'
         end
