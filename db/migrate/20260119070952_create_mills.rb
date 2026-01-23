@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateMills < ActiveRecord::Migration[8.1]
   def change
     create_table :mills do |t|

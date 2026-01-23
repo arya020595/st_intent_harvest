@@ -85,7 +85,8 @@ module ExportHandling
   #       extra_locals: { totals: totals, filter_data: {...} }
   #     )
   #   end
-  def handle_pdf_export(service_class, records, error_path:, params: self.params, disposition: 'inline', extra_locals: {})
+  def handle_pdf_export(service_class, records, error_path:, params: self.params, disposition: 'inline',
+                        extra_locals: {})
     handle_export(
       service_class.new(records: records, params: params, view_context: self, extra_locals: extra_locals),
       error_path: error_path,

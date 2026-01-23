@@ -36,8 +36,8 @@ end_date = Date.current
       date: date,
       block_id: block.id,
       mill_id: mill.id,
-      ticket_estate_no: "EST-#{date.strftime('%Y%m%d')}-#{sprintf('%03d', i + 1)}",
-      ticket_mill_no: "MILL-#{date.strftime('%Y%m%d')}-#{sprintf('%03d', i + 1)}",
+      ticket_estate_no: "EST-#{date.strftime('%Y%m%d')}-#{format('%03d', i + 1)}",
+      ticket_mill_no: "MILL-#{date.strftime('%Y%m%d')}-#{format('%03d', i + 1)}",
       total_bunches: rand(100..500),
       total_weight_ton: rand(5.0..25.0).round(2),
       created_at: Time.current,
@@ -56,7 +56,7 @@ if productions_data.any?
     Production.insert_all(new_records)
     puts "    ✓ #{new_records.size} production records created"
   else
-    puts "    ✓ Production records already exist"
+    puts '    ✓ Production records already exist'
   end
 end
 

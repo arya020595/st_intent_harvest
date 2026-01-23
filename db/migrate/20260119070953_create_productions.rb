@@ -5,8 +5,8 @@ class CreateProductions < ActiveRecord::Migration[8.1]
     create_table :productions do |t|
       t.date :date, null: false
       t.references :block, null: false, foreign_key: true
-      t.string :ticket_estate_no
-      t.string :ticket_mill_no
+      t.string :ticket_estate_no, null: false
+      t.string :ticket_mill_no, null: false
       t.references :mill, null: false, foreign_key: true
       t.integer :total_bunches, null: false, default: 0
       t.decimal :total_weight_ton, precision: 10, scale: 2, null: false, default: 0.0
@@ -16,6 +16,6 @@ class CreateProductions < ActiveRecord::Migration[8.1]
     end
 
     add_index :productions, :date
-    add_index :productions, [:date, :block_id]
+    add_index :productions, %i[date block_id]
   end
 end
