@@ -10,7 +10,6 @@ static targets = [
   "monthSelect",
   "yearSelect",
   "generateBtn",
-  "resetBtn",       // dropdown reset
   "pageResetBtn"    // bottom reset link
 ];
 
