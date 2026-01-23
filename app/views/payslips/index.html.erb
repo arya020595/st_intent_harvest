@@ -7,152 +7,168 @@
         <h4>Payslip Filter</h4>
         <hr/>
         <%= form_with url: payslips_path, method: :get, local: true do |f| %>
+
           <!-- MONTH -->
           <div class="form-group mt-2">
             <%= f.label :month, "Month" %>
             <% available_months = PayCalculation.distinct.pluck(:month_year).map { |d| Date.parse(d + '-01').month }.uniq.sort %>
-            <select name="month" id="month" class="form-control" data-payslip-filter-target="monthSelect" data-action="change->payslip-filter#filterChange">
+            <select name="month" id="month" class="form-control"
+                    data-payslip-filter-target="monthSelect"
+                    data-action="change->payslip-filter#filterChange">
               <option value="" disabled <%= "selected" if params[:month].blank? %> class="text-muted">Select Month</option>
               <% available_months.each do |m| %>
-                <option value="<%= m %>" <%= "selected" if params[:month].to_s == m.to_s %>>
+                <option value="<%= m %>" <%= "selected" if params[:month].to_s == m.to_s %> >
                   <%= Date::MONTHNAMES[m] %>
                 </option>
-                <% end %>
-              </select>
-            </div>
-            <!-- YEAR -->
-            <div class="form-group mt-2">
-              <%= f.label :year, "Year" %>
-              <% available_years = PayCalculation.distinct.pluck(:month_year).map { |d| Date.parse(d + '-01').year }.uniq.sort %>
-              <select name="year" id="year" class="form-control" data-payslip-filter-target="yearSelect" data-action="change->payslip-filter#filterChange">
-                <option value="" disabled <%= "selected" if params[:year].blank? %> class="text-muted">Select Year</option>
-                <% available_years.each do |y| %>
-                  <option value="<%= y %>" <%= "selected" if params[:year].to_s == y.to_s %>><%= y %></option>
-                  <% end %>
-                </select>
-              </div>
-              <!-- WORKER -->
-              <div class="form-group mt-2 text-start">
-                <%= f.label :worker_ids, "Workers", class: "form-label" %>
-                <div class="dropdown w-100">
-                  <% selected_worker_ids = Array(params[:worker_ids]) %>
-                  <% selected_worker_names = if selected_worker_ids.include?("all")
-                                          @workers.pluck(:name)
-                                        else
-                                          @workers.where(id: selected_worker_ids.map(&:to_i)).pluck(:name)
-                                        end %>
-                  <button class="btn btn-outline-secondary dropdown-toggle text-truncate w-100"
+              <% end %>
+            </select>
+          </div>
+
+          <!-- YEAR -->
+          <div class="form-group mt-2">
+            <%= f.label :year, "Year" %>
+            <% available_years = PayCalculation.distinct.pluck(:month_year).map { |d| Date.parse(d + '-01').year }.uniq.sort %>
+            <select name="year" id="year" class="form-control"
+                    data-payslip-filter-target="yearSelect"
+                    data-action="change->payslip-filter#filterChange">
+              <option value="" disabled <%= "selected" if params[:year].blank? %> class="text-muted">Select Year</option>
+              <% available_years.each do |y| %>
+                <option value="<%= y %>" <%= "selected" if params[:year].to_s == y.to_s %>><%= y %></option>
+              <% end %>
+            </select>
+          </div>
+
+          <!-- WORKER -->
+          <div class="form-group mt-2 text-start">
+            <%= f.label :worker_ids, "Workers", class: "form-label" %>
+            <div class="dropdown w-100">
+              <% selected_worker_ids = Array(params[:worker_ids]) %>
+
+              <button class="btn btn-outline-secondary dropdown-toggle text-truncate w-100"
                       type="button"
                       id="workerDropdown"
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                       style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    <% if selected_worker_names.any? %>
-                      <% if selected_worker_names.size > 3 %>
-                        <%= "#{selected_worker_names.size} Workers Selected" %>
-                      <% else %>
-                        <%= selected_worker_names.join(", ") %>
-                      <% end %>
-                    <% else %>
-                      Select Workers
-                    <% end %>
-                  </button>
-                  <ul class="dropdown-menu w-100 p-2" aria-labelledby="workerDropdown" style="max-height: 250px; overflow-y: auto;">
-                    <!-- SEARCH INPUT -->
-                    <li class="mb-2">
-                      <input type="text"
+                Select Workers
+              </button>
+
+              <ul class="dropdown-menu w-100 p-2" aria-labelledby="workerDropdown" style="max-height: 250px; overflow-y: auto;">
+                <!-- SEARCH INPUT -->
+                <li class="mb-2">
+                  <input type="text"
                          id="worker-search"
                          class="form-control form-control-sm"
                          placeholder="Search workers..."
                          aria-label="Search workers"
                          data-payslip-filter-target="searchInput"
                          data-action="input->payslip-filter#searchWorkers">
-                    </li>
-                    <li><hr class="dropdown-divider"></li>
-                    <!-- Select All Option -->
-                    <li>
-                      <div class="form-check">
-                        <input class="form-check-input"
-                           type="checkbox"
-                           name="worker_ids[]"
-                           value="all"
-                           id="worker_all"
-                           <%= "checked" if selected_worker_ids.include?("all") %>
-                           data-payslip-filter-target="selectAll"
-                           data-action="change->payslip-filter#toggleSelectAll">
-                        <label class="form-check-label" for="worker_all"><strong>Select All Workers</strong></label>
-                      </div>
-                    </li>
-                    <hr/>
-                    <!-- Individual Workers -->
-                    <% @workers.each do |w| %>
-                      <li class="worker-item"
-                      data-worker-name="<%= w.name.downcase %>"
-                      data-payslip-filter-target="workerItem">
-                        <div class="form-check">
-                          <input
-                        class="form-check-input worker-checkbox"
-                        type="checkbox"
-                        name="worker_ids[]"
-                        value="<%= w.id %>"
-                        data-worker-name="<%= w.name %>"
-                        id="worker_<%= w.id %>"
-                        <%= "checked" if selected_worker_ids.include?(w.id.to_s) || selected_worker_ids.include?("all") %>
-                        data-payslip-filter-target="workerCheckbox"
-                        data-action="change->payslip-filter#toggleWorkerCheckbox"
-                            >
-                            <label class="form-check-label" for="worker_<%= w.id %>">
-                              <%= w.name %>
-                            </label>
-                          </div>
-                        </li>
-                      <% end %>
-                    </ul>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+
+                <!-- SELECT ALL + RESET -->
+                <li class="mb-2">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="form-check m-0">
+                      <input class="form-check-input"
+                             type="checkbox"
+                             name="worker_ids[]"
+                             value="all"
+                             id="worker_all"
+                             <%= "checked" if selected_worker_ids.include?("all") %>
+                             data-payslip-filter-target="selectAll"
+                             data-action="change->payslip-filter#toggleSelectAll">
+                      <label class="form-check-label" for="worker_all"><strong>Select All</strong></label>
+                    </div>
+                    <%# <button type="button"
+                            class="btn btn-sm btn-link p-0"
+                            data-action="click->payslip-filter#resetWorkers"
+                            data-payslip-filter-target="resetBtn"
+                            style="display: none;"> <!-- hide initially -->
+                      Reset
+                    </button> %>
                   </div>
-                  <!-- VIEW SELECTED WORKERS -->
-                  <div id="selected-workers"
-                 class="mt-2 d-flex flex-wrap gap-2"
-                 data-payslip-filter-target="selectedContainer"></div>
-                </div>
-                <!-- GENERATE BUTTON -->
-                <%= button_tag(type: 'submit',
-                        class: 'btn btn-success w-100 mt-3',
-                        id: 'generate-btn',
-                        disabled: true,
-                        data: { payslip_filter_target: "generateBtn" }) do %>
-                  <i class="bi bi-file-earmark-text-fill text-white"></i> Generate
+                </li>
+                <hr/>
+
+                <!-- Individual Workers -->
+                <% @workers.each do |w| %>
+                  <li class="worker-item" data-worker-name="<%= w.name.downcase %>" data-payslip-filter-target="workerItem">
+                    <div class="form-check">
+                      <input class="form-check-input worker-checkbox"
+                             type="checkbox"
+                             name="worker_ids[]"
+                             value="<%= w.id %>"
+                             data-worker-name="<%= w.name %>"
+                             id="worker_<%= w.id %>"
+                             <%= "checked" if selected_worker_ids.include?(w.id.to_s) %>
+                             data-payslip-filter-target="workerCheckbox"
+                             data-action="change->payslip-filter#toggleWorkerCheckbox">
+                      <label class="form-check-label" for="worker_<%= w.id %>"><%= w.name %></label>
+                    </div>
+                  </li>
                 <% end %>
-              <% end %>
+              </ul>
             </div>
+
+            <!-- VIEW SELECTED WORKERS -->
+            <div id="selected-workers" class="mt-2 d-flex flex-wrap gap-2"
+                 data-payslip-filter-target="selectedContainer"></div>
           </div>
-          <!-- RIGHT SIDE: PDF VIEWER -->
-          <div class="col-md-9">
-            <div class="card p-3" style="text-align: center; min-height: 500px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-              <% if params[:worker_ids].present? && params[:month].present? && params[:year].present? %>
-                <% month = params[:month].to_i %>
-                <% year  = params[:year].to_i %>
-                <% worker_ids = params[:worker_ids].map(&:to_i) %>
-                <% workers = Worker.where(id: worker_ids) %>
-                <% no_payslip = workers.all? do |worker|
+
+          <div class="d-flex gap-2 mt-3">
+          <%= button_tag type: "submit",
+                class: "btn btn-success w-100",
+                disabled: true,
+                data: { payslip_filter_target: "generateBtn" } do %>
+            <i class="bi bi-file-earmark-text-fill text-white"></i> Generate
+          <% end %>
+
+          <%= link_to payslips_path,
+                class: "btn w-100 btn-primary text-white",
+                title: "Reset filters",
+                data: { payslip_filter_target: "pageResetBtn" },
+                style: "display: none;" do %> <!-- hide initially -->
+            <i class="bi bi-arrow-counterclockwise text-white"></i> Reset
+          <% end %>
+
+
+        </div>
+
+
+
+        <% end %>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE: PDF VIEWER -->
+    <div class="col-md-9">
+      <div class="card p-3" style="text-align: center; min-height: 500px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <% if params[:worker_ids].present? && params[:month].present? && params[:year].present? %>
+          <% month = params[:month].to_i %>
+          <% year  = params[:year].to_i %>
+          <% worker_ids = params[:worker_ids].map(&:to_i) %>
+          <% workers = Worker.where(id: worker_ids) %>
+          <% no_payslip = workers.all? do |worker|
                !PayslipServices::FetchPayslipDataService.new(worker: worker, month_year: format('%04d-%02d', year, month)).call.success?
              end %>
-                <% if no_payslip %>
-                  <div class="text-center">
-                    <%= image_tag "clipboard-unavailable.png", alt: "No Payslip Available", class: "d-block mx-auto mb-3", width: "100px", height: "100px" %>
-                    <h5>No Payslip Available</h5>
-                    <p class="text-muted">Please ensure work orders have been completed and processed for this month.</p>
-                  </div>
-                <% else %>
-                  <iframe src="<%= payslips_path(worker_ids: params[:worker_ids], month: params[:month], year: params[:year], format: :pdf) %>"
-                    width="100%" height="500px" style="border: 1px solid #ccc;"></iframe>
-                <% end %>
-              <% else %>
-                <div class="text-center">
-                  <%= image_tag "clipboard-icon.png", alt: "No Payslip Selected", class: "d-block mx-auto mb-3", width: "100px", height: "100px" %>
-                  <p class="text-muted">Select options from the filter fields on the left to generate a report.</p>
-                </div>
-              <% end %>
+          <% if no_payslip %>
+            <div class="text-center">
+              <%= image_tag "clipboard-unavailable.png", alt: "No Payslip Available", class: "d-block mx-auto mb-3", width: "100px", height: "100px" %>
+              <h5>No Payslip Available</h5>
+              <p class="text-muted">Please ensure work orders have been completed and processed for this month.</p>
             </div>
+          <% else %>
+            <iframe src="<%= payslips_path(worker_ids: params[:worker_ids], month: params[:month], year: params[:year], format: :pdf) %>"
+                    width="100%" height="500px" style="border: 1px solid #ccc;"></iframe>
+          <% end %>
+        <% else %>
+          <div class="text-center">
+            <%= image_tag "clipboard-icon.png", alt: "No Payslip Selected", class: "d-block mx-auto mb-3", width: "100px", height: "100px" %>
+            <p class="text-muted">Select options from the filter fields on the left to generate a report.</p>
           </div>
-        </div>
+        <% end %>
       </div>
+    </div>
+  </div>
+</div>
