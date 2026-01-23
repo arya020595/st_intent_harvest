@@ -96,7 +96,7 @@ gem 'discard', '~> 1.4'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem 'byebug', '~> 12.0'
+  gem 'byebug', '~> 13.0'
   gem 'debug', platforms: %i[mri windows]
   gem 'rubocop', '~> 1.82', require: false
 

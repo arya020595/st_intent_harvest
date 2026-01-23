@@ -10,6 +10,8 @@
           <i class="bi bi-speedometer2 me-2"></i> Dashboard
         <% end %>
       </li>
+    <% end %>
+    <% if can_view_menu?('bi_dashboard.index') %>
       <li>
         <%= link_to bi_dashboard_path, class: "nav-link #{active_nav_item?(bi_dashboard_path) ? 'active' : 'link-dark'}" do %>
           <i class="bi bi-bar-chart-line-fill me-2"></i> BI Dashboard
@@ -56,6 +58,14 @@
         <% end %>
       </li>
     <% end %>
+    <!-- Production -->
+    <% if can_view_menu?('production.index') %>
+      <li>
+        <%= link_to productions_path, class: "nav-link #{active_controller?('productions') ? 'active' : 'link-dark'}" do %>
+          <i class="bi bi-clipboard-check-fill me-2"></i> Production
+        <% end %>
+      </li>
+    <% end %>
     <!-- Inventory -->
     <% if can_view_menu?('inventory.index') %>
       <li>
@@ -73,7 +83,7 @@
       </li>
     <% end %>
     <!-- Master Data -->
-    <% has_master_data_access = can_view_menu?('master_data.blocks.index') || can_view_menu?('master_data.units.index') || can_view_menu?('master_data.categories.index') || can_view_menu?('master_data.vehicles.index') || can_view_menu?('master_data.work_order_rates.index') %>
+    <% has_master_data_access = can_view_menu?('master_data.blocks.index') || can_view_menu?('master_data.units.index') || can_view_menu?('master_data.categories.index') || can_view_menu?('master_data.vehicles.index') || can_view_menu?('master_data.work_order_rates.index') || can_view_menu?('master_data.mills.index') %>
     <% if has_master_data_access %>
       <% master_data_active = active_controller?('master_data') %>
       <li>
@@ -102,6 +112,9 @@
             <% end %>
             <% if can_view_menu?('master_data.work_order_rates.index') %>
               <li><%= link_to "Work Order Rates", master_data_work_order_rates_path, class: "nav-link #{active_controller?('master_data/work_order_rates') ? 'active' : 'link-dark'}" %></li>
+            <% end %>
+            <% if can_view_menu?('master_data.mills.index') %>
+              <li><%= link_to "Mills", master_data_mills_path, class: "nav-link #{active_controller?('master_data/mills') ? 'active' : 'link-dark'}" %></li>
             <% end %>
           </ul>
         </div>

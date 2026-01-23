@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Production Records</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        margin: 20px;
+      }
+      h1 {
+        text-align: center;
+        color: #155e1a;
+        margin-bottom: 20px;
+        font-size: 18px;
+      }
+      .info {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 10px;
+        color: #666;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      th {
+        background-color: #155e1a;
+        color: white;
+        padding: 8px;
+        text-align: center;
+        font-size: 10px;
+        border: 1px solid #ddd;
+      }
+      td {
+        padding: 6px 8px;
+        border: 1px solid #ddd;
+        text-align: center;
+        font-size: 10px;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      .total-row {
+        background-color: #e8f5e9;
+        font-weight: bold;
+      }
+      .footer {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 9px;
+        color: #999;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Production Records Report</h1>
+    <div class="info">
+      <% has_filters = false %>
+      <% if params.dig(:q, :date_gteq).present? || params.dig(:q, :date_lteq).present? %>
+        <% has_filters = true %>
+        <strong>Date Range:</strong>
+        <%= params.dig(:q, :date_gteq).present? ? Date.parse(params.dig(:q, :date_gteq)).strftime('%d-%m-%Y') : 'All' %>
+        to
+        <%= params.dig(:q, :date_lteq).present? ? Date.parse(params.dig(:q, :date_lteq)).strftime('%d-%m-%Y') : 'All' %>
+        <br>
+      <% end %>
+      <% if params.dig(:q, :ticket_estate_no_cont).present? %>
+        <% has_filters = true %>
+        <strong>Ticket Estate No.:</strong> <%= params.dig(:q, :ticket_estate_no_cont) %>
+        <br>
+      <% end %>
+      <% if params.dig(:q, :ticket_mill_no_cont).present? %>
+        <% has_filters = true %>
+        <strong>Ticket Mill No.:</strong> <%= params.dig(:q, :ticket_mill_no_cont) %>
+        <br>
+      <% end %>
+      <% if params.dig(:q, :mill_id_eq).present? %>
+        <% has_filters = true %>
+        <strong>Mill:</strong> <%= filter_data[:mill]&.name || 'Unknown' %>
+        <br>
+      <% end %>
+      <% if params.dig(:q, :block_id_eq).present? %>
+        <% has_filters = true %>
+        <strong>Block No.:</strong> <%= filter_data[:block]&.block_number || 'Unknown' %>
+        <br>
+      <% end %>
+      <% unless has_filters %>
+        <strong>Filters:</strong> None applied
+        <br>
+      <% end %>
+      <strong>Generated:</strong> <%= Time.current.strftime('%d-%m-%Y %H:%M') %>
+      <br>
+      <strong>Total Records:</strong> <%= productions.size %>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>Date</th>
+          <th>Ticket Estate No.</th>
+          <th>Ticket Mill No.</th>
+          <th>Mill</th>
+          <th>Block No.</th>
+          <th>Total Bunches</th>
+          <th>Total Weight (Ton)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% productions.each_with_index do |production, index| %>
+          <tr>
+            <td><%= index + 1 %></td>
+            <td><%= production.date.strftime('%d-%m-%Y') %></td>
+            <td><%= production.ticket_estate_no || '-' %></td>
+            <td><%= production.ticket_mill_no || '-' %></td>
+            <td><%= production.mill&.name || '-' %></td>
+            <td><%= production.block&.block_number || '-' %></td>
+            <td><%= number_with_delimiter(production.total_bunches) %></td>
+            <td><%= number_with_precision(production.total_weight_ton, precision: 2) %></td>
+          </tr>
+        <% end %>
+        <% if productions.any? %>
+          <tr class="total-row">
+            <td colspan="6" style="text-align: right;">Total:</td>
+            <td><%= number_with_delimiter(totals[:total_bunches] || 0) %></td>
+            <td><%= number_with_precision(totals[:total_weight_ton] || 0, precision: 2) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <div class="footer">
+      Production Records Report - Generated on <%= Time.current.strftime('%d %B %Y at %H:%M') %>
+    </div>
+  </body>
+</html>

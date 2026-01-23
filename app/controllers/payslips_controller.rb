@@ -13,9 +13,15 @@ class PayslipsController < ApplicationController
 
         month = params[:month].to_i
         year  = params[:year].to_i
-        worker_ids = params[:worker_ids].map(&:to_i)
 
-        @workers = Worker.where(id: worker_ids)
+        # Handle "all" workers selection
+        if params[:worker_ids].include?("all")
+          @workers = Worker.order(:name)
+        else
+          worker_ids = params[:worker_ids].map(&:to_i)
+          @workers = Worker.where(id: worker_ids)
+        end
+
         return if @workers.empty? || month <= 0 || year <= 0
 
         combined_html = @workers.map do |worker|
@@ -62,8 +68,15 @@ class PayslipsController < ApplicationController
 
         month = params[:month].to_i
         year  = params[:year].to_i
-        worker_ids = params[:worker_ids].map(&:to_i)
-        @workers = Worker.where(id: worker_ids)
+
+        # Handle "all" workers selection
+        if params[:worker_ids].include?("all")
+          @workers = Worker.order(:name)
+        else
+          worker_ids = params[:worker_ids].map(&:to_i)
+          @workers = Worker.where(id: worker_ids)
+        end
+
         return head :not_found if @workers.empty?
 
         combined_html = @workers.map do |worker|

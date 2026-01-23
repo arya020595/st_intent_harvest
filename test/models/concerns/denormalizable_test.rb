@@ -36,7 +36,8 @@ class DenormalizableTest < ActiveSupport::TestCase
 
   teardown do
     TestChild.delete_all
-    TestParent.delete_all
+    # Only delete the parent created in this test, not fixture data
+    @parent&.destroy
   end
 
   test 'denormalized fields populate when association is set' do
