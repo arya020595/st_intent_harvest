@@ -16,6 +16,6 @@ class CreateProductions < ActiveRecord::Migration[8.1]
     end
 
     add_index :productions, :date
-    add_index :productions, [:date, :block_id]
+    add_index :productions, %i[date block_id]
   end
 end

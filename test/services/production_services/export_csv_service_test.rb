@@ -135,7 +135,7 @@ module ProductionServices
     end
 
     test 'handles nil values in ticket fields gracefully' do
-      production = Production.create!
+      production = Production.create!(
         date: Date.today,
         ticket_estate_no: 'ESTATE-TEST',
         ticket_mill_no: 'MILL-TEST',

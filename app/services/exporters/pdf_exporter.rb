@@ -12,7 +12,7 @@ module Exporters
   #     def template_locals; { items: @records, params: @params }; end
   #   end
   class PdfExporter < BaseExporter
-    def initialize(records:, params: {}, view_context:, **options)
+    def initialize(records:, view_context:, params: {}, **options)
       super(records: records, params: params, **options)
       @view_context = view_context
       @extra_locals = options[:extra_locals] || {}

@@ -135,7 +135,8 @@ class ProductionsController < ApplicationController
   end
 
   def production_params
-    params.require(:production).permit(:date, :block_id, :ticket_estate_no, :ticket_mill_no, :mill_id, :total_bunches, :total_weight_ton)
+    params.require(:production).permit(:date, :block_id, :ticket_estate_no, :ticket_mill_no, :mill_id, :total_bunches,
+                                       :total_weight_ton)
   end
 
   # Export methods - delegate to SOLID services with dry-monads
@@ -148,7 +149,7 @@ class ProductionsController < ApplicationController
   def export_csv
     records = @q.result.includes(:block, :mill).ordered
     # Pre-calculate totals to avoid N+1 queries in the view
-    totals = {
+    {
       total_bunches: records.sum(:total_bunches),
       total_weight_ton: records.sum(:total_weight_ton)
     }
