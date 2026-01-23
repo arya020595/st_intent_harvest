@@ -91,7 +91,7 @@
         <strong>Filters:</strong> None applied
         <br>
       <% end %>
-      <strong>Generated:</strong> <%= Time.current.strftime('%d-%m-%Y %H:%M') %>
+      <strong>Generated:</strong> <%= Time.current.in_time_zone('Asia/Kuala_Lumpur').strftime('%d-%m-%Y %H:%M') %>
       <br>
       <strong>Total Records:</strong> <%= productions.size %>
     </div>
@@ -131,7 +131,7 @@
       </tbody>
     </table>
     <div class="footer">
-      Production Records Report - Generated on <%= Time.current.strftime('%d %B %Y at %H:%M') %>
+      Production Records Report - Generated on <%= Time.current.in_time_zone('Asia/Kuala_Lumpur').strftime('%d %B %Y at %H:%M') %>
     </div>
   </body>
 </html>
