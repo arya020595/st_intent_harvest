@@ -67,11 +67,21 @@ namespace :permissions do
     puts 'Verifying Permissions...'
     puts '=' * 80
 
-    # Load expected permissions from file
-    expected_permissions = []
-    resources = eval(File.read(Rails.root.join('db/seeds/data/permissions.rb')).match(/resources = (\{.*?\})/m)[1])
+    # Load expected permissions from file safely
+    begin
+      load Rails.root.join('db/seeds/data/permissions.rb')
+    rescue LoadError => e
+      puts "❌ Error loading permissions file: #{e.message}"
+      exit 1
+    end
 
-    resources.each do |resource, actions|
+    unless defined?(PERMISSION_RESOURCES)
+      puts '❌ Error: PERMISSION_RESOURCES constant not found in permissions.rb'
+      exit 1
+    end
+
+    expected_permissions = []
+    PERMISSION_RESOURCES.each do |resource, actions|
       actions.each do |action|
         expected_permissions << "#{resource}.#{action}"
       end
