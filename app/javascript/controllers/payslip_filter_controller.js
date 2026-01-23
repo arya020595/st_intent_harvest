@@ -181,9 +181,6 @@ searchWorkers(event) {
     }
   }
 
-
-
-
   filterChange() {
     this.updateGenerateButtonState();
     this.updateResetButtonVisibility();
