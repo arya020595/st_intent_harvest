@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Block < ApplicationRecord
-  include Discard::Model
-
   has_many :work_orders, dependent: :nullify
   has_many :productions, dependent: :restrict_with_error
 
