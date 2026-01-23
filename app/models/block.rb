@@ -1,18 +1,21 @@
 # frozen_string_literal: true
 
 class Block < ApplicationRecord
+  include Discard::Model
+
   has_many :work_orders, dependent: :nullify
+  has_many :productions, dependent: :restrict_with_error
 
   validates :block_number, presence: true, uniqueness: true
   validates :hectarage, numericality: { greater_than: 0 }, allow_nil: true
 
   # Ransack configuration
   def self.ransackable_attributes(_auth_object = nil)
-    %w[id block_number hectarage created_at updated_at]
+    %w[id block_number hectarage discarded_at created_at updated_at]
   end
 
   def self.ransackable_associations(_auth_object = nil)
-    %w[work_orders]
+    %w[work_orders productions]
   end
 end
 

@@ -9,7 +9,7 @@ module MasterData
     def index
       authorize Mill, policy_class: MasterData::MillPolicy
 
-      apply_ransack_search(policy_scope(Mill, policy_scope_class: MasterData::MillPolicy::Scope).order(id: :desc))
+      apply_ransack_search(policy_scope(Mill, policy_scope_class: MasterData::MillPolicy::Scope).kept.order(id: :desc))
       @pagy, @mills = paginate_results(@q.result)
     end
 
@@ -119,7 +119,7 @@ module MasterData
     private
 
     def set_mill
-      @mill = Mill.find(params[:id])
+      @mill = Mill.with_discarded.find(params[:id])
     end
 
     def mill_params

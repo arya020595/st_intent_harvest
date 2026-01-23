@@ -3,8 +3,8 @@
 class Production < ApplicationRecord
   include Discard::Model
 
-  belongs_to :block
-  belongs_to :mill
+  belongs_to :block, -> { with_discarded }
+  belongs_to :mill, -> { with_discarded }
 
   validates :date, presence: true
   validates :total_bunches, presence: true, numericality: { greater_than_or_equal_to: 0, only_integer: true }
