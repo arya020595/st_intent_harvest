@@ -40,13 +40,28 @@
               <%= f.label :worker_ids, "Workers", class: "form-label" %>
               <div class="dropdown w-100">
                 <% selected_worker_ids = Array(params[:worker_ids]) %>
+                <%
+                  # Determine button text based on selection
+                  if selected_worker_ids.include?("all")
+                    dropdown_text = "All Workers Selected"
+                  elsif selected_worker_ids.any?
+                    selected_workers = @workers.select { |w| selected_worker_ids.include?(w.id.to_s) }
+                    if selected_workers.count <= 3
+                      dropdown_text = selected_workers.map(&:name).join(", ")
+                    else
+                      dropdown_text = "#{selected_workers.count} Workers Selected"
+                    end
+                  else
+                    dropdown_text = "Select Workers"
+                  end
+                %>
                 <button class="btn btn-outline-secondary dropdown-toggle text-truncate w-100"
                       type="button"
                       id="workerDropdown"
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                       style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                  Select Workers
+                  <%= dropdown_text %>
                 </button>
                 <ul class="dropdown-menu w-100 p-2" aria-labelledby="workerDropdown" style="max-height: 250px; overflow-y: auto;">
                   <!-- SEARCH INPUT -->
@@ -87,7 +102,7 @@
                              value="<%= w.id %>"
                              data-worker-name="<%= w.name %>"
                              id="worker_<%= w.id %>"
-                             <%= "checked" if selected_worker_ids.include?(w.id.to_s) %>
+                             <%= "checked" if selected_worker_ids.include?(w.id.to_s) || selected_worker_ids.include?("all") %>
                              data-payslip-filter-target="workerCheckbox"
                              data-action="change->payslip-filter#toggleWorkerCheckbox">
                         <label class="form-check-label" for="worker_<%= w.id %>"><%= w.name %></label>
