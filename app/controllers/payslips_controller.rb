@@ -15,7 +15,7 @@ class PayslipsController < ApplicationController
         year  = params[:year].to_i
 
         # Handle "all" workers selection
-        if params[:worker_ids].include?("all")
+        if params[:worker_ids].include?('all')
           @workers = Worker.order(:name)
         else
           worker_ids = params[:worker_ids].map(&:to_i)
@@ -70,7 +70,7 @@ class PayslipsController < ApplicationController
         year  = params[:year].to_i
 
         # Handle "all" workers selection
-        if params[:worker_ids].include?("all")
+        if params[:worker_ids].include?('all')
           @workers = Worker.order(:name)
         else
           worker_ids = params[:worker_ids].map(&:to_i)

@@ -469,7 +469,7 @@ module Exporters
     def create_view_context
       view_context = Object.new
 
-      def view_context.render_to_string(options)
+      def view_context.render_to_string(_options)
         # Return a valid HTML template
         <<~HTML
           <!DOCTYPE html>

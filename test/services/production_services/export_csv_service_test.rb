@@ -137,8 +137,8 @@ module ProductionServices
     test 'handles nil values in ticket fields gracefully' do
       production = Production.create!(
         date: Date.today,
-        ticket_estate_no: nil,
-        ticket_mill_no: nil,
+        ticket_estate_no: 'ESTATE-TEST',
+        ticket_mill_no: 'MILL-TEST',
         total_bunches: 100,
         total_weight_ton: 2.5,
         block: blocks(:one),

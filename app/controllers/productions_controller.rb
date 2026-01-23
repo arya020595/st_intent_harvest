@@ -10,7 +10,7 @@ class ProductionsController < ApplicationController
   def index
     authorize Production
 
-    apply_ransack_search(policy_scope(Production).includes(:block, :mill).ordered)
+    apply_ransack_search(policy_scope(Production).kept.includes(:block, :mill).ordered)
     @pagy, @productions = paginate_results(@q.result)
 
     respond_to do |format|
@@ -106,7 +106,7 @@ class ProductionsController < ApplicationController
     authorize @production
 
     respond_to do |format|
-      if @production.destroy
+      if @production.discard
         format.turbo_stream do
           flash.now[:notice] = 'Production record was successfully deleted.'
         end
@@ -126,16 +126,17 @@ class ProductionsController < ApplicationController
   private
 
   def set_production
-    @production = Production.find(params[:id])
+    @production = Production.with_discarded.find(params[:id])
   end
 
   def load_form_data
-    @blocks = Block.order(:block_number)
-    @mills = Mill.ordered
+    @blocks = Block.kept.order(:block_number)
+    @mills = Mill.kept.ordered
   end
 
   def production_params
-    params.require(:production).permit(:date, :block_id, :ticket_estate_no, :ticket_mill_no, :mill_id, :total_bunches, :total_weight_ton)
+    params.require(:production).permit(:date, :block_id, :ticket_estate_no, :ticket_mill_no, :mill_id, :total_bunches,
+                                       :total_weight_ton)
   end
 
   # Export methods - delegate to SOLID services with dry-monads

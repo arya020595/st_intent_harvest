@@ -338,7 +338,7 @@ module ProductionServices
       # Create a mock view context with necessary methods
       view_context = Object.new
 
-      def view_context.render_to_string(options)
+      def view_context.render_to_string(_options)
         # Return a minimal HTML that Grover can convert to PDF
         <<~HTML
           <!DOCTYPE html>

@@ -145,8 +145,8 @@ module Exporters
     test 'handles nil values in row_data' do
       production = Production.create!(
         date: Date.today,
-        ticket_estate_no: nil,
-        ticket_mill_no: 'MILL-NIL',
+        ticket_estate_no: 'ESTATE-001',
+        ticket_mill_no: 'MILL-001',
         total_bunches: 100,
         total_weight_ton: 2.5,
         block: blocks(:one),
@@ -177,7 +177,7 @@ module Exporters
 
       # Parse the CSV to verify structure
       parsed = CSV.parse(csv_data, headers: true)
-      assert_equal ['Name', 'Value'], parsed.headers
+      assert_equal %w[Name Value], parsed.headers
     end
 
     test 'CSV escapes special characters correctly' do

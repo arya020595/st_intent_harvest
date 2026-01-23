@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_19_070953) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_23_024152) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -208,8 +208,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_19_070953) do
     t.date "date", null: false
     t.datetime "discarded_at"
     t.bigint "mill_id", null: false
-    t.string "ticket_estate_no"
-    t.string "ticket_mill_no"
+    t.string "ticket_estate_no", null: false
+    t.string "ticket_mill_no", null: false
     t.integer "total_bunches", default: 0, null: false
     t.decimal "total_weight_ton", precision: 10, scale: 2, default: "0.0", null: false
     t.datetime "updated_at", null: false
