@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
-puts 'Seeding Permissions...'
-
-# Define resources with their actions
-resources = {
+# Define resources with their actions as a constant
+PERMISSION_RESOURCES = {
   'dashboard' => %w[index],
   'bi_dashboard' => %w[index],
 
@@ -51,10 +49,12 @@ ACTION_NAME_MAPPING = {
   'mark_complete' => 'mark complete'
 }.freeze
 
+puts 'Seeding Permissions...'
+
 created_count = 0
 updated_count = 0
 
-resources.each do |resource, actions|
+PERMISSION_RESOURCES.each do |resource, actions|
   actions.each do |action|
     code = "#{resource}.#{action}"
 
