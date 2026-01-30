@@ -47,7 +47,7 @@ export default class extends Controller {
     if (this.hasResourcesContainerTarget) {
       const existingResourceRows =
         this.resourcesContainerTarget.querySelectorAll(
-          "tr[data-resource-index]"
+          "tr[data-resource-index]",
         ).length;
       this.resourceIndex = Number.isInteger(this.resourceIndexStartValue)
         ? this.resourceIndexStartValue
@@ -58,7 +58,7 @@ export default class extends Controller {
 
     if (this.hasWorkersContainerTarget) {
       const existingWorkerRows = this.workersContainerTarget.querySelectorAll(
-        "tr[data-worker-index]"
+        "tr[data-worker-index]",
       ).length;
       this.workerIndex = Number.isInteger(this.workerIndexStartValue)
         ? this.workerIndexStartValue
@@ -79,16 +79,16 @@ export default class extends Controller {
     try {
       // Find the select that holds work order rates (it has data-work-order-rates attribute)
       const rateSelect = this.element.querySelector(
-        "select[data-work-order-rates]"
+        "select[data-work-order-rates]",
       );
       if (!rateSelect) return;
 
       const selectedId = rateSelect.value;
       const workOrderRates = JSON.parse(
-        rateSelect.dataset.workOrderRates || "[]"
+        rateSelect.dataset.workOrderRates || "[]",
       );
       const selectedRate = workOrderRates.find(
-        (rate) => rate.id?.toString() === selectedId
+        (rate) => rate.id?.toString() === selectedId,
       );
 
       if (selectedRate) {
@@ -120,7 +120,7 @@ export default class extends Controller {
     if (!this.hasWorkersContainerTarget) return;
 
     const workerRows = this.workersContainerTarget.querySelectorAll(
-      "tr[data-worker-index]"
+      "tr[data-worker-index]",
     );
     workerRows.forEach((row) => {
       const index = row.dataset.workerIndex;
@@ -149,7 +149,7 @@ export default class extends Controller {
     try {
       const workOrderRates = JSON.parse(select.dataset.workOrderRates || "[]");
       const selectedRate = workOrderRates.find(
-        (rate) => rate.id.toString() === selectedId
+        (rate) => rate.id.toString() === selectedId,
       );
 
       if (selectedRate) {
@@ -239,11 +239,11 @@ export default class extends Controller {
 
       // Show amount used column in resources
       amountUsedHeaders.forEach(
-        (header) => (header.style.display = "table-cell")
+        (header) => (header.style.display = "table-cell"),
       );
       if (this.hasAmountUsedCellTarget) {
         this.amountUsedCellTargets.forEach(
-          (cell) => (cell.style.display = "table-cell")
+          (cell) => (cell.style.display = "table-cell"),
         );
       }
     } else if (this.currentRateType === "work_days") {
@@ -272,11 +272,11 @@ export default class extends Controller {
 
       // Show amount used in resources
       amountUsedHeaders.forEach(
-        (header) => (header.style.display = "table-cell")
+        (header) => (header.style.display = "table-cell"),
       );
       if (this.hasAmountUsedCellTarget) {
         this.amountUsedCellTargets.forEach(
-          (cell) => (cell.style.display = "table-cell")
+          (cell) => (cell.style.display = "table-cell"),
         );
       }
 
@@ -309,8 +309,9 @@ export default class extends Controller {
     if (this.hasRateCellTarget) {
       this.rateCellTargets.forEach((cell) => {
         const rateInput = cell.querySelector('input[id^="worker_rate_input_"]');
+        // Find the disabled display field (worker_rate_X, not worker_rate_value_X or worker_rate_input_X)
         const rateDisplay = cell.querySelector(
-          'input[id^="worker_rate_"][id$!="_value"][id$!="_input"]'
+          'input[id^="worker_rate_"]:not([id*="_value"]):not([id*="_input"])',
         );
 
         if (rateInput && rateDisplay) {
@@ -333,7 +334,7 @@ export default class extends Controller {
 
     // Update rate for all existing worker rows (regardless of selection)
     const workerRows = this.workersContainerTarget.querySelectorAll(
-      "tr[data-worker-index]"
+      "tr[data-worker-index]",
     );
     workerRows.forEach((row) => {
       const index = row.dataset.workerIndex;
@@ -361,10 +362,10 @@ export default class extends Controller {
       .map(
         (inv) =>
           `<option value="${inv.id}" data-category="${this.escapeHTML(
-            inv.category?.name || ""
+            inv.category?.name || "",
           )}" data-unit="${this.escapeHTML(
-            inv.unit?.name || ""
-          )}">${this.escapeHTML(inv.name)}</option>`
+            inv.unit?.name || "",
+          )}">${this.escapeHTML(inv.name)}</option>`,
       )
       .join("");
 
@@ -456,29 +457,29 @@ export default class extends Controller {
         </td>
         <td data-work-order-form-target="quantityCell">
           <input type="number" class="form-control form-control-sm" id="worker_quantity_${index}" name="work_order[work_order_workers_attributes][${index}][work_area_size]" placeholder="0" step="0.001" min="0" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="${index}" style="display: ${
-      isWorkDays ? "none" : "block"
-    };">
+            isWorkDays ? "none" : "block"
+          };">
           <input type="number" class="form-control form-control-sm" id="worker_days_${index}" name="work_order[work_order_workers_attributes][${index}][work_days]" placeholder="0" step="1" min="0" max="31" data-action="input->work-order-form#calculateWorkerAmount" data-worker-index="${index}" style="display: ${
-      isWorkDays ? "block" : "none"
-    };">
+            isWorkDays ? "block" : "none"
+          };">
         </td>
         <td data-work-order-form-target="rateCell">
           <!-- Editable input for work_days type -->
           <input type="number" class="form-control form-control-sm" id="worker_rate_input_${index}" placeholder="Rate" step="0.01" min="0" data-action="input->work-order-form#handleRateInput" data-worker-index="${index}" style="display: ${
-      isWorkDays ? "block" : "none"
-    };">
+            isWorkDays ? "block" : "none"
+          };">
           <!-- Display field for normal/resources type -->
           <input type="text" class="form-control form-control-sm" id="worker_rate_${index}" value="${
-      this.currentWorkOrderRate > 0
-        ? `RM ${this.currentWorkOrderRate.toFixed(2)}`
-        : "Auto Calculate"
-    }" disabled style="background-color: #e9ecef; display: ${
-      isWorkDays ? "none" : "block"
-    };">
+            this.currentWorkOrderRate > 0
+              ? `RM ${this.currentWorkOrderRate.toFixed(2)}`
+              : "Auto Calculate"
+          }" disabled style="background-color: #e9ecef; display: ${
+            isWorkDays ? "none" : "block"
+          };">
           <!-- Hidden field for actual value -->
           <input type="hidden" id="worker_rate_value_${index}" name="work_order[work_order_workers_attributes][${index}][rate]" value="${(
-      this.currentWorkOrderRate || 0
-    ).toFixed(2)}">
+            this.currentWorkOrderRate || 0
+          ).toFixed(2)}">
         </td>
         <td>
           <input type="text" class="form-control form-control-sm" id="worker_amount_${index}" value="Auto Calculate" disabled style="background-color: #e9ecef;">
@@ -504,11 +505,9 @@ export default class extends Controller {
     if (!select || !select.options || select.selectedIndex < 0) return;
     const selectedOption = select.options[select.selectedIndex];
     if (!selectedOption.value) {
-      document.getElementById(`worker_rate_${index}`).value = "Auto Filled";
-      document.getElementById(`worker_rate_value_${index}`).value = "0";
-      document.getElementById(`worker_amount_${index}`).value =
-        "Auto Calculate";
-      document.getElementById(`worker_amount_value_${index}`).value = "0";
+      // When worker is cleared, preserve the work order rate and recalculate amount
+      // Don't reset rate to 0, keep the existing work order rate
+      this.calculateWorkerAmountByIndex(index);
       return;
     }
 
@@ -539,7 +538,7 @@ export default class extends Controller {
 
     // Update hidden field value
     const rateValueField = document.getElementById(
-      `worker_rate_value_${index}`
+      `worker_rate_value_${index}`,
     );
     if (rateValueField) {
       rateValueField.value = rateValue.toFixed(2);
@@ -555,7 +554,7 @@ export default class extends Controller {
     const rateEl = document.getElementById(`worker_rate_value_${index}`);
     const amountEl = document.getElementById(`worker_amount_${index}`);
     const amountValueEl = document.getElementById(
-      `worker_amount_value_${index}`
+      `worker_amount_value_${index}`,
     );
 
     // Use days if work_days type, otherwise use quantity (work_area_size)
