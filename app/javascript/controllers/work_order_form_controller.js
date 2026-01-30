@@ -309,8 +309,9 @@ export default class extends Controller {
     if (this.hasRateCellTarget) {
       this.rateCellTargets.forEach((cell) => {
         const rateInput = cell.querySelector('input[id^="worker_rate_input_"]');
+        // Find the disabled display field (worker_rate_X, not worker_rate_value_X or worker_rate_input_X)
         const rateDisplay = cell.querySelector(
-          'input[id^="worker_rate_"][id$!="_value"][id$!="_input"]',
+          'input[id^="worker_rate_"]:not([id*="_value"]):not([id*="_input"])',
         );
 
         if (rateInput && rateDisplay) {
