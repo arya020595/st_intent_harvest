@@ -18,7 +18,7 @@ class Worker < ApplicationRecord
   }.freeze
 
   # --- Mandays Associations ---
-  has_many :mandays_workers
+  has_many :mandays_workers, dependent: :destroy
   has_many :mandays, through: :mandays_workers
 
   # --- Work Orders & Pay Associations ---
