@@ -48,7 +48,8 @@ class WorkOrder < ApplicationRecord
   validates :start_date, presence: true, unless: :resources_type?
   validates :work_order_status, inclusion: { in: STATUSES.values, allow_nil: true }
   # Ensure completion_date is set when work order is completed (prevents pay calculation issues)
-  validates :completion_date, presence: { message: 'is required for completed work orders' }, if: :completed?
+  # Resources type uses date_of_usage instead of completion_date
+  validates :completion_date, presence: { message: 'is required for completed work orders' }, if: -> { completed? && !resources_type? }
 
   # Define denormalized fields - auto-populated from associations
   denormalize :block_number, from: :block
