@@ -2,6 +2,7 @@
 
 class Manday < ApplicationRecord
   has_many :mandays_workers, dependent: :destroy
+  has_many :workers, through: :mandays_workers
   accepts_nested_attributes_for :mandays_workers,
                                 allow_destroy: true,
                                 reject_if: proc { |attrs| attrs['days'].blank? || attrs['days'].to_i <= 0 }
