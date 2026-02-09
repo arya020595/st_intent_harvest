@@ -42,11 +42,8 @@
     <td><strong>Worker Type:</strong> <%= worker_data&.worker_type || "N/A" %></td>
   </tr>
   <tr>
-<tr>
-  <td><strong>Total Mandays:</strong> <%= worker_data.total_mandays_for(month_year_data) %></td>
-  <td><strong>Position:</strong> <%= worker_data&.position || "N/A" %></td>
-</tr>
-
+    <td><strong>Total Mandays:</strong> <%= worker_data.total_mandays_for(month_year_data) %></td>
+    <td><strong>Position:</strong> <%= worker_data&.position || "N/A" %></td>
   </tr>
 </table>
 <!-- Earnings Table -->
