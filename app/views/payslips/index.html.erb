@@ -139,9 +139,16 @@
           <% if params[:worker_ids].present? && params[:month].present? && params[:year].present? %>
             <% month = params[:month].to_i %>
             <% year  = params[:year].to_i %>
-            <% no_payslip = @workers.all? do |worker|
-               !PayslipServices::FetchPayslipDataService.new(worker: worker, month_year: format('%04d-%02d', year, month)).call.success?
-             end %>
+            <% month_year = format('%04d-%02d', year, month) %>
+            <% selected_worker_ids = Array(params[:worker_ids]).map(&:to_i) %>
+            <% pay_calculation = PayCalculation.find_by(month_year: month_year) %>
+            <% has_any_payslip =
+                 if pay_calculation.present? && selected_worker_ids.any?
+                   PayCalculationDetail.exists?(pay_calculation_id: pay_calculation.id, worker_id: selected_worker_ids)
+                 else
+                   false
+                 end %>
+            <% no_payslip = !has_any_payslip %>
             <% if no_payslip %>
               <div class="text-center">
                 <%= image_tag "clipboard-unavailable.png", alt: "No Payslip Available", class: "d-block mx-auto mb-3", width: "100px", height: "100px" %>
