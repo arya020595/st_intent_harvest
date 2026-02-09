@@ -1,0 +1,61 @@
+<div class="modal-content">
+  <%= form_with(model: production, class: "needs-validation", novalidate: true, data: { action: "turbo:submit-end->modal#formSubmitted" }) do |form| %>
+    <div class="modal-header">
+      <h5 class="modal-title"><strong><%= production.persisted? ? 'Edit Production' : 'Add New Production' %></strong></h5>
+      <button type="button" class="btn-close custom-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <% if production.errors.any? %>
+        <div class="alert alert-danger">
+          <h5><%= pluralize(production.errors.count, "error") %> prohibited this record from being saved:</h5>
+          <ul>
+            <% production.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <%= form.label :date, "Date", class: "form-label fw-bold" %>
+          <%= form.date_field :date, class: "form-control", required: true %>
+        </div>
+        <div class="col-md-6">
+          <%= form.label :block_id, "Block No.", class: "form-label fw-bold" %>
+          <%= form.select :block_id,
+              options_from_collection_for_select(@blocks, :id, :block_number, production.block_id),
+              { prompt: 'Select Block No.' },
+              class: "form-select", required: true %>
+        </div>
+        <div class="col-md-6">
+          <%= form.label :mill_id, "Mills", class: "form-label fw-bold" %>
+          <%= form.select :mill_id,
+              options_from_collection_for_select(@mills, :id, :name, production.mill_id),
+              { prompt: 'Select Mill' },
+              class: "form-select", required: true %>
+        </div>
+        <div class="col-md-6">
+          <%= form.label :ticket_estate_no, "Ticket Estate No.", class: "form-label fw-bold" %>
+          <%= form.text_field :ticket_estate_no, placeholder: "Enter Ticket Estate No.", class: "form-control" %>
+        </div>
+        <div class="col-md-6">
+          <%= form.label :ticket_mill_no, "Ticket Mill No.", class: "form-label fw-bold" %>
+          <%= form.text_field :ticket_mill_no, placeholder: "Enter Ticket Mill No.", class: "form-control" %>
+        </div>
+        <div class="col-md-6">
+          <%= form.label :total_bunches, "Total Bunches", class: "form-label fw-bold" %>
+          <%= form.number_field :total_bunches, placeholder: "Enter Total Bunches", class: "form-control", min: 0, required: true %>
+        </div>
+        <div class="col-md-6">
+          <%= form.label :total_weight_ton, "Total Weight (Ton)", class: "form-label fw-bold" %>
+          <%= form.number_field :total_weight_ton, placeholder: "Enter Total Weight", class: "form-control", step: 0.01, min: 0, required: true %>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <%= button_tag type: :submit, class: "btn btn-success" do %>
+        <i class="bi bi-save-fill text-white me-1"></i> Save
+      <% end %>
+    </div>
+  <% end %>
+</div>

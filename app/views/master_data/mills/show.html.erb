@@ -1,0 +1,21 @@
+<%= turbo_frame_tag "modal" do %>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title"><strong>Mill Details</strong></h5>
+      <button type="button" class="btn-close custom-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <dl class="row">
+        <dt class="col-sm-3">Name:</dt>
+        <dd class="col-sm-9"><%= @mill.name %></dd>
+        <dt class="col-sm-3">Created:</dt>
+        <dd class="col-sm-9"><%= @mill.created_at.strftime('%d %b %Y %H:%M') %></dd>
+        <dt class="col-sm-3">Updated:</dt>
+        <dd class="col-sm-9"><%= @mill.updated_at.strftime('%d %b %Y %H:%M') %></dd>
+      </dl>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    </div>
+  </div>
+<% end %>

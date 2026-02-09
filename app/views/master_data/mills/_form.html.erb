@@ -1,0 +1,29 @@
+<div class="modal-content">
+  <%= form_with(model: [:master_data, mill], class: "needs-validation", novalidate: true, data: { action: "turbo:submit-end->modal#formSubmitted" }) do |form| %>
+    <div class="modal-header">
+      <h5 class="modal-title"><strong><%= mill.persisted? ? 'Edit Mill' : 'Add New Mill' %></strong></h5>
+      <button type="button" class="btn-close custom-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+      <% if mill.errors.any? %>
+        <div class="alert alert-danger">
+          <h5><%= pluralize(mill.errors.count, "error") %> prohibited this mill from being saved:</h5>
+          <ul>
+            <% mill.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+      <div class="mb-3">
+        <%= form.label :name, "Mill Name", class: "form-label fw-bold" %>
+        <%= form.text_field :name, placeholder: "Enter Mill Name", class: "form-control", required: true %>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <%= button_tag type: :submit, class: "btn btn-success" do %>
+        <i class="bi bi-save-fill text-white me-1"></i> Save
+      <% end %>
+    </div>
+  <% end %>
+</div>
