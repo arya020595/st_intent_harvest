@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Deduction Types Seed Data
-# Based on Malaysian standard deductions (EPF, SOCSO, SIP)
+# Based on Malaysian standard deductions (EPF, SOCSO, EIS)
 # All amounts are stored as percentages (11.0 = 11%)
 
 puts 'Seeding Deduction Types...'
@@ -79,11 +79,11 @@ DeductionType.create!([
                         }
                       ])
 
-# SIP/EIS (Employment Insurance System) - Only for Local employees
+# EIS (Employment Insurance System) - Only for Local employees
 DeductionType.create!([
                         {
-                          code: 'SIP',
-                          name: 'SIP (Employment Insurance)',
+                          code: 'EIS_LOCAL',
+                          name: 'EIS (Employment Insurance System)',
                           description: 'Employment Insurance System - Only for Malaysian employees (0.2% employee, 0.2% employer)',
                           employee_contribution: 0.2, # 0.2%
                           employer_contribution: 0.2, # 0.2%

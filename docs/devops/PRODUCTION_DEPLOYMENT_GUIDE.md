@@ -309,13 +309,14 @@ Go to your GitHub repository:
 https://github.com/YOUR_USERNAME/st_intent_harvest/settings/secrets/actions
 ```
 
-Click **"New repository secret"** and create these 3 secrets:
+Click **"New repository secret"** and create these 4 secrets:
 
-| Secret Name          | Value               | Example                            |
-| -------------------- | ------------------- | ---------------------------------- |
-| `PRODUCTION_HOST`    | Your server IP      | `46.202.163.155`                   |
-| `PRODUCTION_USER`    | SSH username        | `stadmin`                          |
-| `PRODUCTION_SSH_KEY` | Private key content | `cat ~/.ssh/github_actions_deploy` |
+| Secret Name          | Value               | Example                                                            |
+| -------------------- | ------------------- | ------------------------------------------------------------------ |
+| `PRODUCTION_HOST`    | Your server IP      | `46.202.163.155`                                                   |
+| `PRODUCTION_USER`    | SSH username        | `stadmin`                                                          |
+| `PRODUCTION_SSH_KEY` | Private key content | `cat ~/.ssh/github_actions_deploy`                                 |
+| `SLACK_WEBHOOK_URL`  | Slack webhook URL   | `https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXX`    |
 
 **For PRODUCTION_SSH_KEY:**
 
@@ -330,6 +331,31 @@ cat ~/.ssh/github_actions_deploy
 
 # Paste into GitHub Secret
 ```
+
+**For SLACK_WEBHOOK_URL:**
+
+**Option 1: Create new Slack Webhook**
+
+1. Open your Slack Workspace
+2. Click workspace name → **Settings & administration** → **Manage apps**
+3. Search for "**Incoming WebHooks**" and click on it
+4. Click "**Add to Slack**" or "**Add Configuration**"
+5. Select the **channel** where you want to receive deployment notifications (e.g., `#deployments`, `#production-alerts`)
+6. Click "**Add Incoming WebHooks integration**"
+7. **Copy the Webhook URL** (format: `https://hooks.slack.com/services/T.../B.../xxx`)
+8. Paste into GitHub Secret
+
+**Option 2: Get existing Webhook URL**
+
+1. Go to **https://api.slack.com/apps**
+2. Select your workspace
+3. Find the app "Incoming WebHooks"
+4. Click **Incoming Webhooks** → View **Webhook URLs**
+5. Copy the URL for your desired channel
+
+**Option 3: Use Organization Webhook**
+
+If your team already has a webhook, ask your DevOps/Admin for the `SLACK_WEBHOOK_URL`.
 
 ### 3. Verify Workflow Files
 

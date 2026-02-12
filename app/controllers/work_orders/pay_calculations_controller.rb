@@ -3,6 +3,7 @@
 module WorkOrders
   class PayCalculationsController < ApplicationController
     include RansackMultiSort
+    include ExportHandling
 
     before_action :set_pay_calculation, only: %i[show edit update destroy]
     before_action :set_pay_calculation_with_discarded, only: %i[worker_detail]
@@ -22,7 +23,12 @@ module WorkOrders
 
       apply_ransack_search(@pay_calculation.pay_calculation_details.includes(:worker).order(id: :asc))
 
-      @pagy, @pay_calculation_details = paginate_results(@q.result)
+      respond_to do |format|
+        format.html do
+          @pagy, @pay_calculation_details = paginate_results(@q.result)
+        end
+        format.csv { export_csv }
+      end
     end
 
     def new
@@ -95,6 +101,22 @@ module WorkOrders
       params.require(:pay_calculation).permit(
         :month_year,
         :overall_total
+      )
+    end
+
+    def export_csv
+      records = @q.result.includes(:worker)
+
+      # Use handle_export directly since we need to pass pay_calculation for filename generation
+      # handle_csv_export doesn't support custom options beyond records/params
+      handle_export(
+        PayCalculationServices::ExportCsvService.new(
+          records: records,
+          params: params,
+          pay_calculation: @pay_calculation
+        ),
+        error_path: work_orders_pay_calculation_path(@pay_calculation),
+        disposition: 'attachment'
       )
     end
   end

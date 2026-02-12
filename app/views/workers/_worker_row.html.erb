@@ -28,6 +28,7 @@
   <td><%= worker.name %></td>
   <td><%= worker.worker_type %></td>
   <td><%= worker.position || '-' %></td>
+  <td><%= Worker::NATIONALITY_LABELS[worker.nationality] || '-' %></td>
   <td class="text-center">
     <% if worker.is_active %>
       <span class="text-success fw-bold">Active</span>
