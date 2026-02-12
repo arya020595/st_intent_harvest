@@ -22,18 +22,20 @@
 
 one:
   name: "John Worker"
-  worker_type: "permanent"
-  gender: "male"
+  worker_type: "Full - Time"
+  gender: "Male"
   is_active: true
   hired_date: 2024-01-01
-  nationality: "Local"
+  nationality: "local"
   identity_number: "123456-78-9012"
+  position: "Harvester"
 
 two:
   name: "Jane Worker"
-  worker_type: "contract"
-  gender: "female"
+  worker_type: "Part - Time"
+  gender: "Female"
   is_active: true
   hired_date: 2024-02-01
-  nationality: "Local"
+  nationality: "local"
   identity_number: "234567-89-0123"
+  position: "General"
