@@ -316,7 +316,7 @@ Click **"New repository secret"** and create these 4 secrets:
 | `PRODUCTION_HOST`    | Your server IP      | `46.202.163.155`                                                   |
 | `PRODUCTION_USER`    | SSH username        | `stadmin`                                                          |
 | `PRODUCTION_SSH_KEY` | Private key content | `cat ~/.ssh/github_actions_deploy`                                 |
-| `SLACK_WEBHOOK_URL`  | Slack webhook URL   | `https://hooks.slack.com/services/TT0F5RLA1/B0A0GUJFR46/zlkkte...` |
+| `SLACK_WEBHOOK_URL`  | Slack webhook URL   | `https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXX`    |
 
 **For PRODUCTION_SSH_KEY:**
 
