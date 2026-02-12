@@ -58,7 +58,8 @@ module PayCalculationServices
       formatted_month = begin
         Date.strptime(month_year, '%Y-%m').strftime('%B_%Y')
       rescue StandardError
-        month_year
+        sanitized = month_year.to_s.gsub(/[^A-Za-z0-9_-]/, '_')
+        sanitized.empty? ? 'unknown' : sanitized
       end
       "pay_calculation_workers-#{formatted_month}.csv"
     end
