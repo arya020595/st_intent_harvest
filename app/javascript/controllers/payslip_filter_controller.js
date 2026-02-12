@@ -62,7 +62,7 @@ export default class extends Controller {
   }
 
   // Remove a worker chip
-  removeWorker(id) {
+  removeWorker(id, skipUpdate = false) {
     const chip = document.getElementById(`selected-worker-${id}`);
     if (chip) chip.remove();
 
@@ -77,7 +77,9 @@ export default class extends Controller {
       this.selectAllTarget.checked = false;
     }
 
-    this.updateGenerateButtonState();
+    if (!skipUpdate) {
+      this.updateGenerateButtonState();
+    }
   }
 
   removeWorkerClick(event) {
@@ -124,8 +126,11 @@ export default class extends Controller {
     this.workerCheckboxTargets.forEach((cb) => {
       cb.checked = isChecked;
 
-      if (isChecked) this.addWorker(cb.value, cb.dataset.workerName);
-      else this.removeWorker(cb.value);
+      if (isChecked) {
+        this.addWorker(cb.value, cb.dataset.workerName);
+      } else {
+        this.removeWorker(cb.value, true); // Skip update during batch operation
+      }
 
       // Always make the item visible
       cb.closest(".worker-item").style.display = "";
