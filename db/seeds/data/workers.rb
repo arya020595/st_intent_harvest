@@ -12,23 +12,23 @@ puts '👷 Creating workers...'
 # Worker::POSITIONS = %w[Harvester General Driver Maintenance Mechanic Security Mandour Loaders]
 # Worker::NATIONALITIES = %w[local foreigner foreigner_no_passport]
 
-full_time = Worker::WORKER_TYPES[1]  # 'Full - Time'
-part_time = Worker::WORKER_TYPES[0]  # 'Part - Time'
-male = Worker::GENDERS[0]            # 'Male'
-female = Worker::GENDERS[1]          # 'Female'
-local = Worker::NATIONALITIES[0]     # 'local'
-foreigner = Worker::NATIONALITIES[1] # 'foreigner'
-foreigner_no_passport = Worker::NATIONALITIES[2] # 'foreigner_no_passport'
+full_time = Worker::WORKER_TYPES.find { |t| t == 'Full - Time' }          # 'Full - Time'
+part_time = Worker::WORKER_TYPES.find { |t| t == 'Part - Time' }          # 'Part - Time'
+male = Worker::GENDERS.find { |g| g == 'Male' }                           # 'Male'
+female = Worker::GENDERS.find { |g| g == 'Female' }                       # 'Female'
+local = Worker::NATIONALITIES.find { |n| n == 'local' }                   # 'local'
+foreigner = Worker::NATIONALITIES.find { |n| n == 'foreigner' }           # 'foreigner'
+foreigner_no_passport = Worker::NATIONALITIES.find { |n| n == 'foreigner_no_passport' } # 'foreigner_no_passport'
 
 # Positions from Worker::POSITIONS
-harvester = Worker::POSITIONS[0]     # 'Harvester'
-general = Worker::POSITIONS[1]       # 'General'
-driver = Worker::POSITIONS[2]        # 'Driver'
-maintenance = Worker::POSITIONS[3]   # 'Maintenance'
-mechanic = Worker::POSITIONS[4]      # 'Mechanic'
-security = Worker::POSITIONS[5]      # 'Security'
-mandour = Worker::POSITIONS[6]       # 'Mandour'
-loaders = Worker::POSITIONS[7]       # 'Loaders'
+harvester = Worker::POSITIONS.find { |p| p == 'Harvester' }               # 'Harvester'
+general = Worker::POSITIONS.find { |p| p == 'General' }                   # 'General'
+driver = Worker::POSITIONS.find { |p| p == 'Driver' }                     # 'Driver'
+maintenance = Worker::POSITIONS.find { |p| p == 'Maintenance' }           # 'Maintenance'
+mechanic = Worker::POSITIONS.find { |p| p == 'Mechanic' }                 # 'Mechanic'
+security = Worker::POSITIONS.find { |p| p == 'Security' }                 # 'Security'
+mandour = Worker::POSITIONS.find { |p| p == 'Mandour' }                   # 'Mandour'
+loaders = Worker::POSITIONS.find { |p| p == 'Loaders' }                   # 'Loaders'
 
 workers_data = [
   { identity_number: 'ID-001', name: 'Ahmad Yani', worker_type: full_time, gender: male, is_active: true,
