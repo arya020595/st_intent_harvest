@@ -19,8 +19,8 @@ module PayCalculationServices
       'Position'
     ].freeze
 
-    def initialize(records:, params: {}, pay_calculation: nil, **options)
-      super(records: records, params: params, **options)
+    def initialize(records:, params: {}, pay_calculation: nil, **)
+      super(records: records, params: params, **)
       @pay_calculation = pay_calculation
     end
 
@@ -35,7 +35,7 @@ module PayCalculationServices
     end
 
     def row_data(detail)
-      breakdown = detail.deduction_breakdown || {}
+      breakdown = parse_deduction_breakdown(detail.deduction_breakdown)
 
       [
         detail.worker.id,
@@ -88,6 +88,16 @@ module PayCalculationServices
     def find_deduction_by_type(breakdown, deduction_type)
       key = breakdown.keys.find { |k| k.to_s.start_with?(deduction_type) }
       breakdown[key] if key
+    end
+
+    # Parse deduction_breakdown - handles both Hash (from DB) and String (from fixtures)
+    def parse_deduction_breakdown(breakdown)
+      return {} if breakdown.nil?
+      return breakdown if breakdown.is_a?(Hash)
+
+      JSON.parse(breakdown)
+    rescue JSON::ParserError
+      {}
     end
   end
 end

@@ -107,13 +107,16 @@ module WorkOrders
     def export_csv
       records = @q.result.includes(:worker)
 
+      # Use handle_export directly since we need to pass pay_calculation for filename generation
+      # handle_csv_export doesn't support custom options beyond records/params
       handle_export(
         PayCalculationServices::ExportCsvService.new(
           records: records,
           params: params,
           pay_calculation: @pay_calculation
         ),
-        error_path: work_orders_pay_calculation_path(@pay_calculation)
+        error_path: work_orders_pay_calculation_path(@pay_calculation),
+        disposition: 'attachment'
       )
     end
   end
