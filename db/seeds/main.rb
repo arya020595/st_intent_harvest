@@ -66,7 +66,7 @@ seed_modules = [
   'permissions',        # Foundation: Permission definitions
   'roles',              # Roles with permission assignments
   'users',              # Users with role assignments
-  'deduction_types',    # Deduction type definitions (EPF, SOCSO, SIP)
+  'deduction_types',    # Deduction type definitions (EPF, SOCSO, EIS)
   'master_data',        # Units, Categories, Blocks, Vehicles
   'workers',            # Worker records
   'inventories',        # Inventory items

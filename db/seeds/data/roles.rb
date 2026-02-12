@@ -28,7 +28,7 @@ role_configs = [
     ]
   },
   {
-    name: 'Field Supervisor',
+    name: 'Field Conductor',
     description: 'Can manage work order details in the field',
     permission_codes: [
       'work_orders.details.index',

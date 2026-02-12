@@ -18,7 +18,7 @@ db/seeds/
     ├── permissions.rb              # Permission definitions
     ├── roles.rb                    # Roles with permission assignments
     ├── users.rb                    # User accounts with role assignments
-    ├── deduction_types.rb          # EPF, SOCSO, SIP deduction definitions
+    ├── deduction_types.rb          # EPF, SOCSO, EIS deduction definitions
     ├── master_data.rb              # Units, Categories, Blocks, Vehicles
     ├── workers.rb                  # Worker records
     ├── inventories.rb              # Inventory items by category
@@ -85,7 +85,7 @@ Audited.auditing_enabled = true
 
 - EPF (Malaysian & Foreign)
 - SOCSO (Malaysian & Foreign)
-- SIP (Malaysian only)
+- EIS (Malaysian only)
 
 ### 5. Master Data (`master_data.rb`)
 
