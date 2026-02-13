@@ -1,0 +1,262 @@
+name: Rollback Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Docker image tag to rollback to (e.g., main-abc1234)"
+        required: true
+        type: string
+      rollback_migrations:
+        description: "Number of migrations to rollback (0 = no migration rollback)"
+        required: false
+        default: "0"
+        type: string
+      app_name:
+        description: "Application to rollback"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - st_intent_harvest
+          - st_accorn
+      skip_health_check:
+        description: "Skip health check (use for emergency rollbacks)"
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    steps:
+      - name: Set rollback start time
+        run: |
+          echo "START_TIME=$(date +%s)" >> $GITHUB_ENV
+
+      - name: Notify Slack - Rollback Starting
+        run: |
+          set -e
+
+          REPO="${{ github.repository }}"
+          IMAGE_TAG="${{ github.event.inputs.image_tag }}"
+          APP_NAME="${{ github.event.inputs.app_name }}"
+          MIGRATION_STEPS="${{ github.event.inputs.rollback_migrations }}"
+          ACTOR='${{ github.actor }}'
+          RUN_URL='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+
+          payload=$(jq -n \
+            --arg repo "$REPO" \
+            --arg tag "$IMAGE_TAG" \
+            --arg app "$APP_NAME" \
+            --arg migrations "$MIGRATION_STEPS" \
+            --arg actor "$ACTOR" \
+            --arg runurl "$RUN_URL" \
+            '{
+              text: ":warning: Production rollback started",
+              blocks: [
+                { type: "header", text: { type: "plain_text", text: "⚠️ Production Rollback Started" } },
+                { type: "section", fields: [
+                    { type: "mrkdwn", text: ("*Repository:*\n" + $repo) },
+                    { type: "mrkdwn", text: ("*Target Tag:*\n" + $tag) },
+                    { type: "mrkdwn", text: ("*Application:*\n" + $app) },
+                    { type: "mrkdwn", text: ("*Migration Rollback:*\n" + $migrations + " step(s)") },
+                    { type: "mrkdwn", text: ("*Actor:*\n" + $actor) }
+                  ]
+                },
+                { type: "context", elements: [
+                    { type: "mrkdwn", text: ("<" + $runurl + "|View workflow run>") }
+                  ]
+                }
+              ]
+            }')
+          echo "$payload" | curl -s -X POST -H 'Content-type: application/json' -d @- "$SLACK_WEBHOOK_URL" || echo "Warning: Failed to send Slack notification"
+          echo "Sent Slack rollback start notification"
+
+      - name: Rollback production server
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          IMAGE_TAG: ${{ github.event.inputs.image_tag }}
+          MIGRATION_STEPS: ${{ github.event.inputs.rollback_migrations }}
+          APP_NAME: ${{ github.event.inputs.app_name }}
+          SKIP_HEALTH_CHECK: ${{ github.event.inputs.skip_health_check }}
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          envs: IMAGE_TAG,MIGRATION_STEPS,APP_NAME,SKIP_HEALTH_CHECK
+          script: |
+            set -e
+
+            # Configuration
+            MAX_RETRIES=30
+            RETRY_INTERVAL=5
+
+            # Determine which apps to rollback
+            if [ "$APP_NAME" = "all" ]; then
+              APPS=("st_intent_harvest" "st_accorn")
+            else
+              APPS=("$APP_NAME")
+            fi
+
+            # Reusable rollback function
+            rollback_app() {
+              local app_name=$1
+              local app_path="/home/stadmin/${app_name}"
+
+              echo ""
+              echo "=========================================="
+              echo "🔄 Rolling back ${app_name} to ${IMAGE_TAG}..."
+              echo "=========================================="
+
+              cd "$app_path"
+
+              # Validate MIGRATION_STEPS is a non-negative integer
+              if ! [[ "$MIGRATION_STEPS" =~ ^[0-9]+$ ]]; then
+                echo "❌ Invalid rollback_migrations value: '$MIGRATION_STEPS'. It must be an integer >= 0."
+                return 1
+              fi
+
+              # Verify image exists
+              echo "→ Verifying image exists: ghcr.io/arya020595/${app_name}:${IMAGE_TAG}"
+              if ! docker pull ghcr.io/arya020595/${app_name}:${IMAGE_TAG}; then
+                echo "❌ Image not found: ghcr.io/arya020595/${app_name}:${IMAGE_TAG}"
+                echo "   Available tags can be found at: https://github.com/arya020595/${app_name}/pkgs/container/${app_name}"
+                return 1
+              fi
+
+              # Update DOCKER_IMAGE in .env file
+              echo "→ Updating .env with rollback image..."
+              if [ ! -f .env ]; then
+                echo "❌ .env file not found in ${app_path}. Cannot update DOCKER_IMAGE; aborting rollback."
+                return 1
+              fi
+              sed -i "s|^DOCKER_IMAGE=.*|DOCKER_IMAGE=ghcr.io/arya020595/${app_name}:${IMAGE_TAG}|" .env || true
+              grep -q "^DOCKER_IMAGE=" .env || echo "DOCKER_IMAGE=ghcr.io/arya020595/${app_name}:${IMAGE_TAG}" >> .env
+
+              # Rollback migrations first (before changing code)
+              if [ "$MIGRATION_STEPS" -gt 0 ]; then
+                echo "→ Rolling back ${MIGRATION_STEPS} migration(s)..."
+                docker compose exec -T web rails db:rollback STEP=${MIGRATION_STEPS}
+              fi
+
+              echo "→ Restarting services with rollback image..."
+              docker compose up -d
+
+              # Health check (unless skipped)
+              if [ "$SKIP_HEALTH_CHECK" != "true" ]; then
+                echo "→ Waiting for health check..."
+                local retry_count=0
+                while [ $retry_count -lt $MAX_RETRIES ]; do
+                  local container_id
+                  container_id=$(docker compose ps -q web || true)
+                  if [ -n "$container_id" ]; then
+                    local health_status
+                    health_status=$(docker inspect --format '{{.State.Health.Status}}' "$container_id" 2>/dev/null || echo "unknown")
+                    if [ "$health_status" = "healthy" ]; then
+                      echo "✓ Service is healthy!"
+                      break
+                    fi
+                  fi
+
+                  retry_count=$((retry_count + 1))
+                  if [ $retry_count -eq $MAX_RETRIES ]; then
+                    echo "❌ Health check failed after $((MAX_RETRIES * RETRY_INTERVAL))s"
+                    docker compose ps
+                    docker compose logs --tail=50 web
+                    return 1
+                  fi
+
+                  echo "  Attempt ${retry_count}/${MAX_RETRIES}..."
+                  sleep $RETRY_INTERVAL
+                done
+              else
+                echo "→ Skipping health check (emergency rollback)"
+                sleep 10
+              fi
+
+              # Record rollback in history (consistent format)
+              timestamp="$(date -Iseconds)"
+              previous_tag=""
+              if [ -f ".deploy_history" ]; then
+                previous_tag="$(tail -n 1 ".deploy_history" | awk -F'|' '{print $2}')"
+              fi
+              echo "${timestamp}|${IMAGE_TAG}|${previous_tag}" >> ".deploy_history"
+              # Keep only last 10 deployments
+              tail -n 10 ".deploy_history" > ".deploy_history.tmp" && mv ".deploy_history.tmp" ".deploy_history"
+
+              echo "✅ ${app_name} rolled back successfully to ${IMAGE_TAG}!"
+              docker compose ps
+            }
+
+            # Rollback all specified applications
+            for app in "${APPS[@]}"; do
+              rollback_app "$app" || exit 1
+            done
+
+            echo ""
+            echo "=========================================="
+            echo "✅ Rollback completed successfully!"
+            echo "   Rolled back to: ${IMAGE_TAG}"
+            echo "=========================================="
+
+      - name: Notify Slack - Rollback Result
+        if: always()
+        run: |
+          set -e
+
+          REPO="${{ github.repository }}"
+          IMAGE_TAG="${{ github.event.inputs.image_tag }}"
+          APP_NAME="${{ github.event.inputs.app_name }}"
+          MIGRATION_STEPS="${{ github.event.inputs.rollback_migrations }}"
+          ACTOR='${{ github.actor }}'
+          RUN_URL='${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          STATUS='${{ job.status }}'
+          END_TIME=$(date +%s)
+          DURATION=$(( END_TIME - START_TIME ))
+          HUMAN_DURATION=$(printf '%02dm:%02ds' $((DURATION/60)) $((DURATION%60)))
+
+          if [ "$STATUS" = "success" ]; then
+            TITLE="✅ Production Rollback Succeeded"
+            RESULT_LINE="*Result:* Success"
+          else
+            TITLE="❌ Production Rollback Failed"
+            RESULT_LINE="*Result:* Failure"
+          fi
+
+          payload=$(jq -n \
+            --arg title "$TITLE" \
+            --arg repo "$REPO" \
+            --arg tag "$IMAGE_TAG" \
+            --arg app "$APP_NAME" \
+            --arg migrations "$MIGRATION_STEPS" \
+            --arg actor "$ACTOR" \
+            --arg runurl "$RUN_URL" \
+            --arg result "$RESULT_LINE" \
+            --arg dur "$HUMAN_DURATION" \
+            '{
+              text: $title,
+              blocks: [
+                { type: "header", text: { type: "plain_text", text: $title } },
+                { type: "section", fields: [
+                    { type: "mrkdwn", text: ("*Repository:*\n" + $repo) },
+                    { type: "mrkdwn", text: ("*Rolled back to:*\n" + $tag) },
+                    { type: "mrkdwn", text: ("*Application:*\n" + $app) },
+                    { type: "mrkdwn", text: ("*Migration Rollback:*\n" + $migrations + " step(s)") },
+                    { type: "mrkdwn", text: ("*Actor:*\n" + $actor) },
+                    { type: "mrkdwn", text: $result },
+                    { type: "mrkdwn", text: ("*Duration:*\n" + $dur) }
+                  ]
+                },
+                { type: "context", elements: [
+                    { type: "mrkdwn", text: ("<" + $runurl + "|View workflow run>") }
+                  ]
+                }
+              ]
+            }')
+          echo "$payload" | curl -s -X POST -H 'Content-type: application/json' -d @- "$SLACK_WEBHOOK_URL" || echo "Warning: Failed to send Slack notification"
+          echo "Sent Slack rollback result notification ($STATUS)"
