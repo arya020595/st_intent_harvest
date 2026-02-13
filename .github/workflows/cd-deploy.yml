@@ -120,9 +120,15 @@ jobs:
               echo "→ Waiting for health check..."
               local retry_count=0
               while [ $retry_count -lt $MAX_RETRIES ]; do
-                if docker compose ps web | grep -q "healthy"; then
-                  echo "✓ Service is healthy!"
-                  break
+                local container_id
+                container_id=$(docker compose ps -q web || true)
+                if [ -n "$container_id" ]; then
+                  local health_status
+                  health_status=$(docker inspect --format '{{.State.Health.Status}}' "$container_id" 2>/dev/null || echo "unknown")
+                  if [ "$health_status" = "healthy" ]; then
+                    echo "✓ Service is healthy!"
+                    break
+                  fi
                 fi
 
                 retry_count=$((retry_count + 1))
