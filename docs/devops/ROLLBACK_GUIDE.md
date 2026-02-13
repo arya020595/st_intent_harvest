@@ -27,7 +27,7 @@ Our deployment system supports instant rollback to any previously deployed versi
 - ✅ No code changes required for rollback
 - ✅ Automatic deployment history tracking
 - ✅ Database migration rollback support
-- ✅ Slack notifications for rollback events
+- ✅ Slack notifications for GitHub Actions rollbacks
 - ✅ Multiple rollback methods (GitHub Actions, CLI, Manual)
 
 ---
