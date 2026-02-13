@@ -66,9 +66,9 @@ show_history() {
     echo "Timestamp                     | Deployed Tag       | Previous Tag"
     echo "------------------------------|--------------------|------------------"
 
-    while IFS='|' read -r timestamp deployed_tag previous_tag; do
+    tail -n 10 "$DEPLOY_HISTORY_FILE" | while IFS='|' read -r timestamp deployed_tag previous_tag; do
         printf "%-29s | %-18s | %-18s\n" "$timestamp" "$deployed_tag" "$previous_tag"
-    done < "$DEPLOY_HISTORY_FILE"
+    done
 
     echo ""
 }
@@ -77,6 +77,13 @@ show_history() {
 get_previous_tag() {
     if [ ! -f "$DEPLOY_HISTORY_FILE" ]; then
         log_error "No deployment history found"
+        exit 1
+    fi
+
+    # Ensure there are at least two deployments in history
+    HISTORY_LINES=$(wc -l < "$DEPLOY_HISTORY_FILE")
+    if [ "$HISTORY_LINES" -lt 2 ]; then
+        log_error "Not enough deployment history to rollback (need at least 2 deployments)"
         exit 1
     fi
 
@@ -96,6 +103,12 @@ do_rollback() {
     local IMAGE_TAG=$1
     local MIGRATION_STEPS=${2:-0}
 
+    # Validate that MIGRATION_STEPS is a non-negative integer
+    if ! [[ "$MIGRATION_STEPS" =~ ^[0-9]+$ ]]; then
+        log_error "Invalid migration rollback steps: '${MIGRATION_STEPS}'. Must be a non-negative integer."
+        exit 1
+    fi
+
     header "🔄 Rolling back ${APP_NAME}"
 
     log_info "Target image tag: ${IMAGE_TAG}"
@@ -105,24 +118,27 @@ do_rollback() {
 
     # Verify image exists
     log_info "Verifying image exists..."
-    if ! docker pull ghcr.io/arya020595/${APP_NAME}:${IMAGE_TAG} 2>/dev/null; then
-        log_error "Image not found: ghcr.io/arya020595/${APP_NAME}:${IMAGE_TAG}"
-        echo ""
-        echo "Available tags can be found at:"
-        echo "  https://github.com/arya020595/${APP_NAME}/pkgs/container/${APP_NAME}"
+    if ! pull_output=$(docker pull ghcr.io/arya020595/${APP_NAME}:${IMAGE_TAG} 2>&1); then
+        log_error "Failed to pull image: ghcr.io/arya020595/${APP_NAME}:${IMAGE_TAG}"
+        echo "$pull_output" >&2
+        if echo "$pull_output" | grep -qiE "not found|manifest unknown"; then
+            echo ""
+            echo "Image appears to be missing. Available tags can be found at:"
+            echo "  https://github.com/arya020595/${APP_NAME}/pkgs/container/${APP_NAME}"
+        fi
         exit 1
     fi
     log_success "Image verified"
 
     # Update .env file
     log_info "Updating .env with rollback image..."
-    if [ -f .env ]; then
-        sed -i "s|^DOCKER_IMAGE=.*|DOCKER_IMAGE=ghcr.io/arya020595/${APP_NAME}:${IMAGE_TAG}|" .env || true
-        grep -q "^DOCKER_IMAGE=" .env || echo "DOCKER_IMAGE=ghcr.io/arya020595/${APP_NAME}:${IMAGE_TAG}" >> .env
-    else
+    if [ ! -f .env ]; then
         log_error ".env file not found at ${APP_PATH}/.env"
+        log_error "Cannot update DOCKER_IMAGE; aborting rollback."
         exit 1
     fi
+    sed -i "s|^DOCKER_IMAGE=.*|DOCKER_IMAGE=ghcr.io/arya020595/${APP_NAME}:${IMAGE_TAG}|" .env || true
+    grep -q "^DOCKER_IMAGE=" .env || echo "DOCKER_IMAGE=ghcr.io/arya020595/${APP_NAME}:${IMAGE_TAG}" >> .env
     log_success ".env updated"
 
     # Rollback migrations if requested
@@ -140,9 +156,15 @@ do_rollback() {
     log_info "Waiting for health check..."
     local retry_count=0
     while [ $retry_count -lt $MAX_RETRIES ]; do
-        if docker compose ps web | grep -q "healthy"; then
-            log_success "Service is healthy!"
-            break
+        local container_id
+        container_id=$(docker compose ps -q web || true)
+        if [ -n "$container_id" ]; then
+            local health_status
+            health_status=$(docker inspect --format '{{.State.Health.Status}}' "$container_id" 2>/dev/null || echo "unknown")
+            if [ "$health_status" = "healthy" ]; then
+                log_success "Service is healthy!"
+                break
+            fi
         fi
 
         retry_count=$((retry_count + 1))
@@ -157,8 +179,16 @@ do_rollback() {
         sleep $RETRY_INTERVAL
     done
 
-    # Record rollback in history
-    echo "$(date -Iseconds)|ROLLBACK:${IMAGE_TAG}|manual" >> "$DEPLOY_HISTORY_FILE"
+    # Record rollback in history (maintain consistent format)
+    local timestamp
+    timestamp="$(date -Iseconds)"
+    local previous_tag=""
+    if [ -f "$DEPLOY_HISTORY_FILE" ]; then
+        previous_tag="$(tail -n 1 "$DEPLOY_HISTORY_FILE" | awk -F'|' '{print $2}')"
+    fi
+    echo "${timestamp}|${IMAGE_TAG}|${previous_tag}" >> "$DEPLOY_HISTORY_FILE"
+    # Keep only last 10 deployments
+    tail -n 10 "$DEPLOY_HISTORY_FILE" > "${DEPLOY_HISTORY_FILE}.tmp" && mv "${DEPLOY_HISTORY_FILE}.tmp" "$DEPLOY_HISTORY_FILE"
 
     header "✅ Rollback completed successfully!"
     echo ""

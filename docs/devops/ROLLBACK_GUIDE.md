@@ -99,10 +99,10 @@ For quick rollbacks directly on the server.
 
 ```bash
 # SSH to production server
-ssh stadmin@46.202.163.155
+ssh <user>@<server-ip>
 
 # Navigate to app directory
-cd /home/stadmin/st_intent_harvest
+cd /home/<user>/<app-directory>
 
 # Ensure script is available
 ls scripts/rollback.sh
@@ -234,7 +234,7 @@ git log --oneline -20
 
 ```bash
 # On production server
-cat /home/stadmin/st_intent_harvest/.deploy_history
+cat /home/<user>/<app-directory>/.deploy_history
 ```
 
 ---
@@ -249,11 +249,16 @@ timestamp|deployed_tag|previous_tag
 2026-02-11T15:45:00+07:00|main-def5678|main-ghi9012
 ```
 
+**Notes:**
+- Rollbacks are also recorded with the same format (deployed_tag is the rollback target)
+- Only the last 10 deployments are kept to prevent file bloat
+- Both deploy and rollback operations maintain this consistent format
+
 **View history:**
 
 ```bash
 # On server
-cat /home/stadmin/st_intent_harvest/.deploy_history
+cat /home/<user>/<app-directory>/.deploy_history
 
 # Or use the script
 ./scripts/rollback.sh --list

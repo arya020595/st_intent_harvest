@@ -100,21 +100,19 @@ jobs:
               CURRENT_IMAGE=$(docker compose images web --format "{{.Tag}}" 2>/dev/null | head -1 || echo "none")
               echo "  Current image tag: ${CURRENT_IMAGE}"
 
-              # Record deployment history
-              echo "$(date -Iseconds)|main-${SHORT_SHA}|${CURRENT_IMAGE}" >> "$DEPLOY_HISTORY_FILE"
-              # Keep only last N deployments
-              tail -n $MAX_HISTORY "$DEPLOY_HISTORY_FILE" > "${DEPLOY_HISTORY_FILE}.tmp" && mv "${DEPLOY_HISTORY_FILE}.tmp" "$DEPLOY_HISTORY_FILE"
-
               echo "→ Pulling Docker image with tag: main-${SHORT_SHA}..."
               docker pull ghcr.io/arya020595/${app_name}:main-${SHORT_SHA}
 
               echo "→ Updating docker-compose to use specific image tag..."
               # Update DOCKER_IMAGE in .env file to use specific SHA tag
-              if [ -f .env ]; then
-                sed -i "s|^DOCKER_IMAGE=.*|DOCKER_IMAGE=ghcr.io/arya020595/${app_name}:main-${SHORT_SHA}|" .env || true
-                # If DOCKER_IMAGE doesn't exist, add it
-                grep -q "^DOCKER_IMAGE=" .env || echo "DOCKER_IMAGE=ghcr.io/arya020595/${app_name}:main-${SHORT_SHA}" >> .env
+              if [ ! -f .env ]; then
+                echo "❌ .env file not found in ${app_path}; cannot safely update DOCKER_IMAGE."
+                echo "   Aborting deployment to avoid running an outdated image."
+                return 1
               fi
+              sed -i "s|^DOCKER_IMAGE=.*|DOCKER_IMAGE=ghcr.io/arya020595/${app_name}:main-${SHORT_SHA}|" .env || true
+              # If DOCKER_IMAGE doesn't exist, add it
+              grep -q "^DOCKER_IMAGE=" .env || echo "DOCKER_IMAGE=ghcr.io/arya020595/${app_name}:main-${SHORT_SHA}" >> .env
 
               echo "→ Restarting services..."
               docker compose up -d
@@ -141,6 +139,12 @@ jobs:
 
               echo "→ Running database migrations..."
               docker compose exec -T web rails db:migrate
+
+              # Record deployment history AFTER successful deployment
+              echo "→ Recording deployment history..."
+              echo "$(date -Iseconds)|main-${SHORT_SHA}|${CURRENT_IMAGE}" >> "$DEPLOY_HISTORY_FILE"
+              # Keep only last N deployments
+              tail -n $MAX_HISTORY "$DEPLOY_HISTORY_FILE" > "${DEPLOY_HISTORY_FILE}.tmp" && mv "${DEPLOY_HISTORY_FILE}.tmp" "$DEPLOY_HISTORY_FILE"
 
               echo "✅ ${app_name} deployed successfully with tag: main-${SHORT_SHA}"
               docker compose ps
