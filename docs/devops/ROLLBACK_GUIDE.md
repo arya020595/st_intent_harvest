@@ -148,8 +148,8 @@ For advanced users or emergency situations.
 
 ```bash
 # SSH to production server
-ssh stadmin@46.202.163.155
-cd /home/stadmin/st_intent_harvest
+ssh <user>@<server>
+cd /home/<user>/<app_name>
 
 # 1. Check current running image
 docker compose images web
