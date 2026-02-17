@@ -8,6 +8,8 @@ Comprehensive documentation for the ST Intent Harvest application, organized by 
 
 ```
 docs/
+├── team-management/          # 👥 Team Leadership, SOP & Playbooks
+├── reports/                  # 📊 Progress Reports for Management
 ├── getting-started/          # 🚀 Onboarding & Quick Start
 ├── development/              # 💻 Development Workflow
 │   └── git/                  # Git-related guides
@@ -33,7 +35,21 @@ docs/
 
 ## 📚 Quick Navigation
 
-### 🚀 Getting Started
+### � Team Management & Leadership
+
+| Document                                                           | Description                                                   |
+| ------------------------------------------------------------------ | ------------------------------------------------------------- |
+| [TECH_LEAD_PLAYBOOK.md](team-management/TECH_LEAD_PLAYBOOK.md)     | Mixed-team leadership playbook (Amirul, Anang, Fachri, Haziq) |
+| [TEAM_MANAGEMENT_PLAN.md](team-management/TEAM_MANAGEMENT_PLAN.md) | Remote team processes, communication, task workflow           |
+| [JUNIOR_DEVELOPER_SOP.md](team-management/JUNIOR_DEVELOPER_SOP.md) | Developer SOP — workflow standards & conventions              |
+
+### 📊 Reports
+
+| Document                                                                             | Description                                  |
+| ------------------------------------------------------------------------------------ | -------------------------------------------- |
+| [QUARTERLY_PROGRESS_REPORT_Q1_2026.md](reports/QUARTERLY_PROGRESS_REPORT_Q1_2026.md) | Q1 2026 consultant progress report (Dec–Feb) |
+
+### �🚀 Getting Started
 
 | Document                                                           | Description                |
 | ------------------------------------------------------------------ | -------------------------- |
@@ -79,9 +95,9 @@ docs/
 
 ### � Security
 
-| Document                                                               | Description                        |
-| ---------------------------------------------------------------------- | ---------------------------------- |
-| [PARAMETER_WHITELISTING_GUIDE.md](security/PARAMETER_WHITELISTING_GUIDE.md) | Secure parameter handling          |
+| Document                                                                    | Description               |
+| --------------------------------------------------------------------------- | ------------------------- |
+| [PARAMETER_WHITELISTING_GUIDE.md](security/PARAMETER_WHITELISTING_GUIDE.md) | Secure parameter handling |
 
 ### �🗄️ Database
 
@@ -175,10 +191,12 @@ docs/
 ## 🔍 Finding Documentation
 
 1. **New to the project?** Start with [QUICK_START.md](getting-started/QUICK_START.md)
-2. **Setting up development?** Check [DOCKER_SETUP.md](devops/DOCKER_SETUP.md)
-3. **Adding a feature?** Review relevant guides in `features/` or `architecture/`
-4. **Debugging issues?** See [TROUBLESHOOTING.md](troubleshooting/TROUBLESHOOTING.md)
+2. **New team member?** Read [JUNIOR_DEVELOPER_SOP.md](team-management/JUNIOR_DEVELOPER_SOP.md) for team conventions
+3. **Team lead reference?** See [TECH_LEAD_PLAYBOOK.md](team-management/TECH_LEAD_PLAYBOOK.md)
+4. **Setting up development?** Check [DOCKER_SETUP.md](devops/DOCKER_SETUP.md)
+5. **Adding a feature?** Review relevant guides in `features/` or `architecture/`
+6. **Debugging issues?** See [TROUBLESHOOTING.md](troubleshooting/TROUBLESHOOTING.md)
 
 ---
 
-_Last updated: January 20, 2026_
+_Last updated: February 17, 2026_
