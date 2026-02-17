@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# =============================================================================
+# Pre-Commit Hook — Fast RuboCop Auto-Correct on Staged Files Only
+# =============================================================================
+# Typically runs in 1-3 seconds. Only touches YOUR changed files.
+# Full checks (tests, Brakeman, audit) run in CI — not here.
+#
+# Bypass: git commit --no-verify -m "message"
+# Setup:  git config core.hooksPath .githooks && chmod +x .githooks/pre-commit
+# =============================================================================
+
+# Get staged .rb files (skip deleted)
+STAGED=$(git diff --cached --name-only --diff-filter=d | grep '\.rb$' || true)
+
+[ -z "$STAGED" ] && exit 0
+
+echo "🔍 RuboCop auto-correct ($(echo "$STAGED" | wc -l | tr -d ' ') file(s))..."
+
+# Auto-correct staged files, fail only on real errors (not style warnings)
+echo "$STAGED" | xargs bundle exec rubocop -a --fail-level error --force-exclusion 2>/dev/null
+
+if [ $? -ne 0 ]; then
+  echo "❌ RuboCop errors. Fix and re-stage."
+  exit 1
+fi
+
+# Re-stage corrected files
+echo "$STAGED" | xargs git add
+echo "✅ Clean."
+exit 0
