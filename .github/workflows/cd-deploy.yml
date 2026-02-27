@@ -79,14 +79,20 @@ jobs:
             APPS=("st_intent_harvest" "st_accorn")
             DEPLOY_HISTORY_FILE=".deploy_history"
             MAX_HISTORY=10
+            SHARED_IMAGE="ghcr.io/arya020595/st_intent_harvest"
 
             # Get short SHA for tagging
             SHORT_SHA=$(echo "$DEPLOY_SHA" | cut -c1-7)
+
+            # Pull the image once (same image for both apps)
+            echo "→ Pulling Docker image: ${SHARED_IMAGE}:main-${SHORT_SHA}..."
+            docker pull ${SHARED_IMAGE}:main-${SHORT_SHA}
 
             # Reusable deployment function (DRY principle)
             deploy_app() {
               local app_name=$1
               local app_path="/home/stadmin/${app_name}"
+              local compose_file="docker-compose.${app_name}.production.yml"
 
               echo ""
               echo "=========================================="
@@ -97,11 +103,8 @@ jobs:
 
               # Save current image version before deploying (for rollback)
               echo "→ Saving current deployment state..."
-              CURRENT_IMAGE=$(docker compose images web --format "{{.Tag}}" 2>/dev/null | head -1 || echo "none")
+              CURRENT_IMAGE=$(docker compose -f "$compose_file" images web --format "{{.Tag}}" 2>/dev/null | head -1 || echo "none")
               echo "  Current image tag: ${CURRENT_IMAGE}"
-
-              echo "→ Pulling Docker image with tag: main-${SHORT_SHA}..."
-              docker pull ghcr.io/arya020595/${app_name}:main-${SHORT_SHA}
 
               echo "→ Updating docker-compose to use specific image tag..."
               # Update DOCKER_IMAGE in .env file to use specific SHA tag
@@ -110,18 +113,18 @@ jobs:
                 echo "   Aborting deployment to avoid running an outdated image."
                 return 1
               fi
-              sed -i "s|^DOCKER_IMAGE=.*|DOCKER_IMAGE=ghcr.io/arya020595/${app_name}:main-${SHORT_SHA}|" .env || true
+              sed -i "s|^DOCKER_IMAGE=.*|DOCKER_IMAGE=${SHARED_IMAGE}:main-${SHORT_SHA}|" .env || true
               # If DOCKER_IMAGE doesn't exist, add it
-              grep -q "^DOCKER_IMAGE=" .env || echo "DOCKER_IMAGE=ghcr.io/arya020595/${app_name}:main-${SHORT_SHA}" >> .env
+              grep -q "^DOCKER_IMAGE=" .env || echo "DOCKER_IMAGE=${SHARED_IMAGE}:main-${SHORT_SHA}" >> .env
 
-              echo "→ Restarting services..."
-              docker compose up -d
+              echo "→ Restarting services with compose file: $compose_file..."
+              docker compose -f "$compose_file" up -d
 
               echo "→ Waiting for health check..."
               local retry_count=0
               while [ $retry_count -lt $MAX_RETRIES ]; do
                 local container_id
-                container_id=$(docker compose ps -q web || true)
+                container_id=$(docker compose -f "$compose_file" ps -q web || true)
                 if [ -n "$container_id" ]; then
                   local health_status
                   health_status=$(docker inspect --format '{{.State.Health.Status}}' "$container_id" 2>/dev/null || echo "unknown")
@@ -134,8 +137,8 @@ jobs:
                 retry_count=$((retry_count + 1))
                 if [ $retry_count -eq $MAX_RETRIES ]; then
                   echo "❌ Health check failed after $((MAX_RETRIES * RETRY_INTERVAL))s"
-                  docker compose ps
-                  docker compose logs --tail=50 web
+                  docker compose -f "$compose_file" ps
+                  docker compose -f "$compose_file" logs --tail=50 web
                   return 1
                 fi
 
@@ -144,7 +147,7 @@ jobs:
               done
 
               echo "→ Running database migrations..."
-              docker compose exec -T web rails db:migrate
+              docker compose -f "$compose_file" exec -T web rails db:migrate
 
               # Record deployment history AFTER successful deployment
               echo "→ Recording deployment history..."
@@ -153,7 +156,7 @@ jobs:
               tail -n $MAX_HISTORY "$DEPLOY_HISTORY_FILE" > "${DEPLOY_HISTORY_FILE}.tmp" && mv "${DEPLOY_HISTORY_FILE}.tmp" "$DEPLOY_HISTORY_FILE"
 
               echo "✅ ${app_name} deployed successfully with tag: main-${SHORT_SHA}"
-              docker compose ps
+              docker compose -f "$compose_file" ps
             }
 
             # Deploy all applications
