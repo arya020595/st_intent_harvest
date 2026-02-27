@@ -95,12 +95,21 @@ jobs:
             # Configuration
             MAX_RETRIES=30
             RETRY_INTERVAL=5
+            SHARED_IMAGE="ghcr.io/arya020595/st_intent_harvest"
 
             # Determine which apps to rollback
             if [ "$APP_NAME" = "all" ]; then
               APPS=("st_intent_harvest" "st_accorn")
             else
               APPS=("$APP_NAME")
+            fi
+
+            # Verify image exists (pull once)
+            echo "→ Verifying image exists: ${SHARED_IMAGE}:${IMAGE_TAG}"
+            if ! docker pull ${SHARED_IMAGE}:${IMAGE_TAG}; then
+              echo "❌ Image not found: ${SHARED_IMAGE}:${IMAGE_TAG}"
+              echo "   Available tags can be found at: https://github.com/arya020595/st_intent_harvest/pkgs/container/st_intent_harvest"
+              exit 1
             fi
 
             # Reusable rollback function
@@ -121,22 +130,14 @@ jobs:
                 return 1
               fi
 
-              # Verify image exists
-              echo "→ Verifying image exists: ghcr.io/arya020595/${app_name}:${IMAGE_TAG}"
-              if ! docker pull ghcr.io/arya020595/${app_name}:${IMAGE_TAG}; then
-                echo "❌ Image not found: ghcr.io/arya020595/${app_name}:${IMAGE_TAG}"
-                echo "   Available tags can be found at: https://github.com/arya020595/${app_name}/pkgs/container/${app_name}"
-                return 1
-              fi
-
               # Update DOCKER_IMAGE in .env file
               echo "→ Updating .env with rollback image..."
               if [ ! -f .env ]; then
                 echo "❌ .env file not found in ${app_path}. Cannot update DOCKER_IMAGE; aborting rollback."
                 return 1
               fi
-              sed -i "s|^DOCKER_IMAGE=.*|DOCKER_IMAGE=ghcr.io/arya020595/${app_name}:${IMAGE_TAG}|" .env || true
-              grep -q "^DOCKER_IMAGE=" .env || echo "DOCKER_IMAGE=ghcr.io/arya020595/${app_name}:${IMAGE_TAG}" >> .env
+              sed -i "s|^DOCKER_IMAGE=.*|DOCKER_IMAGE=${SHARED_IMAGE}:${IMAGE_TAG}|" .env || true
+              grep -q "^DOCKER_IMAGE=" .env || echo "DOCKER_IMAGE=${SHARED_IMAGE}:${IMAGE_TAG}" >> .env
 
               # Rollback migrations first (before changing code)
               if [ "$MIGRATION_STEPS" -gt 0 ]; then

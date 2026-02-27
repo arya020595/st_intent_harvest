@@ -1,0 +1,80 @@
+services:
+  db:
+    image: postgres:16.1-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-st_accorn_production}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-ssl/server.crt:/var/lib/postgresql/server.crt:ro
+      - ./postgres-ssl/server.key:/var/lib/postgresql/server.key:ro
+    command: >
+      postgres
+      -c ssl=on
+      -c ssl_cert_file=/var/lib/postgresql/server.crt
+      -c ssl_key_file=/var/lib/postgresql/server.key
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - accorn_app_network
+    restart: unless-stopped
+
+  web:
+    image: ${DOCKER_IMAGE:-ghcr.io/arya020595/st_intent_harvest:latest}
+    env_file:
+      - .env
+    environment:
+      # Database connection - PENTING!
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-st_accorn_production}
+
+      # Database credentials (for reference)
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-st_accorn_production}
+
+      # Rails configuration
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      RAILS_ENV: production
+      RAILS_LOG_TO_STDOUT: "true"
+      RAILS_SERVE_STATIC_FILES: "true"
+      RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
+      TZ: Asia/Jakarta
+      PORT: 3000
+    ports:
+      - "${PORT:-3006}:3000"
+    volumes:
+      - storage_data:/rails/storage
+      - log_data:/rails/log
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - accorn_app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/up"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data:
+    name: st_accorn_postgres_data
+  storage_data:
+    name: st_accorn_storage_data
+  log_data:
+    name: st_accorn_log_data
+
+networks:
+  accorn_app_network:
+    name: st_accorn_app_network
+    driver: bridge

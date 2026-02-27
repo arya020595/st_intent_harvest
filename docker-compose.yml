@@ -56,8 +56,6 @@ services:
     volumes:
       # Mount source code for live reloading (no osxfs flags for Linux/Windows portability)
       - .:/rails
-      # Use named volume for bundle to persist gems and improve performance
-      - bundle_cache:/usr/local/bundle
       # Prevent node_modules conflicts if using Node
       - /rails/node_modules
     depends_on:
@@ -99,8 +97,9 @@ services:
 volumes:
   postgres_data:
   redis_data:
-  bundle_cache:
 
 networks:
   st_intent_harvest_network:
     driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1450
