@@ -116,7 +116,6 @@ jobs:
             rollback_app() {
               local app_name=$1
               local app_path="/home/stadmin/${app_name}"
-              local compose_file="docker-compose.${app_name}.production.yml"
 
               echo ""
               echo "=========================================="
@@ -143,11 +142,11 @@ jobs:
               # Rollback migrations first (before changing code)
               if [ "$MIGRATION_STEPS" -gt 0 ]; then
                 echo "→ Rolling back ${MIGRATION_STEPS} migration(s)..."
-                docker compose -f "$compose_file" exec -T web rails db:rollback STEP=${MIGRATION_STEPS}
+                docker compose exec -T web rails db:rollback STEP=${MIGRATION_STEPS}
               fi
 
-              echo "→ Restarting services with rollback image using compose file: $compose_file..."
-              docker compose -f "$compose_file" up -d
+              echo "→ Restarting services with rollback image..."
+              docker compose up -d
 
               # Health check (unless skipped)
               if [ "$SKIP_HEALTH_CHECK" != "true" ]; then
@@ -155,7 +154,7 @@ jobs:
                 local retry_count=0
                 while [ $retry_count -lt $MAX_RETRIES ]; do
                   local container_id
-                  container_id=$(docker compose -f "$compose_file" ps -q web || true)
+                  container_id=$(docker compose ps -q web || true)
                   if [ -n "$container_id" ]; then
                     local health_status
                     health_status=$(docker inspect --format '{{.State.Health.Status}}' "$container_id" 2>/dev/null || echo "unknown")
@@ -168,8 +167,8 @@ jobs:
                   retry_count=$((retry_count + 1))
                   if [ $retry_count -eq $MAX_RETRIES ]; then
                     echo "❌ Health check failed after $((MAX_RETRIES * RETRY_INTERVAL))s"
-                    docker compose -f "$compose_file" ps
-                    docker compose -f "$compose_file" logs --tail=50 web
+                    docker compose ps
+                    docker compose logs --tail=50 web
                     return 1
                   fi
 
@@ -192,7 +191,7 @@ jobs:
               tail -n 10 ".deploy_history" > ".deploy_history.tmp" && mv ".deploy_history.tmp" ".deploy_history"
 
               echo "✅ ${app_name} rolled back successfully to ${IMAGE_TAG}!"
-              docker compose -f "$compose_file" ps
+              docker compose ps
             }
 
             # Rollback all specified applications
