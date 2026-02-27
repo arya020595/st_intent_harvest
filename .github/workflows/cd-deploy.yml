@@ -148,6 +148,9 @@ jobs:
               echo "→ Running database migrations..."
               docker compose exec -T web rails db:migrate
 
+              echo "→ Resetting database sequences..."
+              docker compose exec -T web rails db:reset_sequences
+
               # Record deployment history AFTER successful deployment
               echo "→ Recording deployment history..."
               echo "$(date -Iseconds)|main-${SHORT_SHA}|${CURRENT_IMAGE}" >> "$DEPLOY_HISTORY_FILE"
