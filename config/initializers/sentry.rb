@@ -11,6 +11,17 @@ Sentry.init do |config|
 
   # Enable sending logs to Sentry
   config.enable_logs = true
-  # Patch Ruby logger to forward logs
-  config.enabled_patches = [:logger]
+
+  # Enable opt-in structured log subscribers (active_record + action_controller are on by default)
+  config.rails.structured_logging.subscribers = {
+    active_record: Sentry::Rails::LogSubscribers::ActiveRecordSubscriber,
+    action_controller: Sentry::Rails::LogSubscribers::ActionControllerSubscriber,
+    active_job: Sentry::Rails::LogSubscribers::ActiveJobSubscriber,
+    action_mailer: Sentry::Rails::LogSubscribers::ActionMailerSubscriber
+  }
+
+  # Use << to append :logger patch without overriding other default patches.
+  # NOTE: This forwards ALL Rails.logger calls to Sentry and can be very noisy.
+  # Prefer Sentry.logger.info/error/warn for explicit, targeted logging.
+  config.enabled_patches << :logger
 end
