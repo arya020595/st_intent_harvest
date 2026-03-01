@@ -175,6 +175,12 @@ jobs:
             echo "   Deployed version: main-${SHORT_SHA}"
             echo "=========================================="
 
+      - name: Checkout code (for Sentry commit tracking)
+        if: success()
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history needed for sentry-cli set-commits --auto
+
       - name: Create Sentry Release
         if: success()
         env:

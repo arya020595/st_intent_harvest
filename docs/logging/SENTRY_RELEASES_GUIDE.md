@@ -148,7 +148,21 @@ grep -q "^SENTRY_RELEASE=" .env && \
   echo "SENTRY_RELEASE=${DEPLOY_SHA}" >> .env
 ```
 
-**b) New step "Create Sentry Release" (runs after successful deploy):**
+**b) New step "Checkout code" (required for commit tracking):**
+
+```yaml
+- name: Checkout code (for Sentry commit tracking)
+  if: success()
+  uses: actions/checkout@v4
+  with:
+    fetch-depth: 0 # Full history needed for sentry-cli set-commits --auto
+```
+
+> **Why `fetch-depth: 0`?** By default, `actions/checkout` does a **shallow clone** (only the
+> latest commit). Sentry CLI needs the full git history to find all commits since the last release.
+> Without this, you get: `error: could not find repository at '.'`
+
+**c) New step "Create Sentry Release" (runs after successful deploy):**
 
 ```yaml
 - name: Create Sentry Release
@@ -326,11 +340,12 @@ With release tracking:
 
 ### CI/CD step fails
 
-| Symptom                         | Cause                  | Fix                                                  |
-| ------------------------------- | ---------------------- | ---------------------------------------------------- |
-| `sentry-cli: command not found` | Install step failed    | Check network access to `sentry.io/get-cli/`         |
-| `401 Unauthorized`              | Wrong or missing token | Verify `SENTRY_AUTH_TOKEN` secret in GitHub          |
-| `Organization not found`        | Wrong org slug         | Verify `SENTRY_ORG` matches your Sentry org URL slug |
+| Symptom                            | Cause                             | Fix                                                                |
+| ---------------------------------- | --------------------------------- | ------------------------------------------------------------------ |
+| `could not find repository at '.'` | No checkout step or shallow clone | Add `actions/checkout@v4` with `fetch-depth: 0` before Sentry step |
+| `sentry-cli: command not found`    | Install step failed               | Check network access to `sentry.io/get-cli/`                       |
+| `401 Unauthorized`                 | Wrong or missing token            | Verify `SENTRY_AUTH_TOKEN` secret in GitHub                        |
+| `Organization not found`           | Wrong org slug                    | Verify `SENTRY_ORG` matches your Sentry org URL slug               |
 
 ---
 
@@ -348,6 +363,12 @@ next successful release creation.
 **Q: Do I need to install anything locally?**
 No. The `sentry-cli` is installed on-the-fly in the GitHub Actions runner during each deploy.
 It's not part of the Docker image or the local development setup.
+
+**Q: Why does the deploy workflow need `actions/checkout` with `fetch-depth: 0`?**
+The `sentry-cli releases set-commits --auto` command reads the local `.git` history to find
+all commits since the last release. By default, GitHub Actions doesn't check out the repo
+in the deploy job (and even if it did, it would be a shallow clone with only 1 commit).
+`fetch-depth: 0` fetches the complete git history so Sentry can properly link all commits.
 
 **Q: Does this work for both st_intent_harvest and st_accorn?**
 Yes. Both apps share the same Docker image and both get `SENTRY_RELEASE` set in their `.env`.
