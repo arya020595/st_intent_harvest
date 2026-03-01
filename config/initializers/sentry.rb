@@ -3,6 +3,7 @@
 Sentry.init do |config|
   config.breadcrumbs_logger = %i[active_support_logger http_logger]
   config.dsn = ENV.fetch('SENTRY_DSN', nil)
+  config.release = ENV.fetch('SENTRY_RELEASE', nil)
   config.traces_sample_rate = 1.0
 
   # Add data like request headers and IP for users,
