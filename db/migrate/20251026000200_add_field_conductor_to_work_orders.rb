@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-class AddFieldConductorToWorkOrders < ActiveRecord::Migration[7.2]
+class AddFieldConductorToWorkOrders < ActiveRecord::Migration[8.1]
+  disable_ddl_transaction!
+
   def change
-    add_reference :work_orders, :field_conductor, foreign_key: { to_table: :users }, index: true
+    add_reference :work_orders, :field_conductor, index: { algorithm: :concurrently }
   end
 end
