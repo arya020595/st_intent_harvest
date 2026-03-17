@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_23_024152) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_12_072331) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -97,7 +97,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_23_024152) do
     t.index ["deduction_type_id", "min_wage", "max_wage"], name: "idx_wage_ranges_salary_lookup"
     t.index ["deduction_type_id"], name: "index_deduction_wage_ranges_on_deduction_type_id"
     t.index ["discarded_at"], name: "index_deduction_wage_ranges_on_discarded_at"
-    t.check_constraint "calculation_method::text = ANY (ARRAY['fixed'::character varying, 'percentage'::character varying]::text[])", name: "calculation_method_check"
+    t.check_constraint "calculation_method::text = ANY (ARRAY['fixed'::character varying::text, 'percentage'::character varying::text])", name: "calculation_method_check"
     t.check_constraint "max_wage IS NULL OR max_wage >= min_wage", name: "max_wage_check"
   end
 
