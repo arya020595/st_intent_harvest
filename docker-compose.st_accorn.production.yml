@@ -32,7 +32,7 @@ services:
       - .env
     environment:
       # Database connection - PENTING!
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-st_accorn_production}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-st_accorn_production}?sslmode=require
 
       # Database credentials (for reference)
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
