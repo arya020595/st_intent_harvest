@@ -31,7 +31,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: |
+            ghcr.io/${{ github.repository }}
+            ghcr.io/${{ github.repository_owner }}/cari_acara
           tags: |
             type=sha,prefix=main-
             type=raw,value=latest,enable={{is_default_branch}}

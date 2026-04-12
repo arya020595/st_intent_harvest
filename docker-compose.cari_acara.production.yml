@@ -1,0 +1,83 @@
+services:
+  db:
+    image: postgres:16.1-alpine
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-cari_acara_production}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-ssl/server.crt:/var/lib/postgresql/server.crt:ro
+      - ./postgres-ssl/server.key:/var/lib/postgresql/server.key:ro
+    command: >
+      postgres
+      -c ssl=on
+      -c ssl_cert_file=/var/lib/postgresql/server.crt
+      -c ssl_key_file=/var/lib/postgresql/server.key
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cari_acara_app_network
+    restart: unless-stopped
+
+  web:
+    image: ${DOCKER_IMAGE:-ghcr.io/arya020595/cari_acara:latest}
+    env_file:
+      - .env
+    environment:
+      # Database connection
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-cari_acara_production}
+
+      # Database credentials (for reference)
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-cari_acara_production}
+
+      # Rails configuration
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      RAILS_ENV: production
+      RAILS_LOG_TO_STDOUT: "true"
+      RAILS_SERVE_STATIC_FILES: "true"
+
+      # Sentry release tracking
+      SENTRY_RELEASE: ${SENTRY_RELEASE:-}
+      RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
+      TZ: Asia/Jakarta
+      PORT: 3000
+    ports:
+      - "${PORT:-3007}:3000"
+    volumes:
+      - storage_data:/rails/storage
+      - log_data:/rails/log
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - cari_acara_app_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/up"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  postgres_data:
+    name: cari_acara_postgres_data
+  storage_data:
+    name: cari_acara_storage_data
+  log_data:
+    name: cari_acara_log_data
+
+networks:
+  cari_acara_app_network:
+    name: cari_acara_app_network
+    driver: bridge
