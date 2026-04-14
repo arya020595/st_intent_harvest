@@ -5,7 +5,7 @@ class InventoriesController < ApplicationController
   include SoftDeletableController
 
   before_action :set_inventory, only: %i[show edit update destroy confirm_delete]
-  before_action :load_collections, only: %i[new edit]
+  before_action :load_collections, only: %i[new edit create update]
 
   def index
     authorize Inventory
