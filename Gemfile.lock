@@ -138,11 +138,11 @@ GEM
       dotenv (= 3.2.0)
       railties (>= 6.1)
     drb (2.2.3)
-    dry-core (1.1.0)
+    dry-core (1.2.0)
       concurrent-ruby (~> 1.0)
       logger
       zeitwerk (~> 2.6)
-    dry-monads (1.9.0)
+    dry-monads (1.10.0)
       concurrent-ruby (~> 1.0)
       dry-core (~> 1.1)
       zeitwerk (~> 2.6)
@@ -485,7 +485,7 @@ DEPENDENCIES
   devise
   discard (~> 1.4)
   dotenv-rails
-  dry-monads (~> 1.9)
+  dry-monads (~> 1.10)
   faker
   font-awesome-rails
   grover
