@@ -68,7 +68,7 @@ gem 'ransack'
 gem 'sidekiq', '~> 8.1'
 
 # dry-rb: functional programming helpers
-gem 'dry-monads', '~> 1.9'
+gem 'dry-monads', '~> 1.10'
 
 # State machine library for Ruby objects (AASM) — used to model object states and transitions
 gem 'aasm', '~> 5.5', '>= 5.5.2'
@@ -102,7 +102,7 @@ group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'byebug', '~> 13.0'
   gem 'debug', platforms: %i[mri windows]
-  gem 'rubocop', '~> 1.85', require: false
+  gem 'rubocop', '~> 1.86', require: false
 
   # Annotate models with schema information
   gem 'annotate', require: false
