@@ -18,16 +18,35 @@ module WorkOrders
       @pagy, @pay_calculations = paginate_results(@q.result)
     end
 
+
     def show
       authorize @pay_calculation, policy_class: WorkOrders::PayCalculationPolicy
 
-      apply_ransack_search(@pay_calculation.pay_calculation_details.includes(:worker).order(id: :asc))
+      apply_ransack_search(
+        @pay_calculation
+          .pay_calculation_details
+          .includes(:worker)
+          .order(id: :asc)
+      )
+
+      records = @q.result
+
+      if params[:worker_filters].present?
+      query = build_worker_filter_query(params[:worker_filters])
+
+      if query.present?
+        records = records.joins(:worker).where(query)
+      end
+    end
 
       respond_to do |format|
         format.html do
-          @pagy, @pay_calculation_details = paginate_results(@q.result)
+          @pagy, @pay_calculation_details = paginate_results(records)
         end
-        format.csv { export_csv }
+
+        format.csv do
+          export_csv(records)
+        end
       end
     end
 
@@ -85,6 +104,28 @@ module WorkOrders
 
     private
 
+def build_worker_filter_query(filters)
+  conditions = []
+
+  filters = Array(filters)
+
+  if filters.include?('local')
+    conditions << "workers.nationality = 'local'"
+  end
+
+  if filters.include?('foreigner')
+    conditions << "(workers.nationality = 'foreigner' OR workers.nationality = 'foreigner_no_passport')"
+  end
+
+  if filters.include?('foreigner_no_passport')
+    conditions << "workers.nationality = 'foreigner_no_passport'"
+  end
+
+  return nil if conditions.empty?
+
+  conditions.join(' OR ')
+end
+
     def set_pay_calculation
       @pay_calculation = PayCalculation.find(params[:id])
     end
@@ -104,11 +145,9 @@ module WorkOrders
       )
     end
 
-    def export_csv
-      records = @q.result.includes(:worker)
+    def export_csv(records)
+      records = records.includes(:worker)
 
-      # Use handle_export directly since we need to pass pay_calculation for filename generation
-      # handle_csv_export doesn't support custom options beyond records/params
       handle_export(
         PayCalculationServices::ExportCsvService.new(
           records: records,
