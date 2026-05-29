@@ -108,7 +108,8 @@ jobs:
 
               # Save current image version before deploying (for rollback)
               echo "→ Saving current deployment state..."
-              CURRENT_IMAGE=$(docker compose images web --format "{{.Tag}}" 2>/dev/null | head -1 || echo "none")
+              CURRENT_IMAGE=$(docker ps --filter "name=${app_name}-web" --format '{{.Image}}' 2>/dev/null | head -1 || echo "none")
+              [ -z "$CURRENT_IMAGE" ] && CURRENT_IMAGE="none"
               echo "  Current image tag: ${CURRENT_IMAGE}"
 
               # Set SENTRY_RELEASE in .env so Rails container picks it up

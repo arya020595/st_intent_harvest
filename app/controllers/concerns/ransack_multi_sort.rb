@@ -49,6 +49,6 @@ module RansackMultiSort
   # @return [Integer] Sanitized per_page value
   def sanitized_per_page_param
     per_page = params[:per_page].to_i
-    per_page.positive? ? per_page : (Pagy.options[:limit] || 10)
+    per_page.positive? ? per_page : (Pagy::OPTIONS[:limit] || 10)
   end
 end
