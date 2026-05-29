@@ -19,7 +19,7 @@ module RansackMultiSortHelper
   # @param current [Integer] Currently selected per-page value
   # @return [String] HTML string
   def per_page_selector(per_page_options: DEFAULT_PER_PAGE_OPTIONS, current: nil)
-    current ||= Pagy.options[:limit]
+    current ||= Pagy::OPTIONS[:limit]
     form_with url: request.path, method: :get, local: true,
               html: { class: 'd-inline' } do |f|
       concat hidden_search_fields

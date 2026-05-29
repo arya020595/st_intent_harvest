@@ -8,12 +8,12 @@
 # Add your global options below. They will be applied globally.
 # For example:
 #
-Pagy.options[:limit] = 10               # Limit the items per page
-Pagy.options[:limit_key] = 'per_page'   # Use 'per_page' as the URL parameter name for limit
-Pagy.options[:client_max_limit] = 100   # The client can request a limit up to 100
-Pagy.options[:max_pages] = 50           # Allow only 50 pages; adjust as needed for performance
-Pagy.options[:jsonapi] = false          # Disabled: using custom limit_key for per_page param
-Pagy.options[:overflow] = :last_page    # Graceful fallback to last page on overflow
+Pagy::OPTIONS[:limit] = 10               # Limit the items per page
+Pagy::OPTIONS[:limit_key] = 'per_page'   # Use 'per_page' as the URL parameter name for limit
+Pagy::OPTIONS[:client_max_limit] = 100   # The client can request a limit up to 100
+Pagy::OPTIONS[:max_pages] = 50           # Allow only 50 pages; adjust as needed for performance
+Pagy::OPTIONS[:jsonapi] = false          # Disabled: using custom limit_key for per_page param
+Pagy::OPTIONS[:overflow] = :last_page    # Graceful fallback to last page on overflow
 
 ############ JavaScript ####################################################################
 # See https://ddnexus.github.io/pagy/resources/javascript/ for details.
