@@ -104,27 +104,27 @@ module WorkOrders
 
     private
 
-def build_worker_filter_query(filters)
-  conditions = []
+    def build_worker_filter_query(filters)
+      conditions = []
 
-  filters = Array(filters)
+      filters = Array(filters)
 
-  if filters.include?('local')
-    conditions << "workers.nationality = 'local'"
-  end
+      if filters.include?('local')
+        conditions << "workers.nationality = 'local'"
+      end
 
-  if filters.include?('foreigner')
-    conditions << "(workers.nationality = 'foreigner' OR workers.nationality = 'foreigner_no_passport')"
-  end
+      if filters.include?('foreigner')
+        conditions << "workers.nationality = 'foreigner'"
+      end
 
-  if filters.include?('foreigner_no_passport')
-    conditions << "workers.nationality = 'foreigner_no_passport'"
-  end
+      if filters.include?('foreigner_no_passport')
+        conditions << "workers.nationality = 'foreigner_no_passport'"
+      end
 
-  return nil if conditions.empty?
+      return nil if conditions.empty?
 
-  conditions.join(' OR ')
-end
+      conditions.join(' OR ')
+    end
 
     def set_pay_calculation
       @pay_calculation = PayCalculation.find(params[:id])
