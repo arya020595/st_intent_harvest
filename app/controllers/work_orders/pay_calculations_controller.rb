@@ -123,7 +123,7 @@ module WorkOrders
 
       return nil if conditions.empty?
 
-      conditions.join(' OR ')
+       conditions.join(' OR ')
     end
 
     def set_pay_calculation
