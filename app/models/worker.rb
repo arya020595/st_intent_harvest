@@ -33,6 +33,7 @@ class Worker < ApplicationRecord
   validates :gender, inclusion: { in: GENDERS, allow_nil: true }
   validates :position, inclusion: { in: POSITIONS, allow_nil: true }
   validates :nationality, inclusion: { in: NATIONALITIES, allow_nil: true }
+  validates :date_of_birth,  presence: true
 
   # --- Scopes ---
   scope :active, -> { where(is_active: true) }
@@ -73,7 +74,19 @@ class Worker < ApplicationRecord
   def self.ransackable_associations(_auth_object = nil)
     %w[work_order_workers work_orders pay_calculation_details pay_calculations]
   end
+
+  # Returns worker age based on date_of_birth
+  def age
+    return nil unless date_of_birth
+
+    today = Date.current
+    age = today.year - date_of_birth.year
+    age -= 1 if today < date_of_birth + age.years
+    age
+  end
 end
+
+
 
 # == Schema Information
 #
@@ -91,6 +104,7 @@ end
 #  worker_type     :string
 #  position        :string
 #  discarded_at    :datetime
+#  date_of_birth   :date
 #
 # Indexes
 #

@@ -39,6 +39,11 @@ class DeductionType < ApplicationRecord
       .where('effective_until IS NULL OR effective_until >= ?', date)
   }
 
+scope :expired, ->(date = Date.current) {
+  where.not(effective_until: nil)
+       .where('effective_until < ?', date)
+}
+
   # Filter by nationality
   # Special handling: foreigner_no_passport workers get NO deductions
   # 'all' means local + foreigner (with passport), NOT foreigner_no_passport
@@ -55,14 +60,24 @@ class DeductionType < ApplicationRecord
     end
   }
 
+  def effective_on?(date)
+    effective_from <= date &&
+      (effective_until.nil? || effective_until >= date) &&
+        is_active
+  end
+
+  def active_today?
+    effective_on?(Date.current)
+  end
+
   # Calculate actual deduction amount based on gross salary
   # Delegates to appropriate calculator strategy (Strategy Pattern)
   #
   # @param gross_salary [BigDecimal] The worker's gross salary
   # @param field [Symbol] :employee_contribution or :employer_contribution
   # @return [BigDecimal] The calculated deduction amount
-  def calculate_amount(gross_salary, field: :employee_contribution)
-    calculator.calculate(gross_salary, field: field)
+  def calculate_amount(gross_salary, field: :employee_contribution, age: nil)
+    calculator.calculate(gross_salary, field: field, age: age)
   end
 
   # Ransack configuration

@@ -16,7 +16,7 @@ module DeductionCalculators
     # @param gross_salary [BigDecimal] Worker's gross salary (not used)
     # @param field [Symbol] :employee_contribution or :employer_contribution
     # @return [BigDecimal] Fixed contribution amount
-    def calculate(_gross_salary, field: :employee_contribution)
+    def calculate(_gross_salary, field: :employee_contribution, age: nil)
       # The gross_salary parameter is unused in this subclass,
       # but is required to maintain the method signature for polymorphism
       # (Strategy pattern implementation).

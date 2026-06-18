@@ -23,7 +23,7 @@ module DeductionCalculators
     # @param gross_salary [BigDecimal] Worker's gross salary
     # @param field [Symbol] :employee_contribution or :employer_contribution
     # @return [BigDecimal] Calculated amount (rounded per deduction_type settings)
-    def calculate(gross_salary, field: :employee_contribution)
+    def calculate(gross_salary, field: :employee_contribution, age: nil)
       rate = contribution_rate(field)
 
       # Return 0 if rate is nil or zero

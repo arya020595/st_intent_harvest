@@ -27,7 +27,7 @@ module DeductionCalculators
     # @param field [Symbol] :employee_contribution or :employer_contribution
     # @return [BigDecimal] Calculated deduction amount
     # @raise [NotImplementedError] If subclass doesn't implement this method
-    def calculate(gross_salary, field: :employee_contribution)
+    def calculate(gross_salary, field: :employee_contribution, age: nil)
       raise NotImplementedError, "#{self.class} must implement #calculate"
     end
 

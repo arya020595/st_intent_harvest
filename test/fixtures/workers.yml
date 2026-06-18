@@ -14,11 +14,13 @@
 #  worker_type     :string
 #  position        :string
 #  discarded_at    :datetime
+#  date_of_birth   :date
 #
 # Indexes
 #
 #  index_workers_on_discarded_at  (discarded_at)
 #
+
 
 one:
   name: "John Worker"
@@ -29,6 +31,7 @@ one:
   nationality: "local"
   identity_number: "123456-78-9012"
   position: "Harvester"
+  date_of_birth: 1990-01-01
 
 two:
   name: "Jane Worker"
@@ -39,3 +42,4 @@ two:
   nationality: "local"
   identity_number: "234567-89-0123"
   position: "General"
+  date_of_birth: 1992-05-15

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_12_072331) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_17_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -90,14 +90,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_072331) do
     t.decimal "employee_percentage", precision: 5, scale: 2, default: "0.0", null: false
     t.decimal "employer_amount", precision: 10, scale: 2, default: "0.0", null: false
     t.decimal "employer_percentage", precision: 5, scale: 2, default: "0.0", null: false
+    t.integer "max_age"
     t.decimal "max_wage", precision: 10, scale: 2
+    t.integer "min_age"
     t.decimal "min_wage", precision: 10, scale: 2, null: false
     t.datetime "updated_at", null: false
-    t.index "deduction_type_id, min_wage, COALESCE(max_wage, (999999999)::numeric)", name: "idx_wage_ranges_unique", unique: true
+    t.index "deduction_type_id, min_wage, COALESCE(max_wage, (999999999)::numeric), COALESCE(min_age, '-1'::integer), COALESCE(max_age, '-1'::integer)", name: "idx_wage_ranges_unique", unique: true
     t.index ["deduction_type_id", "min_wage", "max_wage"], name: "idx_wage_ranges_salary_lookup"
     t.index ["deduction_type_id"], name: "index_deduction_wage_ranges_on_deduction_type_id"
     t.index ["discarded_at"], name: "index_deduction_wage_ranges_on_discarded_at"
-    t.check_constraint "calculation_method::text = ANY (ARRAY['fixed'::character varying::text, 'percentage'::character varying::text])", name: "calculation_method_check"
+    t.check_constraint "calculation_method::text = ANY (ARRAY['fixed'::character varying, 'percentage'::character varying]::text[])", name: "calculation_method_check"
     t.check_constraint "max_wage IS NULL OR max_wage >= min_wage", name: "max_wage_check"
   end
 
@@ -382,6 +384,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_12_072331) do
 
   create_table "workers", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.date "date_of_birth"
     t.datetime "discarded_at"
     t.string "gender"
     t.date "hired_date"

@@ -46,6 +46,12 @@
         <%= form.date_field :hired_date, class: "form-control", required: true %>
       </div>
     </div>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <%= form.label :date_of_birth, "Date of Birth", class: "form-label fw-semibold" %>
+        <%= form.date_field :date_of_birth, class: "form-control" %>
+      </div>
+    </div>
     <!-- NATIONALITY + ID FIELD -->
     <div data-controller="nationality">
       <div class="row">

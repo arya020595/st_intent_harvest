@@ -280,7 +280,8 @@ module PayCalculationServices
         worker = Worker.create!(
           name: "Test Worker #{i}",
           worker_type: Worker::WORKER_TYPES.first,
-          nationality: 'local'
+          nationality: 'local',
+          date_of_birth: Date.new(1990, 1, 1)
         )
         PayCalculationDetail.create!(
           pay_calculation: @pay_calculation,

@@ -18,25 +18,26 @@ module DeductionCalculators
     # @param gross_salary [BigDecimal] Worker's gross salary
     # @param field [Symbol] :employee_contribution or :employer_contribution
     # @return [BigDecimal] Deduction amount from matching wage range
-    def calculate(gross_salary, field: :employee_contribution)
-      # Find wage range that contains this salary
-      wage_range = find_wage_range(gross_salary)
+    def calculate(gross_salary, field: :employee_contribution, age: nil)
+      wage_range = find_wage_range(gross_salary, age)
 
-      # Return 0 if no matching range found
       return BigDecimal('0') unless wage_range
 
-      # Delegate calculation to the wage range
-      # The wage range knows whether to use fixed amount or percentage
       wage_range.calculate_for(gross_salary, field: normalize_field(field))
     end
 
     private
 
-    # Find the wage range matching the gross salary
-    # @param gross_salary [BigDecimal] Salary to match
-    # @return [DeductionWageRange, nil] Matching range or nil
-    def find_wage_range(gross_salary)
-      deduction_type.deduction_wage_ranges.for_salary(gross_salary).first
+    def find_wage_range(gross_salary, age)
+      ranges = deduction_type.deduction_wage_ranges.for_salary(gross_salary)
+
+      if age.present?
+        age_match = ranges.for_age(age)
+        return age_match.first if age_match.exists?
+      end
+
+      # Fall back to age-agnostic rows (min_age IS NULL) for deduction types without age brackets
+      ranges.where(min_age: nil).first
     end
 
     # Normalize field name for wage range calculation
