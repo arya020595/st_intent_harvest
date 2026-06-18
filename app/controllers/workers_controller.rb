@@ -134,7 +134,8 @@ class WorkersController < ApplicationController
       :is_active,
       :hired_date,
       :nationality,
-      :identity_number
+      :identity_number,
+      :date_of_birth
     )
   end
 end

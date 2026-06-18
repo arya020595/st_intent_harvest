@@ -24,6 +24,9 @@ class DeductionWageRange < ApplicationRecord
   validates :calculation_method, presence: true, inclusion: { in: CALCULATION_METHODS }
 
   validate :max_wage_greater_than_or_equal_to_min_wage
+  validate :max_age_greater_than_or_equal_to_min_age
+  validates :min_age, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :max_age, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
   # Scopes
   # Find the wage range that contains the given salary
@@ -32,6 +35,19 @@ class DeductionWageRange < ApplicationRecord
   scope :for_salary, lambda { |salary|
     where('min_wage <= ?', salary)
       .where('max_wage IS NULL OR max_wage >= ?', salary)
+  }
+
+  # Find wage ranges that match a given age
+  # @param age [Integer] worker age
+  # @return [ActiveRecord::Relation]
+  scope :for_age, lambda { |age|
+    where('min_age <= ?', age)
+      .where('max_age IS NULL OR max_age >= ?', age)
+  }
+
+
+  scope :for_salary_and_age, lambda { |salary, age|
+  for_salary(salary).for_age(age)
   }
 
   # Calculate the deduction amount for this wage range
@@ -70,6 +86,13 @@ class DeductionWageRange < ApplicationRecord
 
     errors.add(:max_wage, 'must be greater than or equal to min_wage')
   end
+
+  def max_age_greater_than_or_equal_to_min_age
+    return if max_age.nil? || min_age.nil?
+    return if max_age >= min_age
+
+    errors.add(:max_age, 'must be greater than or equal to min_age')
+  end
 end
 
 # == Schema Information
@@ -87,6 +110,8 @@ end
 #  calculation_method   :string           default("fixed"), not null
 #  created_at           :datetime         not null
 #  updated_at           :datetime         not null
+#  min_age             :integer
+#  max_age             :integer
 #
 # Indexes
 #

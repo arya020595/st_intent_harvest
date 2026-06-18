@@ -22,8 +22,9 @@ namespace :deductions do
     CSV.foreach(csv_file, headers: true) do |row|
       code = row['code']
 
-      # Check if already exists
-      existing = DeductionType.find_by(code: code, effective_until: nil)
+      # Check if already exists (search by code only — after a previous import sets
+      # effective_until, filtering by effective_until: nil would miss it and create a duplicate)
+      existing = DeductionType.find_by(code: code)
       if existing
         # Update only metadata (name, description)
         # Skip if calculation_type would change (too risky)
@@ -162,12 +163,17 @@ namespace :deductions do
         next
       end
 
+      min_age = row['min_age'].present? ? row['min_age'].to_i : nil
+      max_age = row['max_age'].present? ? row['max_age'].to_i : nil
+
       # Check if range already exists (only in non-force mode)
       unless force_mode
         existing = DeductionWageRange.find_by(
           deduction_type: deduction_type,
           min_wage: min_wage,
-          max_wage: max_wage
+          max_wage: max_wage,
+          min_age: min_age,
+          max_age: max_age
         )
 
         if existing
@@ -183,7 +189,9 @@ namespace :deductions do
           max_wage: max_wage,
           employee_amount: row['employee_amount'].to_f,
           employer_amount: row['employer_amount'].to_f,
-          calculation_method: row['calculation_method'] || 'fixed'
+          calculation_method: row['calculation_method'] || 'fixed',
+          min_age: min_age,
+          max_age: max_age
         )
 
         success_count += 1
@@ -208,7 +216,8 @@ namespace :deductions do
     csv_files = [
       'epf_local_wage_ranges.csv',
       'socso_wage_ranges.csv',
-      'eis_local_wage_ranges.csv'
+      'eis_local_wage_ranges.csv',
+      'socso_wage_2026_ranges.csv'
     ]
 
     puts '=== Importing All Wage Ranges ==='
@@ -247,6 +256,8 @@ namespace :deductions do
         code = row['code']
         min_wage = row['min_wage'].to_f
         max_wage = row['max_wage'].present? ? row['max_wage'].to_f : nil
+        min_age = row['min_age'].present? ? row['min_age'].to_i : nil
+        max_age = row['max_age'].present? ? row['max_age'].to_i : nil
 
         deduction_type = DeductionType.find_by(code: code, effective_until: nil)
         unless deduction_type
@@ -259,7 +270,9 @@ namespace :deductions do
           existing = DeductionWageRange.find_by(
             deduction_type: deduction_type,
             min_wage: min_wage,
-            max_wage: max_wage
+            max_wage: max_wage,
+            min_age: min_age,
+            max_age: max_age
           )
 
           if existing
@@ -275,7 +288,9 @@ namespace :deductions do
             max_wage: max_wage,
             employee_amount: row['employee_amount'].to_f,
             employer_amount: row['employer_amount'].to_f,
-            calculation_method: row['calculation_method'] || 'fixed'
+            calculation_method: row['calculation_method'] || 'fixed',
+            min_age: min_age,
+            max_age: max_age
           )
           success += 1
           print '.' if (success % 10).zero?
