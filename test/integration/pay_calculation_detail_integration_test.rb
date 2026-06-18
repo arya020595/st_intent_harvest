@@ -109,19 +109,22 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
     @malaysian_worker = Worker.create!(
       name: 'Ahmad bin Abdullah',
       nationality: 'local',
-      worker_type: 'Full - Time'
+      worker_type: 'Full - Time',
+      date_of_birth: Date.new(1990, 1, 1)
     )
 
     @foreign_worker = Worker.create!(
       name: 'John Smith',
       nationality: 'foreigner',
-      worker_type: 'Full - Time'
+      worker_type: 'Full - Time',
+      date_of_birth: Date.new(1988, 6, 15)
     )
 
     @foreign_worker_no_passport = Worker.create!(
       name: 'Mizuno Yoshiki',
       nationality: 'foreigner_no_passport',
-      worker_type: 'Part - Time'
+      worker_type: 'Part - Time',
+      date_of_birth: Date.new(1995, 3, 20)
     )
   end
 
@@ -500,7 +503,8 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
     worker_no_nationality = Worker.create!(
       name: 'Test Worker',
       nationality: nil,
-      worker_type: 'Full - Time'
+      worker_type: 'Full - Time',
+      date_of_birth: Date.new(1990, 1, 1)
     )
 
     detail = PayCalculationDetail.create!(
@@ -631,7 +635,8 @@ class PayCalculationDetailIntegrationTest < ActiveSupport::TestCase
     second_malaysian = Worker.create!(
       name: 'Ali bin Ahmad',
       nationality: 'local',
-      worker_type: 'Full - Time'
+      worker_type: 'Full - Time',
+      date_of_birth: Date.new(1990, 1, 1)
     )
     detail_5000 = PayCalculationDetail.create!(
       pay_calculation: @pay_calc,
