@@ -37,7 +37,8 @@ class PayCalculationDetail < ApplicationRecord
     result = PayCalculationServices::DeductionCalculator.calculate(
       pay_calculation.month_year,
       gross_salary: gross_salary || 0,
-      nationality: worker.nationality || 'local'
+      nationality: worker.nationality || 'local',
+      age: worker.age
     )
 
     update_columns(
@@ -62,7 +63,8 @@ class PayCalculationDetail < ApplicationRecord
     result = PayCalculationServices::DeductionCalculator.calculate(
       pay_calculation.month_year,
       gross_salary: gross_salary || 0,
-      nationality: worker.nationality || 'local'
+      nationality: worker.nationality || 'local',
+      age: worker.age
     )
 
     self.employee_deductions = result.employee_deduction

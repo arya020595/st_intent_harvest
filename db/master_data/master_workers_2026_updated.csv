@@ -1,0 +1,127 @@
+﻿id,created_at,gender,hired_date,identity_number,is_active,name,nationality,updated_at,worker_type,position,discarded_at,date_of_birth
+141,41:48.8,Male,16-05-25,X5490686,TRUE,ACHMADI NUGROHO,foreigner,01:14.2,Full - Time,Harvester,,1993-06-20
+250,22:23.8,Male,26-01-26,,FALSE,ADAM BIN SARIP,foreigner_no_passport,41:57.4,Full - Time,Loaders,,
+170,41:48.8,Female,01-12-21,,TRUE,AGUSTINA HUTRI,foreigner_no_passport,08:47.5,Full - Time,Maintenance,,1985-08-17
+142,41:48.8,Male,09-08-24,AU310384,TRUE,AHMAD IRFANGI DAROZAT,foreigner,34:24.9,Full - Time,Harvester,,1996-10-26
+127,41:48.7,Male,19-02-16,841222-12-5463,TRUE,AIDE BIN ANTHONY,local,59:19.0,Full - Time,Mandour,,1984-12-22
+143,41:48.8,Male,16-05-25,X5491189,TRUE,AKHMAD SUDIBYO,foreigner,35:14.1,Full - Time,Maintenance,,1981-05-07
+171,41:48.8,Male,02-05-23,,TRUE,ALEX SANDER TIBA,foreigner_no_passport,47:48.7,Full - Time,Maintenance,,2005-01-01
+172,41:48.8,Male,18-05-23,,TRUE,ALOYSIA KEYN,foreigner_no_passport,08:12.7,Full - Time,Maintenance,,1978-03-01
+126,41:48.7,Male,18-12-24,830310-12-6331,TRUE,AMAT BIN SALAM,local,04:58.1,Full - Time,Security,,1983-03-10
+173,41:48.8,Male,14-04-25,,TRUE,ANDI,foreigner_no_passport,11:19.4,Full - Time,Harvester,,2002-01-13
+169,41:48.8,Female,07-07-24,,FALSE,ANDI IRAWATI,foreigner_no_passport,24:25.5,Full - Time,Maintenance,,
+174,41:48.8,Male,04-07-22,,TRUE,ANDREAS ARA,foreigner_no_passport,10:48.6,Full - Time,Harvester,,1977-07-07
+255,02:46.1,Female,13-04-26,,TRUE,ANI SORAYA BIRA,foreigner_no_passport,02:46.1,Full - Time,Maintenance,,1997-07-31
+252,48:35.7,Male,24-02-26,,TRUE,ANTONIUS BHASO,foreigner_no_passport,48:35.7,Full - Time,Harvester,,1969-07-01
+175,41:48.8,Male,14-09-21,,TRUE,ANWAR,foreigner_no_passport,49:16.1,Full - Time,Harvester,,1989-08-25
+144,41:48.8,Male,28-08-25,E9379000,TRUE,ARMANSYAH,foreigner,24:03.5,Full - Time,Mechanic,,1984-10-31
+219,41:48.9,Male,03-12-25,,FALSE,ARNOLOUS SAM TANCO HARUM,foreigner_no_passport,33:42.2,Full - Time,Harvester,,
+248,02:54.6,Male,23-01-26,,TRUE,ASIS BIN HIDE,foreigner_no_passport,02:54.6,Full - Time,Harvester,,1982-10-25
+176,41:48.8,Female,16-07-24,,TRUE,ASMA,foreigner_no_passport,19:45.2,Full - Time,Maintenance,,1991-11-10
+177,41:48.8,Male,14-10-23,,FALSE,ASRAF BAKRI,foreigner_no_passport,00:57.2,Full - Time,Loaders,,
+178,41:48.8,Male,20-01-24,,TRUE,BAHRI BAKRI,foreigner_no_passport,15:09.3,Full - Time,Harvester,,1998-10-10
+179,41:48.8,Male,19-01-24,,TRUE,BAKRI BIN UMAR,foreigner_no_passport,14:46.1,Full - Time,Harvester,,1972-05-28
+180,41:48.8,Male,01-05-25,,TRUE,BARLIN NGAJO,foreigner_no_passport,02:21.4,Full - Time,Harvester,,1990-06-26
+128,41:48.8,Male,09-07-22,920115-12-6263,TRUE,BARTOH KOLONG,local,06:54.6,Full - Time,Security,,1992-01-15
+251,51:37.4,Male,29-01-26,,TRUE,BASRI,foreigner_no_passport,51:37.4,Full - Time,Harvester,,1990-04-05
+231,20:57.4,Male,10-10-25,20320120465,TRUE,BRANDON JAMES PAPNA,local,21:59.0,Full - Time,Loaders,,2002-03-20
+145,41:48.8,Male,28-08-25,E9378999,TRUE,CANDRA PERDIANTO SITORUS,foreigner,23:21.4,Full - Time,Mechanic,,2000-03-15
+181,41:48.8,Male,09-09-21,,TRUE,DAMASUS JEHEDOT,foreigner_no_passport,01:01.5,Full - Time,Harvester,,1979-01-30
+227,06:16.6,Male,02-10-25,50227120847,TRUE,DANIEL MUDAIR,local,48:22.1,Full - Time,General,,2005-02-27
+129,41:48.8,Male,04-10-21,790822-12-5099,TRUE,DANIEL VALENTINO DE SOUZA,local,50:50.0,Full - Time,Driver,,1979-08-22
+146,41:48.8,Male,16-05-25,E9378782,TRUE,DERI SYAHPUTRA,foreigner,36:03.3,Full - Time,Maintenance,,1997-07-29
+222,56:28.6,Male,02-12-25,,FALSE,DESTI LAOS,foreigner_no_passport,26:57.7,Full - Time,Loaders,,
+130,41:48.8,Male,17-06-25,8.61221E+11,FALSE,DISEMOUND BIN MISIN,local,36:57.8,Full - Time,Driver,,
+233,29:49.9,Male,11-07-25,E8002045,TRUE,EDI WAHYU TRIYONO,foreigner,29:49.9,Full - Time,Maintenance,,2002-06-18
+182,41:48.8,Male,20-08-22,,TRUE,EDISON TALLO,foreigner_no_passport,23:54.8,Full - Time,Driver,,1981-11-20
+183,41:48.8,Male,11-05-23,,TRUE,ENDANG BIN TAHIR,foreigner_no_passport,12:14.0,Full - Time,Maintenance,,1969-04-10
+184,41:48.8,Male,11-05-23,,TRUE,ERFAN LABAH,foreigner_no_passport,59:13.2,Full - Time,Harvester,,1987-04-25
+245,52:58.4,Female,01-10-24,,TRUE,EROSVITA METI,foreigner_no_passport,52:58.4,Full - Time,General,,1973-06-14
+147,41:48.8,Male,09-05-22,AT992326,TRUE,FALWENDI,foreigner,07:37.9,Full - Time,Driver,,1983-08-11
+241,29:14.8,Male,15-10-25,,TRUE,FATUL,foreigner_no_passport,42:05.3,Full - Time,Harvester,,2005-11-17
+185,41:48.8,Female,01-01-22,,TRUE,FERA ALOYSIUS,foreigner_no_passport,00:02.0,Full - Time,General,,1988-12-31
+253,50:59.7,Male,24-02-26,,TRUE,FILEMON JEFRI TIMU,foreigner_no_passport,50:59.7,Full - Time,Loaders,,2004-11-01
+186,41:48.8,Male,10-10-19,,TRUE,FRANSISKUS,foreigner_no_passport,28:11.8,Full - Time,Maintenance,,1980-10-10
+131,41:48.8,Male,01-07-23,921110-12-1992,TRUE,FRENANDEZ BIN ANASIUS,local,41:58.0,Full - Time,Mandour,,1992-11-10
+249,04:54.0,Male,23-01-26,,FALSE,HAIKAL BIN SARIP,foreigner_no_passport,42:05.7,Full - Time,Driver,,
+188,41:48.8,Male,31-03-22,,TRUE,HASBUR BIN JEDI,foreigner_no_passport,23:57.5,Full - Time,General,,2000-12-11
+189,41:48.8,Female,20-01-24,,TRUE,HAWA BINTI PARO,foreigner_no_passport,53:41.8,Full - Time,Maintenance,,1979-10-12
+190,41:48.8,Female,30-03-22,,TRUE,HERMIA,foreigner_no_passport,26:57.5,Full - Time,Maintenance,,1977-01-01
+148,41:48.8,Male,15-03-24,AU494935,TRUE,IBNU ROHADI,foreigner,23:45.6,Full - Time,Harvester,,1988-04-14
+247,02:08.7,Female,23-01-26,,FALSE,IRMA SYAFIKA SAFUTRI,foreigner_no_passport,27:54.6,Full - Time,General,,
+191,41:48.8,Male,13-05-24,,FALSE,ISWANDY,foreigner_no_passport,43:09.2,Full - Time,Loaders,,
+134,41:48.8,Male,03-05-23,901107-12-6067,TRUE,JAINUS BIN TONY,local,42:47.0,Full - Time,Mandour,,1990-11-07
+132,41:48.8,Male,01-09-22,940404-12-6997,TRUE,JAIVIN BIN ELAP,local,30:40.9,Full - Time,Driver,,1994-04-04
+133,41:48.8,Male,17-03-17,850920-49-5087,TRUE,JAUNAS AMIT,local,51:31.9,Full - Time,Driver,,1985-09-20
+220,05:51.2,Male,02-10-25,61220120629,TRUE,JIEY ERLISTHER JILIEO,local,50:49.2,Full - Time,General,,2006-12-20
+223,03:09.3,Male,12-12-25,111111,FALSE,JOHAN,local,43:33.9,Full - Time,Harvester,,
+140,41:48.8,Female,01-07-22,840715-12-6152,TRUE,JONAINI JOHN @ ANDUAN,local,29:32.2,Full - Time,General,,
+149,41:48.8,Male,28-08-25,E9379006,TRUE,JONER MANURUNG,foreigner,24:35.1,Full - Time,Mechanic,,1977-09-14
+192,41:48.8,Female,21-02-24,,FALSE,JUHARTI,foreigner_no_passport,23:14.8,Full - Time,General,,
+135,41:48.8,Male,01-12-24,730119-12-5607,TRUE,JUIL BIN AMPATING,local,50:17.5,Full - Time,Security,,1973-01-19
+193,41:48.8,Male,04-04-24,,TRUE,JUSRI SAPPE,foreigner_no_passport,24:44.6,Full - Time,Harvester,,1978-11-10
+194,41:48.8,Male,12-05-22,,TRUE,JUSRIADI UDDIN,foreigner_no_passport,36:59.5,Full - Time,Driver,,1999-07-11
+136,41:48.8,Male,01-04-24,720115125301,FALSE,JUSTIN BIN ELANG,local,52:27.0,Full - Time,Driver,,
+150,41:48.8,Male,23-06-23,E5289997,TRUE,KASMONO,foreigner,43:01.2,Full - Time,Maintenance,,1980-06-15
+137,41:48.8,Male,01-04-24,860702495803,TRUE,LADIUS BIN BALUA,local,44:14.4,Full - Time,Mechanic,,
+195,41:48.8,Female,07-03-22,,TRUE,LARAS NASIR,foreigner_no_passport,29:42.5,Full - Time,Maintenance,,2000-11-17
+196,41:48.8,Male,05-05-25,,TRUE,LAURENSIUS BHEGA,foreigner_no_passport,54:47.1,Full - Time,Harvester,,1982-09-28
+138,41:48.8,Male,09-07-22,730826-12-5729,TRUE,LORINE BIN EPUN,local,37:58.3,Full - Time,Security,,1973-08-26
+151,41:48.8,Male,11-04-25,E9405459,FALSE,LUTFI HIDAYAT,foreigner,14:06.9,Full - Time,Maintenance,,
+152,41:48.8,Male,28-08-25,E9379010,TRUE,M AFFANDI,foreigner,56:40.6,Full - Time,Harvester,,1990-05-16
+139,41:48.8,Male,09-07-22,741127-12-6099,TRUE,MARACUS BIN LASIR @ BASIR,local,39:03.2,Full - Time,Security,,1974-11-27
+197,41:48.8,Male,07-02-25,,TRUE,MARIANUS WARE,foreigner_no_passport,20:45.3,Full - Time,Loaders,,1987-08-09
+153,41:48.8,Male,15-03-24,E6312275,TRUE,MARINO,foreigner,40:22.4,Full - Time,Harvester,,1991-03-04
+217,41:48.9,Male,22-04-25,,TRUE,MARKUS LELA MARE,foreigner_no_passport,56:17.4,Full - Time,Harvester,,1993-07-04
+154,41:48.8,Male,03-09-22,C8046546,TRUE,MIKAEL TARANG MARE,foreigner,39:39.9,Full - Time,Mandour,,1976-12-08
+155,41:48.8,Male,15-03-24,,FALSE,MUHAMAD ABDUL KHALIM,foreigner_no_passport,29:35.9,Full - Time,Maintenance,,
+156,41:48.8,Male,23-05-24,,TRUE,MUHAMAD FAIZIN,foreigner_no_passport,33:19.5,Full - Time,Maintenance,,
+242,52:11.8,Male,01-12-25,E0532348,TRUE,MUHAMMAD ARIF,foreigner,52:11.8,Full - Time,Harvester,,1992-12-09
+187,41:48.8,Male,14-04-25,,TRUE,MUHAMMAD HAFIS,foreigner_no_passport,34:42.1,Full - Time,Harvester,,2007-01-07
+157,41:48.8,Male,10-12-25,E7217928,TRUE,MUNAWAR,foreigner,05:28.6,Full - Time,Harvester,,1996-07-12
+260,47:22.8,Male,16-06-26,,TRUE,MURSAN,foreigner_no_passport,47:22.8,Full - Time,Maintenance,,
+258,24:11.6,Male,04-06-26,,TRUE,MUS MULIADI,foreigner_no_passport,24:11.6,Full - Time,Maintenance,,1975-09-12
+243,34:55.8,Male,01-12-25,880209-49-5947,FALSE,NIKE BIN MICHAEL,local,27:48.5,Part - Time,Driver,,
+198,41:48.8,Female,18-04-24,,FALSE,NISMAYANTI,foreigner_no_passport,21:17.8,Full - Time,Maintenance,,
+230,15:10.0,Female,10-10-25,,FALSE,NOFRIANA MEDES,foreigner_no_passport,11:55.8,Full - Time,Maintenance,,
+199,41:48.8,Female,10-04-25,,FALSE,NUR AFIANI,foreigner_no_passport,30:43.9,Full - Time,Maintenance,,
+257,20:08.6,Female,03-06-26,,TRUE,NURSAKILA BINTI LAMPE,foreigner_no_passport,20:20.0,Full - Time,Maintenance,,2008-03-11
+218,41:48.9,Male,18-09-25,,TRUE,OLFAS DEPANTO,foreigner_no_passport,50:21.5,Full - Time,Loaders,,
+200,41:48.8,Male,03-07-18,,TRUE,PEDRITO JR OCANA DELA PENA,foreigner_no_passport,41:50.9,Full - Time,Driver,,1985-08-15
+229,14:10.2,Female,19-07-92,,TRUE,RAISYA MAJID,foreigner_no_passport,14:10.2,Full - Time,Maintenance,,1992-07-19
+201,41:48.8,Male,21-12-19,,TRUE,RAKMAN JOHAN,foreigner_no_passport,01:33.6,Full - Time,Driver,,1999-08-08
+244,37:42.0,Male,01-12-25,910711-12-6885,FALSE,RAMLI AMIT,local,28:06.7,Part - Time,Driver,,
+158,41:48.8,Male,15-05-24,,TRUE,RATNO SETIAWAN,foreigner_no_passport,33:09.6,Full - Time,Harvester,,
+159,41:48.8,Male,09-08-24,AU610403,TRUE,REGI WIDODO,foreigner,03:01.3,Full - Time,Harvester,,1997-03-11
+234,31:10.4,Male,11-07-25,E9298707,FALSE,RELA INDRA WANTO,foreigner,37:16.8,Full - Time,Maintenance,,
+160,41:48.8,Male,11-04-25,E9405476,TRUE,RENO DANIKA APRIADI,foreigner,45:56.8,Full - Time,Maintenance,,2005-04-20
+202,41:48.8,Male,02-01-25,,TRUE,RESKI FAHRI ZAMAN,foreigner_no_passport,07:39.0,Full - Time,Harvester,,2000-06-26
+204,41:48.8,Male,15-09-21,,TRUE,RISAL BANJI,foreigner_no_passport,40:23.5,Full - Time,Harvester,,
+203,41:48.8,Male,20-06-24,,TRUE,RISAL JEDI,foreigner_no_passport,58:05.0,Full - Time,Harvester,,
+205,41:48.8,Female,17-09-24,,TRUE,ROSWITA SUSUR,foreigner_no_passport,34:41.1,Full - Time,Maintenance,,1992-03-27
+161,41:48.8,Male,09-02-21,,TRUE,ROY TORRES ENTRINA,foreigner_no_passport,06:06.2,Full - Time,Driver,,1994-07-17
+256,22:52.9,Male,18-05-26,,TRUE,SAHRIL,foreigner_no_passport,22:52.9,Full - Time,Harvester,,2008-04-01
+259,45:14.1,Male,16-06-26,,TRUE,SAHRUL MULIADI,foreigner_no_passport,45:14.1,Full - Time,Maintenance,,
+206,41:48.9,Male,02-12-24,,FALSE,SAM KOMBI,foreigner_no_passport,53:08.6,Full - Time,Driver,,
+216,41:48.9,Male,03-03-25,,FALSE,SAPA BIN ANTO,foreigner_no_passport,46:46.8,Full - Time,Loaders,,
+207,41:48.9,Male,20-01-24,,FALSE,SAPRIL BAKRI,foreigner_no_passport,33:59.0,Full - Time,Maintenance,,
+162,41:48.8,Male,28-08-25,AU405019,TRUE,SLAMET,foreigner,56:17.4,Full - Time,Harvester,,1983-10-26
+208,41:48.9,Male,16-07-24,,TRUE,SODIKIN,foreigner_no_passport,25:32.1,Full - Time,Maintenance,,1969-10-09
+246,01:17.2,Female,23-01-26,,TRUE,SUKMA BINTI HALIM,foreigner_no_passport,01:17.2,Full - Time,Maintenance,,1988-08-18
+163,41:48.8,Male,09-08-24,E6965492,TRUE,SUKRON FADOLI,foreigner,47:01.2,Full - Time,Maintenance,,1981-11-07
+164,41:48.8,Male,16-05-25,E937879,TRUE,SURIONO,foreigner,04:12.8,Full - Time,Harvester,,1985-06-04
+228,09:19.8,Male,04-11-25,E9379004,TRUE,SURYA DARMA,foreigner,09:19.8,Full - Time,Mechanic,,1993-06-24
+165,41:48.8,Male,11-04-25,X5014016,TRUE,SYARIF HIDAYATULLOH,foreigner,53:28.3,Full - Time,Maintenance,,1980-02-06
+209,41:48.9,Male,20-01-24,,FALSE,SYARULLAH,foreigner_no_passport,22:39.9,Full - Time,Harvester,,
+210,41:48.9,Male,09-02-24,,FALSE,TAKDIR,foreigner_no_passport,22:25.3,Full - Time,Driver,,
+254,13:16.8,Male,23-02-26,,TRUE,TAMIR,foreigner_no_passport,13:16.8,Full - Time,Loaders,,1993-03-03
+166,41:48.8,Male,23-05-24,,TRUE,TAUFIK HIDAYAT,foreigner_no_passport,32:55.0,Full - Time,Harvester,,
+167,41:48.8,Male,09-08-24,E6966460,TRUE,TOFAN NUR RIFAI,foreigner,47:52.6,Full - Time,Harvester,,1992-10-17
+211,41:48.9,Male,21-05-24,,TRUE,ULE,foreigner_no_passport,16:56.9,Full - Time,Harvester,,1977-01-31
+232,27:54.1,Male,11-07-25,X6010488,TRUE,WAHID AGUNG NUGROHO,foreigner,28:00.5,Full - Time,Maintenance,,2002-10-24
+235,33:11.5,Female,11-07-25,E5166674,FALSE,WAHYUDI,foreigner,37:06.8,Full - Time,Maintenance,,
+212,41:48.9,Female,08-12-25,,FALSE,WINDA FIRDAUS,foreigner_no_passport,23:50.3,Full - Time,Maintenance,,
+213,41:48.9,Male,30-12-25,,FALSE,YAYA,foreigner_no_passport,42:36.3,Full - Time,Driver,,
+214,41:48.9,Male,02-12-19,,TRUE,YOSEPH BHASO,foreigner_no_passport,53:20.1,Full - Time,Harvester,,
+215,41:48.9,Female,13-02-25,,TRUE,YULIANA BINTI ANTO,foreigner_no_passport,13:57.8,Full - Time,Maintenance,,2005-06-05
+168,41:48.8,Male,15-03-24,E1222978,TRUE,ZAMRONI,foreigner,59:22.9,Full - Time,Maintenance,,1978-08-11

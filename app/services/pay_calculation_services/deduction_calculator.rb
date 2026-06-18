@@ -14,7 +14,7 @@ module PayCalculationServices
       # @param nationality [String] Worker's nationality ('local' or 'foreigner') for nationality-specific deductions
       # @return [DeductionResult]
       # @raise [ArgumentError] if gross_salary is negative or nationality is invalid
-      def calculate(month_year = nil, gross_salary: 0, nationality: 'local')
+      def calculate(month_year = nil, gross_salary: 0, nationality: 'local', age: nil)
         # Validate inputs
         validate_inputs!(gross_salary, nationality)
 
@@ -32,8 +32,8 @@ module PayCalculationServices
         employer_total = BigDecimal('0')
 
         deduction_types.each do |deduction_type|
-          employee_amt = deduction_type.calculate_amount(gross_salary, field: :employee_contribution)
-          employer_amt = deduction_type.calculate_amount(gross_salary, field: :employer_contribution)
+          employee_amt = deduction_type.calculate_amount(gross_salary, field: :employee_contribution, age: age)
+          employer_amt = deduction_type.calculate_amount(gross_salary, field: :employer_contribution, age: age)
 
           breakdown[deduction_type.code] = build_deduction_entry(
             deduction_type,

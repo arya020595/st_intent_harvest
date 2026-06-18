@@ -24,7 +24,7 @@ namespace :deductions do
 
     ActiveRecord::Base.transaction do
       # Find current active deduction (no end date)
-      current = DeductionType.find_by(code: code, effective_until: nil)
+      current = DeductionType.find_by(code: code)
 
       unless current
         puts "Error: No active deduction found with code '#{code}'"
@@ -182,7 +182,7 @@ namespace :deductions do
     end
 
     # Check if code already exists
-    existing = DeductionType.find_by(code: code, effective_until: nil)
+    existing = DeductionType.find_by(code: code)
     if existing
       puts "Error: Deduction with code '#{code}' already exists and is active"
       puts 'Use deductions:update_rate to change rates'
