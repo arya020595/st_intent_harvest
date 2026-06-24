@@ -34,11 +34,12 @@ class PayCalculationDetail < ApplicationRecord
     # - local: Has local deductions (EPF, SOCSO, etc.)
     # - foreigner: Has foreigner deductions
     # - foreigner_no_passport: No deductions
+    pay_month_date = Date.parse("#{pay_calculation.month_year}-01")
     result = PayCalculationServices::DeductionCalculator.calculate(
       pay_calculation.month_year,
       gross_salary: gross_salary || 0,
       nationality: worker.nationality || 'local',
-      age: worker.age
+      age: worker.age(as_of: pay_month_date)
     )
 
     update_columns(
@@ -60,11 +61,12 @@ class PayCalculationDetail < ApplicationRecord
     # - local: Has local deductions (EPF, SOCSO, etc.)
     # - foreigner: Has foreigner deductions
     # - foreigner_no_passport: No deductions
+    pay_month_date = Date.parse("#{pay_calculation.month_year}-01")
     result = PayCalculationServices::DeductionCalculator.calculate(
       pay_calculation.month_year,
       gross_salary: gross_salary || 0,
       nationality: worker.nationality || 'local',
-      age: worker.age
+      age: worker.age(as_of: pay_month_date)
     )
 
     self.employee_deductions = result.employee_deduction
