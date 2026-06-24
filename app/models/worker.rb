@@ -76,12 +76,12 @@ class Worker < ApplicationRecord
   end
 
   # Returns worker age based on date_of_birth
-  def age
+  # @param as_of [Date] reference date for age calculation; defaults to today
+  def age(as_of: Date.current)
     return nil unless date_of_birth
 
-    today = Date.current
-    age = today.year - date_of_birth.year
-    age -= 1 if today < date_of_birth + age.years
+    age = as_of.year - date_of_birth.year
+    age -= 1 if as_of < date_of_birth + age.years
     age
   end
 end
