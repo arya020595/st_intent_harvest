@@ -5,7 +5,6 @@ id,name,nationality,gender,identity_number,worker_type,position,hired_date,is_ac
 5,ABDUL ROHMAD,foreigner_no_passport,Male,,Full - Time,Harvester,2024-10-24,true,1996-08-30
 6,ADRIANA LALIAN,foreigner_no_passport,Female,,Full - Time,General,2025-01-10,true,1984-04-04
 7,BAHA MASSA,foreigner_no_passport,Male,,Full - Time,Harvester,2022-12-02,true,1972-12-11
-8,DESTI LAOS,foreigner_no_passport,Male,,Full - Time,Harvester,2026-01-08,false,
 9,JAMES BANI ,foreigner_no_passport,Male,,Full - Time,Harvester,2024-12-10,true,1977-12-21
 10,MAKLON MATMARO,foreigner_no_passport,Male,,Full - Time,Driver,2024-10-05,true,1999-03-19
 11,SAIFUL ANUAR,foreigner_no_passport,Male,,Full - Time,Harvester,2025-07-19,true,1985-10-11
