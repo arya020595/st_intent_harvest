@@ -6,8 +6,8 @@ require 'csv'
 # Upserts workers from the updated CSV: creates missing workers, updates existing ones.
 namespace :workers do
   desc 'Upsert workers from updated CSV (creates missing, updates existing, sets date_of_birth)'
-  task import_dob: :environment do
-    importer = WorkersDobImporter.new
+  task :import_dob, [:csv_file] => :environment do |_task, args|
+    importer = WorkersDobImporter.new(args[:csv_file])
     importer.import
   end
 end
@@ -16,9 +16,10 @@ end
 # WORKERS DOB IMPORTER
 # ================================
 class WorkersDobImporter
-  CSV_PATH = Rails.root.join('db/master_data/master_workers_2026_updated.csv').freeze
+  DEFAULT_CSV_PATH = Rails.root.join('db/master_data/master_workers_2026_updated.csv').freeze
 
-  def initialize
+  def initialize(csv_file = nil)
+    @csv_path = csv_file.present? ? Pathname.new(csv_file) : DEFAULT_CSV_PATH
     @stats = { total: 0, created: 0, updated: 0, skipped: 0, errors: 0 }
   end
 
@@ -39,19 +40,19 @@ class WorkersDobImporter
   attr_reader :stats
 
   def validate_file!
-    return if File.exist?(CSV_PATH)
+    return if File.exist?(@csv_path)
 
-    puts "File not found: #{CSV_PATH}"
+    puts "File not found: #{@csv_path}"
     exit 1
   end
 
   def header
-    puts "Upserting workers from #{CSV_PATH}"
+    puts "Upserting workers from #{@csv_path}"
     puts '=' * 80
   end
 
   def parse_rows
-    CSV.foreach(CSV_PATH, headers: true, header_converters: :symbol) do |row|
+    CSV.foreach(@csv_path, headers: true, header_converters: :symbol) do |row|
       stats[:total] += 1
       WorkersDobRowProcessor.new(row, stats).process
     rescue StandardError => e
