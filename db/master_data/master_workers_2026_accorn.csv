@@ -1,0 +1,16 @@
+id,name,nationality,gender,identity_number,worker_type,position,hired_date,is_active,date_of_birth
+2,NIKE BIN MICHEAL,local,Male,880209-49-5947,Full - Time,Driver,2024-02-05,true,1988-02-09
+3,BERRY BIN MICHEAL,local,Male,910128-12-5981,Full - Time,Mandour,2024-09-01,true,1991-01-28
+4,RAHIYA LESSE ,foreigner,Female,E0530928,Full - Time,General,2015-10-07,true,1973-12-31
+5,ABDUL ROHMAD,foreigner_no_passport,Male,,Full - Time,Harvester,2024-10-24,true,1996-08-30
+6,ADRIANA LALIAN,foreigner_no_passport,Female,,Full - Time,General,2025-01-10,true,1984-04-04
+7,BAHA MASSA,foreigner_no_passport,Male,,Full - Time,Harvester,2022-12-02,true,1972-12-11
+9,JAMES BANI ,foreigner_no_passport,Male,,Full - Time,Harvester,2024-12-10,true,1977-12-21
+10,MAKLON MATMARO,foreigner_no_passport,Male,,Full - Time,Driver,2024-10-05,true,1999-03-19
+11,SAIFUL ANUAR,foreigner_no_passport,Male,,Full - Time,Harvester,2025-07-19,true,1985-10-11
+12,UNTUNG,foreigner_no_passport,Male,,Full - Time,Harvester,2025-07-23,true,1988-12-11
+13,NUR SARIAH,foreigner_no_passport,Female,,Full - Time,General,2025-07-23,true,1989-07-27
+14,SUYANTO,foreigner_no_passport,Male,,Full - Time,Harvester,2025-07-23,true,1984-10-10
+15,ANIK MARTINI,foreigner_no_passport,Female,,Full - Time,General,2025-07-23,true,1986-06-17
+16,JAMALIAH BINTI SUARNO,foreigner_no_passport,Female,,Full - Time,General,2026-05-04,true,1995-03-09
+17,SRI UTAMI BINTI LAMIRAN,foreigner_no_passport,Female,,Full - Time,General,2026-06-11,true,1992-01-19
