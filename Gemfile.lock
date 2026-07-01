@@ -187,7 +187,7 @@ GEM
     jbuilder (2.14.1)
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
-    json (2.19.9)
+    json (2.20.0)
     kramdown (2.5.2)
       rexml (>= 3.4.4)
     kramdown-parser-gfm (1.1.0)
@@ -393,7 +393,7 @@ GEM
       logger (>= 1.7.0)
       rack (>= 3.2.0)
       redis-client (>= 0.29.0)
-    solargraph (0.60.1)
+    solargraph (0.60.2)
       ast (~> 2.4.3)
       backport (~> 1.2)
       benchmark (~> 0.4)
@@ -409,6 +409,7 @@ GEM
       parser (~> 3.0)
       prism (~> 1.4)
       rbs (>= 3.10.0)
+      rdoc (~> 7.0)
       reverse_markdown (~> 3.0)
       rubocop (~> 1.76)
       sord (~> 7.0)
@@ -417,7 +418,7 @@ GEM
       yard (~> 0.9, >= 0.9.24)
       yard-activesupport-concern (~> 0.0)
       yard-solargraph (~> 0.1)
-    sorbet-runtime (0.6.13309)
+    sorbet-runtime (0.6.13320)
     sord (7.1.0)
       commander (~> 5.0)
       parlour (~> 9.1)
@@ -525,7 +526,7 @@ DEPENDENCIES
   sentry-rails
   sentry-ruby
   sidekiq (~> 8.1)
-  solargraph (~> 0.60.1)
+  solargraph (~> 0.60.2)
   sprockets-rails
   stimulus-rails
   strong_migrations
