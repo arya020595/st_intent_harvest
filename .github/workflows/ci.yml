@@ -7,8 +7,23 @@ on:
       - main
 
 jobs:
+  secret-scan:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks Scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }} # Optional; set only if your organization uses a Gitleaks license
+
   ci:
     runs-on: ubuntu-latest
+    needs: secret-scan # Run CI only after secret scan passes
 
     services:
       postgres:
@@ -34,7 +49,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history for better secret detection
 
+      - name: Secret Scanning
+        run: |
+          echo "🔒 Scanning for secrets..."
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.4.7"
