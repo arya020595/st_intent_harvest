@@ -92,7 +92,7 @@ gem 'font-awesome-rails'
 gem 'grover'
 
 # Soft delete for Active Record models
-gem 'discard', '~> 1.4'
+gem 'discard', '~> 2.0'
 
 # Sentry for error tracking
 gem "sentry-ruby"
