@@ -92,7 +92,7 @@ gem 'font-awesome-rails'
 gem 'grover'
 
 # Soft delete for Active Record models
-gem 'discard', '~> 1.4'
+gem 'discard', '~> 2.0'
 
 # Sentry for error tracking
 gem "sentry-ruby"
@@ -102,7 +102,7 @@ group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'byebug', '~> 13.0'
   gem 'debug', platforms: %i[mri windows]
-  gem 'rubocop', '~> 1.86', require: false
+  gem 'rubocop', '~> 1.88', require: false
 
   # Annotate models with schema information
   gem 'annotate', require: false
@@ -131,7 +131,7 @@ group :development do
   # gem "spring"
 
   # Code completion and inline documentation for Ruby/Rails [https://solargraph.org]
-  gem 'solargraph', '~> 0.60.1', require: false
+  gem 'solargraph', '~> 0.60.2', require: false
 
   # HTML formatter for Ruby/Rails code [https://github.com/threedaymonk/htmlbeautifier]
   gem 'htmlbeautifier', require: false

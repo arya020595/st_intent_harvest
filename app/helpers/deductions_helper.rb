@@ -21,7 +21,7 @@ module DeductionsHelper
     deduction_breakdown.sort_by do |deduction_code, _data|
       priority = case deduction_code
                  when /^EPF/i then 0 # EPF_LOCAL, EPF_FOREIGN
-                 when /^SOCSO$/i then 1 # SOCSO (exact match)
+                 when /^SOCSO/i then 1 # SOCSO, SOCSO_JUNE_2026, etc.
                  when /^EIS/i then 2 # EIS_LOCAL, EIS_FOREIGN
                  else 3 # Other deductions
                  end
