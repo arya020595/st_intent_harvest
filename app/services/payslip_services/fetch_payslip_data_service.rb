@@ -35,6 +35,7 @@ module PayslipServices
       month_end = month_date.end_of_month
 
       worker.work_order_workers
+            .includes(:work_order)
             .joins(:work_order)
             .where(work_orders: {
                      completion_date: month_start..month_end,
