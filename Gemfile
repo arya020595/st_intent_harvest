@@ -71,7 +71,7 @@ gem 'sidekiq', '~> 8.1'
 gem 'dry-monads', '~> 1.10'
 
 # State machine library for Ruby objects (AASM) — used to model object states and transitions
-gem 'aasm', '~> 5.5', '>= 5.5.2'
+gem 'aasm', '~> 6.0'
 
 # Audit trail for models - tracks who created/updated records and what changed
 gem 'audited', '~> 5.8'
